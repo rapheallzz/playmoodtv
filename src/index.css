@@ -1,3 +1,4 @@
+
 *{
   padding: 0;
   margin: 0;
@@ -33,6 +34,11 @@
   display: flex;
   position: relative;
   margin-right: 5px !important; /* Adjusted margin */
+  transition: transform 0.3s ease; 
+    
+  &:hover {
+    transform: scale(1.09); 
+  }
 }
 .thisslides{
   cursor: pointer;
@@ -47,15 +53,20 @@
 }
 
 .slidescircle {
-  width: 250px !important; /* Set the desired width for your circle */
-  height: 250px; /* Set the desired height for your circle */
-  border-radius: 50%; /* Makes the slider circular */
-  overflow: hidden; /* Clips content outside the circle */
+  width: 250px !important; 
+  height: 250px; 
+  border-radius: 50%; 
+  overflow: hidden; 
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  transition: transform 0.3s ease; 
+  
+  &:hover {
+    transform: scale(1.09); 
+  }
   
 }
 
@@ -177,10 +188,26 @@
   cursor: pointer;
 
 }
-.movie-title h1{
+.movie-title h1 {
   color: white;
   font-size: 1rem;
   font-weight: 500;
+  /* For WebKit-based browsers */
+  -webkit-line-clamp: 3;
+  /* For Firefox */
+  -moz-line-clamp: 3;
+  /* For IE */
+  -ms-line-clamp: 3;
+  /* Standard */
+  line-clamp: 3;
+  /* Ensure text wraps within container */
+  display: -webkit-box;
+  overflow: hidden;
+  /* Ensure proper display for multi-line text */
+  -webkit-box-orient: vertical;
+  /* Add ellipsis for overflow text */
+  text-overflow: ellipsis;
+
 }
 
 .movie-slider{
@@ -229,17 +256,7 @@
   padding: 15px 10px;
   gap: 10px;
 }
-.prev-movie-info h3{
-  color: white;
-  font-size: 1rem;
-  font-weight: 400;
-  line-height: 1.5;
-  width: 80%;
-}
-.more-info-dots{
-  width: 20%;
-  height: 40px;
-}
+
 .video-hovered{
   height: 100%;
   width: 100%;
@@ -436,6 +453,8 @@
 
 /* end of spinner */
 
+
+
 /* lgt-btn */
 
 .head_section li {
@@ -443,8 +462,8 @@
 }
 
 .head_section .lgt_btn {
-  background-color: #e72b2b; /* Choose your desired background color */
-  color: #ffffff; /* Choose your desired text color */
+  background-color: #e72b2b; 
+  color: #ffffff; 
   padding: 5px 15px;
   border: none;
   border-radius: 5px;
@@ -459,15 +478,109 @@
   background-color: #7c1408; /* Change the background color on hover */
 }
 
+
+
+
+
+
+
+
+
 /* Dashboard button */
 
 .dash-btn{
-
+  
 }
 
 .dash-btn .lgt_btn {
-  background-color: #f3f3f3; /* Choose your desired background color */
-  color: #541011; /* Choose your desired text color */
+  background-color: #541011; /* Choose your desired background color */
+  color: #f3f3f3; /* Choose your desired text color */
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: normal;
+  transition: background-color 0.3s ease;
+  margin: 10px 10px;
+}
+
+
+.dash-btn .lgt_btn:hover {
+  background-color: #ffffff;
+  color:#541011;
+}
+
+.dash-btn .dashb_btn{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px; /* Adjust spacing between buttons */
+
+  color: #541011; /* Choose your desired background color */
+  background-color: #f3f3f3; /* Choose your desired text color */
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: normal;
+  transition: background-color 0.3s ease;
+  margin: 10px 10px;
+}
+
+.dash-btn .dashb_btn span {
+  margin-left: 5px; /* Adjust spacing between icon and text */
+}
+
+
+
+.dash-btn .dashb_btn:hover {
+  color: #ffffff;
+  background-color:#541011;
+}
+
+.donate-btns{
+  position: absolute;
+  top:700px;
+  left:20px;
+  display: flex;
+  flex-wrap: wrap;
+  max-width: fit-content;
+  /* background-color: red; */
+  width: 250px;
+}
+
+.donate-btns .creator_btn{
+  width: 74%;
+}
+
+.dash-btn .donate_btn {
+  background-color: #541011; /* Choose your desired background color */
+  color: #f3f3f3; /* Choose your desired text color */
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: normal;
+  transition: background-color 0.3s ease;
+  margin: 5px 5px;
+}
+
+.dash-btn .donate_btn:hover {
+  background-color: #ffffff;
+  color:#541011;
+}
+
+
+
+
+
+
+/* .next-btn .lgt_btn {
+  background-color: #f3f3f3; 
+  color: #541011;
   padding: 10px 15px;
   border: none;
   border-radius: 5px;
@@ -477,13 +590,7 @@
   transition: background-color 0.3s ease;
   margin: 10px 10px;
 
-}
-
-.dash-btn .lgt_btn:hover {
-  background-color: #541011;
-  color:#ffffff;
-}
-
+} */
 
 /*  */
 
@@ -493,11 +600,124 @@
   background-repeat: no-repeat;
 } */
 
+.movie-minimize{
+  position: relative;
+  left:-50px;
+}
+
+.label {
+  position: absolute;
+  /* top: -30px;
+  left: 50px; */
+  transform: translateX(-50%);
+  background-color: #7c1408;
+  color: white;
+  padding: 5px;
+  border-radius: 5px;
+  z-index: 999;
+  font-size: 12px;
+}
+.title-label{
+  top: -30px;
+  left: 50px;
+}
+.video-label{
+  top: -60px;
+  left: 10px;
+ 
+}
+
+.miniplayer{
+  top: -40px;
+  right: -5px;
+  width: 80px;
+}
+
+.dash-btn .production_btn{
+  padding: 5px;
+  position: relative;
+  left: 50px;
+}
+
+.dash-btn .nextvideo-btn{
+  position: relative;
+  left: -90px;
+  font-size:12px;
+}
+
+.dash-btn .production_par{
+  position: absolute;
+  left: -220px;
+}
+
+.dash-btn .favorite-icon{
+  position:absolute;
+  top: -60px;
+  left: 920px;
+  color:gold
+}
+
+.title-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 380px; /* Adjust the maximum width as needed */
+}
+
+.description-truncate {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 4; /* Number of lines to show */
+  -webkit-box-orient: vertical;
+}
+
+.view-more-btn {
+  background-color: #007bff; /* Blue color, change as needed */
+  color: #fff; /* White text color */
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.view-more-btn:hover {
+  background-color: #0056b3; /* Darker shade of blue on hover */
+}
+
+.movie-left-cont{
+  height: 250px;
+}
+
+.movie-right-cont{
+  /* position: relative; */
+  /* background-color: blue; */
+  left: -20px;
+  height: 250px;
+  width:450px;
+}
+
+
+
+.mobile-hamburger {
+  filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.5)); 
+  position: relative;
+  top: -70px;
+}
+
+
+
+
+
+
+
 @media (max-width: 768px) {
-  /* Styles for screens up to 768px width */
+
   .slides,
   .thisslides {
-    height: 270px; /* Adjusted height for smaller screens */
+
+    
+    height: 290px; /* Adjusted height for smaller screens */
   }
 
   .slidescircle {
@@ -510,10 +730,13 @@
   }
 
   .movie-title {
-    width: 80%; /* Adjusted width for smaller screens */
-    left: 10px; /* Adjusted left position for smaller screens */
-    top: 10px; /* Adjusted top position for smaller screens */
-    border-bottom-right-radius: 20px; /* Adjusted border radius for smaller screens */
+    display: flex;
+    width: 80%; 
+    left: 10px; 
+    top: 10px; 
+    border-bottom-right-radius: 20px; 
+    align-items: center;
+    justify-content: center;
   }
 
   .home-page-icon {
@@ -530,5 +753,241 @@
     font-size: 0.6rem; /* Adjusted font size for smaller screens */
   }
 
-  /* Add more responsive styles as needed */
+  .home-page-icon {
+    right: -8px; /* Adjusted right position for smaller screens */
+    top: 10px; /* Adjusted top position for smaller screens */
+  }
+
+  .movie-title {
+    width: 35%; 
+    height: 40px;
+    left: 50px; 
+    top: 10px; 
+    border-bottom-right-radius: 20px; 
+    padding: 10px;
+  }
+
+  .movie-title h1{
+    font-size: 7px;
+  }
+
+  .dash-btn .lgt_btn {
+    padding: 8px 8px;
+    font-size: 10px;
+    font-weight: normal;
+    margin: 10px 10px;
+  }
+
+  .dash-btn .production_btn{
+    padding: 5px;
+    position: relative;
+    left: -50px;
+  }
+
+  .dash-btn .nextvideo-btn{
+    position: relative;
+    left: -60px;
+    font-size:12px;
+  }
+
+  .dash-btn .production_par{
+    position: relative;
+    left: -140px;
+  }
+
+
+  .menutitle-credits{
+    position: relative;
+    left: 27px;
+  }
+
+  .dash-btn .dashb_btn{
+    color: #541011; /* Choose your desired background color */
+    background-color: #f3f3f3; /* Choose your desired text color */
+    padding: 10px 5px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 9px;
+    font-weight: normal;
+    transition: background-color 0.3s ease;
+    margin: 5px 5px;
+  }
+  
+  .dash-btn .dashb_btn:hover {
+    color: #ffffff;
+    background-color:#541011;
+  }
+
+  .movie-right-cont{
+    height: 250px;
+    /* width:220px; */
+  }
+
+  /* .movie-right-cont .movie-desc{
+    position: relative;
+    left:-200px;
+  } */
+  
 }
+
+.picture-placeholder {
+  position: relative;
+  width: 150px; /* Adjust according to your design */
+  height: 150px; /* Adjust according to your design */
+  border-radius: 50%; /* To make it circular */
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid #ccc; /* Optional: border styling */
+}
+
+.picture-placeholder img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* To ensure the image covers the entire container */
+}
+
+.placeholder-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 16px; /* Adjust according to your design */
+  color: #333; /* Adjust according to your design */
+}
+
+
+@media (max-width: 425px) {
+  #top10{
+    position: relative;
+    top:-80px;
+  }
+  #newonplay{
+    position: relative;
+    top: -170px;
+
+  }
+
+  #channel{
+    position: relative;
+    top:-180px
+  }
+
+  #diaries{
+    position: relative;
+    top:-180px
+  }
+  #spaces{
+    position: relative;
+    top:-180px
+  }
+  .donate-btns .creator_btn{
+    width: 155px;
+  }
+  .donate-btns{
+    position: relative;
+    top:50px;
+    display: flex;
+    flex-wrap: wrap;
+    width:180px;
+  }
+  .donate_btneq{
+    display: flex;
+    width: 40%;
+  }
+
+  .dash-btn .favorite-icon{
+    top: -45px;
+    left: -30px;
+    color:gold
+  }
+
+  
+}
+
+@media (max-width: 414px) {
+
+  .dash-btn .production_par{
+    position: absolute;
+    left: 30px;
+  }
+
+  .dash-btn .nextvideo-btn{
+    left: -190px;
+    position: absolute;
+    font-size:10px; 
+    padding: 4px;
+    top:5px;
+  }
+
+  .dash-btn .production_btn{
+    padding: 5px;
+    position: absolute;
+    left: 200px;
+    font-size: 8px;
+    line-height: normal;
+  }
+
+  .donate-btns{
+    position: relative;
+    top:50px;
+    display: flex;
+    flex-wrap: wrap;
+    width:180px;
+    /* background-color: red; */
+  }
+  
+  .donate-btns .creator_btn{
+    width: 140px;
+  }
+
+  .donate_btneq{
+    width: 65px;
+  }
+  
+  .dash-btn .donate_btn {
+    padding: 5px 10px;
+    font-size: 8px;
+    margin: 5px 5px;
+  }
+
+ 
+
+  .dash-btn .favorite-icon{
+    top: 160px;
+    left: 120px;
+    color:gold
+  }
+
+
+}
+
+@media (max-width: 375px) {
+
+  .dash-btn .production_par{
+    position: relative;
+    left: -140px;
+  }
+
+  .dash-btn .production_btn{
+    padding: 5px;
+    position: relative;
+    left: -150px;
+  }
+
+}
+
+.inputfield {
+  @apply px-4 py-2 rounded-lg;
+}
+
+.subscribe-button {
+  @apply bg-red-500 text-white px-4 py-2 rounded-lg cursor-pointer;
+}
+
+
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

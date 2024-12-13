@@ -1,171 +1,165 @@
-// // // LikedContentCard.js
-
-// // import React from 'react';
-// // import styled from 'styled-components';
-// // import cardImage from '/16_models.png';
-
-// // const LikedContentCard = ({ likedContent, isVisibleOnMobile }) => {
-// //   if (!isVisibleOnMobile) {
-// //     return null;
-// //   }
-
-// //   return (
-// //     <CardContainer backgroundImage={cardImage}>
-
-// //       <CardContain>
-// //         <p>Category.teens.10 Model..</p>
-// //         <LikecardButton>
-// //          <LikeButton>Play</LikeButton>
-// //          <LikeButton>My List</LikeButton>
-// //         </LikecardButton>
-
-// //       </CardContain>
-// //       {/* <h2>Liked Content</h2>
-// //       {likedContent.map((content) => (
-// //         <ContentItem key={content.id}>
-// //           <ContentImage src={content.thumbnail} alt={content.title} />
-// //           <ContentTitle>{content.title}</ContentTitle>
-// //         </ContentItem>
-// //       ))} */}
-// //     </CardContainer>
-// //   );
-// // };
-
-// // const CardContainer = styled.div`
-// //   position: relative;
-// //   width: 250px;
-// //   height: 400px;
-// //   background-color: #fff;
-// //   border-radius: 12px;
-// //   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-// //   margin: 70px;
-// //   background-image: url(${(props) => props.backgroundImage});
-// //   background-size: cover;
-// //   background-position: center;
-
-// // `;
-
-// // const ContentItem = styled.div`
-// //   display: flex;
-// //   align-items: center;
-// //   margin: 10px 0;
-// // `;
-
-// // const ContentImage = styled.img`
-// //   width: 80px;
-// //   height: 120px;
-// //   object-fit: cover;
-// //   border-radius: 8px;
-// //   margin-right: 10px;
-// // `;
-
-// // const ContentTitle = styled.p`
-// //   margin: 0;
-// // `;
-
-// // const CardContain = styled.div`
-// //   position: absolute;
-// //   bottom: 0;
-// //   width: 100%;
-// //   display: flex;
-// //   flex-direction: column;
-// //   align-items: flex-end;
-// //   p{
-// //     font-size:13px;
-// //     align-self:center;
-// //     font-weight:bold;
-// //     color:white;
-// //     &:hover{
-// //       color: #541011;
-// //     }
-   
-// //   }
-// // `;
-
-// // const LikecardButton = styled.div`
-// //   display: flex;
-// //   align-self:center;
-// // `;
-
-// // const LikeButton = styled.button`
-// //   width: 85px;
-// //   height: 35px;
-// //   margin: 7px;
-// //   padding: 10px;
-// //   background-color: #808080;
-// //   color: white;
-// //   border: none;
-// //   border-radius: 4px;
-// //   cursor: pointer;
-  
-// //   &:hover {
-// //     background-color: #541011;
-// //   }
-// // `;
-
-// // export default LikedContentCard;
-
-
-
-import React, {useState} from 'react';
+import React, { useEffect, useState, useRef  } from 'react';
 import styled from 'styled-components';
 import cardImage from '/16_models.png';
 import { FaPlay, FaHeart, FaShare, FaPlus } from 'react-icons/fa';
 import LinkCopied from './sliders/linkCopied';
 import WelcomePopup from './Welcomepop';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const LikedContentCard = ({ likedContent, isVisibleOnMobile }) => {
+  const [data, setData] = useState([]);
+  const [cardContent, setCardContent] = useState('');
+  const [contentIndex, setContentIndex] = useState(0);
+  const navigate = useNavigate();
+
+  
+
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      // console.log(user)
+      try {
+        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
+        setData(response.data);
+
+        const cardContentData = response.data.find(item => item._id === "65c78b61f7fb61666f4a93b6");
+        console.log(cardContentData)
+
+        if (cardContentData) {
+          setCardContent(cardContentData);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+   
+
+  }, []);
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
+  //       setData(response.data);
+  //       console.log(response.data);
+
+  //       // Start content rotation
+  //       const interval = setInterval(() => {
+  //         setContentIndex(prevIndex => (prevIndex + 1) % response.data.length);
+  //       }, 30000); // Rotate every 30 seconds
+
+  //       return () => clearInterval(interval); // Cleanup on unmount
+  //     } catch (error) {
+  //       console.error('Error fetching data:', error);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, []);
+
+  const currentContent = data[contentIndex];
+ 
+
   if (!isVisibleOnMobile) {
     return null;
   }
   const [showPopup, setShowPopup] = useState(false);
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
-  
+
 
   const handleShareClick = () => {
-    // Show the popup when the Share button is clicked
-    setShowPopup(true);
-    // Hide the popup after 3 seconds
-    setTimeout(() => {
-      setShowPopup(false);
-    }, 3000);
+    // Copy video URL to clipboard
+    const videoUrl = cardContent.video; // Assuming cardContent has a property named 'video' containing the URL
+    console.log(videoUrl);
+    navigator.clipboard.writeText(videoUrl)
+      .then(() => {
+        // Show link copied message
+        setShowPopup(true);
+        setTimeout(() => {
+          setShowPopup(false);
+        }, 3000);
+      })
+      .catch((error) => {
+        console.error('Error copying to clipboard: ', error);
+      });
   };
 
+  const handlePlayNow = () => {
+    // Navigate to the MoviePage and pass the video URL as a query parameter
+    navigate(`/movie/${currentContent._id}`, {
+      state: {
+        movie: cardContent.video,
+        title: cardContent.title || '',
+        desc: cardContent.description || '',
+        credits: cardContent.credit || '',
+      },
+    });
+  };  
+
   const handleLikeClick = () => {
-    // Show the welcome popup when the Like button is clicked
     setShowWelcomePopup(true);
   };
 
+  
+
   return (
-    <CardContainer backgroundImage={cardImage}>
-      <CardContain>
-       <Loveshare>   <FaHeart onClick={handleLikeClick} />
-     <FaShare  onClick={handleShareClick}/></Loveshare>
-   
-        <TitleText>
-          Teen Interview Test
-        </TitleText>
-        <CategoryContainer>
-          <CategoryText>
-            Category
-            <DotSeparator>•</DotSeparator>
-            Teens
-            <DotSeparator>•</DotSeparator>
-            10 Model
-          </CategoryText>
-        </CategoryContainer>
-        <ButtonContainer>
-          <LikecardButton>
-            <LikeButton><FaPlay /> Play Now</LikeButton>
-            <LikeButton><FaPlus /> Add to Watchlist</LikeButton>
-          </LikecardButton>
-        </ButtonContainer>
-      </CardContain>
-      <LinkCopied showPopup={showPopup} onClose={() => setShowPopup(false)} /> {/* Render the LinkCopied component */}
-      <WelcomePopup showPopup={showWelcomePopup} onClose={() => setShowWelcomePopup(false)} /> {/* Render the WelcomePopup component */}
-    </CardContainer>
+    <CenteredContainer>
+      <CardContainer backgroundImage={cardContent.thumbnail}>
+        <CardContain>
+          <Loveshare>
+            <FaHeart onClick={handleLikeClick} />
+            <FaShare onClick={handleShareClick} />
+          </Loveshare>
+          <TitleText>{cardContent.title}</TitleText>
+          <CategoryContainer>
+            <CategoryText>
+              Category
+              <DotSeparator>•</DotSeparator>
+              {cardContent.category}
+              <DotSeparator>•</DotSeparator>
+              {cardContent.credit}
+            </CategoryText>
+          </CategoryContainer>
+          <ButtonContainer>
+            <LikecardButton>
+              <LikeButton onClick={handlePlayNow}>
+                <FaPlay /> Play Now
+              </LikeButton>
+              <LikeButton onClick={handleLikeClick}>
+                <FaPlus /> Add to Watchlist
+              </LikeButton>
+            </LikecardButton>
+          </ButtonContainer>
+        </CardContain>
+      </CardContainer>
+      <LinkCopied
+        showPopup={showPopup}
+        onClose={() => setShowPopup(false)}
+      />
+      <WelcomePopup
+        showPopup={showWelcomePopup}
+        onClose={() => setShowWelcomePopup(false)}
+      />
+    </CenteredContainer>
   );
 };
+
+const CenteredContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 70vh;
+  position: relative;
+  top: 10px;
+  
+  @media screen and (max-width: 414px) {
+    height: 80vh
+}
+    
+`;
 
 const CardContainer = styled.div`
   position: relative;
@@ -174,10 +168,19 @@ const CardContainer = styled.div`
   background-color: #fff;
   border-radius: 12px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin: 70px;
   background-image: url(${(props) => props.backgroundImage});
   background-size: cover;
   background-position: center;
+
+  @media (max-width: 768px) {
+    width: calc(250px + 15%);
+    height: calc(400px + 5%);
+  }
+
+  @media (max-width: 320px) {
+    width: calc(250px - 15%);
+    height: calc(400px - 5%);
+  }
 `;
 
 const CardContain = styled.div`
@@ -186,15 +189,18 @@ const CardContain = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center; /* Center horizontally */
+  align-items: center;
 `;
 
 const TitleText = styled.p`
   margin: 0;
   font-size: 16px;
   font-weight: bold;
-  margin-bottom: 6px;
+
   color: #541011;
+  background-color: rgba(255, 255, 255, 0.7); /* Semi-transparent white */
+  padding: 5px 10px; /* Adjust padding as needed */
+  border-radius: 4px; /* Optional: Add border radius */
 `;
 
 const CategoryContainer = styled.div`
@@ -216,7 +222,7 @@ const DotSeparator = styled.span`
 const ButtonContainer = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center; /* Center horizontally */
+  align-items: center;
 `;
 
 const LikecardButton = styled.div`
@@ -225,29 +231,38 @@ const LikecardButton = styled.div`
 `;
 
 const Loveshare = styled.div`
-  width: 40px; 
- display: flex;
+  width: 40px;
+  display: flex;
   align-self: center;
-  justify-content:space-between;
- position: relative;
-     top: -240px;
-    right: -90px;
-    z-index: 1000;
-    color: #541011;
-    margin: 7px;
-    cursor: pointer;
-    
-      &:hover {
-        color: white;
-      }
-    
-  
-    
+  justify-content: space-between;
+  position: relative;
+
+  color: #541011;
+
+  cursor: pointer;
+
+  @media (max-width: 768px) {
+    top: -260px;
+    right: -140px;
+  }
+
+  @media (max-width: 425px) {
+    right: -120px;
+  }
+
+  @media (max-width: 320px) {
+    top: -210px;
+    right: -70px;
+  }
+
+
 `;
 
 const LikeButton = styled.button`
-  max-width: 150px; /* Set max-width for the button */
-  width: 80px;
+  display:flex;
+  align-items: center;
+  max-width: 200px;
+  width: auto;
   height: auto;
   margin: 7px;
   padding: 10px;
@@ -256,9 +271,13 @@ const LikeButton = styled.button`
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  text-align: center; /* Center text */
-  word-wrap: break-word; /* Allow text to break into multiple lines */
+  text-align: center;
+  word-wrap: break-word;
   font-size: 12px;
+    &:hover {
+    color: white;
+  }
+
 
   &:hover {
     background-color: #541011;

@@ -2,170 +2,134 @@ import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { register, reset } from '../features/authSlice';
+import { registerUser, reset } from '../features/authSlice';
 import Spinner from '../components/LoadSpinner';
-import axios from 'axios';
 import styled from 'styled-components';
 import playmood from "/PLAYMOOD_DEF.png";
+import axios from 'axios';
+// import { GoogleLogin } from 'react-google-login';
 
 const Register = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [age, setAge] = useState('');
+  const [countryCodes, setCountryCodes] = useState([]);
+  const [countries, setCountries] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState('');
-  const [address, setAddress] = useState('');
   const [selectedCode, setSelectedCode] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
+
+  useEffect(() => {
+    const fetchCountries = async () => {
+      try {
+        const response = await axios.get('https://restcountries.com/v3.1/all');
+        const fetchedCountries = response.data.map((country) => ({
+          name: country.name.common,
+          code: country.idd?.root
+            ? `${country.idd.root}${country.idd.suffixes ? country.idd.suffixes[0] : ''}`
+            : '',
+        }));
+        setCountries(fetchedCountries);
+        setCountryCodes(
+          fetchedCountries.map((country) => country.code).filter((code) => code)
+        );
+      } catch (error) {
+        console.error('Error fetching countries:', error);
+        toast.error('Failed to load countries. Please try again.');
+      }
+    };
+    fetchCountries();
+  }, []);
+
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    age: '',
+    country: '',  
+    address: '',
+    selectedCode: '',
+    phoneNumber: '',
+});
 
   const { user, isLoading, isError, isSuccess, message } = useSelector(
     (state) => state.auth
   );
 
-  const countries = [
-    'Select Country',
-    'United States',
-    'United Kingdom',
-    'Canada',
-    'Australia',
-    'Spain',
-    'Nigeria',
-    'Russia',
-    'Brazil',
-  ];
-
-  const countryCodes = [
-    'Select Code',
-    '+1',
-    '+44',
-    '+1',
-    '+61',
-  ];
+  const { name, email, password, age, country, address, phoneNumber } = formData;
 
   useEffect(() => {
     if (isError) {
       toast.error(message);
     }
 
-    if (isSuccess || user) {
-      navigate('/login');
+    if (isSuccess && user) {
+      navigate('/emailverify');
     }
+  
 
     dispatch(reset());
-  }, [user, isError, isSuccess, message, navigate, dispatch]);
+  }, [isError, isSuccess, message, navigate, dispatch]);
 
-  const handleSignup = async (e) => {
-    e.preventDefault();
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+};
 
-    const userData = {
-      name,
-      email,
-      password,
-      age,
-      selectedCountry,
-      address,
-      selectedCode,
-      phoneNumber,
-    };
-    try {
-      const response = await axios.post('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/user/', userData);
-  
-      console.log('Registration successful:', response.data);
-  
-      // Dispatch the register action directly
-      dispatch(register(response.data));
-      navigate('/login');
-    } catch (error) {
-      console.error('Registration failed:', error);
-      // Error handling is done in the extraReducers section of your authSlice
-      toast.error('Registration failed. Please try again.');
-    }
-  };
+
+const handleCountryChange = (e) => {
+    const selected = e.target.value;
+    setSelectedCountry(selected);
+    setFormData({ ...formData, country: selected });
+};
+
+const handleSignup = (e) => {
+  e.preventDefault();
+
+  if (!name || !email || !password || !country) {
+    toast.error("Please fill in all required fields.");
+    return;
+}
+
+  console.log(formData);
+  dispatch(registerUser(formData));
+};
+
+
   return (
     <RegisterContainer>
-      <Logo src={playmood} alt="Playmood Logo" />
-      <Form onSubmit={handleSignup}>
+    <Logo src={playmood} alt="Playmood Logo" />
+    <Form onSubmit={handleSignup}>
         <h2>Sign Up</h2>
-        <Input
-          type="text"
-          placeholder="Name"
-          id="name"
-          name="name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-        <Input
-          type="text"
-          placeholder="Email"
-          id="email"
-          name="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <Input
-          type="password"
-          placeholder="Password"
-          id="password"
-          name="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <Input
-          type="text"
-          placeholder="Age"
-          id="age"
-          name="age"
-          value={age}
-          onChange={(e) => setAge(e.target.value)}
-        />
-        <Select
-          value={selectedCountry}
-          onChange={(e) => setSelectedCountry(e.target.value)}
-        >
-          {countries.map((country, index) => (
-            <option key={index} value={country}>
-              {country}
-            </option>
-          ))}
+        <Input type="text" name="name" placeholder="Name" value={name} onChange={handleChange} />
+        <Input type="email" name="email" placeholder="Email" value={email} onChange={handleChange} />
+        <Input type="password" name="password" placeholder="Password" value={password} onChange={handleChange} />
+        <Select value={selectedCountry} onChange={handleCountryChange}>
+            <option value="">Select Country</option>
+            {countries.map((country, index) => (
+                <option key={index} value={country.name}>
+                    {country.name}
+                </option>
+            ))}
         </Select>
-        <Input
-          type="text"
-          placeholder="Address"
-          id="address"
-          name="address"
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
-        />
-        <Select
-          value={selectedCode}
-          onChange={(e) => setSelectedCode(e.target.value)}
-        >
-          {countryCodes.map((code, index) => (
-            <option key={index} value={code}>
-              {code}
-            </option>
-          ))}
+        <Input type="text" name="age" placeholder="Age (Optional)" value={age} onChange={handleChange} />
+        <Input type="text" name="address" placeholder="Address (Optional)" value={address} onChange={handleChange} />
+        <Select value={selectedCode} onChange={(e) => setSelectedCode(e.target.value)}>
+            <option value="">Select Code</option>
+            {countryCodes.map((code, index) => (
+                <option key={index} value={code}>
+                    {code}
+                </option>
+            ))}
         </Select>
-        <Input
-          type="tel"
-          placeholder="Phone Number"
-          id="phone"
-          name="phone"
-          value={phoneNumber}
-          onChange={(e) => setPhoneNumber(e.target.value)}
-        />
+        <Input type="tel" name="phoneNumber" placeholder="Phone Number (Optional)" value={phoneNumber} onChange={handleChange} />
         <SignupButton type="submit" disabled={isLoading}>
-          {isLoading ? 'Signing Up...' : 'Sign Up'}
+            {isLoading ? 'Signing Up...' : 'Sign Up'}
         </SignupButton>
         <SignInText>
-          Already have an account?{' '}
-          <SignInLink onClick={() => navigate('/login')}>Sign In</SignInLink>
+            Already have an account?{' '}
+            <SignInLink onClick={() => navigate('/login')}>Sign In</SignInLink>
         </SignInText>
-      </Form>
-      {isLoading && <Spinner />}
-    </RegisterContainer>
+    </Form>
+    {isLoading && <Spinner />}
+</RegisterContainer>
   );
 };
 
@@ -179,18 +143,39 @@ const RegisterContainer = styled.div`
   height: 100vh;
 `;
 
+const Google = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  // height: 100vh;
+`;
+
 const Logo = styled.img`
   height: 100px;
   width: auto;
   margin-bottom: 20px;
+
+  @media only screen and (max-width: 768px) {
+    width:60%;
+    height:auto;
+  }
 `;
 
 const Form = styled.form`
   background-color: #fff;
-  padding: 20px;
+  // padding: 20px;
+  padding:10px 20px 20px 20px;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0,  0, 0, 0.1);
   width: 40%;
+  h2{
+    text-align: center;
+    padding:5px;
+  }
+
+  @media only screen and (max-width: 768px) {
+    width:80%;
+  }
 `;
 
 const Input = styled.input`

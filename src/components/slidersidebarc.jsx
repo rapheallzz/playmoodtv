@@ -48,7 +48,7 @@ export default function SidebarSliderc() {
       const cardElement = clickedElement.closest('.slides');
   
       if (cardElement) {
-        navigate('/movie', {
+        navigate(`/movie/{_id}`, {
           state: {
             movie: content.video,
             title: content.title || '',

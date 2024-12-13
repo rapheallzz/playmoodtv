@@ -10,33 +10,39 @@ export default function SliderChannel() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchCreators = async () => {
       try {
-        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
-        setData(response.data);
+        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/user/creators', {
+          headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          }
+        });
+        console.log('Response:', response);
+        if (Array.isArray(response.data)) {
+          setData(response.data);
+        } else {
+          console.error('Response data is not an array:', response.data);
+        }
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching creators:', error);
       }
     };
 
-    fetchData();
+    fetchCreators();
   }, []);
-
-  const filteredData = data.filter((content) => content.category === 'Top 10').map((content) => ({
-    id: content.id,
-    thumbnail: content.thumbnail,
-  }));
 
   const settings = {
     dots: false,
     infinite: true,
     speed: 500,
-    slidesToShow: 5,
+    slidesToShow: 2,
     slidesToScroll: 1,
     initialSlide: 0,
     autoplay: true,
-    speed: 2000,
-    autoplaySpeed: 2000,
+    speed: 3000,
+    autoplaySpeed: 3000,
     cssEase: "linear",
     arrows: false,
     responsive: [
@@ -67,36 +73,36 @@ export default function SliderChannel() {
     ]
   };
 
-  const handleSlideClick = (event, content) => {
-    const clickedElement = event.target;
-  
-    // Check if the clicked element is a video
-    if (clickedElement.tagName.toLowerCase() === 'video') {
-      const cardElement = clickedElement.closest('.slidescircle');
-  
-      if (cardElement) {
-        navigate('/movie', {
-          state: {
-            movie: content.video,
-            title: content.title || '',
-            desc: content.description || '',
-            credits: content.credit || '',
-          },
-        });
-      }
-    }
+  const handleSlideClick = (creator) => {
+    console.log('Slide clicked', creator); 
+    navigate('/creator', {
+      state: {
+        name: creator.name || '',
+        profileImage: creator.profileImage || '',
+        bannerImage: creator.bannerImage || '',
+        content: creator.content || '',
+        subscribers: creator.subscribers || 0,
+        socialMedia: creator.socialMedia || {},
+      },
+    });
   };
+
   return (
+
     <Slider {...settings}>
-      {filteredData.map((content, index) => (
+      {Array.isArray(data) && data.map((creator, index) => (
         <div
-          key={content.id}
-          className="slidescircle"
-          onClick={(e) => handleSlideClick(e, content)}
-        >
-          <img src={content.thumbnail} alt={`Thumbnail ${index}`} />
-        </div>
+  key={creator._id}
+  className="slidescircle relative"
+  onClick={() => handleSlideClick(creator)}
+>
+  <img src={creator.profileImage} alt={`Creator ${index}`} className="w-full h-auto" />
+  <div className="absolute inset-0 flex flex-col justify-center items-center space-y-2">
+  </div>
+</div>
+
       ))}
+      
     </Slider>
   );
 }

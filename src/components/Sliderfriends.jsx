@@ -70,12 +70,11 @@ export default function Sliderfriends() {
   const handleSlideClick = (event, content) => {
     const clickedElement = event.target;
   
-    // Check if the clicked element is a video
     if (clickedElement.tagName.toLowerCase() === 'video') {
       const cardElement = clickedElement.closest('.slidescircle');
   
       if (cardElement) {
-        navigate('/movie', {
+        navigate(`/movie/{_id}`, {
           state: {
             movie: content.video,
             title: content.title || '',

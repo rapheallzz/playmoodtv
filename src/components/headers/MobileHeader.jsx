@@ -268,49 +268,55 @@ export default function MobileHeader({ channels, set_channels }) {
   return (
     <MobileHead>
       {/* <MobileNavigation></MobileNavigation> */}
-        <MobileNav>
-         
-            <Logo>
-            <div>    <img className="main-logo" src={playmood} onClick={() => navigate('/')} /> </div>
-        
-            <div
-                className="profile-container"
-                onClick={() => {
-                  // Check if the user is logged in
-                  if (user) {
-                    navigate('/dashboard');
-                  } else {
-                    navigate('/login');
-                  }
-                }}
-              >
-               <img src={profile} />
-              </div>
- 
-            </Logo>
+<div className="flex justify-between flex-col bg-black  items-center py-2 px-8 h-20">
 
-          <MobileNavi>
-          <Link to="/" className="links">
-            HOME
-          </Link>
-          <p className="links" onClick={() => set_channels(!channels)} >
-            CHANNELS
-          </p>
-          <Link to="/schedule" className="links">
-            SCHEDULE
-          </Link>
-          <Link to="/" className="links" onClick={() => set_channels(!channels)}>
-            SPACES
-          </Link>
-          <Link to="/" className="links" onClick={() => set_channels(!channels)}>
-            STORIES
-          </Link>
-          <Link to="/" className="links" onClick={() => set_channels(!channels)}>
-            DIARIES
-          </Link>
-          </MobileNavi>
+{/* Logo and Profile */}
+<div className="flex w-full items-center justify-around gap-10">
 
-        </MobileNav>
+
+  <div className="w-48 cursor-pointer">
+    <img src={playmood} alt="Playmood Logo" onClick={() => navigate('/')} />
+  </div>
+
+  <div
+    className="w-10 h-10 flex justify-center items-center rounded-full bg-red-600 cursor-pointer"
+    onClick={() => {
+      if (user) {
+        navigate('/dashboard');
+      } else {
+        navigate('/login');
+      }
+    }}
+  >
+    <img src={profile} alt="Profile Icon" className="w-6 h-6" />
+  </div>
+      
+</div>
+
+
+<div className=" flex justify-around w-full gab-8 ">
+  <Link to="/" className=" text-xs  text-white hover:text-red-600">
+    HOME
+  </Link>
+  <Link to="/channels" className="text-white  text-xs hover:text-red-600">
+   CHANNELS
+  </Link>
+  <Link to="/schedule" className="text-white  text-xs hover:text-red-600" >
+    SCHEDULE
+  </Link>
+  <Link to="/spaces" className="text-white  text-xs hover:text-red-600">
+    SPACES
+  </Link>
+  <Link to="/stories" className="text-white  text-xs hover:text-red-600">
+    STORIES
+  </Link>
+  <Link to="/diaries" className="text-white  text-xs hover:text-red-600">
+    DIARIES
+  </Link>
+</div>
+
+
+</div>
      
 
         <Side>
@@ -359,7 +365,7 @@ export default function MobileHeader({ channels, set_channels }) {
                </ul>
                </div>
                   {/* Conditionally render the user profile image */}
-                   <img className='user_profile' src={profile} onClick={() => { navigate('/dashboard') }} />
+                  {user && <img src={`${user.profile}?${new Date().getTime()}`} alt="Profile" className="w-32 h-32 rounded-full" onClick={() => { navigate('/dashboard') }}  />}
                      </div>
                        )}
 
@@ -577,8 +583,8 @@ const Side = styled.div`
     height: 10%;
     align-items: center;
     gap: 30px;
-    // position: relative;
-    // top: -40px;
+    position: relative; 
+    top: -65px;
     // left: -90px;
     // z-index: 1000;
 

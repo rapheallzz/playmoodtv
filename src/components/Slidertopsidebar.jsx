@@ -4,17 +4,17 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import axios from 'axios';
 import Slidercontent from './Slidercont';
-import { useNavigate } from 'react-router-dom';
-
+import { useNavigate, useParams } from 'react-router-dom';
 
 export default function Slidertopsidebar() {
   const navigate = useNavigate();
+  const { params } = useParams();
   const [data, setData] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
+        const response = await axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${params}`);
         setData(response.data);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -22,7 +22,7 @@ export default function Slidertopsidebar() {
     };
 
     fetchData();
-  }, []);
+  }, [params]);
 
   const filteredData = data.filter((content) => content.category === 'Top 10');
   
@@ -75,7 +75,7 @@ export default function Slidertopsidebar() {
       const cardElement = clickedElement.closest('.dashslide');
   
       if (cardElement) {
-        navigate('/movie', {
+        navigate(`/movie/{_id}`, {
           state: {
             movie: content.video,
             title: content.title || '',

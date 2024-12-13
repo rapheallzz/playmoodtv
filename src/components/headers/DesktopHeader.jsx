@@ -33,12 +33,16 @@ import SidebarSlider from '../slidersidebar';
 import SidebarSliderc from '../slidersidebarc';
 import { useSelector, useDispatch } from 'react-redux'
 import { logout, reset } from '.././../features/authSlice'
+import DonationModal from '../DonationModal'
 
-export default function DesktopHeader({ channels, set_channels }) {
+
+
+export default function DesktopHeader({ }) {
   const [dropbar, set_drop_bar] = useState(false);
   const navigate = useNavigate();
   const [top, set_top] = useState(false);
   const [settings_hover, set_settings_hovered] = useState(true);
+  const [showDonationModal, setShowDonationModal] = useState(false);
 
   const dispatch = useDispatch()
   const { user } = useSelector((state) => state.auth)
@@ -186,6 +190,21 @@ export default function DesktopHeader({ channels, set_channels }) {
   };
 
 
+  const handleDonationClick = () => {
+    setShowDonationModal(true);
+  };
+
+  const handleDonationClose = () => {
+    setShowDonationModal(false);
+  };
+
+  
+  const handleSubscriptionSubmit = (event) => {
+    event.preventDefault();
+    console.log('Email submitted');
+    setShowDonationModal(false); 
+  };
+
   const [top10Toggled, setTop10Toggled] = useState(false);
   const [newPlaymoodToggled, setNewPlaymoodToggled] = useState(false);
   const [channelsToggled, setChannelsToggled] = useState(false);
@@ -267,45 +286,54 @@ export default function DesktopHeader({ channels, set_channels }) {
   return (
     <DesktopHead>
       <DesktopNavigation>
-        <DesktopNav>
-
-          <Link to="/" className="links">
+      <nav className="w-full h-full flex items-center justify-between">
+        <div className="flex h-full flex-row gap-8 items-center">
+          <Link to="/" className="text-white text-sm font-medium">
             HOME
           </Link>
-          <p className="links" onClick={() => set_channels(!channels)} >
+          <Link to="/channels" className="text-white text-sm font-medium">
             CHANNELS
-          </p>
-          <Link to="/schedule" className="links">
+          </Link>
+          <Link  onClick={handleDonationClick} className="text-white text-sm font-medium">
             SCHEDULE
           </Link>
-          <Link to="/" className="links" onClick={() => set_channels(!channels)}>
+          <Link to="/spaces" className="text-white text-sm font-medium">
             SPACES
           </Link>
-          <Link to="/" className="links" onClick={() => set_channels(!channels)}>
+          <Link to="/stories" className="text-white text-sm font-medium">
             STORIES
           </Link>
-          <Link to="/" className="links" onClick={() => set_channels(!channels)}>
+          <Link to="/diaries" className="text-white text-sm font-medium">
             DIARIES
           </Link>
-          <LogoAndSettings>
-            <Logo>
-            <div
-                className="profile-container"
-                onClick={() => {
-                  // Check if the user is logged in
-                  if (user) {
-                    navigate('/dashboard');
-                  } else {
-                    navigate('/login');
-                  }
-                }}
-              >
-                <p>Post</p> <img src={categories} />
-              </div>
-              <img className="main-logo" src={playmood} onClick={() => navigate('/')} />
-            </Logo>
-          </LogoAndSettings>
-        </DesktopNav>
+        </div>
+        <div className="flex items-center ml-48">
+          <div
+            className="flex items-center justify-center w-32 h-10 border border-white cursor-pointer mr-2"
+            onClick={() => {
+              if (user) {
+                navigate('/dashboard');
+              } else {
+                navigate('/login');
+              }
+            }}
+          >
+            <p className="text-base">Post</p>
+            <img src={categories} className="w-6 h-6 pl-1" alt="Categories" />
+          </div>
+          <img src={playmood} className="h-10 cursor-pointer" alt="Playmood" onClick={() => navigate('/')} />
+        </div>
+
+              
+        <DonationModal 
+        isOpen={showDonationModal} 
+        onClose={handleDonationClose} 
+        onSubmit={handleSubscriptionSubmit} 
+      />
+ 
+
+
+      </nav>
         <Side>
 
           {sidebar ? (
@@ -349,7 +377,8 @@ export default function DesktopHeader({ channels, set_channels }) {
                </ul>
                </div>
                   {/* Conditionally render the user profile image */}
-                   <img className='user_profile' src={profile} onClick={() => { navigate('/dashboard') }} />
+                  {user && <img src={`${user.profile}?${new Date().getTime()}`} alt="Profile" className="w-32 h-32 rounded-full" onClick={() => { navigate('/dashboard') }}  />}
+                   {/* <img className='user_profile' src={profile} onClick={() => { navigate('/dashboard') }} /> */}
                      </div>
                        )}
 
@@ -363,19 +392,19 @@ export default function DesktopHeader({ channels, set_channels }) {
                     {home_hover ? <img src={home} onMouseEnter={handle_home_hover} /> : <img src={home_red} onMouseOut={handle_home_hover_out} />}
                     <p>Home</p>
                   </div>
-                  <div className="recommended_tab" onClick={() => set_channels(!channels)}>
+                  <div className="recommended_tab" onClick={() => { navigate('/recommended') }}>
                     {thumbs_hover ? <img src={thumbs} onMouseEnter={handle_thumbs_hover} /> : <img src={thumbs_red} onMouseOut={handle_thumbs_hover_out} />}
                     <p>Recommended</p>
                   </div>
-                  <div className="new_tab" onClick={() => set_channels(!channels)}>
+                  <div className="new_tab" onClick={() => { navigate('/newplaymood') }}>
                     {new_hover ? <img src={newp} onMouseEnter={handle_newp_hover} /> : <img src={newp_red} onMouseOut={handle_newp_hover_out} />}
                     <p>New on playmood</p>
                   </div>
-                  <div className="channels_tab" onClick={() => set_channels(!channels)}>
+                  <div className="channels_tab" onClick={() => { navigate('/channels') }}>
                     {snowflakes_hover ? <img src={snowflakes} onMouseEnter={handle_snowflakes_hover} /> : <img src={snowflakes_red} onMouseOut={handle_snowflakes_hover_out} />}
                     <p>Channels</p>
                   </div>
-                  <div className="spaces_tab" onClick={() => set_channels(!channels)}>
+                  <div className="spaces_tab" onClick={() => { navigate('/spaces') }}>
                     {location_hover ? <img src={location} onMouseEnter={handle_location_hover} /> : <img src={location_red} onMouseOut={handle_location_hover_out} />}
                     <p>Spaces</p>
                   </div>
@@ -383,10 +412,13 @@ export default function DesktopHeader({ channels, set_channels }) {
                     {schedule_hover ? <img src={schedule_white} onMouseEnter={handle_schedule_hover} /> : <img src={schedule_red} onMouseOut={handle_schedule_hover_out} />}
                     <p>Schedule</p>
                   </div>
-                  <div className="favorites_tab" onClick={() => set_channels(!channels)}>
+                  <div className="favorites_tab" onClick={() => { navigate('/dashboard') }}>
                     {favourites_hover ? <img src={favourite} onMouseEnter={handle_favourites_hover} /> : <img src={favourite_red} onMouseOut={handle_favourites_hover_out} />}
                     <p>Favorites</p>
                   </div>
+                        
+
+
                 </>
               )}
               <div className="categories" onClick={handle_mountcategory}>
@@ -579,7 +611,7 @@ position: fixed;
 padding: 20px 10px 0px 20px;
 display: flex;
 flex-direction: column;
-gap: 30px;
+gap: 20px;
 
     .categories_subsection{
         display: flex;
@@ -616,7 +648,7 @@ gap: 30px;
     .search_tab{
         display: flex;
         align-items: center;
-        gap: 30px;
+        gap: 20px;
         padding: 8px 10px 8px 20px;
         cursor: pointer;
         &:hover{
@@ -634,7 +666,7 @@ gap: 30px;
     .home_tab{
         display: flex;
         align-items: center;
-        gap: 30px;
+        gap: 20px;
         padding: 8px 10px 8px 20px;
         cursor: pointer;
         &:hover{
@@ -652,7 +684,7 @@ gap: 30px;
     .recommended_tab{
         display: flex;
         align-items: center;
-        gap: 30px;
+        gap: 20px;
         padding: 8px 10px 8px 20px;
         cursor: pointer;
         &:hover{
@@ -670,7 +702,7 @@ gap: 30px;
     .new_tab{
         display: flex;
         align-items: center;
-        gap: 30px;
+        gap: 20px;
         padding: 8px 10px 8px 20px;
         cursor: pointer;
         &:hover{
@@ -688,7 +720,7 @@ gap: 30px;
     .channels_tab{
         display: flex;
         align-items: center;
-        gap: 30px;
+        gap: 20px;
         padding: 8px 10px 8px 20px;
         cursor: pointer;
         &:hover{
@@ -706,7 +738,7 @@ gap: 30px;
     .spaces_tab{
         display: flex;
         align-items: center;
-        gap: 30px;
+        gap: 20px;
         padding: 8px 10px 8px 20px;
         cursor: pointer;
         &:hover{
@@ -724,7 +756,7 @@ gap: 30px;
     .schedule_tab{
         display: flex;
         align-items: center;
-        gap: 30px;
+        gap: 20px;
         padding: 8px 10px 8px 20px;
         cursor: pointer;
         &:hover{
@@ -742,7 +774,7 @@ gap: 30px;
     .favorites_tab{
         display: flex;
         align-items: center;
-        gap: 30px;
+        gap: 20px;
         padding: 8px 10px 8px 20px;
         cursor: pointer;
         &:hover{
@@ -760,7 +792,7 @@ gap: 30px;
     .categories{
         display: flex;
         align-items: center;
-        gap: 30px;
+        gap: 20px;
         padding: 8px 10px 8px 20px;
         cursor: pointer;
         &:hover{

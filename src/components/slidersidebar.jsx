@@ -49,7 +49,7 @@ export default function SidebarSlider() {
       const cardElement = clickedElement.closest('.slides');
   
       if (cardElement) {
-        navigate('/movie', {
+        navigate(`/movie/{_id}`, {
           state: {
             movie: content.video,
             title: content.title || '',
@@ -78,7 +78,7 @@ export default function SidebarSlider() {
              id={content.id} 
              desc={content.description}
             customStyle={{ fontSize: '5px',   position: 'absolute',
-            bottom: '10px', }}
+            bottom: '-100px', }}
           />
         </div>
       ))}

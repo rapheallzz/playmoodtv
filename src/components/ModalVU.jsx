@@ -7,7 +7,8 @@ import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 
 const VideoModal = ({ onClose }) => {
-    const { token } = useSelector((state) => state.auth.user);
+
+    const { token, user } = useSelector((state) => state.auth);
 
     const [videoData, setVideoData] = useState({
         title: '',
@@ -36,7 +37,7 @@ const VideoModal = ({ onClose }) => {
             [name]: value,
         }));
     };
-
+// console.log(user._id)
     const handleSubmit = async (e) => {
         e.preventDefault();
     
@@ -47,12 +48,15 @@ const VideoModal = ({ onClose }) => {
         formData.append('description', videoData.description);
         formData.append('credit', videoData.credit);
         formData.append('category', videoData.category);
+        formData.append('userId', user._id); 
         files.forEach((file) => {
             formData.append('files', file);
         });
     
         try {
+          
             const response = await fetch('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/', {
+
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -64,7 +68,7 @@ const VideoModal = ({ onClose }) => {
                     console.log(`Upload Progress: ${progress}%`);
                     // Update the state with the current progress
                     setUploadProgress(progress);
-                }
+                 }
             });
     
             if (response.ok) {
@@ -119,15 +123,16 @@ const VideoModal = ({ onClose }) => {
                     <option value='Top 10'>Top 10</option>
                     <option value='Fashion Show'>Fashion Show</option>
                     <option value='Teen'>Teens</option>
+                    <option value='Channels'>Channels</option>
                     <option value='Documentarie'>Documentaries</option>
                     <option value='Interview'>Interviews</option>
                     <option value='Social'>Social</option>
                     <option value='Behind the camera'>Behind the camera</option>
                     <option value='Soon in Playmood'>Soon in Playmood</option>
-                    <option value='Daries'>Watchlist</option>
+                    <option value='Watchlist'>Watchlist</option>
                     <option value='Daries'>Recommended</option>
-                    <option value='Daries'>New on Playmood</option>
-                    <option value='Daries'>Only in Playmood</option>
+                    <option value='New on Playmood'>New on Playmood</option>
+                    <option value='Only in Playmood'>Only in Playmood</option>
                 </Select>
 
                 <label>Upload Video and Thumbnail</label>

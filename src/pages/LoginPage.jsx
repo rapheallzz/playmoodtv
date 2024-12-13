@@ -5,25 +5,31 @@ import { useNavigate } from 'react-router-dom';
 import playmood from '/PLAYMOOD_DEF.png';
 import { toast } from 'react-toastify';
 import { login, reset } from '../features/authSlice';
+// import { GoogleLogin } from 'react-google-login';
 
 const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
-  const dispatch = useDispatch();
+ 
+  const dispatch = useDispatch(); 
 
   const { user, isLoading, isError, isSuccess, message } = useSelector(
     (state) => state.auth
   );
 
+  const responseGoogle = (response) => {
+    console.log(response);
+    // Handle the Google login response here
+  };
+
   useEffect(() => {
    
-    console.log('Redux State:', user);
-  console.log('isError:', isError);
-  console.log('isSuccess:', isSuccess);
-  console.log('user.role:', user && user.role);
-
+    console.log('Redux State:', user); 
+    console.log('isError:', isError);
+    console.log('isSuccess:', isSuccess);
+    console.log('user.role:', user && user.role);
+ 
     if (isError) {
       toast.error(message);
     }
@@ -57,7 +63,7 @@ const Login = () => {
 
   return (
     <LoginContainer>
-      <Logo src={playmood} alt="Playmood Logo" />
+      <Logo src={playmood} alt="Playmood Logo" onClick={() => navigate('/')} />
       <Form>
         <h2>Login</h2>
         <Input
@@ -84,7 +90,21 @@ const Login = () => {
         <CreateAccountButton onClick={() => navigate('/register')}>
           Create an account
         </CreateAccountButton>
+        
+        {/* <Google>
+
+        <GoogleLogin
+        // clientId="YOUR_GOOGLE_CLIENT_ID"
+        buttonText="Sign in with Google"
+        onSuccess={responseGoogle}
+        onFailure={responseGoogle}
+        cookiePolicy={'single_host_origin'}
+      />
+
+      </Google> */}
+
       </Form>
+      
     </LoginContainer>
   );
 };
@@ -97,20 +117,49 @@ const LoginContainer = styled.div`
   align-items: center;
   justify-content: center;
   height: 100vh;
+
 `;
 
 const Logo = styled.img`
   height: 100px;
   width: auto;
   margin-bottom: 20px;
+
+  @media only screen and (max-width: 768px) {
+    width:60%;
+    height:auto;
+  }
 `;
+
+const Google = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 25px;
+
+  }
+  
+`;
+
+
 
 const Form = styled.div`
   background-color: #fff;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  gap: 8;
+
+  h2{
+    text-align: center;
+    padding:5px;
+  }
+
+  @media only screen and (max-width: 768px) {
+    width:80%;
+  }
 `;
+
 
 const Input = styled.input`
   width: 100%;
@@ -137,6 +186,7 @@ const ForgotPasswordLink = styled.span`
   display: block;
   text-align: center;
   margin-top: 10px;
+    margin-bottom: 10px;
 `;
 
 const CreateAccountButton = styled.button`
@@ -145,11 +195,10 @@ const CreateAccountButton = styled.button`
   border: none;
   border-radius: 4px;
   padding: 10px;
-  width: 60%; 
+  width: 100%; 
   cursor: pointer;
-  margin-top: 10px;
-  margin-left:80px; 
-  margin-right: auto; 
+
+
 `;
 
 export default Login;

@@ -1,347 +1,509 @@
-import React, { useState } from 'react'
-import styled from "styled-components";
-import { useLocation, useNavigate } from 'react-router-dom';
-import logo from "/PLAYMOOD_DEF.png";
-import settings from "/settings.png";
-import search from "/search.png";
-import recommended from "/recommended.png";
-import newp from "/newp.png";
-import snowflakes from "/snowflakes.png";
-import schedule from "/schedule.png";
-import favourite from "/favourite.png";
-import categories from "/categories.png";
-import profile from "/icon-profile.png";
-import home from "/home.png";
+
+import React, { useState, useRef, useEffect } from 'react';
+import styled from 'styled-components';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import axios from 'axios';
+import MovieBurger from '../components/headers/MovieBurger';
+import instagram from '/instagram.png';
+import logo from '/PLAYMOOD_DEF.png';
+import profile from '/icon-profile.png';
+import { FaBars, FaPlay, FaHeart, FaBell, FaDonate, FaUser, FaEye, FaLink } from 'react-icons/fa';
 import Sliderinterviews from '../components/sliders/SliderInterview';
 import SliderDocumentaries from '../components/sliders/SliderDocumentaries'
-import instagram from "/instagram.png";
-import { FaPlay } from 'react-icons/fa';
+import WelcomePopup from '../components/Welcomepop';
 
 
 
 
 
 
+export default function MoviePage() {
+  const [info, setInfo] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(false);
+  const [showFavoriteMessage, setShowFavoriteMessage] = useState(false);
+  const [subscribed, setSubscribed] = useState(false);
+  const [spank, setSpank] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [movie, setMovie] = useState(null);
+  const toggleInfo = () => {
+    setInfo(!info);
+  };
 
-export default function MoviePage(props) {
-  const [info, set_info] = useState(false)
-  const location = useLocation();
-  const navigate = useNavigate();
-  const [tab_hovered, set_tab_hovered] = useState(true);
-  const handle_sidebar_hover = () => {
-    set_tab_hovered(!tab_hovered)
-  }
-  const handle_sidebar_hoverout = () => {
-    set_tab_hovered(!tab_hovered)
-  }
-  console.log(location)
-
+  const [showWelcomePopup, setShowWelcomePopup] = useState(false);
   
+  const navigate = useNavigate();
+  const { user } = useSelector((state) => state.auth);
+  const { slug } = useParams(); // Extract slug from URL
+
+  // Extract content ID from slug
+  const contentId = slug.split('-').pop();
+  const videoRef = useRef(null);
+
+
+  useEffect(() => {
+    const fetchMovieDataById = async () => {
+      try {
+        const response = await axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${contentId}`);
+        setMovie(response.data);
+      } catch (error) {
+        console.error('Error fetching movie:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchMovieDataById();
+  }, [contentId]);
+
+
+
+  // Check if user is already subscribed
+  useEffect(() => {
+    const checkSubscription = async () => {
+      try {
+        const response = await axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/subscribe/check/${movie?.user?._id}`);
+        setSubscribed(response.data.isSubscribed);
+      } catch (error) {
+        console.error('Error checking subscription:', error);
+      }
+    };
+
+    if (movie && user) {
+      checkSubscription();
+    }
+  }, [movie, user]);
+
+  // Subscribe to the creator's channel
+  const handleSubscribeClick = async () => {
+    try {
+      const response = await axios.post('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/subscribe/', {
+        creatorId: movie?.user?._id,
+      }, {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      });
+
+      if (response.status === 201) {
+        setSubscribed(true);
+        alert('Subscribed successfully');
+      }
+    } catch (error) {
+      console.error('Error subscribing:', error);
+    }
+  };
+
+  // Unsubscribe from the creator's channel
+  const handleUnsubscribeClick = async () => {
+    try {
+      const response = await axios.put('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/subscribe/', {
+        creatorId: movie?.user?._id,
+      }, {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      });
+
+      if (response.status === 200) {
+        setSubscribed(false);
+        alert('Unsubscribed successfully');
+      }
+    } catch (error) {
+      console.error('Error unsubscribing:', error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen bg-black text-white">
+        <div className="flex flex-col items-center">
+          <img src={logo} alt="Loading logo" className="w-32 mb-5 animate-bounce" />
+          <p className="text-lg font-semibold animate-pulse">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!movie) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen text-center">
+        <h1 className="text-2xl font-semibold mb-4">Movie Not Found</h1>
+        <p className="text-gray-600 mb-6">
+          The movie you're looking for doesn't seem to exist. Please return to the homepage and try selecting a different movie.
+        </p>
+        <button
+          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-200"
+          onClick={() => navigate('/')}
+        >
+          Back to Homepage
+        </button>
+      </div>
+    );
+  }
+  
+  
+
+  const handleWatchFromBeginning = () => {
+    if (videoRef.current) {
+      videoRef.current.currentTime = 0;
+      videoRef.current.play();
+    }
+  };
+
+  // const handleSubscribeClick = () => {
+  //   setSubscribed(!subscribed);
+  //   setSpank(true);
+  //   setTimeout(() => {
+  //     setSpank(false);
+  //   }, 1000);
+  // };
+
+  const handleLikeClick = () => {
+    setShowFavoriteMessage(true);
+    setTimeout(() => {
+      setShowFavoriteMessage(false);
+    }, 4000);
+  };
+
+  const handleCopyLink = () => {
+    const pageUrl = window.location.href; // Get the current page URL
+    navigator.clipboard.writeText(pageUrl)
+      .then(() => {
+        alert('URL copied to clipboard!'); 
+      })
+      .catch(err => {
+        console.error('Failed to copy: ', err);
+      });
+  };
+
+  const handleHeartClick = () => {
+    if (!user) {
+      setShowWelcomePopup(true);  // Show popup if user is not logged in
+    } else {
+      // Logic for liking/favoriting the movie goes here
+      console.log('User liked the movie');
+    }
+  };
+
+
+  const { title, description, credits, views, like, user: movieUser } = movie;
+
   return (
     <Movie>
-      <Dmovie muted playsInline loop autoPlay controls>
-        <source src={location.state.movie}/>
-      </Dmovie>
-      <div className='movie-title'>
-        <h1>{location.state.title}</h1>
-      </div>
-      <div className='home-page-icon'>
-        <img src={logo} alt="" onClick={()=>navigate('/')} />
-        <img src={profile}  onClick={()=>navigate('/dashboard')}/>
-      </div>
 
-      {/* {
-        tab_hovered
-        ?
-        <div className='sidebar-single-movie-page' onMouseEnter={handle_sidebar_hover}>
-          <img src={settings} className='settings-icon'/>
-          <img src={home} className='search-icon' />
-          <img src={search} className='search-icon'/>
-          <img src={recommended} className='search-icon' />
-          <img src={newp} className='search-icon'/>
-          <img src={snowflakes} className='search-icon' />
-          <img src={schedule} className='search-icon' />
-          <img src={favourite} className='search-icon' />
-          <img src={categories} className='search-icon' />
-        </div>
-        :
-        <div className='sidebar-expanded-movie-page' onMouseLeave={handle_sidebar_hoverout}>
-          <div className='profile-sidebar-section'>
-            <p>Sign Up/Log In</p>
-            <img src={settings} className='settings-icon'/>
-          </div>
-          <div className='search-container'>
-            <img src={search} className='search-icon'/>
-            <p>Search</p>
-          </div>
-          <div className='search-container'>
-            <img src={search} className='search-icon'/>
-            <p>Home</p>
-          </div>
-          <div className='search-container'>
-            <img src={recommended} className='search-icon' />
-            <p>Recommended</p>
-          </div>
-          <div className='search-container'>
-            <img src={newp} className='search-icon' />
-            <p>New on Playmood</p>
-          </div>
-          <div className='search-container'>
-            <img src={snowflakes} className='search-icon' />
-            <p>Channels</p>
-          </div>
-          <div className='search-container'>
-            <img src={schedule} className='search-icon' />
-            <p>Schedule</p>
-          </div>
-          <div className='search-container'>
-            <img src={favourite} className='search-icon' />
-            <p>Favorites</p>
-          </div>
-          <div className='search-container'>
-            <img src={categories} className='search-icon' />
-            <p>Categories</p>
-          </div>
-        </div>
-      } */}
-      <MovieDetail>
+      {/* all holder */}
 
 
+      <div className='h-auto'>
 
-        <div><Movietitle>
-          <p>Title: {location.state.title}</p>
-          <p>Duration: 6min</p>
-          <p> <FaPlay /> Watch From begining</p>
-        </Movietitle>
-        </div>
+           {/* Video Holder */}
+
+           <video
+  muted
+  playsInline
+  loop
+  autoPlay
+  controls
+  ref={videoRef}
+  controlsList="nodownload"
+  className={`object-cover z-1 ${isMinimized ? 'fixed bottom-0 right-0 w-52 h-auto' : 'w-full h-550px static'} md:${isMinimized ? 'h-auto' : 'h-200px'}`}
+>
+<source src={movie?.video} type="video/mp4" />
+
+</video>
+
+                <Hamburger onClick={() => handle_sidebar_hover()}>
+                 <MovieBurger />
+                </Hamburger>
+
+                  
+                <div className='movie-title'>
+                   <h1>{title}</h1>
+                   </div>
 
 
-
-        <div>   <Menutitle>
-          <p onClick={()=> set_info(false)}>Information</p>
-          <p onClick={()=> set_info(true)}>Production ~ Credits</p>
-          <p>Categories</p>
-        </Menutitle>
-        <> { info ? 
-          <Moviedescription>
-         
-         
-         
-         
-            <div>
-              <p><b>Credits: </b>{location.state.credits}</p>
-              <p>{location.state.creditss}</p>
-              <p>{location.state.creditsss}</p>
-            </div>
-            <div>
-              <p>{location.state.creditssss}</p>
-              <p>{location.state.creditsssss}</p>
-            </div>
-            <div>
-              <p>{location.state.creditssssss}</p>
-              <p>{location.state.creditsssssss}</p>
-              <p>{location.state.creditssssssss}</p>
-            </div>
-          </Moviedescription>
-          :
-          <MovieInformation>
-            <p>
-            <b>Description: </b>
-              {
-                location.state.desc.toString()
-              }
-            </p>
-          </MovieInformation>
-        }
-        </>  </div>
+                   <div className='home-page-icon'>
+                   <img src={logo} alt="" onClick={() => navigate('/')} />
+                       <img src={profile} onClick={() => {
+                       // Check if the user is logged in
+                   if (user) {
+                       navigate('/dashboard');
+                     } else {
+                    navigate('/login');
+                       }
+                          }} />
+                          </div>
       
-      
-        <div className='dash-btn'>  <Nextbtn>
-       
-                    <button className='lgt_btn'  >
-                   NEXT
-                  </button>
-        </Nextbtn>
-      </div>
-      
-      </MovieDetail>
 
-         <VideoCategoryfour id="interviews">
-            <Videocategorytitle>Recommended for you</Videocategorytitle>
-            <Sliderinterviews/>
-          </VideoCategoryfour>
 
-          <VideoCategoryfour id="interviews">
-            <Videocategorytitle>Continue Watching</Videocategorytitle>
-            <SliderDocumentaries/>
-          </VideoCategoryfour>
 
-          
-        <Footer>
+              {/* main section Section */}
+
+                    {/*  info Section */}
+
+                     
+    <div className='flex flex-col md:flex-row  w-[100%] gap-[3rem] md:gap-[8rem] h-auto my-[2rem] mx-12'>
+
+
+
+    {/* left Section */}
+
+
+    <div className='w-[35%]'>
+        <div className="mb-3">
+             
+             <div className="h-[auto] w-[300px] md:flex-row  my-5 md:my-0">
+
+              <div>
+
+              <p className="text-[15px] md:text-[12px] sm:text-[10px] p-[15px] md:p-[5px] cursor-pointer text-white hover:text-red-500">Title: {title}</p>
+                
+              </div>
+
+              <div className='flex gap-2 px-3 justify-between align-middle my-5 '>
+                     
+                             
+             <div className="flex  gap-1 items-center">
+                <FaEye className="text-white" />
+                <h6 className="text-white text-[0.6rem]">0</h6>
+              </div>
+
+                 
+              <div className="flex gap-1 items-center" onClick={handleHeartClick}>
+                <FaHeart className="text-white cursor-pointer" />
+                <h6 className="text-white text-[0.6rem]">0</h6>
+              </div>
+
+
+              <div className="flex gap-1 items-center" onClick={handleCopyLink}>
+                <FaLink className="text-white cursor-pointer" />
+              
+              </div>
+
+
+              </div>
+              
+              
+
+
+             </div>
+   
+               <div className="h-[50px] w-[300px] flex  gap-[50px] relative  md:p-[5px]">
+               <button className="w-[50%] gap-2 bg-[#541011] text-[#f3f3f3] p-[10px] px-[15px] border-none rounded-[5px] cursor-pointer text-[10px] font-normal transition-colors duration-300 ease-in-out hover:bg-white hover:text-[#541011] flex items-center justify-center m-[5px]" onClick={handleWatchFromBeginning}>
+               <FaPlay /> Play Again
+              </button>
+
+              <button className="w-[50%] gap-2 bg-[#541011] text-[#f3f3f3] p-[10px] px-[15px] border-none rounded-[5px] cursor-pointer text-[10px] font-normal transition-colors duration-300 ease-in-out hover:bg-white hover:text-[#541011] flex items-center justify-center m-[5px]">
+                NEXT VIDEO
+              </button>
+
+
+               </div>
+
+
+
+        </div>
+
+        
+
+        {/* buttons */}
+              
+
+        <div className=' h-[50px] w-[300px] flex  gap-[10px] relative md:  md:flex-col p-[5px] mb-0 md:mb-8'>
+            <button className=" md:w-[40%] w-[200] gap-2 bg-[#541011] text-[#f3f3f3] p-[10px]  border-none rounded-[5px] cursor-pointer text-[10px] font-normal transition-colors duration-300 ease-in-out hover:bg-white hover:text-[#541011] flex items-center justify-center m-[1px]">
+                <FaUser /> By: {movieUser ? movieUser.name : 'Anonymous'}
+            </button>
+            
+            <button onClick={handleLikeClick} className="bg-[#541011] gap-2 md:w-[40%] text-[#f3f3f3] p-[10px]  border-none rounded-[5px] cursor-pointer text-[10px] font-normal transition-colors duration-300 ease-in-out hover:bg-white hover:text-[#541011] flex items-center justify-center m-[1px]">
+                <FaDonate /> Donate
+            </button>
+            {/* <button className={`bg-[#541011] md:w-[40%] gap-2 text-[#f3f3f3] p-[10px] border-none rounded-[5px] cursor-pointer text-[10px] font-normal transition-colors duration-300 ease-in-out hover:bg-white hover:text-[#541011] flex items-center justify-center m-[1px] ${spank ? 'spank' : ''}`} onClick={handleSubscribeClick}>
+                <FaBell /> {subscribed ? 'Unsubscribe' : 'Subscribe'}
+            </button> */}
+            <button
+        onClick={subscribed ? handleUnsubscribeClick : handleSubscribeClick}
+        className={`bg-[#541011] md:w-[40%] gap-2 text-[#f3f3f3] p-[10px] border-none rounded-[5px] cursor-pointer text-[10px] font-normal transition-colors duration-300 ease-in-out hover:bg-white hover:text-[#541011] flex items-center justify-center m-[1px] btn ${subscribed ? 'btn-danger' : 'btn-success'}`}
+      >
+        {subscribed ? <FaBell /> : <FaBell />} {subscribed ? 'Unsubscribe' : 'Subscribe'}
+      </button>
+        </div>
+
+
+
+    </div>
+
+    {/* right section */}
+    <div className="mt-1 md:mt-0 h-auto">
+                
+
+
+        <div className="movie-right-cont   h-auto w-[85%] md:w-[65%]">
+            <div className="menutitle ml-[18px] flex items-center gap-[30px] h-[50px]  mx-auto">
+                {/* <FaStar onClick={handleAddToFavorites} className="favorite-icon absolute top-[-60px] left-[920px] text-yellow-400" /> */}
+                <p className="production_par cursor-pointer text-white hover:text-red-500" onClick={() => setInfo(false)}>Information</p>
+                <button className=" gap-2 bg-[#541011] text-[#f3f3f3] p-[10px] px-[15px] border-none rounded-[5px] cursor-pointer text-[10px] font-normal transition-colors duration-300 ease-in-out hover:bg-white hover:text-[#541011] flex items-center justify-center m-[5px]" onClick={toggleInfo}>Production ~ Credits</button>
+            </div>
+            {showFavoriteMessage && (
+                <div className="popup-message fixed top-[200px] right-[100px] bg-[rgba(0,0,0,0.8)] text-white p-[10px_20px] rounded z-[9999] text-[12px] animate-fadeOut">
+                    Added to favorites!
+                </div>
+            )}
+            <div className="">
+                {info ? (
+                    <div className="flex items-center justify-between text-white w-[70%] mx-auto">
+                        <div>
+                            <p><b>Credits: </b>{credits}</p>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="movieinformation text-white w-[75%] h-auto flex mx-auto relative  md:left-[-170px] md:text-[12px]">
+                        <p>{description}</p>
+                    </div>
+                )}
+            </div>
+        </div>
+
+        {/* next button */}
+
+                      </div>
+                       </div>
+
+
+
+
+                      
+
+                {/* Slider Section */}
+<div className='md:my-32'>
+    <div id="interviews" className="video-category-four h-[390px] w-[90%] mx-[30px] mb-[40px] flex flex-col md:mx-[20px] md:my-[20px] md:mb-[50px]">
+        <h3 className="video-category-title text-white pb-[20px] font-semibold text-[1.5rem] md:text-[1.3rem] lg:text-[1.5rem]">Recommended for you</h3>
+        <Sliderinterviews />
+    </div>
+
+    {user && (
+        <div id="interviews" className="video-category-four h-[380px] w-[90%] my-[30px] mx-[50px] mt-[50px] flex flex-col gap-[20px] md:mx-[20px] md:my-[20px] md:mb-[50px]">
+            <h3 className="video-category-title text-white pb-[20px] font-semibold text-[1.5rem] md:text-[1.3rem] lg:text-[1.5rem]">Continue Watching</h3>
+            <SliderDocumentaries />
+        </div>
+    )}
+    
+
+
+  
+
+    <WelcomePopup
+        showPopup={showWelcomePopup}
+        onClose={() => setShowWelcomePopup(false)}
+        onLogin={() => {
+          // Handle login logic here
+          setShowWelcomePopup(false);
+        }}
+        onRegister={() => {
+          // Handle register logic here
+          setShowWelcomePopup(false);
+        }}
+      />
+
+
+</div>
+
+
+
+                     {/* footer */}
+
+                           
+                     <Footer>
+                    <div>
+                    <img src={logo} />
+               </div>
+                <div className='instagrams'>
+                     <div className='instagram-official'>
+            <a href="https://instagram.com/playmoodtv?igshid=MzRlODBiNWFlZA==">
+              <img src={instagram} />
+            </a>
+            <p className='instagram-links'><a href="https://instagram.com/playmoodtv?igshid=MzRlODBiNWFlZA==" target='_blank'>Official</a></p>
+          </div>
+          <div className='instagram-official'>
+            <a href="https://www.instagram.com/playmoodlat/">
+              <img src={instagram} />
+            </a>
+            <p className='instagram-links'><a href="https://www.instagram.com/playmoodlat/" target='_blank'>Latam</a></p>
+          </div>
+          <div className='instagram-official'>
+            <a href="https://www.instagram.com/playmoodmx/">
+              <img src={instagram} />
+            </a>
+            <p className='instagram-links'><a href="https://www.instagram.com/playmoodmx/" target='_blank'>MX</a></p>
+          </div>
+        </div>
+        <div></div>
+        <div className='contact-footer'>
+          <h2>Contact us:</h2>
+          <h3>Creators@playmoodtv.com</h3>
           <div>
-            <img src={logo}/>            
+            <p onClick={() => navigate('/privacy-policy')}>Privacy Policy</p>
+            <p onClick={() => navigate('/cookies')}>Cookies Policy</p>
           </div>
-          <div className='instagrams'>
-            <div className='instagram-official'>
-              <a href="https://instagram.com/playmoodtv?igshid=MzRlODBiNWFlZA==">
-                <img src={instagram} />
-              </a>
-              <p className='instagram-links'><a href="https://instagram.com/playmoodtv?igshid=MzRlODBiNWFlZA==" target='_blank'>Official</a></p>
-            </div>
-            <div className='instagram-official'>
-              <a href="https://www.instagram.com/playmoodlat/">
-                <img src={instagram} />
-              </a>
-              <p className='instagram-links'><a href="https://www.instagram.com/playmoodlat/" target='_blank'>Latem</a></p>
-            </div>
-            <div className='instagram-official'>
-              <a href="https://www.instagram.com/playmoodmx/">
-                <img src={instagram} />
-              </a>
-              <p className='instagram-links'><a href="https://www.instagram.com/playmoodmx/" target='_blank'>MX</a></p>
-            </div>
+          <div>
+            <p>All rights reserved to PlaymoodTV 2023</p>
           </div>
-          <div></div>
-          <div className='contact-footer'>
-            <h2>Contact us:</h2>
-            <h3>Creators@playmoodtv.com</h3>
-            <div>
-              <p onClick={() =>navigate('/privacy-policy')}>Privacy Policy</p>
-              <p onClick={()=>navigate('/cookies')}>Cookies Policy</p>
-            </div>
-            <div>
-              <p>All rights reserved to PlaymoodTV 2023</p>
-            </div>
-          </div>
-        </Footer> 
+        </div>
+                    </Footer>
+
+                  
+              
+            
+
+      </div>
 
     </Movie>
-  )
+  );
 }
+
 
 const Movie = styled.div`
   width: auto;
-  height: auto;
+  // height: auto;
+  height: ${props => props.isMinimized ? '100px' : 'auto'};
+  position:relative;
   display flex;
   flex-direction: column;
   overflow: hidden;
   background: black;
-`
-const Dmovie = styled.video`
-  width: 100%;
-  height: 25%;
-  object-fit: cover;
-`
-const MovieDetail = styled.div`
-  height: 30%;
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  gap: 40px;
+
 `
 
-const Menutitle = styled.div`
-  height: 50px; 
-  width: 70%;
-  display: flex;
-  margin: 0px auto 0px auto;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: 50px;
-  p{
+const Hamburger = styled.div`
+  display: none; /* Hide by default */
+
+  @media (max-width: 768px) {
+    display: block; 
+    position: absolute;
+    top: 10px;
+    left: 5px;
     cursor: pointer;
     color: white;
     &:hover{
-      color: red;
+      color: #541011;
+    }
+    z-index: 1000;
+
+    svg {
+      font-size: 40px;
     }
   }
-`
 
-
-const Movietitle = styled.div`
-  height: 50px; 
-  width: 100%;
-  margin: 30px;
-  align-items: center;
-  justify-content: center;
-  gap: 50px;
-  p{ 
-    font-size:15px;
-    padding:15px;
-    cursor: pointer;
-    color: white;
-    &:hover{
-      color: red;
+  @media (max-width: 790px) {
+    svg{
+      position: relative;
+      font-size: 30px;
+      top:6px;
+      left:8px
     }
   }
-`
-
-const Nextbtn = styled.div`
-  height: 50px; 
-  width: 100%;
-  margin-right: 170px;
-  align-items: center;
-  justify-content: center;
-  gap: 50px;
-  p{ 
-    font-size:15px;
-    padding:15px;
-    cursor: pointer;
-    color: white;
-    &:hover{
-      color: red;
-    }
-  }
-`
-
-const Moviedescription = styled.div`
-  width: 70%;
-  height: fit-content;
-  display: flex;
-  color: white;
-  justify-content: space-between;
-  align-items: center; 
-  margin: 0px auto 0px auto;
-`
-const MovieInformation = styled.div`
-  height: fit-content;
-  color: white;
-  width: 70%;
-  display: flex;
-  align-items: center;
-  margin: 0px auto 0px auto;
-
-`
-const VideoCategoryfour = styled.div`
-    height: 300px;
-    width: 90%;
-    margin: 140px 50px 150px 50px;
-    display: flex;
-    gap: 20px;
-    flex-direction: column;
-
-    @media screen and (max-width: 1000px) {
-        margin: 220px 20px 100px 20px;
-    }
-`
+`;
 
 
-
-const Videocategorytitle = styled.h3`
-    font-size: 1.5rem;
-    color: white;
-    padding-bottom: 20px;
-    font-weight: 600;
-
-    @media only screen and (min-width: 300px) {
-        font-size: 1.3rem;
-    }
-
-    @media only screen and (min-width: 800px) {
-        font-size: 1.5rem;
-    }
-`
 
 const Footer = styled.div`
     height: fit-content;
@@ -367,7 +529,7 @@ const Footer = styled.div`
 
     .instagrams {
         display: flex;
-        gap: 10px;
+        gap: 5px;
 
         .instagram-official {
             display: flex;
@@ -383,8 +545,8 @@ const Footer = styled.div`
             }
 
             img {
-                height: 40px;
-                width: 40px;
+                height: 20px;
+                width: 20px;
             }
         }
     }
@@ -392,7 +554,7 @@ const Footer = styled.div`
     div {
         height: fit-content;
         display: flex;
-        gap: 20px;
+        gap: 10px;
         color: white;
 
         p {
@@ -409,5 +571,9 @@ const Footer = styled.div`
 
     @media screen and (max-width: 600px) {
         flex-direction: column;
+        padding: 10px;
+        text-align: center;
     }
-`
+`;
+
+

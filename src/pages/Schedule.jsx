@@ -1,161 +1,88 @@
-import React from 'react'
-import styled from "styled-components";
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 export default function Schedule() {
+  const [data, setData] = useState([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
+        setData(response.data);
+        console.log(response.data); 
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleTitleClick = (content) => {
+    if (content._id) {
+      navigate(`/movie/${content._id}`, {
+        state: {
+          movie: content.video,
+          title: content.title || '',
+          desc: content.description || '',
+          credits: content.credit || '',
+        },
+      });
+    } else {
+      console.error('Content _id is missing:', content);
+    }
+  };
+
   return (
-    <SchedulePage>
-        <Header/>
-        <Program>
-            <Sidebar>
-                <Logo>
-                    <h1>Playmood</h1>
-                    <p>TV</p>
-                </Logo>
-                <Navigation>
-                    <Home>
-                        Home
-                    </Home>
-                    <Tv>
-                        TV Guide
-                    </Tv>
-                </Navigation>
-
-            </Sidebar>
-            <Mainbar>
-                <table>
-                    <thead>
-                        <th>Early</th>
-                        <th>Late</th>
-                        <th>Medium</th>
-                        <th>Hard</th>
-                    </thead>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                </table>
-
-            </Mainbar>
-
-        </Program>
-
-    </SchedulePage>
-  )
+    <div className="h-full w-full bg-black">
+      <div className="flex">
+        <div className="w-1/5 bg-gray-500 h-full flex flex-col gap-8">
+          <div className="mt-32 flex justify-center">
+            <h1 className="text-3xl text-red-600">Playmood</h1>
+            <p className="text-white text-2xl">TV</p>
+          </div>
+          <div className="flex flex-col items-center">
+            <Link to="/" className=" text-white text-sm font-medium w-full">
+              <div className="py-5 cursor-pointer flex justify-center hover:bg-white hover:text-red-600">
+                HOME
+              </div>
+            </Link>
+                
+            <Link to="#" className="text-white text-sm font-medium w-full">
+              <div className="py-5 cursor-pointer flex justify-center hover:bg-white hover:text-red-600">
+                TV Guide
+              </div>
+            </Link>
+          </div>
+        </div>
+        <div className="w-4/5 h-full bg-black pt-2 flex flex-col items-center">
+          <div className="w-auto flex align-middle justify-center mb-10">
+            <h1 className="text-red-800 font-bold text-2xl">SCHEDULES</h1>
+          </div>
+          <table className="w-full border-2 border-white text-white">
+            <thead className="border-2 border-white h-36">
+              <tr>
+                <th className="border-2 border-white">Early</th>
+                <th className="border-2 border-white">Late</th>
+                <th className="border-2 border-white">Medium</th>
+                <th className="border-2 border-white">Hard</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.slice(0, 6).map((content, index) => (
+                <tr key={index} className="border-2 border-white h-20 cursor-pointer">
+                  <td onClick={() => handleTitleClick(content)} className="border-2 border-white">{content.title}</td>
+                  <td className="border-2 border-white"></td>
+                  <td className="border-2 border-white"></td>
+                  <td className="border-2 border-white"></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
 }
-
-const SchedulePage = styled.div`
-    width: 100vw;
-    height: 100vh;
-`
-const Program = styled.div`
-    display: flex;
-    height: 100%;
-    width: 100%;
-`
-const Sidebar = styled.div`
-    width: 25%;
-    background-color: grey;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
-`
-const Mainbar = styled.div`
-    width: 75%;
-    height: 100%;
-    background-color: black;
-    padding-top: 100px;
-    table{
-        width: 100%;
-        height: 100%;
-        border: 2px solid white;
-        tr{
-            border: 2px solid white;
-            height: 80px;
-        }
-        thead{
-            border: 2px solid white;
-            height: 150px;
-        }
-        td{
-            border: 2px solid white;
-        }
-        th{
-            border: 2px solid white;
-        }
-        
-    }
-`
-const Logo = styled.div`   
-    height: fit-content;
-    width: 100%;
-    margin-top: 120px;
-    display: flex;
-    justify-content: center;
-    h1{
-        font-size: 3rem;
-        color: red; 
-    }
-    p{
-        color: white;
-        font-size: 1.5rem;
-    }
-`
-const Navigation = styled.div`
-    height: fit-content; 
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-`
-const Home = styled.div`
-    padding: 20px;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    &:hover{
-        background-color: white;
-        color: red;
-    }
-`
-const Tv = styled.div`
-    padding: 20px;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    &:hover{
-        background-color: white;
-        color: red;
-    }
-`

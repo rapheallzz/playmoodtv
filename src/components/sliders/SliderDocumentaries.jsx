@@ -1,30 +1,73 @@
-import React, { useEffect, useState } from 'react';
-import Slider from 'react-slick';
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
-import axios from 'axios';
-import Slidercontent from '../Slidercont';
-import { useNavigate } from 'react-router-dom';
 
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import Slider from 'react-slick'; 
+import 'slick-carousel/slick/slick.css'; 
+import 'slick-carousel/slick/slick-theme.css'; 
+import { useNavigate } from 'react-router-dom';
+import Slidercontent from '../Slidercont';
+import ContentModal from '../ContentModal'; 
 
 export default function SliderDocumentaries() {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
+  const [error, setError] = useState(null);
+  const [modalContent, setModalContent] = useState(null); 
+  const [isModalOpen, setIsModalOpen] = useState(false); 
+
 
   useEffect(() => {
-    const fetchData = async () => {
+    async function fetchData() {
       try {
+        console.log('Requesting data from API');
+
+        // Fetch all data
         const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
-        setData(response.data);
+        
+        console.log('API response:', response);
+
+        // Filter data by category 'Documentaries'
+        if (response.data && Array.isArray(response.data)) {
+          const filteredData = response.data.filter(content => content.category === 'Top 10');
+          setData(filteredData);
+        } else {
+          console.error('Unexpected data format:', response.data);
+          setError('Unexpected data format.');
+        }
       } catch (error) {
         console.error('Error fetching data:', error);
+        setError('Error fetching data.');
       }
-    };
+    }
 
     fetchData();
   }, []);
+   
 
-  const filteredData = data.filter((content) => content.category === 'Documentarie');
+  const handleOpenModal = (content) => {
+    setModalContent(content); 
+    setIsModalOpen(true);    
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);   
+    setModalContent(null);    
+  };
+
+
+  const createSlug = (title, _id) => {
+    const formattedTitle = title.toLowerCase().replace(/[^a-z0-9]+/g, '-'); 
+    return `${formattedTitle}-${_id}`;
+  };
+
+
+
+  const handleNavigateToMovie = (content) => {
+    const slug = createSlug(content.title, content._id); 
+    console.log('Navigating to movie with slug:', slug);
+    navigate(`/movie/${slug}`);
+  };
+
   const settings = {
     dots: false,
     infinite: true,
@@ -33,8 +76,8 @@ export default function SliderDocumentaries() {
     slidesToScroll: 1,
     initialSlide: 0,
     autoplay: true,
-    speed: 2000,
-    autoplaySpeed: 2000,
+    speed: 3000,
+    autoplaySpeed: 3000,
     cssEase: "linear",
     arrows: false,
     responsive: [
@@ -65,46 +108,35 @@ export default function SliderDocumentaries() {
     ]
   };
 
-
-  const handleSlideClick = (event, content) => {
-    const clickedElement = event.target;
   
-    // Check if the clicked element is a video
-    if (clickedElement.tagName.toLowerCase() === 'video') {
-      const cardElement = clickedElement.closest('.slides');
-  
-      if (cardElement) {
-        navigate('/movie', {
-          state: {
-            movie: content.video,
-            title: content.title || '',
-            desc: content.description || '',
-            credits: content.credit || '',
-          },
-        });
-      }
-    }
-  };
-
   return (
-    <Slider {...settings}>
-      {filteredData.map((content, index) => (
-        <div
-          key={content.id}
-          className="slides"
-          onClick={(e) => handleSlideClick(e, content)}
-        >
-          
-          <Slidercontent
-            img={content.thumbnail}
-            title={content.title}
-             movie={content.video} 
-             id={content.id} 
-             desc={content.description}
-            customStyle={{ }}
-          />
-        </div>
-      ))}
-    </Slider>
+    <>
+      {error ? (
+        <div className="error-message">{error}</div>
+      ) : (
+        <Slider {...settings}> 
+          {Array.isArray(data) && data.map((content, index ) => (
+            <div key={content._id} className="slides" onClick={() => handleOpenModal(content)}>
+              <Slidercontent 
+                img={content.thumbnail} 
+                title={content.title} 
+                movie={content.video} 
+                views={content.views}
+                desc={content.description} 
+                customStyle={{}}
+              />
+            </div>
+          ))}
+        </Slider>
+      )}
+
+    <ContentModal
+        isOpen={isModalOpen}
+        content={modalContent}
+        onClose={handleCloseModal}
+        handleNavigateToMovie={handleNavigateToMovie}
+      />
+    </>
   );
 }
+

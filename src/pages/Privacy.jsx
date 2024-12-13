@@ -1,10 +1,39 @@
-import React from 'react'
+import React, {useState, useEffect} from 'react'
 import styled from "styled-components";
+import MobileBurger from "../components/headers/MobileBurger";
+import DesktopHeader from '../components/headers/DesktopHeader'
 
 function Privacy() {
+    const [channels, set_channels] = useState(false)
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+    
+  const handleResize = () => {
+    setIsMobile(window.innerWidth <= 768);
+  };
+
+  useEffect(() => {
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
   return (
     <PrivacyPage>
-        <Header/>
+
+        
+      {isMobile ? (
+        // <MobileHeader channels={channels} set_channels={set_channels} />
+        
+        <Hamburger onClick={() => handle_sidebar_hover()}>
+        <MobileBurger channels={channels} set_channels={set_channels} />
+       </Hamburger>
+      ) : (
+        <DesktopHeader channels={channels} set_channels={set_channels} />
+      )}
+      
         <PrivacyContent>
             <PrivacyTitle>Privacy Policy</PrivacyTitle>
             <PrivacyTitleSec>Effective Date: 01/09/2023</PrivacyTitleSec>
@@ -126,6 +155,37 @@ const PrivacyTitleSec = styled.h3`
     color: white;
     font-size: 0.9rem;
 `
+
+const Hamburger = styled.div`
+  display: none; /* Hide by default */
+
+  @media (max-width: 768px) {
+    display: block; /* Show only on screens with width <= 425px */
+    position: absolute;
+    top: 10px;
+    left: 5px;
+    cursor: pointer;
+    color: white;
+    &:hover{
+      color: #541011;
+    }
+    z-index: 1000;
+
+    svg {
+      font-size: 40px;
+    }
+  }
+
+  @media (max-width: 425px) {
+    svg{
+      position: relative;
+      font-size: 30px;
+      top:6px;
+      left:8px
+    }
+  }
+`;
+
 const PrivacyIntro = styled.p`  
     color:white;
     line-height: 1.5;

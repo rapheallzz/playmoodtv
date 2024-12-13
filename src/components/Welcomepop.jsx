@@ -57,6 +57,7 @@ const ButtonContainer = styled.div`
   margin-top: 20px;
   display: flex;
   flex-direction: column;
+  justify-content: center;
 
   @media screen and (min-width: 768px) {
     flex-direction: row;
