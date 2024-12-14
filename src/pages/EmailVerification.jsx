@@ -52,7 +52,7 @@ const EmailVerification = ({ userId, email }) => {
       <Form>
         <Title>Email Verification</Title>
         <Description>
-          Please enter the 6-digit code sent to your email address.
+          Please enter the 6-digit code sent to your email address (Case Sensitive!).
         </Description>
         <CodeInputContainer>
           {code.map((digit, index) => (
@@ -62,7 +62,7 @@ const EmailVerification = ({ userId, email }) => {
               type="text"
               maxLength="1"
               value={digit}
-              onChange={(e) => handleInputChange(e.target.value, index)}
+              onChange={(e) => handleChange(e.target.value, index)}
             />
           ))}
         </CodeInputContainer>
