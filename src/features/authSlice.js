@@ -18,10 +18,11 @@ const initialState = {
 // Register user
 export const registerUser = createAsyncThunk('auth/register', async (user, thunkAPI) => {
   try {
-    const response = await authService.register(user); // Use 'user' directly
+    const response = await authService.register(user);
     console.log('Registration successful:', response);
-
-    return { ...response.data, role: response.data.role }; // return with role included
+    
+    // Ensure role is included, fallback to 'defaultRole' if missing
+    return { ...response.data, role: response.data.role || 'defaultRole' };
   } catch (error) {
     const message =
       (error.response && error.response.data && error.response.data.message) ||
@@ -148,14 +149,15 @@ export const authSlice = createSlice({
     .addCase(registerUser.fulfilled, (state, action) => {
       state.isLoading = false;
       state.isSuccess = true;
-      state.user = action.payload;
+      state.user = action.payload; // Ensure the user data is properly set
     })
     .addCase(registerUser.rejected, (state, action) => {
       state.isLoading = false;
       state.isError = true;
-      state.message = action.payload;
+      state.message = action.payload; // Error message
     })
-      .addCase(login.pending, (state) => {
+    
+    .addCase(login.pending, (state) => {
         state.isLoading = true;
       })
       .addCase(login.fulfilled, (state, action) => {

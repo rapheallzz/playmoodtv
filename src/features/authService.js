@@ -29,11 +29,13 @@ const resendVerificationCode = async (email) => {
 const register = async (userData) => {
   try {
     const response = await axios.post(API_URL, userData);
+    console.log('Register response:', response.data);
     if (response.data) {
-      localStorage.setItem('user', JSON.stringify({
+      const userData = {
         ...response.data,
-        userId: response.data.userId,
-      }));
+        role: response.data.role || 'defaultRole', // Add a fallback role
+      };
+      localStorage.setItem('user', JSON.stringify(userData));
     }
     return response.data;
   } catch (error) {
@@ -41,6 +43,7 @@ const register = async (userData) => {
     throw error.response?.data || 'Registration failed';
   }
 };
+
 
 
 // Login user
@@ -59,6 +62,7 @@ const login = async (userData) => {
     throw error;
   }
 };
+
 
 // Logout user
 const logout = () => {

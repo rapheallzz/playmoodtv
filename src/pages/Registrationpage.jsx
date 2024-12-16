@@ -56,18 +56,15 @@ const Register = () => {
 
   const { name, email, password, age, country, address, phoneNumber } = formData;
 
+  
   useEffect(() => {
-    if (isError) {
-      toast.error(message);
-    }
-
     if (isSuccess && user) {
       navigate('/emailverify');
     }
-  
-
-    dispatch(reset());
-  }, [isError, isSuccess, message, navigate, dispatch]);
+    if (isError) {
+      toast.error(message);
+    }
+  }, [isError, isSuccess, user, message, navigate]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
