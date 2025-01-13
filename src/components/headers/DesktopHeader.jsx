@@ -351,6 +351,7 @@ export default function DesktopHeader({ }) {
                   </Settings>
   
               <DropdownArea>
+                  
                 {search_hover ? <img src={search_icon} onMouseEnter={handle_search_hover} /> : <img src={search_red} onMouseOut={handle_search_hover_out} />}
                 {home_hover ? <img src={home} onMouseEnter={handle_home_hover} /> : <img src={home_red} onMouseOut={handle_home_hover_out} />}
                 {thumbs_hover ? <img src={thumbs} onMouseEnter={handle_thumbs_hover} /> : <img src={thumbs_red} onMouseOut={handle_thumbs_hover_out} />}
@@ -384,6 +385,13 @@ export default function DesktopHeader({ }) {
 
               {!mountcategory && (
                 <>
+                      {!user && (
+                      <div onClick={() => { navigate('/login') }}> <button className='font-semibold hover:text-red-600'>
+                               Sign In
+                        </button>
+                        
+                        </div> ) }
+                  
                   <div className="search_tab">
                     {search_hover ? <img src={search_icon} onMouseEnter={handle_search_hover} /> : <img src={search_red} onMouseOut={handle_search_hover_out} />}
                     <p>Search</p>

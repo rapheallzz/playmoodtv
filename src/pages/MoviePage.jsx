@@ -12,6 +12,8 @@ import { FaBars, FaPlay, FaHeart, FaBell, FaDonate, FaUser, FaEye, FaLink } from
 import Sliderinterviews from '../components/sliders/SliderInterview';
 import SliderDocumentaries from '../components/sliders/SliderDocumentaries'
 import WelcomePopup from '../components/Welcomepop';
+import DesktopHeader from '../components/headers/DesktopHeader';
+import MovieHeader from '../components/headers/MovieHeader';
 
 
 
@@ -193,9 +195,10 @@ export default function MoviePage() {
 
       {/* all holder */}
 
-
+           
       <div className='h-auto'>
-
+      <MovieHeader />
+  
            {/* Video Holder */}
 
            <video
