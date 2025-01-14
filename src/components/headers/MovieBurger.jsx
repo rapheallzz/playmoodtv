@@ -485,7 +485,7 @@ const Logo = styled.div`
 `
 
 const SettingsAndDropdown = styled.div`
-    width: 60px; 
+    width: 50px; 
     height: 100vh;
     background-color: transparent;
     display: flex;
@@ -541,13 +541,13 @@ const Side = styled.div`
 
 `
 const SidebarClicked = styled.div`
-width: 240px;
+width: 160px;
 height: 100vh;
 background-color: black;
 top: 0;
 left: 0; // Align to the left
 position: fixed;
-padding: 20px 10px 0px 20px;
+padding: 20px 10px 0px 0px;
 display: flex;
 flex-direction: column;
 gap: 18px;
@@ -571,8 +571,8 @@ gap: 18px;
         justify-content: space-between;
         align-items: center;
         img{
-            width: 40px;
-            height: 40px;
+            width: 30px;
+            height: 30px;
         }
         .head_section{
             h1{
@@ -587,163 +587,163 @@ gap: 18px;
     .search_tab{
         display: flex;
         align-items: center;
-        gap: 30px;
-        padding: 8px 10px 8px 20px;
+        gap: 20px;
+        padding: 8px 10px 8px 10px;
         cursor: pointer;
         &:hover{
             background-color: grey;
             border-right: 4px solid red;
         }
         img{
-            width: 25px;
-            height: 25px;
+            width: 20px;
+            height: 20px;
         }
         p{
-            font-size: 0.9rem;
+            font-size: 0.7rem;
         }
     }
     .home_tab{
         display: flex;
         align-items: center;
-        gap: 30px;
-        padding: 8px 10px 8px 20px;
+        gap: 20px;
+        padding: 8px 10px 8px 10px;
         cursor: pointer;
         &:hover{
             background-color: grey;
             border-right: 4px solid red;
         }
         img{
-            width: 25px;
-            height: 25px;
+            width: 20px;
+            height: 20px;
         }
         p{
-            font-size: 0.9rem;
+            font-size: 0.7rem;
         }
     }
     .recommended_tab{
         display: flex;
         align-items: center;
-        gap: 30px;
-        padding: 8px 10px 8px 20px;
+        gap: 20px;
+        padding: 8px 10px 8px 10px;
         cursor: pointer;
         &:hover{
             background-color: grey;
             border-right: 4px solid red;
         }
         img{
-            width: 25px;
-            height: 25px;
+            width: 20px;
+            height: 20px;
         }
         p{
-            font-size: 0.9rem;
+            font-size: 0.7rem;
         }
     }
     .new_tab{
         display: flex;
         align-items: center;
-        gap: 30px;
-        padding: 8px 10px 8px 20px;
+        gap: 20px;
+        padding: 8px 10px 8px 10px;
         cursor: pointer;
         &:hover{
             background-color: grey;
             border-right: 4px solid red;
         }
         img{
-            width: 25px;
-            height: 25px;
+            width: 20px;
+            height: 20px;
         }
         p{
-            font-size: 0.9rem;
+            font-size: 0.7rem;
         }
     }
     .channels_tab{
         display: flex;
         align-items: center;
-        gap: 30px;
-        padding: 8px 10px 8px 20px;
+        gap: 20px;
+        padding: 8px 10px 8px 10px;
         cursor: pointer;
         &:hover{
             background-color: grey;
             border-right: 4px solid red;
         }
         img{
-            width: 25px;
-            height: 25px;
+            width: 20px;
+            height: 20px;
         }
         p{
-            font-size: 0.9rem;
+            font-size: 0.7rem;
         }
     }
     .spaces_tab{
         display: flex;
         align-items: center;
-        gap: 30px;
-        padding: 8px 10px 8px 20px;
+        gap: 20px;
+        padding: 8px 10px 8px 10px;
         cursor: pointer;
         &:hover{
             background-color: grey;
             border-right: 4px solid red;
         }
         img{
-            width: 25px;
-            height: 25px;
+            width: 20px;
+            height: 20px;
         }
         p{
-            font-size: 0.9rem;
+            font-size: 0.7rem;
         }
     }
     .schedule_tab{
         display: flex;
         align-items: center;
-        gap: 30px;
-        padding: 8px 10px 8px 20px;
+        gap: 20px;
+        padding: 8px 10px 8px 10px;
         cursor: pointer;
         &:hover{
             background-color: grey;
             border-right: 4px solid red;
         }
         img{
-            width: 25px;
-            height: 25px;
+            width: 20px;
+            height: 20px;
         }
         p{
-            font-size: 0.9rem;
+            font-size: 0.7rem;
         }
     }
     .favorites_tab{
         display: flex;
         align-items: center;
-        gap: 30px;
-        padding: 8px 10px 8px 20px;
+        gap: 20px;
+        padding: 8px 10px 8px 10px;
         cursor: pointer;
         &:hover{
             background-color: grey;
             border-right: 4px solid red;
         }
         img{
-            width: 25px;
-            height: 25px;
+            width: 20px;
+            height: 20px;
         }
         p{
-            font-size: 0.9rem;
+            font-size: 0.7rem;
         }
     }
     .categories{
         display: flex;
         align-items: center;
-        gap: 30px;
-        padding: 8px 10px 8px 20px;
+        gap: 20px;
+        padding: 8px 10px 8px 10px;
         cursor: pointer;
         &:hover{
             background-color: grey;
             border-right: 4px solid red;
         }
         img{
-            width: 25px;
-            height: 25px;
+            width: 20px;
+            height: 20px;
         }
         p{
-            font-size: 0.9rem;
+            font-size: 0.7rem;
         }
     }
 

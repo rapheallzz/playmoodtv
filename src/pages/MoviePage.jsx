@@ -197,7 +197,7 @@ export default function MoviePage() {
 
            
       <div className='h-auto'>
-      <MovieHeader />
+      {/* <MovieHeader /> */}
   
            {/* Video Holder */}
 
