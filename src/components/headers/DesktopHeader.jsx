@@ -386,8 +386,8 @@ export default function DesktopHeader({ }) {
               {!mountcategory && (
                 <>
                       {!user && (
-                      <div onClick={() => { navigate('/login') }}> <button className='font-semibold hover:text-red-600'>
-                               Sign In
+                      <div onClick={() => { navigate('/login') }}> <button className='font-semibold w-44 h-10 bg-red-950 text-white text-[14px] rounded-md'>
+                              Sign In / Register
                         </button>
                         
                         </div> ) }

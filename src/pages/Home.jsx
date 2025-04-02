@@ -65,7 +65,19 @@ export default function Home() {
     if (!cookiesAccepted) {
       setShowCookiesPopup(true);
     }
+
   }, []);
+
+
+  const handleAcceptCookies = () => {
+    localStorage.setItem('cookiesAccepted', 'true');
+    setShowCookiesPopup(false);
+  };
+
+  const handleOptOutCookies = () => {
+    localStorage.setItem('cookiesAccepted', 'false'); // Optional: store opt-out preference
+    setShowCookiesPopup(false);
+  };
 
   const handleAcceptPrivacy = () => {
     localStorage.setItem('privacyAccepted', 'true');
@@ -78,10 +90,6 @@ export default function Home() {
   
   };
 
-  const handleAcceptCookies = () => {
-    localStorage.setItem('cookiesAccepted', 'true');
-    setShowCookiesPopup(false);
-  };
 
 
   // state for changing color of heart icon
@@ -285,12 +293,25 @@ export default function Home() {
 
 
 
-  const CookiesPopup = ({ onAccept }) => (
-    <div className="fixed top-[-100] left-0 right-0 bottom-20 flex justify-center items-center bg-gray-800 bg-opacity-50 z-50">
-      <div className="bg-white p-5 rounded shadow-lg text-center">
-        <h2 className="text-xl font-bold mb-3">Cookies Policy</h2>
-        <p className="mb-5">We use cookies to enhance your experience. Please accept our cookies policy.</p>
-        <button className="bg-[#541011] text-white py-2 px-4 rounded" onClick={onAccept}>Accept</button>
+  const CookiesPopup = ({ onAccept, onOptOut }) => (
+    <div className="fixed bottom-0 left-0 right-0 flex justify-center items-end bg-gray-800 bg-opacity-50 z-50 p-4">
+      <div className="bg-white p-5 rounded-t-lg shadow-lg text-center w-full">
+        <h2 className="text-x font-bold mb-1">Cookies Policy</h2>
+        <p className="mb-1 text-sm">We use cookies to enhance your experience. Please accept our cookies policy.</p>
+        <div className="flex justify-center gap-4">
+          <button
+            className="bg-[#541011] text-xs text-white py-1 px-2 rounded hover:bg-[#6b1516] transition-colors"
+            onClick={onAccept}
+          >
+            Accept
+          </button>
+          <button
+            className="bg-gray-500 text-xs text-white py-1 px-2 rounded hover:bg-gray-600 transition-colors"
+            onClick={onOptOut}
+          >
+            Opt Out
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -301,7 +322,7 @@ export default function Home() {
   return (
     <Homecontent>
                     {/* {showPrivacyPopup && <PrivacyPopup onAccept={handleAcceptPrivacy} />} */}
-                    {showCookiesPopup && <CookiesPopup onAccept={handleAcceptCookies} />}
+                    {showCookiesPopup && <CookiesPopup onAccept={handleAcceptCookies} onOptOut={handleOptOutCookies} />}
 
       {isMobile ? (
         
@@ -669,7 +690,7 @@ const Banner = styled.div`
 
 const VideoCategoryCircle = styled.div`
    height: 230px;
-    width: 90%;
+    width: 92%;
     margin: 50px 20px 150px 20px;
     display: flex;
     gap: 0px;
@@ -684,7 +705,7 @@ const VideoCategoryCircle = styled.div`
 
 const VideoCategory = styled.div`
     height: 390px;
-    width: 90%;
+    width: 92%;
     margin: 0px 20px 100px 20px;
     display: flex;
     gap: 0px;
@@ -699,7 +720,7 @@ const VideoCategory = styled.div`
 
 const VideoCategorythis = styled.div`
     height: 380px;
-    width: 90%;
+    width: 92%;
     margin: 0px 20px 100px 20px;
     display: flex;
     gap: 0px;
@@ -715,7 +736,7 @@ const VideoCategorythis = styled.div`
 
 const VideoCategory1 = styled.div`
     height: 350px;
-    width: 90%;
+    width: 92%;
     margin: 10px 20px 100px 20px;
     display: flex;
     gap: 0px;
@@ -734,7 +755,7 @@ const Videocategorytitle = styled.h3`
 
     @media only screen and (min-width: 300px) {
         font-size: 1.5rem;
-        padding:5px 5px 20px 60px;
+        padding:5px 5px 20px 25px;
     }
 
     @media only screen and (min-width: 800px) {

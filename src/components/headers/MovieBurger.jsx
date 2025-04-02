@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import playmood from '/PLAYMOOD_DEF.png';
@@ -32,9 +32,10 @@ import favourite_red from '/star_red.png';
 import SidebarSlider from '../slidersidebar';
 import SidebarSliderc from '../slidersidebarc';
 import { useSelector, useDispatch } from 'react-redux'
-import { logout, reset } from '../../features/authSlice'
+import { logout, reset } from '.././../features/authSlice'
+import axios from 'axios';
 
-export default function MobileBurger({  }) {
+export default function MobileBurger({ }) {
   const [dropbar, set_drop_bar] = useState(false);
   const navigate = useNavigate();
   const [top, set_top] = useState(false);
@@ -43,11 +44,51 @@ export default function MobileBurger({  }) {
   const dispatch = useDispatch()
   const { user } = useSelector((state) => state.auth)
 
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [data, setData] = useState([]);
+
   const onLogout = () => {
     dispatch(logout())
     dispatch(reset())
     navigate('/')
   }
+
+  const handle_tab_hover = () => {
+    set_tab_hovered(true);
+  };
+  
+  const handle_tab_hover_out = () => {
+    set_tab_hovered(false);
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
+        setData(response.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    handleSearch();
+  }, [searchQuery, data]);
+
+  const handleSearchInputChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const handleSearch = () => {
+    const results = data.filter((item) =>
+      item.name?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setSearchResults(results);
+  };
 
 
   const handleTopClick = () => {
@@ -268,15 +309,22 @@ export default function MobileBurger({  }) {
   return (
     <MobileHead>
              
-   
+             <div className="flex justify-between flex-col  items-center ">
+
+
+
+
+          </div>
 
          <Side>
+
+ 
 
           {sidebarOpen ? (
             <SettingsAndDropdown>
               
                 {window.innerWidth <= 768 ? (
-                  <GiHamburgerMenu className='mobile-hamburger' size={30} color="white" onClick={toggleSidebar}/>
+                  <GiHamburgerMenu  size={30} color="white" onClick={toggleSidebar}/>
                 ) : (
                   <Settings>
                     {settings_hover ? (
@@ -288,61 +336,87 @@ export default function MobileBurger({  }) {
                     )}
                   </Settings>
                 )}
-              {/* <DropdownArea>
-                {search_hover ? <img src={search_icon} onMouseEnter={handle_search_hover} /> : <img src={search_red} onMouseOut={handle_search_hover_out} />}
-                {home_hover ? <img src={home} onMouseEnter={handle_home_hover} /> : <img src={home_red} onMouseOut={handle_home_hover_out} />}
-                {thumbs_hover ? <img src={thumbs} onMouseEnter={handle_thumbs_hover} /> : <img src={thumbs_red} onMouseOut={handle_thumbs_hover_out} />}
-                {new_hover ? <img src={newp} onMouseEnter={handle_newp_hover} /> : <img src={newp_red} onMouseOut={handle_newp_hover_out} />}
-                {snowflakes_hover ? <img src={snowflakes} onMouseEnter={handle_snowflakes_hover} /> : <img src={snowflakes_red} onMouseOut={handle_snowflakes_hover_out} />}
-                {location_hover ? <img src={location} onMouseEnter={handle_location_hover} /> : <img src={location_red} onMouseOut={handle_location_hover_out} />}
-                {schedule_hover ? <img src={schedule_white} onMouseEnter={handle_schedule_hover} /> : <img src={schedule_red} onMouseOut={handle_schedule_hover_out} />}
-                {favourites_hover ? <img src={favourite} onMouseEnter={handle_favourites_hover} /> : <img src={favourite_red} onMouseOut={handle_favourites_hover_out} />}
-                {categories_hover ? <img src={categories} onMouseEnter={handle_category_hover} /> : <img src={plus} onMouseOut={handle_category_hover_out} />}
-              </DropdownArea> */}
+
             </SettingsAndDropdown>
           ) : (
             <SidebarClicked onMouseLeave={toggleSidebar} >
-        {user && (
-         <div className="user_and_settings" >
-            <div className="head_section">
-              <h1>{user.name}</h1>
-             
-               <ul>
-                <li>
-                 <button className='lgt_btn' onClick={onLogout}>
-                  Logout
-                  </button>
-               </li>
-               </ul>
-               </div>
-                  {/* Conditionally render the user profile image */}
-                   <img className='user_profile' src={profile} onClick={() => { navigate('/dashboard') }} />
+
+                    <div className="flex align-middle justify-between">
+                     {user && (
+                   <button className="bg-red-600 text-white  px-3 rounded-md text-xs cursor-pointer  transition-colors duration-300 ease-in-out" onClick={onLogout}>
+                   Logout
+                   </button>
+                                  )}
+                    <button
+                    className=" w-8 h-8 text-sm rounded-full text-white"
+                   onClick={toggleSidebar}
+                      > X </button>
+
+
+                    </div>
+
+                             
+                             <div className='mt-33'>
+                             {user && (
+                         <div className="" >
+                            <div className=" flex gap-5 align-middle my-4 ">
+                          <img className=' w-8 h-8' src={profile} onClick={() => { navigate('/dashboard') }} />
+                            <h1 className='text-sm self-center '>{user.name}</h1>
+                             </div>
                      </div>
                        )}
 
               {!mountcategory && (
                 <>
-                  <div className="search_tab">
-                    {search_hover ? <img src={search_icon} onMouseEnter={handle_search_hover} /> : <img src={search_red} onMouseOut={handle_search_hover_out} />}
-                    <p>Search</p>
-                  </div>
+                             
+                             {!user && (
+                      <div onClick={() => { navigate('/login') }}> <button className='font-semibold text-[10px] w-28 h-10 bg-red-950 text-white rounded-md'>
+                                Sign In / Register
+                        </button>
+                        
+                        </div> ) }
+
+      <div className="search_tab">
+        <div className="flex items-center">
+          {search_hover ? (
+            <img src={search_icon} onMouseEnter={handle_search_hover} />
+          ) : (
+            <img src={search_red} onMouseOut={handle_search_hover_out} />
+          )}
+          <input
+            type="text"
+            placeholder="Search..."
+            value={searchQuery}
+            onChange={handleSearchInputChange}
+            className="ml-2 p-1 bg-transparent  border-b border-white text-red-200 text-sm focus:outline-none"
+          />
+        </div>
+        
+      </div>           
+           <div className="search_results">
+          {searchResults.map((result, index) => (
+           <div key={index} className="search_result_item">
+            {result.name}
+           </div>
+            ))}
+          </div>
                   <div className="home_tab" onClick={() => { navigate('/') }}>
                     {home_hover ? <img src={home} onMouseEnter={handle_home_hover} /> : <img src={home_red} onMouseOut={handle_home_hover_out} />}
                     <p>Home</p>
                   </div>
-                  <div className="recommended_tab" onClick={() => set_channels(!channels)}>
+                  <div className="recommended_tab" onClick={() => { navigate('/recommended') }}>
                     {thumbs_hover ? <img src={thumbs} onMouseEnter={handle_thumbs_hover} /> : <img src={thumbs_red} onMouseOut={handle_thumbs_hover_out} />}
                     <p>Recommended</p>
                   </div>
-                  <div className="new_tab" onClick={() => set_channels(!channels)}>
+                  <div className="new_tab" onClick={() => { navigate('/newplaymood') }}>
                     {new_hover ? <img src={newp} onMouseEnter={handle_newp_hover} /> : <img src={newp_red} onMouseOut={handle_newp_hover_out} />}
                     <p>New on playmood</p>
                   </div>
-                  <div className="channels_tab" onClick={() => set_channels(!channels)}>
+                  <div className="channels_tab" onClick={() => { navigate('/channels') }}>
                     {snowflakes_hover ? <img src={snowflakes} onMouseEnter={handle_snowflakes_hover} /> : <img src={snowflakes_red} onMouseOut={handle_snowflakes_hover_out} />}
                     <p>Channels</p>
                   </div>
-                  <div className="spaces_tab" onClick={() => set_channels(!channels)}>
+                  <div className="spaces_tab" onClick={() => { navigate('/spaces') }}>
                     {location_hover ? <img src={location} onMouseEnter={handle_location_hover} /> : <img src={location_red} onMouseOut={handle_location_hover_out} />}
                     <p>Spaces</p>
                   </div>
@@ -350,7 +424,7 @@ export default function MobileBurger({  }) {
                     {schedule_hover ? <img src={schedule_white} onMouseEnter={handle_schedule_hover} /> : <img src={schedule_red} onMouseOut={handle_schedule_hover_out} />}
                     <p>Schedule</p>
                   </div>
-                  <div className="favorites_tab" onClick={() => set_channels(!channels)}>
+                  <div className="favorites_tab" onClick={() => { navigate('/favourites') }}>
                     {favourites_hover ? <img src={favourite} onMouseEnter={handle_favourites_hover} /> : <img src={favourite_red} onMouseOut={handle_favourites_hover_out} />}
                     <p>Favorites</p>
                   </div>
@@ -365,38 +439,41 @@ export default function MobileBurger({  }) {
                 <h3 onClick={handleTop10Toggle}>TOP 10</h3>
                 {top10Toggled && <SidebarSlider />}
                 <h3 onClick={handleNewPlaymoodToggle}>New on Playmood</h3>
-                {newPlaymoodToggled && <SidebarSliderc />}
+                {newPlaymoodToggled && <SidebarSlider />}
                 <h3 onClick={handleChannelsToggle}>Channels</h3>
-                {channelsToggled && <SidebarSliderc />}
+                {channelsToggled && <SidebarSlider />}
                 <h3 onClick={handleDiariesToggle}>Diaries</h3>
-                {diariesToggled && <SidebarSliderc />}
+                {diariesToggled && <SidebarSlider />}
                 <h3 onClick={handleSpacesToggle}>Spaces</h3>
-                {spacesToggled && <SidebarSliderc />}
+                {spacesToggled && <SidebarSlider />}
                 <h3 onClick={handleRecommendationsToggle}>Recommendations for you</h3>
-                {recommendationsToggled && <SidebarSliderc />}
+                {recommendationsToggled && <SidebarSlider />}
                 <h3 onClick={handleInterviewsToggle}>Interviews</h3>
-                {interviewsToggled && <SidebarSliderc />}
+                {interviewsToggled && <SidebarSlider />}
                 <h3 onClick={handleFashionShowsToggle}>Fashion Shows Stories</h3>
-                {fashionShowsToggled && <SidebarSliderc />}
+                {fashionShowsToggled && <SidebarSlider />}
                 <h3 onClick={handleSpacesToggle}>Spaces</h3>
-                {spacesToggled && <SidebarSliderc />}
+                {spacesToggled && <SidebarSlider />}
                 <h3 onClick={handleDocumentariesToggle}>Documentaries and Reports</h3>
-                {documentariesToggled && <SidebarSliderc />}
+                {documentariesToggled && <SidebarSlider />}
                 <h3 onClick={handleBehindTheCamerasToggle}>Behind the cameras</h3>
-                {behindTheCamerasToggled && <SidebarSliderc />}
+                {behindTheCamerasToggled && <SidebarSlider />}
                 <h3 onClick={handleSoonInPlaymoodToggle}>Soon in Playmood</h3>
-                {soonInPlaymoodToggled && <SidebarSliderc />}
+                {soonInPlaymoodToggled && <SidebarSlider />}
                 <h3 onClick={handleTeenToggle}>Teen</h3>
-                {teenToggled && <SidebarSliderc />}
+                {teenToggled && <SidebarSlider />}
                 <h3 onClick={handleBestInFashionToggle}>Best in Fashion</h3>
-                {bestInFashionToggled && <SidebarSliderc />}
+                {bestInFashionToggled && <SidebarSlider />}
                 <h3 onClick={handleOnlyInPlaymoodToggle}>Only in Playmood</h3>
-                {onlyInPlaymoodToggled && <SidebarSliderc />}
+                {onlyInPlaymoodToggled && <SidebarSlider />}
                 <h3 onClick={handleWatchlistToggle}>Watchlist</h3>
-                {watchlistToggled && <SidebarSliderc />}
+                {watchlistToggled && <SidebarSlider />}
               </div>
                
               )}
+                             </div>
+ 
+ 
             </SidebarClicked>
           )}
          </Side>
@@ -485,7 +562,7 @@ const Logo = styled.div`
 `
 
 const SettingsAndDropdown = styled.div`
-    width: 50px; 
+    width: 60px; 
     height: 100vh;
     background-color: transparent;
     display: flex;
@@ -541,13 +618,13 @@ const Side = styled.div`
 
 `
 const SidebarClicked = styled.div`
-width: 160px;
+width: 250px;
 height: 100vh;
 background-color: black;
 top: 0;
 left: 0; // Align to the left
 position: fixed;
-padding: 20px 10px 0px 0px;
+padding: 20px 10px 0px 10px;
 display: flex;
 flex-direction: column;
 gap: 18px;
@@ -571,8 +648,8 @@ gap: 18px;
         justify-content: space-between;
         align-items: center;
         img{
-            width: 30px;
-            height: 30px;
+            width: 40px;
+            height: 40px;
         }
         .head_section{
             h1{
@@ -587,7 +664,7 @@ gap: 18px;
     .search_tab{
         display: flex;
         align-items: center;
-        gap: 20px;
+        gap: 30px;
         padding: 8px 10px 8px 10px;
         cursor: pointer;
         &:hover{
@@ -595,155 +672,155 @@ gap: 18px;
             border-right: 4px solid red;
         }
         img{
-            width: 20px;
-            height: 20px;
+            width: 25px;
+            height: 25px;
         }
         p{
-            font-size: 0.7rem;
+            font-size: 0.9rem;
         }
     }
     .home_tab{
         display: flex;
         align-items: center;
-        gap: 20px;
-        padding: 8px 10px 8px 10px;
+        gap: 30px;
+        padding: 8px 10px 8px 20px;
         cursor: pointer;
         &:hover{
             background-color: grey;
             border-right: 4px solid red;
         }
         img{
-            width: 20px;
-            height: 20px;
+            width: 25px;
+            height: 25px;
         }
         p{
-            font-size: 0.7rem;
+            font-size: 0.9rem;
         }
     }
     .recommended_tab{
         display: flex;
         align-items: center;
-        gap: 20px;
-        padding: 8px 10px 8px 10px;
+        gap: 30px;
+        padding: 8px 10px 8px 20px;
         cursor: pointer;
         &:hover{
             background-color: grey;
             border-right: 4px solid red;
         }
         img{
-            width: 20px;
-            height: 20px;
+            width: 25px;
+            height: 25px;
         }
         p{
-            font-size: 0.7rem;
+            font-size: 0.9rem;
         }
     }
     .new_tab{
         display: flex;
         align-items: center;
-        gap: 20px;
-        padding: 8px 10px 8px 10px;
+        gap: 30px;
+        padding: 8px 10px 8px 20px;
         cursor: pointer;
         &:hover{
             background-color: grey;
             border-right: 4px solid red;
         }
         img{
-            width: 20px;
-            height: 20px;
+            width: 25px;
+            height: 25px;
         }
         p{
-            font-size: 0.7rem;
+            font-size: 0.9rem;
         }
     }
     .channels_tab{
         display: flex;
         align-items: center;
-        gap: 20px;
-        padding: 8px 10px 8px 10px;
+        gap: 30px;
+        padding: 8px 10px 8px 20px;
         cursor: pointer;
         &:hover{
             background-color: grey;
             border-right: 4px solid red;
         }
         img{
-            width: 20px;
-            height: 20px;
+            width: 25px;
+            height: 25px;
         }
         p{
-            font-size: 0.7rem;
+            font-size: 0.9rem;
         }
     }
     .spaces_tab{
         display: flex;
         align-items: center;
-        gap: 20px;
-        padding: 8px 10px 8px 10px;
+        gap: 30px;
+        padding: 8px 10px 8px 20px;
         cursor: pointer;
         &:hover{
             background-color: grey;
             border-right: 4px solid red;
         }
         img{
-            width: 20px;
-            height: 20px;
+            width: 25px;
+            height: 25px;
         }
         p{
-            font-size: 0.7rem;
+            font-size: 0.9rem;
         }
     }
     .schedule_tab{
         display: flex;
         align-items: center;
-        gap: 20px;
-        padding: 8px 10px 8px 10px;
+        gap: 30px;
+        padding: 8px 10px 8px 20px;
         cursor: pointer;
         &:hover{
             background-color: grey;
             border-right: 4px solid red;
         }
         img{
-            width: 20px;
-            height: 20px;
+            width: 25px;
+            height: 25px;
         }
         p{
-            font-size: 0.7rem;
+            font-size: 0.9rem;
         }
     }
     .favorites_tab{
         display: flex;
         align-items: center;
-        gap: 20px;
-        padding: 8px 10px 8px 10px;
+        gap: 30px;
+        padding: 8px 10px 8px 20px;
         cursor: pointer;
         &:hover{
             background-color: grey;
             border-right: 4px solid red;
         }
         img{
-            width: 20px;
-            height: 20px;
+            width: 25px;
+            height: 25px;
         }
         p{
-            font-size: 0.7rem;
+            font-size: 0.9rem;
         }
     }
     .categories{
         display: flex;
         align-items: center;
-        gap: 20px;
-        padding: 8px 10px 8px 10px;
+        gap: 30px;
+        padding: 8px 10px 8px 20px;
         cursor: pointer;
         &:hover{
             background-color: grey;
             border-right: 4px solid red;
         }
         img{
-            width: 20px;
-            height: 20px;
+            width: 25px;
+            height: 25px;
         }
         p{
-            font-size: 0.7rem;
+            font-size: 0.9rem;
         }
     }
 

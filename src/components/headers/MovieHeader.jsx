@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import playmood from '/PLAYMOOD_DEF.png';
@@ -32,26 +32,63 @@ import favourite_red from '/star_red.png';
 import SidebarSlider from '../slidersidebar';
 import SidebarSliderc from '../slidersidebarc';
 import { useSelector, useDispatch } from 'react-redux'
-import { logout, reset } from '../../features/authSlice'
-import DonationModal from '../DonationModal'
-
-
+import { logout, reset } from '.././../features/authSlice'
+import axios from 'axios';
 
 export default function MovieHeader({ }) {
   const [dropbar, set_drop_bar] = useState(false);
   const navigate = useNavigate();
   const [top, set_top] = useState(false);
   const [settings_hover, set_settings_hovered] = useState(true);
-  const [showDonationModal, setShowDonationModal] = useState(false);
 
   const dispatch = useDispatch()
   const { user } = useSelector((state) => state.auth)
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [data, setData] = useState([]);
 
   const onLogout = () => {
     dispatch(logout())
     dispatch(reset())
     navigate('/')
   }
+
+  const handle_tab_hover = () => {
+    set_tab_hovered(true);
+  };
+  
+  const handle_tab_hover_out = () => {
+    set_tab_hovered(false);
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
+        setData(response.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    handleSearch();
+  }, [searchQuery, data]);
+
+  const handleSearchInputChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const handleSearch = () => {
+    const results = data.filter((item) =>
+      item.name?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setSearchResults(results);
+  };
 
 
   const handleTopClick = () => {
@@ -177,11 +214,12 @@ export default function MovieHeader({ }) {
     set_categories_hover(!categories_hover);
   };
 
-  const [sidebar, sidebar_hovered] = useState(true);
 
-  const handle_settings_hovered = () => {
-    sidebar_hovered(!sidebar);
-  };
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  }
 
   const [mountcategory, set_mountcategory] = useState(false);
 
@@ -189,21 +227,6 @@ export default function MovieHeader({ }) {
     set_mountcategory(!mountcategory);
   };
 
-
-  const handleDonationClick = () => {
-    setShowDonationModal(true);
-  };
-
-  const handleDonationClose = () => {
-    setShowDonationModal(false);
-  };
-
-  
-  const handleSubscriptionSubmit = (event) => {
-    event.preventDefault();
-    console.log('Email submitted');
-    setShowDonationModal(false); 
-  };
 
   const [top10Toggled, setTop10Toggled] = useState(false);
   const [newPlaymoodToggled, setNewPlaymoodToggled] = useState(false);
@@ -284,71 +307,89 @@ export default function MovieHeader({ }) {
   };
 
   return (
-    <DesktopHead>
-      <DesktopNavigation>
+    <MobileHead>
+             
+             <div className="flex justify-between flex-col  items-center ">
 
-        <Side>
 
-          {sidebar ? (
-            <SettingsAndDropdown onMouseEnter={handle_settings_hovered} onMouseLeave={handle_settings_hovered}>
-                  <Settings>
-                    {settings_hover ? (
-                      <img src={profile} onMouseEnter={handle_hovered_settings} />
-                    ) : (
-                      <img
-                        src={profile}
-                        onMouseOut={handle_hovered_settings_out}
-                        onMouseEnter={handle_settings_hovered}
-                      />
-                    )}
-                  </Settings>
-  
-              <DropdownArea>
-                  
-                {search_hover ? <img src={search_icon} onMouseEnter={handle_search_hover} /> : <img src={search_red} onMouseOut={handle_search_hover_out} />}
-                {home_hover ? <img src={home} onMouseEnter={handle_home_hover} /> : <img src={home_red} onMouseOut={handle_home_hover_out} />}
-                {thumbs_hover ? <img src={thumbs} onMouseEnter={handle_thumbs_hover} /> : <img src={thumbs_red} onMouseOut={handle_thumbs_hover_out} />}
-                {new_hover ? <img src={newp} onMouseEnter={handle_newp_hover} /> : <img src={newp_red} onMouseOut={handle_newp_hover_out} />}
-                {snowflakes_hover ? <img src={snowflakes} onMouseEnter={handle_snowflakes_hover} /> : <img src={snowflakes_red} onMouseOut={handle_snowflakes_hover_out} />}
-                {location_hover ? <img src={location} onMouseEnter={handle_location_hover} /> : <img src={location_red} onMouseOut={handle_location_hover_out} />}
-                {schedule_hover ? <img src={schedule_white} onMouseEnter={handle_schedule_hover} /> : <img src={schedule_red} onMouseOut={handle_schedule_hover_out} />}
-                {favourites_hover ? <img src={favourite} onMouseEnter={handle_favourites_hover} /> : <img src={favourite_red} onMouseOut={handle_favourites_hover_out} />}
-                {categories_hover ? <img src={categories} onMouseEnter={handle_category_hover} /> : <img src={plus} onMouseOut={handle_category_hover_out} />}
-              </DropdownArea>
+
+
+          </div>
+
+         <Side>
+
+ 
+
+          {sidebarOpen ? (
+            <SettingsAndDropdown>
+              
+                {window.innerWidth > 768 ? (
+                  <GiHamburgerMenu  size={30} color="white" onClick={toggleSidebar}/>
+                ) : (
+                 <div></div>
+                )}
+
             </SettingsAndDropdown>
           ) : (
-            <SidebarClicked onMouseLeave={handle_settings_hovered}>
-        {user && (
-         <div className="user_and_settings">
-            <div className="head_section">
-              <h1>{user.name}</h1>
-               <ul>
-                <li>
-                 <button className='lgt_btn' onClick={onLogout}>
-                  Logout
-                  </button>
-               </li>
-               </ul>
-               </div>
-                  {/* Conditionally render the user profile image */}
-                  {user && <img src={`${user.profile}?${new Date().getTime()}`} alt="Profile" className="w-32 h-32 rounded-full" onClick={() => { navigate('/dashboard') }}  />}
-                   {/* <img className='user_profile' src={profile} onClick={() => { navigate('/dashboard') }} /> */}
+            <SidebarClicked onMouseLeave={toggleSidebar} >
+
+                    <div className="flex align-middle justify-between">
+                     {user && (
+                   <button className="bg-red-600 text-white  px-3 rounded-md text-xs cursor-pointer  transition-colors duration-300 ease-in-out" onClick={onLogout}>
+                   Logout
+                   </button>
+                                  )}
+                    <button
+                    className=" w-8 h-8 text-sm rounded-full text-white"
+                   onClick={toggleSidebar}
+                      > X </button>
+
+
+                    </div>
+
+                             
+                             <div className='mt-33'>
+                             {user && (
+                         <div className="" >
+                            <div className=" flex gap-5 align-middle my-4 ">
+                          <img className=' w-8 h-8' src={profile} onClick={() => { navigate('/dashboard') }} />
+                            <h1 className='text-sm self-center '>{user.name}</h1>
+                             </div>
                      </div>
                        )}
 
               {!mountcategory && (
                 <>
-                      {!user && (
-                      <div onClick={() => { navigate('/login') }}> <button className='font-semibold hover:text-red-600'>
-                               Sign In
+                                      {!user && (
+                      <div onClick={() => { navigate('/login') }}> <button className='font-semibold text-[10px] w-28 h-10 bg-red-950 text-white rounded-md'>
+                               Sign In / Register
                         </button>
                         
                         </div> ) }
-                  
-                  <div className="search_tab">
-                    {search_hover ? <img src={search_icon} onMouseEnter={handle_search_hover} /> : <img src={search_red} onMouseOut={handle_search_hover_out} />}
-                    <p>Search</p>
-                  </div>
+      <div className="search_tab">
+        <div className="flex items-center">
+          {search_hover ? (
+            <img src={search_icon} onMouseEnter={handle_search_hover} />
+          ) : (
+            <img src={search_red} onMouseOut={handle_search_hover_out} />
+          )}
+          <input
+            type="text"
+            placeholder="Search..."
+            value={searchQuery}
+            onChange={handleSearchInputChange}
+            className="ml-2 p-1 bg-transparent  border-b border-white text-red-200 text-sm focus:outline-none"
+          />
+        </div>
+        
+      </div>           
+           <div className="search_results">
+          {searchResults.map((result, index) => (
+           <div key={index} className="search_result_item">
+            {result.name}
+           </div>
+            ))}
+          </div>
                   <div className="home_tab" onClick={() => { navigate('/') }}>
                     {home_hover ? <img src={home} onMouseEnter={handle_home_hover} /> : <img src={home_red} onMouseOut={handle_home_hover_out} />}
                     <p>Home</p>
@@ -373,13 +414,10 @@ export default function MovieHeader({ }) {
                     {schedule_hover ? <img src={schedule_white} onMouseEnter={handle_schedule_hover} /> : <img src={schedule_red} onMouseOut={handle_schedule_hover_out} />}
                     <p>Schedule</p>
                   </div>
-                  <div className="favorites_tab" onClick={() => { navigate('/dashboard') }}>
+                  <div className="favorites_tab" onClick={() => { navigate('/favourites') }}>
                     {favourites_hover ? <img src={favourite} onMouseEnter={handle_favourites_hover} /> : <img src={favourite_red} onMouseOut={handle_favourites_hover_out} />}
                     <p>Favorites</p>
                   </div>
-                        
-
-
                 </>
               )}
               <div className="categories" onClick={handle_mountcategory}>
@@ -391,129 +429,102 @@ export default function MovieHeader({ }) {
                 <h3 onClick={handleTop10Toggle}>TOP 10</h3>
                 {top10Toggled && <SidebarSlider />}
                 <h3 onClick={handleNewPlaymoodToggle}>New on Playmood</h3>
-                {newPlaymoodToggled && <SidebarSliderc />}
+                {newPlaymoodToggled && <SidebarSlider />}
                 <h3 onClick={handleChannelsToggle}>Channels</h3>
-                {channelsToggled && <SidebarSliderc />}
+                {channelsToggled && <SidebarSlider />}
                 <h3 onClick={handleDiariesToggle}>Diaries</h3>
-                {diariesToggled && <SidebarSliderc />}
+                {diariesToggled && <SidebarSlider />}
                 <h3 onClick={handleSpacesToggle}>Spaces</h3>
-                {spacesToggled && <SidebarSliderc />}
+                {spacesToggled && <SidebarSlider />}
                 <h3 onClick={handleRecommendationsToggle}>Recommendations for you</h3>
-                {recommendationsToggled && <SidebarSliderc />}
+                {recommendationsToggled && <SidebarSlider />}
                 <h3 onClick={handleInterviewsToggle}>Interviews</h3>
-                {interviewsToggled && <SidebarSliderc />}
+                {interviewsToggled && <SidebarSlider />}
                 <h3 onClick={handleFashionShowsToggle}>Fashion Shows Stories</h3>
-                {fashionShowsToggled && <SidebarSliderc />}
+                {fashionShowsToggled && <SidebarSlider />}
                 <h3 onClick={handleSpacesToggle}>Spaces</h3>
-                {spacesToggled && <SidebarSliderc />}
+                {spacesToggled && <SidebarSlider />}
                 <h3 onClick={handleDocumentariesToggle}>Documentaries and Reports</h3>
-                {documentariesToggled && <SidebarSliderc />}
+                {documentariesToggled && <SidebarSlider />}
                 <h3 onClick={handleBehindTheCamerasToggle}>Behind the cameras</h3>
-                {behindTheCamerasToggled && <SidebarSliderc />}
+                {behindTheCamerasToggled && <SidebarSlider />}
                 <h3 onClick={handleSoonInPlaymoodToggle}>Soon in Playmood</h3>
-                {soonInPlaymoodToggled && <SidebarSliderc />}
+                {soonInPlaymoodToggled && <SidebarSlider />}
                 <h3 onClick={handleTeenToggle}>Teen</h3>
-                {teenToggled && <SidebarSliderc />}
+                {teenToggled && <SidebarSlider />}
                 <h3 onClick={handleBestInFashionToggle}>Best in Fashion</h3>
-                {bestInFashionToggled && <SidebarSliderc />}
+                {bestInFashionToggled && <SidebarSlider />}
                 <h3 onClick={handleOnlyInPlaymoodToggle}>Only in Playmood</h3>
-                {onlyInPlaymoodToggled && <SidebarSliderc />}
+                {onlyInPlaymoodToggled && <SidebarSlider />}
                 <h3 onClick={handleWatchlistToggle}>Watchlist</h3>
-                {watchlistToggled && <SidebarSliderc />}
+                {watchlistToggled && <SidebarSlider />}
               </div>
                
               )}
+                             </div>
+ 
+ 
             </SidebarClicked>
           )}
-        </Side>
-      </DesktopNavigation>
-    </DesktopHead>
+         </Side>
+
+    </MobileHead>
   );
 }
 
 
-const DesktopHead = styled.div`
+
+const MobileHead = styled.div`
     height: 80px;
     width: 100%;
+    // background-color: rgba(0,0,0,0.6);
+
     color: white;
     position: fixed;
     top: 0px;
-    left: 0px; 
-    z-index: 1001;
+    right: 0px; 
+     z-index: 10;
 `
-const DesktopNavigation = styled.nav`
-    width: 100%;
-    height: 100%; 
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0px 260px 0px 80px;
-`
-const DesktopNav = styled.div` 
+
+
+
+const Logo = styled.div`
+    width:100%;
     height: 100%;
     display: flex;
-    flex-direction: row;
-    gap: 30px;
     align-items: center;
-    justify-content: space-between;
-    p{
-        cursor: pointer;
-    }
-    .links{
-        color: white;
-        text-decoration: none;
-        font-size: 0.8rem;
-        font-weight: 500;
-    }
-
-`
-const LogoAndSettings = styled.div`
-    height: fit-content;
-    display: flex;
-    margin-left: 600px;
-`
-const Logo = styled.div`
- 
-    height: fit-content;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    justify-content: Space-between;
     gap: 10px; 
-    margin-right:70px;
     .profile-container{
-        width: 80px;
+      width: 40px;
+      background-color:rgb(140,7,52);
         height: 40px;
         display: flex;
-        font-size:15px;
-        border-style: solid;
-        border-color:white;
         justify-content: center;
         align-items: center;
+        border-radius:100%;
         cursor: pointer;
-        margin-right: 1px;
+       
         img{
-            width: 25%;
-            height: 40%;
-            padding-left:4px;
+            width: 80%;
+            height: 80%;
+            
+          
            
         }
-
-     
-      
     }
-
     .main-logo{
-      height: 40px;
-      width:auto;
-      cursor: pointer;
-  }
-
+        height: 40px;
+        width:auto;
+        cursor: pointer;
+        padding-right:150px;
+    }
 `
 
 const SettingsAndDropdown = styled.div`
     width: 60px; 
     height: 100vh;
-    background-color: black;
+    background-color: transparent;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -526,6 +537,11 @@ const SettingsAndDropdown = styled.div`
         cursor: pointer;
     }
 
+    @media screen and (max-width: 768px) {
+      left: 0;  // Align to the left instead of right
+      right: unset;  // Remove the right positioning
+      // Full width on mobile screens
+  }
 `
 const Settings = styled.div`
     height: 80px;
@@ -535,43 +551,29 @@ const Settings = styled.div`
     align-items: center;
     border-bottom: 0.5px solid rgba(255,255,255,0.4);
 `
-const DropdownArea = styled.div`
-    height: fit-content;
-    width:100%;
-    background-color: black;
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    flex-direction: column;
-    padding: 30px 0px 30px 0px;
-    gap: 40px;
-    img{
-        width: 25px;
-        height: 25px;
-    }
-`
+
 const Side = styled.div`
     display: flex;
     height: 10%;
     align-items: center;
     gap: 30px;
-    // position: relative;
-    // top: -40px;
-    // left: -90px;
+    position: relative;
+    top: 10px;
+    right: 0px;
     // z-index: 1000;
 
 `
 const SidebarClicked = styled.div`
-width: 240px;
+width: 250px;
 height: 100vh;
 background-color: black;
 top: 0;
 right: 0; // Align to the left
 position: fixed;
-padding: 20px 10px 0px 20px;
+padding: 20px 10px 0px 10px;
 display: flex;
 flex-direction: column;
-gap: 20px;
+gap: 18px;
 
     .categories_subsection{
         display: flex;
@@ -608,8 +610,8 @@ gap: 20px;
     .search_tab{
         display: flex;
         align-items: center;
-        gap: 20px;
-        padding: 8px 10px 8px 20px;
+        gap: 30px;
+        padding: 8px 10px 8px 10px;
         cursor: pointer;
         &:hover{
             background-color: grey;
@@ -626,7 +628,7 @@ gap: 20px;
     .home_tab{
         display: flex;
         align-items: center;
-        gap: 20px;
+        gap: 30px;
         padding: 8px 10px 8px 20px;
         cursor: pointer;
         &:hover{
@@ -644,7 +646,7 @@ gap: 20px;
     .recommended_tab{
         display: flex;
         align-items: center;
-        gap: 20px;
+        gap: 30px;
         padding: 8px 10px 8px 20px;
         cursor: pointer;
         &:hover{
@@ -662,7 +664,7 @@ gap: 20px;
     .new_tab{
         display: flex;
         align-items: center;
-        gap: 20px;
+        gap: 30px;
         padding: 8px 10px 8px 20px;
         cursor: pointer;
         &:hover{
@@ -680,7 +682,7 @@ gap: 20px;
     .channels_tab{
         display: flex;
         align-items: center;
-        gap: 20px;
+        gap: 30px;
         padding: 8px 10px 8px 20px;
         cursor: pointer;
         &:hover{
@@ -698,7 +700,7 @@ gap: 20px;
     .spaces_tab{
         display: flex;
         align-items: center;
-        gap: 20px;
+        gap: 30px;
         padding: 8px 10px 8px 20px;
         cursor: pointer;
         &:hover{
@@ -716,7 +718,7 @@ gap: 20px;
     .schedule_tab{
         display: flex;
         align-items: center;
-        gap: 20px;
+        gap: 30px;
         padding: 8px 10px 8px 20px;
         cursor: pointer;
         &:hover{
@@ -734,7 +736,7 @@ gap: 20px;
     .favorites_tab{
         display: flex;
         align-items: center;
-        gap: 20px;
+        gap: 30px;
         padding: 8px 10px 8px 20px;
         cursor: pointer;
         &:hover{
@@ -752,7 +754,7 @@ gap: 20px;
     .categories{
         display: flex;
         align-items: center;
-        gap: 20px;
+        gap: 30px;
         padding: 8px 10px 8px 20px;
         cursor: pointer;
         &:hover{
@@ -767,5 +769,4 @@ gap: 20px;
             font-size: 0.9rem;
         }
     }
-
 `

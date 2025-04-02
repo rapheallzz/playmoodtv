@@ -85,9 +85,9 @@
 }
 .movie-ids {
   position: absolute;
-  top: 125px; /* Adjusted top position */
-  left: -25px; /* Adjusted left position */
-  font-size: 5.5rem; /* Adjusted font size */
+  top: 98px; /* Adjusted top position */
+  left: -20px; /* Adjusted left position */
+  font-size: 5.0rem; /* Adjusted font size */
   color: rgb(247, 247, 247);
   transform: scaleY(1); /* Adjusted transform */
   transform-origin: 0% 0%;
@@ -179,8 +179,9 @@
   padding: 10px 20px 10px 20px;
   position: absolute;
   top: 20px;
-  right: 150px;
+  right: 300px;
   display: flex;
+  z-index: 12;
 }
 .home-page-icon img{
   height: 30px;
@@ -703,6 +704,12 @@
   filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.5)); 
   position: relative;
   top: -70px;
+}
+
+.mobile-hamburger-movie {
+  filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.5)); 
+  position: relative;
+  top: 0px;
 }
 
 

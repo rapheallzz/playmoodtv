@@ -197,23 +197,24 @@ export default function MoviePage() {
 
            
       <div className='h-auto'>
-      {/* <MovieHeader /> */}
+      <MovieHeader />
   
            {/* Video Holder */}
+           <div className="video-container relative mt-20">
+  <video
+    muted
+    playsInline
+    loop
+    autoPlay
+    controls
+    ref={videoRef}
+    controlsList="nodownload"
+    className={`object-cover z-1 ${isMinimized ? 'bottom-0 right-0 w-52' : 'w-full h-550px static'} md:${isMinimized ? 'h-auto' : 'h-200px'}`}
+  >
+    <source src={movie?.video} type="video/mp4" />
+  </video>
+</div>
 
-           <video
-  muted
-  playsInline
-  loop
-  autoPlay
-  controls
-  ref={videoRef}
-  controlsList="nodownload"
-  className={`object-cover z-1 ${isMinimized ? 'fixed bottom-0 right-0 w-52 h-auto' : 'w-full h-550px static'} md:${isMinimized ? 'h-auto' : 'h-200px'}`}
->
-<source src={movie?.video} type="video/mp4" />
-
-</video>
 
                 <Hamburger onClick={() => handle_sidebar_hover()}>
                  <MovieBurger />
@@ -499,14 +500,13 @@ const Hamburger = styled.div`
   @media (max-width: 790px) {
     svg{
       position: relative;
+       z-index: 1000;
       font-size: 30px;
       top:6px;
       left:8px
     }
   }
 `;
-
-
 
 const Footer = styled.div`
     height: fit-content;

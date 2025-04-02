@@ -411,6 +411,14 @@ export default function MobileBurger({ }) {
 
               {!mountcategory && (
                 <>
+
+{!user && (
+                      <div onClick={() => { navigate('/login') }}> <button className='font-semibold text-[10px] w-28 h-10 bg-red-950 text-white rounded-md'>
+                               Sign In / Register
+                        </button>
+                        
+                        </div> ) }
+
       <div className="search_tab">
         <div className="flex items-center">
           {search_hover ? (
@@ -426,7 +434,7 @@ export default function MobileBurger({ }) {
             className="ml-2 p-1 bg-transparent  border-b border-white text-red-200 text-sm focus:outline-none"
           />
         </div>
-        <p>Search</p>
+        
       </div>           
            <div className="search_results">
           {searchResults.map((result, index) => (
@@ -653,13 +661,13 @@ const Side = styled.div`
 
 `
 const SidebarClicked = styled.div`
-width: 240px;
+width: 250px;
 height: 100vh;
 background-color: black;
 top: 0;
 left: 0; // Align to the left
 position: fixed;
-padding: 20px 10px 0px 20px;
+padding: 20px 10px 0px 10px;
 display: flex;
 flex-direction: column;
 gap: 18px;
@@ -700,7 +708,7 @@ gap: 18px;
         display: flex;
         align-items: center;
         gap: 30px;
-        padding: 8px 10px 8px 20px;
+        padding: 8px 10px 8px 10px;
         cursor: pointer;
         &:hover{
             background-color: grey;

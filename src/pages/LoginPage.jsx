@@ -145,7 +145,7 @@ const Google = styled.div`
 
 const Form = styled.div`
   background-color: #fff;
-  padding: 20px;
+  padding: 25px;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   gap: 8;
@@ -156,14 +156,14 @@ const Form = styled.div`
   }
 
   @media only screen and (max-width: 768px) {
-    width:80%;
+    width:90%;
   }
 `;
 
 
 const Input = styled.input`
   width: 100%;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
