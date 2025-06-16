@@ -34,6 +34,7 @@ import SidebarSliderc from '../slidersidebarc';
 import { useSelector, useDispatch } from 'react-redux'
 import { logout, reset } from '.././../features/authSlice'
 import DonationModal from '../DonationModal'
+import { FaPlus } from 'react-icons/fa';
 
 
 
@@ -286,30 +287,30 @@ export default function DesktopHeader({ }) {
   return (
     <DesktopHead>
       <DesktopNavigation>
-      <nav className="w-full h-full flex items-center justify-between">
+      <nav className="w-full h-full flex gap-16  justify-between">
         <div className="flex h-full flex-row gap-8 items-center">
-          <Link to="/" className="text-white text-sm font-medium">
+          <Link to="/" className="text-white text-sm font-medium hover:text-[#541011]">
             HOME
           </Link>
-          <Link to="/channels" className="text-white text-sm font-medium">
+          <Link to="/channels" className="text-white text-sm font-medium hover:text-[#541011]">
             CHANNELS
           </Link>
-          <Link  onClick={handleDonationClick} className="text-white text-sm font-medium">
+          <Link  onClick={handleDonationClick} className="text-white text-sm font-medium hover:text-[#541011]">
             SCHEDULE
           </Link>
-          <Link to="/spaces" className="text-white text-sm font-medium">
+          <Link onClick={handleDonationClick} className="text-white text-sm font-medium hover:text-[#541011]">
             SPACES
           </Link>
-          <Link to="/stories" className="text-white text-sm font-medium">
+          <Link to="/stories" className="text-white text-sm font-medium hover:text-[#541011]">
             STORIES
           </Link>
-          <Link to="/diaries" className="text-white text-sm font-medium">
+          <Link to="/diaries" className="text-white text-sm font-medium hover:text-[#541011]">
             DIARIES
           </Link>
         </div>
-        <div className="flex items-center ml-48">
+        <div className="flex gap-8 items-center ">
           <div
-            className="flex items-center justify-center w-32 h-10 border border-white cursor-pointer mr-2"
+            className="flex items-center justify-center gap-4 w-auto h-10 border border-white cursor-pointer px-6"
             onClick={() => {
               if (user) {
                 navigate('/dashboard');
@@ -319,7 +320,7 @@ export default function DesktopHeader({ }) {
             }}
           >
             <p className="text-base">Post</p>
-            <img src={categories} className="w-6 h-6 pl-1" alt="Categories" />
+         <FaPlus />
           </div>
           <img src={playmood} className="h-10 cursor-pointer" alt="Playmood" onClick={() => navigate('/')} />
         </div>
@@ -408,21 +409,21 @@ export default function DesktopHeader({ }) {
                     {new_hover ? <img src={newp} onMouseEnter={handle_newp_hover} /> : <img src={newp_red} onMouseOut={handle_newp_hover_out} />}
                     <p>New on playmood</p>
                   </div>
-                  <div className="channels_tab" onClick={() => { navigate('/channels') }}>
+                  <div className="channels_tab"  onClick={() => { navigate('/channels') }}>
                     {snowflakes_hover ? <img src={snowflakes} onMouseEnter={handle_snowflakes_hover} /> : <img src={snowflakes_red} onMouseOut={handle_snowflakes_hover_out} />}
                     <p>Channels</p>
                   </div>
-                  <div className="spaces_tab" onClick={() => { navigate('/spaces') }}>
+                  <div className="spaces_tab" onClick={handleDonationClick}>
                     {location_hover ? <img src={location} onMouseEnter={handle_location_hover} /> : <img src={location_red} onMouseOut={handle_location_hover_out} />}
                     <p>Spaces</p>
                   </div>
-                  <div className="schedule_tab" onClick={() => { navigate('/schedule') }}>
+                  <div className="schedule_tab" onClick={handleDonationClick}>
                     {schedule_hover ? <img src={schedule_white} onMouseEnter={handle_schedule_hover} /> : <img src={schedule_red} onMouseOut={handle_schedule_hover_out} />}
                     <p>Schedule</p>
                   </div>
-                  <div className="favorites_tab" onClick={() => { navigate('/dashboard') }}>
-                    {favourites_hover ? <img src={favourite} onMouseEnter={handle_favourites_hover} /> : <img src={favourite_red} onMouseOut={handle_favourites_hover_out} />}
-                    <p>Favorites</p>
+                  <div className="favorites_tab" onClick={() => { user ? navigate('/dashboard') : navigate('/login') }}>
+                   {favourites_hover ? <img src={favourite} onMouseEnter={handle_favourites_hover} /> : <img src={favourite_red} onMouseOut={handle_favourites_hover_out} />}
+                   <p>Favorites</p>
                   </div>
                         
 

@@ -4,125 +4,154 @@ import contentService from './contentService';
 
 const API_URL = 'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/user/';
 
-// Get user from localStorage
-const user = JSON.parse(localStorage.getItem('user'));
+// Get user from localStorage with validation
+let user = null;
+try {
+  const storedUser = localStorage.getItem('user');
+  if (storedUser && storedUser !== 'undefined') {
+    user = JSON.parse(storedUser);
+  }
+} catch (error) {
+  console.error('Error parsing user from localStorage:', error);
+  localStorage.removeItem('user');
+}
 
 const initialState = {
-  user: user ? { ...user, role: user.role } : null,
+  user: user ? { ...user, role: user.role || 'defaultRole' } : null,
   isError: false,
   isSuccess: false,
   isLoading: false,
   message: '',
+  contentError: null, // Store content-specific errors
 };
 
 // Register user
-export const registerUser = createAsyncThunk('auth/register', async (user, thunkAPI) => {
+export const registerUser = createAsyncThunk('auth/register', async (userData, thunkAPI) => {
   try {
-    const response = await authService.register(user);
-    console.log('Registration successful:', response);
-    
-    // Ensure role is included, fallback to 'defaultRole' if missing
-    return { ...response.data, role: response.data.role || 'defaultRole' };
+    const response = await authService.register(userData);
+    const user = {
+      userId: response.userId,
+      email: userData.email,
+      role: response.role || 'defaultRole',
+      token: response.token, // Ensure token is stored
+    };
+    localStorage.setItem('user', JSON.stringify(user));
+    return user;
   } catch (error) {
     const message =
       (error.response && error.response.data && error.response.data.message) ||
       error.message ||
-      error.toString();
+      'Unable to connect to the server. Please try again later.';
     return thunkAPI.rejectWithValue(message);
   }
 });
-
 
 // Login user
 export const login = createAsyncThunk('auth/login', async (user, thunkAPI) => {
   try {
     const response = await authService.login(user);
-    console.log('Login successful:', response);
-    // Update the payload to include the role
-    return { ...response, role: response.role };
+    return { ...response, role: response.role || 'defaultRole' };
   } catch (error) {
-    console.error('Login failed:', error);
     return thunkAPI.rejectWithValue(error.message || 'Login failed');
   }
 });
 
 // Like content
-export const likeContent = createAsyncThunk('content/likeContent', async ({ userId, contentId }, thunkAPI) => {
+export const likeContent = createAsyncThunk('content/likeContent', async ({ contentId }, thunkAPI) => {
   try {
-    const response = await contentService.likeContent({ userId, contentId });
-    
-    console.log('Content liked successfully:', response);
-    
-    return response.contentId; // Assuming the response contains updated content data
+    const state = thunkAPI.getState();
+    const token = state.auth.user?.token;
+    if (!token) {
+      throw new Error('No token found');
+    }
+    const response = await contentService.likeContent({ contentId, token });
+    return response.contentId || contentId;
   } catch (error) {
-    console.error('Error liking content:', error);
     return thunkAPI.rejectWithValue(error.message || 'Error liking content');
   }
 });
 
 // Unlike content
-export const unlikeContent = createAsyncThunk('content/unlikeContent', async ({ userId, contentId }, thunkAPI) => {
+export const unlikeContent = createAsyncThunk('content/unlikeContent', async ({ contentId }, thunkAPI) => {
   try {
-    const response = await contentService.unlikeContent({ userId, contentId });
-    console.log('Content unliked successfully:', response);
-    return response.contentId; // Assuming the response contains updated content data
+    const state = thunkAPI.getState();
+    const token = state.auth.user?.token;
+    if (!token) {
+      throw new Error('No token found');
+    }
+    const response = await contentService.unlikeContent({ contentId, token });
+    return response.contentId || contentId;
   } catch (error) {
-    console.error('Error unliking content:', error);
     return thunkAPI.rejectWithValue(error.message || 'Error unliking content');
   }
 });
 
-// add to watchlist
+// Add to watchlist
 export const addToWatchlist = createAsyncThunk('content/addToWatchlist', async ({ userId, contentId }, thunkAPI) => {
   try {
-    const response = await contentService.addToWatchlist({ userId, contentId });
-    console.log(response)
-    return response.contentId;
+    const state = thunkAPI.getState();
+    const token = state.auth.user?.token;
+    if (!token) {
+      throw new Error('No token found');
+    }
+    const response = await contentService.addToWatchlist({ userId, contentId, token });
+    return response.contentId || contentId;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.message || 'Error adding to watchlist');
   }
 });
 
-// remove from watchlist
+// Remove from watchlist
 export const removeFromWatchlist = createAsyncThunk('content/removeFromWatchlist', async ({ userId, contentId }, thunkAPI) => {
   try {
-    const response = await contentService.removeFromWatchlist({ userId, contentId });
-    console.log(response.contentId)
-    return response.contentId;
+    const state = thunkAPI.getState();
+    const token = state.auth.user?.token;
+    if (!token) {
+      throw new Error('No token found');
+    }
+    const response = await contentService.removeFromWatchlist({ userId, contentId, token });
+    return response.contentId || contentId;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.message || 'Error removing from watchlist');
   }
 });
 
-
-
 export const logout = createAsyncThunk('auth/logout', async (_, thunkAPI) => {
   await authService.logout();
-  thunkAPI.dispatch(reset()); // Reset all states to initial values
+  thunkAPI.dispatch(reset());
   localStorage.removeItem('user');
 });
 
-
 // Verify email
 export const verifyEmail = createAsyncThunk(
-  'auth/verifyEmail',
+  'auth/verify-email',
   async ({ userId, verificationCode }, thunkAPI) => {
     try {
-      return await authService.verifyEmail({ userId, verificationCode });
+      const response = await authService.verifyEmail({ userId, verificationCode });
+      return response;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.message || 'Verification failed');
+      const message =
+        (error.response && error.response.data && error.response.data.message) ||
+        error.message ||
+        'Verification failed';
+      return thunkAPI.rejectWithValue(message);
     }
   }
 );
 
 // Resend verification code
 export const resendVerificationCode = createAsyncThunk(
-  'auth/resendVerificationCode',
+  'auth/reverify',
   async (email, thunkAPI) => {
     try {
-      return await authService.resendVerificationCode(email);
+      const response = await authService.resendVerificationCode(email);
+      return response;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.message || 'Failed to resend code');
+      const message =
+        (error.response && error.response.data && error.response.data.message) ||
+        error.message ||
+        'Failed to resend code';
+      return thunkAPI.rejectWithValue(message);
     }
   }
 );
@@ -136,34 +165,60 @@ export const authSlice = createSlice({
       state.isSuccess = false;
       state.isError = false;
       state.message = '';
-  },
-  updateAuthUser: (state, action) => {
+      state.contentError = null;
+    },
+    updateAuthUser: (state, action) => {
       state.user = action.payload;
-  },
+    },
   },
   extraReducers: (builder) => {
     builder
-    .addCase(registerUser.pending, (state) => {
-      state.isLoading = true;
-    })
-    .addCase(registerUser.fulfilled, (state, action) => {
-      state.isLoading = false;
-      state.isSuccess = true;
-      state.user = action.payload; // Ensure the user data is properly set
-    })
-    .addCase(registerUser.rejected, (state, action) => {
-      state.isLoading = false;
-      state.isError = true;
-      state.message = action.payload; // Error message
-    })
-    
-    .addCase(login.pending, (state) => {
+      .addCase(registerUser.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(registerUser.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.user = action.payload;
+      })
+      .addCase(registerUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      .addCase(verifyEmail.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(verifyEmail.fulfilled, (state) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.message = 'Email verified successfully';
+      })
+      .addCase(verifyEmail.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      .addCase(resendVerificationCode.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(resendVerificationCode.fulfilled, (state) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.message = 'Verification code resent';
+      })
+      .addCase(resendVerificationCode.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      .addCase(login.pending, (state) => {
         state.isLoading = true;
       })
       .addCase(login.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.user = { ...action.payload, role: action.payload.role };
+        state.user = action.payload;
       })
       .addCase(login.rejected, (state, action) => {
         state.isLoading = false;
@@ -176,23 +231,21 @@ export const authSlice = createSlice({
         state.isSuccess = false;
         state.isError = false;
         state.message = '';
-    })
+        state.contentError = null;
+      })
       .addCase(likeContent.pending, (state) => {
         state.isLoading = true;
       })
       .addCase(likeContent.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        console.log(action.payload)
         if (state.user && state.user.like) {
           state.user.like.push(action.payload);
         }
-        console.log("likeContent Reducer Working")
       })
       .addCase(likeContent.rejected, (state, action) => {
         state.isLoading = false;
-        state.isError = true;
-        state.message = action.payload;
+        state.contentError = action.payload;
       })
       .addCase(unlikeContent.pending, (state) => {
         state.isLoading = true;
@@ -200,13 +253,13 @@ export const authSlice = createSlice({
       .addCase(unlikeContent.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        console.log(action.payload)
-        state.user.like = state.user.like.filter(id => id !== action.payload);
+        if (state.user && state.user.like) {
+          state.user.like = state.user.like.filter((id) => id !== action.payload);
+        }
       })
       .addCase(unlikeContent.rejected, (state, action) => {
         state.isLoading = false;
-        state.isError = true;
-        state.message = action.payload;
+        state.contentError = action.payload;
       })
       .addCase(addToWatchlist.pending, (state) => {
         state.isLoading = true;
@@ -220,8 +273,7 @@ export const authSlice = createSlice({
       })
       .addCase(addToWatchlist.rejected, (state, action) => {
         state.isLoading = false;
-        state.isError = true;
-        state.message = action.payload;
+        state.contentError = action.payload;
       })
       .addCase(removeFromWatchlist.pending, (state) => {
         state.isLoading = true;
@@ -230,44 +282,15 @@ export const authSlice = createSlice({
         state.isLoading = false;
         state.isSuccess = true;
         if (state.user && state.user.watchlist) {
-          state.user.watchlist = state.user.watchlist.filter(id => id !== action.payload);
+          state.user.watchlist = state.user.watchlist.filter((id) => id !== action.payload);
         }
       })
       .addCase(removeFromWatchlist.rejected, (state, action) => {
         state.isLoading = false;
-        state.isError = true;
-        state.message = action.payload;
-      })
-
-      .addCase(verifyEmail.pending, (state) => {
-        state.isLoading = true;
-      })
-      .addCase(verifyEmail.fulfilled, (state) => {
-        state.isLoading = false;
-        state.isSuccess = true;
-      })
-      .addCase(verifyEmail.rejected, (state, action) => {
-        state.isLoading = false;
-        state.isError = true;
-        state.message = action.payload;
-      })
-      .addCase(resendVerificationCode.pending, (state) => {
-        state.isLoading = true;
-      })
-      .addCase(resendVerificationCode.fulfilled, (state) => {
-        state.isLoading = false;
-        state.isSuccess = true;
-      })
-      .addCase(resendVerificationCode.rejected, (state, action) => {
-        state.isLoading = false;
-        state.isError = true;
-        state.message = action.payload;
-      })
-      
+        state.contentError = action.payload;
+      });
   },
 });
-
-
 
 export const { reset, updateAuthUser } = authSlice.actions;
 export default authSlice.reducer;

@@ -12,14 +12,13 @@ export default function SliderChannel() {
   useEffect(() => {
     const fetchCreators = async () => {
       try {
-        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/user/creators', {
+        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/creators', {
           headers: {
             'Cache-Control': 'no-cache',
             'Pragma': 'no-cache',
             'Expires': '0'
           }
         });
-        console.log('Response:', response);
         if (Array.isArray(response.data)) {
           setData(response.data);
         } else {
@@ -36,8 +35,8 @@ export default function SliderChannel() {
   const settings = {
     dots: false,
     infinite: true,
-    speed: 500,
-    slidesToShow: 2,
+    speed: 300,
+    slidesToShow: 1,
     slidesToScroll: 1,
     initialSlide: 0,
     autoplay: true,
@@ -74,35 +73,27 @@ export default function SliderChannel() {
   };
 
   const handleSlideClick = (creator) => {
-    console.log('Slide clicked', creator); 
+    console.log('Slide clicked', creator);
     navigate('/creator', {
       state: {
-        name: creator.name || '',
-        profileImage: creator.profileImage || '',
-        bannerImage: creator.bannerImage || '',
-        content: creator.content || '',
-        subscribers: creator.subscribers || 0,
-        socialMedia: creator.socialMedia || {},
-      },
+        creatorId: creator._id || ''
+      }
     });
   };
 
   return (
-
     <Slider {...settings}>
       {Array.isArray(data) && data.map((creator, index) => (
         <div
-  key={creator._id}
-  className="slidescircle relative"
-  onClick={() => handleSlideClick(creator)}
->
-  <img src={creator.profileImage} alt={`Creator ${index}`} className="w-full h-auto" />
-  <div className="absolute inset-0 flex flex-col justify-center items-center space-y-2">
-  </div>
-</div>
-
+          key={creator._id}
+          className="slidescircle relative"
+          onClick={() => handleSlideClick(creator)}
+        >
+          <img src={creator.profileImage} alt={`Creator ${index}`} className="w-full h-auto" />
+          <div className="absolute inset-0 flex flex-col justify-center items-center space-y-2">
+          </div>
+        </div>
       ))}
-      
     </Slider>
   );
 }

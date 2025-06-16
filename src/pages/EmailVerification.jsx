@@ -1,52 +1,83 @@
 import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import { toast } from 'react-toastify';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { verifyEmail, resendVerificationCode, reset } from '../features/authSlice';
+import styled from 'styled-components';
 
+const EmailVerification = () => {
+  const navigate = useNavigate();
+  const { state } = useLocation();
+  const dispatch = useDispatch();
+  const { isLoading, isError, isSuccess, message } = useSelector((state) => state.auth);
 
+  const [code, setCode] = useState(new Array(6).fill(''));
+  const [timer, setTimer] = useState(60);
+  const [isResendDisabled, setIsResendDisabled] = useState(true);
+  const [errorMessage, setErrorMessage] = useState('');
 
-const EmailVerification = ({ userId, email }) => {
-    const dispatch = useDispatch();
-    const { isLoading, isError, isSuccess, message } = useSelector((state) => state.auth);
-  
-    const [code, setCode] = useState(new Array(6).fill(''));
-    const [timer, setTimer] = useState(60); 
-    const [isResendDisabled, setIsResendDisabled] = useState(true);
-  
-    useEffect(() => {
-      if (isError) toast.error(message);
-      if (isSuccess) toast.success('Email verified successfully!');
+  // Get userId and email from navigation state
+  const userId = state?.userId;
+  const email = state?.email;
+
+  useEffect(() => {
+    // Validate userId and email
+    if (!userId || !email) {
+      setErrorMessage('Invalid verification link. Please register again.');
+      return;
+    }
+
+    if (isError) {
+      setErrorMessage(message || 'Verification failed. Please try again.');
+      window.alert(message || 'Verification failed. Please try again.');
+    }
+    if (isSuccess) {
+      window.alert('Email verified successfully!');
+      navigate('/login');
       dispatch(reset());
-    }, [isError, isSuccess, message, dispatch]);
-  
-    useEffect(() => {
-      let interval;
-      if (timer > 0) {
-        interval = setInterval(() => setTimer((prev) => prev - 1), 1000);
-      } else {
-        setIsResendDisabled(false);
-      }
-      return () => clearInterval(interval);
-    }, [timer]);
-  
-    const handleChange = (value, index) => {
-      const updatedCode = [...code];
-      updatedCode[index] = value.toUpperCase();
-      setCode(updatedCode);
-    };
-  
-    const handleSubmit = () => {
-      const verificationCode = code.join('');
-      dispatch(verifyEmail({ userId, verificationCode }));
-    };
-  
-    const handleResend = () => {
-      dispatch(resendVerificationCode(email));
-      setTimer(60);
-      setIsResendDisabled(true);
-    };
-  
+    }
+  }, [isError, isSuccess, message, navigate, dispatch]);
+
+  useEffect(() => {
+    let interval;
+    if (timer > 0) {
+      interval = setInterval(() => setTimer((prev) => prev - 1), 1000);
+    } else {
+      setIsResendDisabled(false);
+    }
+    return () => clearInterval(interval);
+  }, [timer]);
+
+  const handleChange = (value, index) => {
+    const updatedCode = [...code];
+    updatedCode[index] = value.toUpperCase();
+    setCode(updatedCode);
+  };
+
+  const handleSubmit = () => {
+    if (!userId) {
+      setErrorMessage('User ID is missing. Please register again.');
+      return;
+    }
+    const verificationCode = code.join('');
+    if (verificationCode.length !== 6) {
+      setErrorMessage('Please enter a 6-digit code.');
+      return;
+    }
+    dispatch(verifyEmail({ userId, verificationCode }));
+  };
+
+  const handleResend = () => {
+    if (!email) {
+      setErrorMessage('Email is missing. Please register again.');
+      return;
+    }
+    dispatch(resendVerificationCode(email));
+    setTimer(60);
+    setIsResendDisabled(true);
+    setErrorMessage('');
+    window.alert('Verification code resent successfully!');
+  };
+
   return (
     <Container>
       <Form>
@@ -54,6 +85,7 @@ const EmailVerification = ({ userId, email }) => {
         <Description>
           Please enter the 6-digit code sent to your email address (Case Sensitive!).
         </Description>
+        {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
         <CodeInputContainer>
           {code.map((digit, index) => (
             <CodeInput
@@ -63,20 +95,22 @@ const EmailVerification = ({ userId, email }) => {
               maxLength="1"
               value={digit}
               onChange={(e) => handleChange(e.target.value, index)}
+              disabled={isLoading || !userId}
             />
           ))}
         </CodeInputContainer>
         <TimerText>
-          {timer > 0
-            ? `Resend code in ${timer}s`
-            : 'Didn’t receive a code?'}
+          {timer > 0 ? `Resend code in ${timer}s` : 'Didn’t receive a code?'}
         </TimerText>
         <ResendButton
-          onClick={handleResend} disabled={isResendDisabled || isLoading}
+          onClick={handleResend}
+          disabled={isResendDisabled || isLoading || !email}
         >
           Resend Code
         </ResendButton>
-        <VerifyButton  onClick={handleSubmit} disabled={isLoading}>Verify</VerifyButton>
+        <VerifyButton onClick={handleSubmit} disabled={isLoading || !userId}>
+          Verify
+        </VerifyButton>
       </Form>
     </Container>
   );
@@ -144,8 +178,7 @@ const TimerText = styled.p`
 `;
 
 const ResendButton = styled.button`
-  background-color: ${(props) =>
-    props.disabled ? '#ccc' : '#541011'};
+  background-color: ${(props) => (props.disabled ? '#ccc' : '#541011')};
   color: #fff;
   padding: 10px 20px;
   border: none;
@@ -160,8 +193,17 @@ const VerifyButton = styled.button`
   padding: 10px 20px;
   border: none;
   border-radius: 8px;
-  cursor: pointer;
+  cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
   width: 100%;
+`;
+
+const ErrorMessage = styled.div`
+  color: #d32f2f;
+  background-color: #ffebee;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  text-align: center;
 `;
 
 export default EmailVerification;

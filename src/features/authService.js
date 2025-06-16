@@ -1,30 +1,38 @@
 import axios from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
-const API_URL = 'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/user/';
 
-// Verify email
+const API_URL = 'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/';
+
+
+
 const verifyEmail = async ({ userId, verificationCode }) => {
   try {
     const response = await axios.post(`${API_URL}verify-email`, {
       userId,
       verificationCode,
     });
-    return response.data;
+    return response.data; // Expecting { message: "Email verified successfully" }
   } catch (error) {
-    throw error.response?.data || 'Verification failed';
+    console.error('Email verification failed:', error);
+    throw new Error(
+      error.response?.data?.message || 'Verification failed'
+    );
   }
 };
 
-// Resend verification code
 const resendVerificationCode = async (email) => {
   try {
     const response = await axios.post(`${API_URL}reverify`, { email });
-    return response.data;
+    return response.data; // Expecting { message: "Verification code resent" }
   } catch (error) {
-    throw error.response?.data || 'Failed to resend verification code';
+    console.error('Resend verification code failed:', error);
+    throw new Error(
+      error.response?.data?.message || 'Failed to resend code'
+    );
   }
 };
+
 
 const register = async (userData) => {
   try {

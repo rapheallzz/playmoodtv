@@ -76,7 +76,7 @@ export default function SliderWatchlist() {
     speed: 3000,
     autoplaySpeed: 3000,
     cssEase: "linear",
-    arrows: false,
+    arrows: false, 
     responsive: [
       {
         breakpoint: 1024,
@@ -117,10 +117,11 @@ export default function SliderWatchlist() {
               <Slidercontent 
                 img={content.thumbnail} 
                 title={content.title} 
-                movie={content.video} 
+                 movie={content} 
                 views={content.views}
                 desc={content.description} 
                 customStyle={{}}
+                  onVideoClick={() => handleOpenModal(content)}
               />
             </div>
           ))}

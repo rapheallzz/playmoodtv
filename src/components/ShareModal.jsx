@@ -86,7 +86,7 @@ const SocialIcon = styled.div`
   margin: 5px;
 
   &:hover {
-    color: #007bff;
+    color: #541011;
   }
 
   @media screen and (max-width: 768px) {

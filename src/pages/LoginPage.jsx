@@ -3,49 +3,40 @@ import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import playmood from '/PLAYMOOD_DEF.png';
-import { toast } from 'react-toastify';
 import { login, reset } from '../features/authSlice';
-// import { GoogleLogin } from 'react-google-login';
 
 const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
- 
-  const dispatch = useDispatch(); 
+  const [errorMessage, setErrorMessage] = useState('');
 
+  const dispatch = useDispatch();
   const { user, isLoading, isError, isSuccess, message } = useSelector(
     (state) => state.auth
   );
 
   const responseGoogle = (response) => {
     console.log(response);
-    // Handle the Google login response here
   };
 
   useEffect(() => {
-   
-    console.log('Redux State:', user); 
-    console.log('isError:', isError);
-    console.log('isSuccess:', isSuccess);
-    console.log('user.role:', user && user.role);
- 
     if (isError) {
-      toast.error(message);
+      setErrorMessage(message);
+      alert(`Login Error: ${message}`);
     }
 
-    if  (isSuccess && user && user.role) {
-      
+    if (isSuccess && user && user.role) {
       console.log('Redirecting to /dashboard');
       navigate('/dashboard');
     }
-    
+
     dispatch(reset());
- 
   }, [user, isError, isSuccess, message, navigate, dispatch]);
 
   const onClick = async (e) => {
     e.preventDefault();
+    setErrorMessage(''); // Clear previous errors
 
     const userData = {
       email,
@@ -54,10 +45,9 @@ const Login = () => {
 
     try {
       await dispatch(login(userData));
-      // Redirecting to '/dashboard' is handled in the useEffect when isSuccess is true
     } catch (error) {
-      // You can handle specific error cases here if needed
-      toast.error('An error occurred during login.');
+      setErrorMessage('An error occurred during login.');
+      alert('An error occurred during login.');
     }
   };
 
@@ -66,6 +56,7 @@ const Login = () => {
       <Logo src={playmood} alt="Playmood Logo" onClick={() => navigate('/')} />
       <Form>
         <h2>Login</h2>
+        {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
         <Input
           type="text"
           placeholder="Enter email"
@@ -90,25 +81,10 @@ const Login = () => {
         <CreateAccountButton onClick={() => navigate('/register')}>
           Create an account
         </CreateAccountButton>
-        
-        {/* <Google>
-
-        <GoogleLogin
-        // clientId="YOUR_GOOGLE_CLIENT_ID"
-        buttonText="Sign in with Google"
-        onSuccess={responseGoogle}
-        onFailure={responseGoogle}
-        cookiePolicy={'single_host_origin'}
-      />
-
-      </Google> */}
-
       </Form>
-      
     </LoginContainer>
   );
 };
-
 
 const LoginContainer = styled.div`
   background-color: #fff;
@@ -117,7 +93,6 @@ const LoginContainer = styled.div`
   align-items: center;
   justify-content: center;
   height: 100vh;
-
 `;
 
 const Logo = styled.img`
@@ -126,22 +101,10 @@ const Logo = styled.img`
   margin-bottom: 20px;
 
   @media only screen and (max-width: 768px) {
-    width:60%;
-    height:auto;
+    width: 60%;
+    height: auto;
   }
 `;
-
-const Google = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 25px;
-
-  }
-  
-`;
-
-
 
 const Form = styled.div`
   background-color: #fff;
@@ -150,16 +113,15 @@ const Form = styled.div`
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   gap: 8;
 
-  h2{
+  h2 {
     text-align: center;
-    padding:5px;
+    padding: 5px;
   }
 
   @media only screen and (max-width: 768px) {
-    width:90%;
+    width: 90%;
   }
 `;
-
 
 const Input = styled.input`
   width: 100%;
@@ -186,19 +148,26 @@ const ForgotPasswordLink = styled.span`
   display: block;
   text-align: center;
   margin-top: 10px;
-    margin-bottom: 10px;
+  margin-bottom: 10px;
 `;
 
 const CreateAccountButton = styled.button`
   color: #fff;
-  background-color: #808080; /* Grey background color */
+  background-color: #808080;
   border: none;
   border-radius: 4px;
   padding: 10px;
-  width: 100%; 
+  width: 100%;
   cursor: pointer;
+`;
 
-
+const ErrorMessage = styled.div`
+  color: #d32f2f;
+  background-color: #ffebee;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  text-align: center;
 `;
 
 export default Login;

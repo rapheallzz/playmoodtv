@@ -3,116 +3,255 @@ import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import axios from 'axios';
-import Slidercontent from './Slidercont';
+import SideBarSlidercont from './SideBarSlidercont';
 import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components'; 
-
+import styled from 'styled-components';
+import ContentModal from './ContentModal';
 
 export default function SidebarSlider() {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalContent, setModalContent] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchData = async () => {
+    async function fetchData() {
       try {
+        console.log('Requesting data from API');
         const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
-        setData(response.data);
+        console.log('API response:', response);
+        if (response.data && Array.isArray(response.data)) {
+          const filteredData = response.data.filter(content => content.category === 'Top 10');
+          setData(filteredData);
+        } else {
+          console.error('Unexpected data format:', response.data);
+          setError('Unexpected data format.');
+        }
       } catch (error) {
         console.error('Error fetching data:', error);
+        setError('Error fetching data.');
       }
-    };
+    }
 
     fetchData();
   }, []);
 
-  const filteredData = data.filter((content) => content.category === 'Top 10');
+  const handleOpenModal = (content) => {
+    setModalContent(content);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setModalContent(null);
+  };
+
+  const createSlug = (title, _id) => {
+    const formattedTitle = title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    return `${formattedTitle}-${_id}`;
+  };
+
+  const handleNavigateToMovie = (content) => {
+    const slug = createSlug(content.title, content._id);
+    console.log('Navigating to movie with slug:', slug);
+    navigate(`/movie/${slug}`);
+  };
+
   const settings = {
     dots: false,
     infinite: true,
     speed: 500,
-    slidesToShow: 3,
+    slidesToShow: 3, // Show 3 slides for sidebar
     slidesToScroll: 1,
     initialSlide: 0,
     autoplay: true,
-    speed: 2000,
-    autoplaySpeed: 2000,
-    cssEase: "linear",
-   
+    autoplaySpeed: 3000,
+    cssEase: 'linear',
+    arrows: true, 
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1,
+          dots: false,
+          arrows: true,
+        },
+      },
+      {
+        breakpoint: 768,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1,
+          arrows: true,
+        },
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          arrows: true,
+        },
+      },
+    ],
   };
-
-
-  const handleSlideClick = (event, content) => {
-    const clickedElement = event.target;
-  
-    // Check if the clicked element is a video
-    if (clickedElement.tagName.toLowerCase() === 'video') {
-      const cardElement = clickedElement.closest('.slides');
-  
-      if (cardElement) {
-        navigate(`/movie/{_id}`, {
-          state: {
-            movie: content.video,
-            title: content.title || '',
-            desc: content.description || '',
-            credits: content.credit || '',
-          },
-        });
-      }
-    }
-  };
-
 
   return (
     <SliderContainer>
-    <Slider {...settings}>
-      {filteredData.map((content, index) => (
-        <div
-          key={content.id}
-          className="sidebar-slide"
-          onClick={(e) => handleSlideClick(e, content)}
-        >
-          <Slidercontent
-            img={content.thumbnail}
-            title={content.title}
-             movie={content.video} 
-             id={content.id} 
-             desc={content.description}
-            customStyle={{ fontSize: '5px',   position: 'absolute',
-            bottom: '-100px', }}
-          />
-        </div>
-      ))}
-    </Slider>
+      {error ? (
+        <div className="error-message">{error}</div>
+      ) : (
+        <Slider {...settings}>
+          {Array.isArray(data) &&
+            data.map((content, index) => (
+              <div key={content._id} className="sidebar-slide">
+                <SideBarSlidercont
+                  img={content.thumbnail}
+                  title={content.title}
+                  movie={content}
+                  views={content.views}
+                  desc={content.description}
+                  customStyle={{}}
+                  onVideoClick={() => handleOpenModal(content)}
+                />
+              </div>
+            ))}
+        </Slider>
+      )}
+      <ContentModal
+        isOpen={isModalOpen}
+        content={modalContent}
+        onClose={handleCloseModal}
+        handleNavigateToMovie={handleNavigateToMovie}
+      />
     </SliderContainer>
   );
 }
 
 const SliderContainer = styled.div`
   .sidebar-slide {
-    height: 80px;
-    width:100px;
-    margin: 0 1px; /* Adjust the margin to fit your layout */
+    width: 300px; /* Increased width for better visibility */
+    height: 200px; /* Fixed height for consistency */
+    margin: 0 4px; /* Horizontal spacing */
     cursor: pointer;
-    box-shadow: 0px 4px 8px rgba(255, 255, 255, 0.1);
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    overflow: visible; /* Prevent clipping of content */
+    z-index: 10; /* Ensure clickable */
   }
 
-  .sidebar-slide img {
+  .sidebar-slide img,
+  .sidebar-slide video {
     max-width: 100%;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     border-radius: 8px;
-    transition: transform 0.3s;
+    transition: transform 0.3s ease;
   }
 
-  .sidebar-slide:hover img {
-    transform: scale(1.05); /* Zoom in on hover */
+  .sidebar-slide:hover img,
+  .sidebar-slide:hover video {
+    transform: scale(1.05); /* Zoom on hover */
   }
 
+  .slick-slider {
+    width: 100%;
+    max-width: 1000px; /* Increased to accommodate arrows and slides */
+    margin: 0 auto;
+    position: relative; /* Ensure arrows are positioned relative to slider */
+  }
+
+  .slick-list,
+  .slick-track {
+    display: flex;
+    align-items: center;
+  }
+
+  /* Style default arrows */
   .slick-prev,
   .slick-next {
-    display: none; /* Hide navigation arrows */
+    display: block !important; /* Show default arrows */
+    z-index: 20; /* Ensure arrows are above slides */
+    width: 30px;
+    height: 30px;
+    transform: translate(0, -50%); /* Center vertically */
   }
-  
-  .sidebar-text {
-    color: #ffffff; /* Change text color if needed */
-    /* Add other styles you want for the sidebar text */
+
+  .slick-prev {
+    left: -40px; /* Position left arrow outside slider */
+  }
+
+  .slick-next {
+    right: -40px; /* Position right arrow outside slider */
+  }
+
+  .slick-prev:before,
+  .slick-next:before {
+    font-size: 30px; /* Increase arrow size */
+    color: #ffffff; /* White arrows for visibility */
+    opacity: 0.8; /* Slightly transparent */
+    transition: opacity 0.3s ease;
+  }
+
+  .slick-prev:hover:before,
+  .slick-next:hover:before {
+    opacity: 1; /* Full opacity on hover */
+  }
+
+  /* Ensure touch events are not blocked */
+  .sidebar-slide * {
+    pointer-events: auto;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .sidebar-slide {
+      width: 120px;
+      height: 180px;
+      margin: 0 2px;
+    }
+
+    .slick-slider {
+      max-width: 300px;
+    }
+
+    .slick-prev {
+      left: -30px;
+    }
+
+    .slick-next {
+      right: -30px;
+    }
+
+    .slick-prev:before,
+    .slick-next:before {
+      font-size: 24px; /* Smaller arrows for tablet */
+    }
+  }
+
+  @media (max-width: 480px) {
+    .sidebar-slide {
+      width: 100px;
+      height: 150px;
+    }
+
+    .slick-slider {
+      max-width: 200px;
+    }
+
+    .slick-prev {
+      left: -25px;
+    }
+
+    .slick-next {
+      right: -25px;
+    }
+
+    .slick-prev:before,
+    .slick-next:before {
+      font-size: 20px; /* Smaller arrows for mobile */
+    }
   }
 `;

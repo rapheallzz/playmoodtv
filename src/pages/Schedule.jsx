@@ -1,10 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import MobileBurger from '../components/headers/MobileBurger';
+import DesktopHeader from '../components/headers/DesktopHeader';
+import styled from "styled-components";
 
 export default function Schedule() {
   const [data, setData] = useState([]);
   const navigate = useNavigate();
+   const [channels, set_channels] = useState(false)
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  
+
+
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+  
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,11 +50,27 @@ export default function Schedule() {
 
   return (
     <div className="h-full w-full bg-black">
-      <div className="flex">
+
+           
+{isMobile ? (
+                   
+                   // <MobileHeader channels={channels} set_channels={set_channels} />
+                   
+                   <Hamburger>
+                   <MobileBurger channels={channels} set_channels={set_channels} />
+                  </Hamburger>
+           
+           
+           
+                 ) : (
+                   <DesktopHeader channels={channels} set_channels={set_channels} />
+                 )}
+
+      <div className="flex mt-16">
         <div className="w-1/5 bg-gray-500 h-full flex flex-col gap-8">
           <div className="mt-32 flex justify-center">
-            <h1 className="text-3xl text-red-600">Playmood</h1>
-            <p className="text-white text-2xl">TV</p>
+            <h1 className=" md:text-3xl  text-red-600">Playmood</h1>
+            <p className="text-white md:text-2xl">TV</p>
           </div>
           <div className="flex flex-col items-center">
             <Link to="/" className=" text-white text-sm font-medium w-full">
@@ -57,8 +86,8 @@ export default function Schedule() {
             </Link>
           </div>
         </div>
-        <div className="w-4/5 h-full bg-black pt-2 flex flex-col items-center">
-          <div className="w-auto flex align-middle justify-center mb-10">
+        <div className="w-4/5 h-full bg-black pt-2 flex flex-col items-center my-10">
+          <div className="w-auto flex align-middle justify-center my-4">
             <h1 className="text-red-800 font-bold text-2xl">SCHEDULES</h1>
           </div>
           <table className="w-full border-2 border-white text-white">
@@ -72,7 +101,7 @@ export default function Schedule() {
             </thead>
             <tbody>
               {data.slice(0, 6).map((content, index) => (
-                <tr key={index} className="border-2 border-white h-20 cursor-pointer">
+                <tr key={index} className="border-2 border-white h-20 cursor-pointer text-center">
                   <td onClick={() => handleTitleClick(content)} className="border-2 border-white">{content.title}</td>
                   <td className="border-2 border-white"></td>
                   <td className="border-2 border-white"></td>
@@ -86,3 +115,26 @@ export default function Schedule() {
     </div>
   );
 }
+
+const Hamburger = styled.div`
+  display: none; /* Hide by default */
+  @media (max-width: 768px) {
+    display: block; /* Show only on screens with width <= 425px */
+    position: relative;
+    font-size: 30px;
+    top:60px;
+    left:8px;
+    cursor: pointer;
+    color: white;
+    &:hover{
+      color: #541011;
+    }
+    z-index: 1000;
+
+    svg {
+      font-size: 40px;
+    }
+  }
+
+  
+`;

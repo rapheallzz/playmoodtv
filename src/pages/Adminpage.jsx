@@ -56,7 +56,7 @@ const AdminDashboard = () => {
     console.log(contents);
 
     try {
-      let url = 'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content';
+      let url = 'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/';
 
       if (selectedCategory !== 'all') {
         url += `?category=${selectedCategory}`;
@@ -78,7 +78,15 @@ const AdminDashboard = () => {
 
   const fetchUnapprovedContents = async () => {
     try {
-      const response = await fetch('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/unapproved');
+      const response = await fetch('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/unapproved',
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${user.token}`, 
+          },
+        }
+      );
 
       if (!response.ok) {
         console.error(`Failed to fetch unapproved videos. Status: ${response.status}, ${response.statusText}`);
@@ -94,7 +102,15 @@ const AdminDashboard = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/user/');
+      const response = await fetch('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/',
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${user.token}`, 
+          },
+        }
+      );
       const data = await response.json();
       setUsers(data);
     } catch (error) {
@@ -110,7 +126,7 @@ const AdminDashboard = () => {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`, 
+            'Authorization': `Bearer ${user.token}`, 
           },
         }
       );
@@ -177,7 +193,14 @@ const AdminDashboard = () => {
 
   const fetchCreatorRequests = async () => {
     try {
-      const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/rolechange/');
+      const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/rolechange/',
+         {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${user.token}`, 
+          },
+        }
+      );
       setCreatorRequests(response.data);
     } catch (error) {
       console.error('Error fetching creator requests:', error);
@@ -187,24 +210,41 @@ const AdminDashboard = () => {
 
   // Handle approval of creator requests
 const approveCreatorRequest = async (requestId) => {
-  try {
-    await axios.put(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/rolechange/${requestId}`, { status: 'approved' });
-    // Update the state to reflect the change
-    setCreatorRequests(creatorRequests.filter(request => request._id !== requestId));
-  } catch (error) {
-    console.error('Error approving creator request:', error);
-  }
+    try {
+        await axios.put(
+            `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/rolechange/${requestId}`,
+            { status: 'approved' },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user.token}`, 
+                },
+            }
+        );
+        // Update the state to reflect the change
+        setCreatorRequests(creatorRequests.filter(request => request._id !== requestId));
+    } catch (error) {
+        console.error('Error approving creator request:', error.response?.data || error.message);
+    }
 };
-
 // Handle declining of creator requests
 const declineCreatorRequest = async (requestId) => {
-  try {
-    await axios.put(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/rolechange/${requestId}`, { status: 'declined' });
-    // Update the state to reflect the change
-    setCreatorRequests(creatorRequests.filter(request => request._id !== requestId));
-  } catch (error) {
-    console.error('Error declining creator request:', error);
-  }
+    try {
+        await axios.put(
+            `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/rolechange/${requestId}`,
+            { status: 'declined' },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user.token}`,
+                },
+            }
+        );
+        // Update the state to reflect the change
+        setCreatorRequests(creatorRequests.filter(request => request._id !== requestId));
+    } catch (error) {
+        console.error('Error declining creator request:', error.response?.data || error.message);
+    }
 };
 
 

@@ -33,12 +33,14 @@ import SidebarSlider from '../slidersidebar';
 import SidebarSliderc from '../slidersidebarc';
 import { useSelector, useDispatch } from 'react-redux'
 import { logout, reset } from '.././../features/authSlice'
+import DonationModal from '../DonationModal';
 
 export default function MobileHeader({ channels, set_channels }) {
   const [dropbar, set_drop_bar] = useState(false);
   const navigate = useNavigate();
   const [top, set_top] = useState(false);
   const [settings_hover, set_settings_hovered] = useState(true);
+  const [showDonationModal, setShowDonationModal] = useState(false);
 
   const dispatch = useDispatch()
   const { user } = useSelector((state) => state.auth)
@@ -48,6 +50,18 @@ export default function MobileHeader({ channels, set_channels }) {
     dispatch(reset())
     navigate('/')
   }
+
+    const handleDonationClose = () => {
+    setShowDonationModal(false);
+  };
+
+  
+  
+  const handleSubscriptionSubmit = (event) => {
+    event.preventDefault();
+    console.log('Email submitted');
+    setShowDonationModal(false); 
+  };
 
 
   const handleTopClick = () => {
@@ -204,6 +218,11 @@ export default function MobileHeader({ channels, set_channels }) {
   const [watchlistToggled, setWatchlistToggled] = useState(false);
 
 
+    const handleDonationClick = () => {
+    setShowDonationModal(true);
+  };
+
+
 
   const handleTop10Toggle = () => {
     setTop10Toggled(!top10Toggled);
@@ -295,22 +314,22 @@ export default function MobileHeader({ channels, set_channels }) {
 
 
 <div className=" flex justify-around w-full gab-8 ">
-  <Link to="/" className=" text-xs  text-white hover:text-red-600">
+  <Link to="/" className=" text-xs  text-white hover:text-[#541011]">
     HOME
   </Link>
-  <Link to="/channels" className="text-white  text-xs hover:text-red-600">
+  <Link onClick={handleDonationClick} className="text-white  text-xs hover:text-[#541011]">
    CHANNELS
   </Link>
-  <Link to="/schedule" className="text-white  text-xs hover:text-red-600" >
+  <Link onClick={handleDonationClick} className="text-white  text-xs hover:text-[#541011]" >
     SCHEDULE
   </Link>
-  <Link to="/spaces" className="text-white  text-xs hover:text-red-600">
+  <Link onClick={handleDonationClick} className="text-white  text-xs hover:text-[#541011]">
     SPACES
   </Link>
-  <Link to="/stories" className="text-white  text-xs hover:text-red-600">
+  <Link to="/stories" className="text-white  text-xs hover:text-[#541011]">
     STORIES
   </Link>
-  <Link to="/diaries" className="text-white  text-xs hover:text-red-600">
+  <Link to="/diaries" className="text-white  text-xs hover:text-[#541011]">
     DIARIES
   </Link>
 </div>
@@ -318,6 +337,11 @@ export default function MobileHeader({ channels, set_channels }) {
 
 </div>
      
+             <DonationModal 
+             isOpen={showDonationModal} 
+             onClose={handleDonationClose} 
+             onSubmit={handleSubscriptionSubmit} 
+           />
 
         <Side>
 
@@ -379,29 +403,29 @@ export default function MobileHeader({ channels, set_channels }) {
                     {home_hover ? <img src={home} onMouseEnter={handle_home_hover} /> : <img src={home_red} onMouseOut={handle_home_hover_out} />}
                     <p>Home</p>
                   </div>
-                  <div className="recommended_tab" onClick={() => set_channels(!channels)}>
+                  <div className="recommended_tab" onClick={() => { navigate('/recommended') }}>
                     {thumbs_hover ? <img src={thumbs} onMouseEnter={handle_thumbs_hover} /> : <img src={thumbs_red} onMouseOut={handle_thumbs_hover_out} />}
                     <p>Recommended</p>
                   </div>
-                  <div className="new_tab" onClick={() => set_channels(!channels)}>
+                  <div className="new_tab" onClick={() => { navigate('/newplaymood') }}>
                     {new_hover ? <img src={newp} onMouseEnter={handle_newp_hover} /> : <img src={newp_red} onMouseOut={handle_newp_hover_out} />}
                     <p>New on playmood</p>
                   </div>
-                  <div className="channels_tab" onClick={() => set_channels(!channels)}>
+                  <div className="channels_tab" onClick={handleDonationClick}>
                     {snowflakes_hover ? <img src={snowflakes} onMouseEnter={handle_snowflakes_hover} /> : <img src={snowflakes_red} onMouseOut={handle_snowflakes_hover_out} />}
                     <p>Channels</p>
                   </div>
-                  <div className="spaces_tab" onClick={() => set_channels(!channels)}>
+                  <div className="spaces_tab" onClick={handleDonationClick}>
                     {location_hover ? <img src={location} onMouseEnter={handle_location_hover} /> : <img src={location_red} onMouseOut={handle_location_hover_out} />}
                     <p>Spaces</p>
                   </div>
-                  <div className="schedule_tab" onClick={() => { navigate('/schedule') }}>
+                  <div className="schedule_tab" onClick={handleDonationClick}>
                     {schedule_hover ? <img src={schedule_white} onMouseEnter={handle_schedule_hover} /> : <img src={schedule_red} onMouseOut={handle_schedule_hover_out} />}
                     <p>Schedule</p>
                   </div>
-                  <div className="favorites_tab" onClick={() => set_channels(!channels)}>
-                    {favourites_hover ? <img src={favourite} onMouseEnter={handle_favourites_hover} /> : <img src={favourite_red} onMouseOut={handle_favourites_hover_out} />}
-                    <p>Favorites</p>
+                  <div className="favorites_tab" onClick={() => { user ? navigate('/dashboard') : navigate('/login') }}>
+                   {favourites_hover ? <img src={favourite} onMouseEnter={handle_favourites_hover} /> : <img src={favourite_red} onMouseOut={handle_favourites_hover_out} />}
+                   <p>Favorites</p>
                   </div>
                 </>
               )}

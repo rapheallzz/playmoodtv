@@ -18,7 +18,7 @@ export default function SliderDairies() {
         // Fetch all data
         const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
         
-        console.log('API response:', response);
+      
 
         // Filter data by category 'Documentaries'
         if (response.data && Array.isArray(response.data)) {

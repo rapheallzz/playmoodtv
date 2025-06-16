@@ -1,158 +1,127 @@
+// contentService.js
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api/';
+const API_URL = 'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users';
 
 // Function to update localStorage for adding or removing content from the watchlist
 const updateLocalStorage = (contentId, action) => {
-  // Retrieve user object from localStorage
-  let user = JSON.parse(localStorage.getItem('user'));
+  let user = JSON.parse(localStorage.getItem('user')) || { watchlist: [] };
 
-  // Check if action is 'add' or 'remove'
   if (action === 'add') {
-      // Push the new contentId to the watchlist array
-      user.watchlist.push(contentId);
+    user.watchlist = user.watchlist ? [...user.watchlist, contentId] : [contentId];
   } else if (action === 'remove') {
-      // Find the index of the contentIdToRemove in the watchlist array
-      let index = user.watchlist.indexOf(contentId);
-
-      // If the contentIdToRemove exists in the watchlist array, remove it
-      if (index !== -1) {
-          user.watchlist.splice(index, 1);
-      }
+    user.watchlist = user.watchlist?.filter((id) => id !== contentId) || [];
   }
 
-  // Stringify the updated user object
-  let updatedUser = JSON.stringify(user);
-
-  // Save the updated user object back to localStorage
-  localStorage.setItem('user', updatedUser);
+  localStorage.setItem('user', JSON.stringify(user));
 };
 
+// Function to update localStorage for liking/unliking content
 const updateLocalStorageLike = (contentId, action) => {
-  // Retrieve user object from localStorage
-  let user = JSON.parse(localStorage.getItem('user'));
+  let user = JSON.parse(localStorage.getItem('user')) || { like: [] };
 
-  // Check if action is 'add' or 'remove'
   if (action === 'like') {
-      // Push the new contentId to the watchlist array
-      user.like.push(contentId);
+    user.like = user.like ? [...user.like, contentId] : [contentId];
   } else if (action === 'unlike') {
-      // Find the index of the contentIdToRemove in the watchlist array
-      let index = user.like.indexOf(contentId);
-
-      // If the contentIdToRemove exists in the watchlist array, remove it
-      if (index !== -1) {
-          user.like.splice(index, 1);
-      }
+    user.like = user.like?.filter((id) => id !== contentId) || [];
   }
 
-  // Stringify the updated user object
-  let updatedUser = JSON.stringify(user);
-
-  // Save the updated user object back to localStorage
-  localStorage.setItem('user', updatedUser);
+  localStorage.setItem('user', JSON.stringify(user));
 };
 
-
-// const likeContent = async ({ userId, contentId }) => {
-//     try {
-//       const response = await axios.put(`http://localhost:5000/api/user/like/${userId}`, { contentId }); // Ensure userId is passed correctly as a string
-//       console.log('Content liked successfully:', response);
-      
-//       return response.data; // Assuming the response contains updated content data
-//     } catch (error) {
-//       console.error('Error liking content:', error);
-//       throw error;
-//     }
-//   };
-
-const likeContent = async ({ userId, contentId }) => {
+// Like content
+const likeContent = async ({ contentId, token }) => {
   try {
-    const response = await axios.put(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/user/like/${userId}`, { contentId }); // Ensure userId is passed correctly as a string
-    updateLocalStorageLike(contentId, "like");
-      alert("user liked this content");
-  
-    // console.log('Content liked successfully:', response);
-    
-    return response.data; // Assuming the response contains updated content data
+    const response = await axios.post(
+      `${API_URL}/like`,
+      { contentId },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    updateLocalStorageLike(contentId, 'like');
+    return response.data;
   } catch (error) {
-    console.error('Error liking content:', error);
-    throw error;
+    const message =
+      error.response?.data?.message || 'Failed to like content. Please try again.';
+    throw new Error(message);
   }
 };
 
-// // Unlike content
-const unlikeContent = async ({userId, contentId}) => {
-    try {
-      // Make the PUT request to unlike the content
-      const response = await axios.put(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/user/unlike/${userId}`, { contentId });
-      updateLocalStorageLike(contentId, "unlike");
-      alert("user unlike this content");
-
-
-      console.log('Content unliked successfully:', response); // Log the response data
-      return response.data; // Return the response data
-    } catch (error) {
-      console.error('Error unliking content:', error);
-      throw error;
-    }
-  };
-
-  const addToWatchlist = async ({ userId, contentId }) => {
-    try {
-        // Make the API call to add content to watchlist
-        const response = await axios.put(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/user/watchlist/${userId}`, { contentId });
-
-        // Update localStorage
-        updateLocalStorage(contentId, "add");
-
-        // Optionally, you can dispatch an action to update the UI here
-
-        // Alert user
-        alert("Content added to watchlist");
-
-        // Log the response data
-        console.log('Content added to watchlist:', response.data);
-
-        // Return the response data
-        return response.data;
-    } catch (error) {
-        console.error('Error adding to watchlist:', error);
-        // Handle error, show error message to the user
-    }
+// Unlike content
+const unlikeContent = async ({ contentId, token }) => {
+  try {
+    const response = await axios.post(
+      `${API_URL}/unlike`,
+      { contentId },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    updateLocalStorageLike(contentId, 'unlike');
+    return response.data;
+  } catch (error) {
+    const message =
+      error.response?.data?.message || 'Failed to unlike content. Please try again.';
+    throw new Error(message);
+  }
 };
 
-  const removeFromWatchlist = async ({ userId, contentId }) => {
-    try {
-        // Make the API call to remove content from watchlist
-        const response = await axios.put(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/user/unwatch/${userId}`, { contentId });
-
-        // Update localStorage
-        updateLocalStorage(contentId, 'remove');
-
-        // Optionally, you can dispatch an action to update the UI here
-
-        // Alert user
-        alert("Content removed from watchlist");
-
-        // Log the response data
-        console.log(response);
-
-        // Return the response data
-        return response.data;
-    } catch (error) {
-        console.error('Error removing from watchlist:', error);
-        // Handle error, show error message to the user
-    }
+// Add to watchlist
+const addToWatchlist = async ({ userId, contentId, token }) => {
+  try {
+    const response = await axios.post(
+      `${API_URL}/watchlist/${userId}`,
+      { contentId },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    updateLocalStorage(contentId, 'add');
+    return response.data;
+  } catch (error) {
+    const message =
+      error.response?.data?.message || 'Failed to add to watchlist. Please try again.';
+    throw new Error(message);
+  }
 };
 
-  
+// Remove from watchlist
+const removeFromWatchlist = async ({ userId, contentId, token }) => {
+  try {
+    const response = await axios.put(
+      `${API_URL}/unwatch/${userId}`,
+      { contentId },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    updateLocalStorage(contentId, 'remove');
+    return response.data;
+  } catch (error) {
+    const message =
+      error.response?.data?.message || 'Failed to remove from watchlist. Please try again.';
+    throw new Error(message);
+  }
+};
 
 const contentService = {
   likeContent,
   unlikeContent,
   addToWatchlist,
-  removeFromWatchlist, 
+  removeFromWatchlist,
 };
 
 export default contentService;

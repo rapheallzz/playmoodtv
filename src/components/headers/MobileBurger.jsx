@@ -34,12 +34,14 @@ import SidebarSliderc from '../slidersidebarc';
 import { useSelector, useDispatch } from 'react-redux'
 import { logout, reset } from '.././../features/authSlice'
 import axios from 'axios';
+import DonationModal from '../DonationModal';
 
 export default function MobileBurger({ }) {
   const [dropbar, set_drop_bar] = useState(false);
   const navigate = useNavigate();
   const [top, set_top] = useState(false);
   const [settings_hover, set_settings_hovered] = useState(true);
+   const [showDonationModal, setShowDonationModal] = useState(false);
 
   const dispatch = useDispatch()
   const { user } = useSelector((state) => state.auth)
@@ -53,6 +55,17 @@ export default function MobileBurger({ }) {
     dispatch(reset())
     navigate('/')
   }
+
+    const handleDonationClose = () => {
+    setShowDonationModal(false);
+  };
+
+  
+  const handleSubscriptionSubmit = (event) => {
+    event.preventDefault();
+    console.log('Email submitted');
+    setShowDonationModal(false); 
+  };
 
   const handle_tab_hover = () => {
     set_tab_hovered(true);
@@ -293,6 +306,11 @@ export default function MobileBurger({ }) {
   const handleTeenToggle = () => {
     setTeenToggled(!teenToggled);
   };
+
+  
+  const handleDonationClick = () => {
+    setShowDonationModal(true);
+  };
   
   const handleBestInFashionToggle = () => {
     setBestInFashionToggled(!bestInFashionToggled);
@@ -342,10 +360,10 @@ export default function MobileBurger({ }) {
   <Link to="/channels" className="text-white  text-[0.5rem] hover:text-red-600">
     CHANNELS
   </Link>
-  <Link to="/" className="text-white  text-[0.5rem] hover:text-red-600">
+  <Link onClick={handleDonationClick} className="text-white  text-[0.5rem] hover:text-red-600">
     SCHEDULE
   </Link>
-  <Link to="/spaces" className="text-white  text-[0.5rem] hover:text-red-600" >
+  <Link onClick={handleDonationClick} className="text-white  text-[0.5rem] hover:text-red-600" >
     SPACES
   </Link>
   <Link to="/stories" className="text-white  text-[0.5rem] hover:text-red-600" >
@@ -358,6 +376,12 @@ export default function MobileBurger({ }) {
 
 
           </div>
+
+                  <DonationModal
+                  isOpen={showDonationModal} 
+                  onClose={handleDonationClose} 
+                  onSubmit={handleSubscriptionSubmit} 
+                />
 
          <Side>
 
@@ -459,15 +483,15 @@ export default function MobileBurger({ }) {
                     {snowflakes_hover ? <img src={snowflakes} onMouseEnter={handle_snowflakes_hover} /> : <img src={snowflakes_red} onMouseOut={handle_snowflakes_hover_out} />}
                     <p>Channels</p>
                   </div>
-                  <div className="spaces_tab" onClick={() => { navigate('/spaces') }}>
+                  <div className="spaces_tab" onClick={handleDonationClick}>
                     {location_hover ? <img src={location} onMouseEnter={handle_location_hover} /> : <img src={location_red} onMouseOut={handle_location_hover_out} />}
                     <p>Spaces</p>
                   </div>
-                  <div className="schedule_tab" onClick={() => { navigate('/schedule') }}>
+                  <div className="schedule_tab" onClick={handleDonationClick}>
                     {schedule_hover ? <img src={schedule_white} onMouseEnter={handle_schedule_hover} /> : <img src={schedule_red} onMouseOut={handle_schedule_hover_out} />}
                     <p>Schedule</p>
                   </div>
-                  <div className="favorites_tab" onClick={() => { navigate('/favourites') }}>
+                  <div className="favorites_tab" onClick={() => { user ? navigate('/dashboard') : navigate('/login') }}>
                     {favourites_hover ? <img src={favourite} onMouseEnter={handle_favourites_hover} /> : <img src={favourite_red} onMouseOut={handle_favourites_hover_out} />}
                     <p>Favorites</p>
                   </div>

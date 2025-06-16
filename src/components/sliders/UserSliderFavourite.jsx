@@ -13,6 +13,7 @@ export default function UserFavourite() {
   const { params } = useParams();
   const [data, setData] = useState([]);
   const user = useSelector(state => state.auth.user);
+   const [error, setError] = useState(null);
 
 
   // useEffect(() => {
@@ -33,10 +34,18 @@ export default function UserFavourite() {
       try {
         // const userId = '65a1b29e81e997cff7fa0bca';
         const userId = user._id;
-        const response = await axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/user/watchlist/${userId}`);
+        const response = await axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/user/watchlist/${userId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${user.token}`,
+            },
+          }
+        );
         setData(response.data.watchList);
       } catch (error) {
         console.error('Error fetching data:', error);
+        setError('Failed to load favourite content. Please try again later.');
+        setData([]);
       }
     };
   
@@ -56,7 +65,7 @@ export default function UserFavourite() {
     speed: 3000,
     autoplaySpeed: 3000,
     cssEase: "linear",
-    arrows: false,
+    arrows: false, 
     responsive: [
       {
         breakpoint: 1024,
@@ -108,23 +117,28 @@ export default function UserFavourite() {
 
   return (
     <Slider {...settings}>
-      {data.map((content, index) => (
+    {error ? (
+      <div>{error}</div>
+    ) : data && data.length > 0 ? (
+      data.map((content, index) => (
         <div
-          key={content.id}
+          key={content.id || index}
           className="dashslide"
           onClick={(e) => handleSlideClick(e, content)}
         >
-  
           <Slidercontent
             img={content.thumbnail}
             title={content.title}
-             movie={content.video} 
-             id={content.id} 
-             desc={content.description}
-            customStyle={{ }}
+            movie={content.video}
+            id={content.id}
+            desc={content.description}
+            customStyle={{}}
           />
         </div>
-      ))}
-    </Slider>
+      ))
+    ) : (
+      <div className='text-white flex text-center'>No Favorite content available</div>
+    )}
+  </Slider>
   );
 }

@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { registerUser, reset } from '../features/authSlice';
 import Spinner from '../components/LoadSpinner';
 import styled from 'styled-components';
-import playmood from "/PLAYMOOD_DEF.png";
+import playmood from '/PLAYMOOD_DEF.png';
 import axios from 'axios';
-// import { GoogleLogin } from 'react-google-login';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -16,6 +14,7 @@ const Register = () => {
   const [countries, setCountries] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState('');
   const [selectedCode, setSelectedCode] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     const fetchCountries = async () => {
@@ -33,7 +32,7 @@ const Register = () => {
         );
       } catch (error) {
         console.error('Error fetching countries:', error);
-        toast.error('Failed to load countries. Please try again.');
+        setErrorMessage('Failed to load countries. Please try again.');
       }
     };
     fetchCountries();
@@ -44,93 +43,140 @@ const Register = () => {
     email: '',
     password: '',
     age: '',
-    country: '',  
+    country: '',
     address: '',
     selectedCode: '',
     phoneNumber: '',
-});
+  });
 
-  const { user, isLoading, isError, isSuccess, message } = useSelector(
-    (state) => state.auth
-  );
+  const { user, isLoading, isSuccess } = useSelector((state) => state.auth);
 
   const { name, email, password, age, country, address, phoneNumber } = formData;
 
-  
   useEffect(() => {
-    if (isSuccess && user) {
-      navigate('/emailverify');
+    console.log('useEffect triggered:', { isSuccess, user });
+    if (isSuccess) {
+      navigate('/emailverify', { state: { userId: user?.userId, email } });
+      dispatch(reset());
     }
-    if (isError) {
-      toast.error(message);
-    }
-  }, [isError, isSuccess, user, message, navigate]);
+  }, [isSuccess, user, navigate, dispatch, email]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-};
+  };
 
-
-const handleCountryChange = (e) => {
+  const handleCountryChange = (e) => {
     const selected = e.target.value;
     setSelectedCountry(selected);
     setFormData({ ...formData, country: selected });
-};
+  };
 
-const handleSignup = (e) => {
-  e.preventDefault();
+  const handleCodeChange = (e) => {
+    const code = e.target.value;
+    setSelectedCode(code);
+    setFormData({ ...formData, selectedCode: code });
+  };
 
-  if (!name || !email || !password || !country) {
-    toast.error("Please fill in all required fields.");
-    return;
-}
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    setErrorMessage('');
 
-  console.log(formData);
-  dispatch(registerUser(formData));
-};
+    if (!name || !email || !password || !country) {
+      setErrorMessage('Please fill in all required fields.');
+      return;
+    }
 
+    try {
+      const result = await dispatch(registerUser(formData)).unwrap();
+      console.log('Signup result:', result);
+      navigate('/emailverify', { state: { userId: result.userId, email } });
+    } catch (error) {
+      console.error('Signup error:', error);
+      setErrorMessage(
+        error.message || 'Registration failed. Please try again later.'
+      );
+      dispatch(reset());
+    }
+  };
 
   return (
     <RegisterContainer>
-    <Logo src={playmood} alt="Playmood Logo" />
-    <Form onSubmit={handleSignup}>
+      <Logo src={playmood} alt="Playmood Logo" />
+      <Form onSubmit={handleSignup}>
         <h2>Sign Up</h2>
-        <Input type="text" name="name" placeholder="Name" value={name} onChange={handleChange} />
-        <Input type="email" name="email" placeholder="Email" value={email} onChange={handleChange} />
-        <Input type="password" name="password" placeholder="Password" value={password} onChange={handleChange} />
+        {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
+        <Input
+          type="text"
+          name="name"
+          placeholder="Name"
+          value={name}
+          onChange={handleChange}
+        />
+        <Input
+          type="email"
+          name="email"
+          placeholder="Email"
+          value={email}
+          onChange={handleChange}
+        />
+        <Input
+          type="password"
+          name="password"
+          placeholder="Password"
+          value={password}
+          onChange={handleChange}
+        />
         <Select value={selectedCountry} onChange={handleCountryChange}>
-            <option value="">Select Country</option>
-            {countries.map((country, index) => (
-                <option key={index} value={country.name}>
-                    {country.name}
-                </option>
-            ))}
+          <option value="">Select Country</option>
+          {countries.map((country, index) => (
+            <option key={index} value={country.name}>
+              {country.name}
+            </option>
+          ))}
         </Select>
-        <Input type="text" name="age" placeholder="Age (Optional)" value={age} onChange={handleChange} />
-        <Input type="text" name="address" placeholder="Address (Optional)" value={address} onChange={handleChange} />
-        <Select value={selectedCode} onChange={(e) => setSelectedCode(e.target.value)}>
-            <option value="">Select Code</option>
-            {countryCodes.map((code, index) => (
-                <option key={index} value={code}>
-                    {code}
-                </option>
-            ))}
+        <Input
+          type="text"
+          name="age"
+          placeholder="Age (Optional)"
+          value={age}
+          onChange={handleChange}
+        />
+        <Input
+          type="text"
+          name="address"
+          placeholder="Address (Optional)"
+          value={address}
+          onChange={handleChange}
+        />
+        <Select value={selectedCode} onChange={handleCodeChange}>
+          <option value="">Select Code</option>
+          {countryCodes.map((code, index) => (
+            <option key={index} value={code}>
+              {code}
+            </option>
+          ))}
         </Select>
-        <Input type="tel" name="phoneNumber" placeholder="Phone Number (Optional)" value={phoneNumber} onChange={handleChange} />
+        <Input
+          type="tel"
+          name="phoneNumber"
+          placeholder="Phone Number (Optional)"
+          value={phoneNumber}
+          onChange={handleChange}
+        />
         <SignupButton type="submit" disabled={isLoading}>
-            {isLoading ? 'Signing Up...' : 'Sign Up'}
+          {isLoading ? 'Signing Up...' : 'Sign Up'}
         </SignupButton>
         <SignInText>
-            Already have an account?{' '}
-            <SignInLink onClick={() => navigate('/login')}>Sign In</SignInLink>
+          Already have an account?{' '}
+          <SignInLink onClick={() => navigate('/login')}>Sign In</SignInLink>
         </SignInText>
-    </Form>
-    {isLoading && <Spinner />}
-</RegisterContainer>
+      </Form>
+      {isLoading && <Spinner />}
+    </RegisterContainer>
   );
 };
 
-// Styled components
+// Styled components (unchanged)
 const RegisterContainer = styled.div`
   background-color: #fff;
   display: flex;
@@ -140,38 +186,30 @@ const RegisterContainer = styled.div`
   height: 100vh;
 `;
 
-const Google = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  // height: 100vh;
-`;
-
 const Logo = styled.img`
   height: 100px;
   width: auto;
   margin-bottom: 20px;
 
   @media only screen and (max-width: 768px) {
-    width:60%;
-    height:auto;
+    width: 60%;
+    height: auto;
   }
 `;
 
 const Form = styled.form`
   background-color: #fff;
-  // padding: 20px;
-  padding:10px 20px 20px 20px;
+  padding: 10px 20px 20px 20px;
   border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0,  0, 0, 0.1);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   width: 40%;
-  h2{
+  h2 {
     text-align: center;
-    padding:5px;
+    padding: 5px;
   }
 
   @media only screen and (max-width: 768px) {
-    width:80%;
+    width: 80%;
   }
 `;
 
@@ -211,6 +249,15 @@ const SignInLink = styled.span`
   color: #541011;
   cursor: pointer;
   text-decoration: underline;
+`;
+
+const ErrorMessage = styled.div`
+  color: #d32f2f;
+  background-color: #ffebee;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  text-align: center;
 `;
 
 export default Register;

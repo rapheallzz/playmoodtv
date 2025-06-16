@@ -1,59 +1,66 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux'
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import axios from 'axios';
 import Slidercontent from '../SlidercontPlain';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 
-export default function UserWatchlist() {
+
+export default function UserRecommended() {
   const navigate = useNavigate();
-  const { params } = useParams();
   const [data, setData] = useState([]);
-  const user = useSelector(state => state.auth.user);
-   const [error, setError] = useState(null);
-
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
-  //       setData(response.data);
-  //     } catch (error) {
-  //       console.error('Error fetching data:', error);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, []);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchData = async () => {
+    async function fetchData() {
       try {
-        // const userId = '65a1b29e81e997cff7fa0bca';
-        const userId = user._id;
-        const response = await axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/watchlist`,
-          {
-            headers: {
-              Authorization: `Bearer ${user.token}`,
-            },
-          }
-        );
-        setData(response.data.watchList);
+        console.log('Requesting data from API');
+
+        // Fetch all data
+        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
+        
+        console.log('API response:', response);
+
+        // Filter data by category 'Documentaries'
+        if (response.data && Array.isArray(response.data)) {
+          const filteredData = response.data.filter(content => content.category === 'Teen');
+          setData(filteredData);
+        } else {
+          console.error('Unexpected data format:', response.data);
+          setError('Unexpected data format.');
+        }
       } catch (error) {
         console.error('Error fetching data:', error);
-        setError('Failed to load favourite content. Please try again later.');
-        setData([]);
+        setError('Error fetching data.');
       }
-    };
-  
+    }
+
     fetchData();
   }, []);
+   
+  const handleOpenModal = (content) => {
+    setModalContent(content); 
+    setIsModalOpen(true);    
+  };
 
-  // const filteredData = data.filter((content) => content.category === 'Top 10');
-  
+  const handleCloseModal = () => {
+    setIsModalOpen(false);   
+    setModalContent(null);    
+  };
+
+  const createSlug = (title, _id) => {
+    const formattedTitle = title.toLowerCase().replace(/[^a-z0-9]+/g, '-'); 
+    return `${formattedTitle}-${_id}`;
+  };
+
+  const handleNavigateToMovie = (content) => {
+    const slug = createSlug(content.title, content._id); 
+    console.log('Navigating to movie with slug:', slug);
+    navigate(`/movie/${slug}`);
+  };
+
   const settings ={
     dots: false ,
     infinite: true,
@@ -117,28 +124,23 @@ export default function UserWatchlist() {
 
   return (
     <Slider {...settings}>
-    {error ? (
-      <div>{error}</div>
-    ) : data && data.length > 0 ? (
-      data.map((content, index) => (
+      {data.map((content, index) => (
         <div
-          key={content.id || index}
+          key={content.id}
           className="dashslide"
           onClick={(e) => handleSlideClick(e, content)}
         >
+  
           <Slidercontent
             img={content.thumbnail}
             title={content.title}
-            movie={content.video}
-            id={content.id}
-            desc={content.description}
-            customStyle={{}}
+             movie={content.video} 
+             id={content.id} 
+             desc={content.description}
+            customStyle={{ }}
           />
         </div>
-      ))
-    ) : (
-      <div className='text-white flex text-center'>No watchlist content available</div>
-    )}
-  </Slider>
+      ))}
+    </Slider>
   );
 }

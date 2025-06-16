@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { HiDotsVertical } from 'react-icons/hi';
 import { FaPaperPlane, FaHeart, FaPlus, FaCheck, FaEye } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import WelcomePopup from '../components/Welcomepop';
 import { likeContent, unlikeContent, addToWatchlist, removeFromWatchlist } from '../features/authSlice';
 import styled from 'styled-components';
-import { useHoveredContent } from '../HoveredContentContext'; 
 
 const Slidercontent = React.memo(function Slidercontent({
   img,
@@ -16,7 +15,8 @@ const Slidercontent = React.memo(function Slidercontent({
   customStyle,
   progress,
   onVideoClick,
-  onHoverContent,
+  onHoverStart,
+  onHoverEnd,
 }) {
   const [hover, setHover] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -24,9 +24,49 @@ const Slidercontent = React.memo(function Slidercontent({
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [localError, setLocalError] = useState(null);
   const [copyModal, setCopyModal] = useState({ show: false, message: '', isError: false });
+  const [previewTimestamps, setPreviewTimestamps] = useState({ start: 0, end: 15 }); // Default preview
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
-  const { setHoveredContent } = useHoveredContent(); // Use context
+  const videoRef = useRef(null);
+
+  // Compute preview timestamps when movie changes
+  useEffect(() => {
+    if (movie?.shortPreview?.start && movie?.shortPreview?.end) {
+      // Use shortPreview if available
+      setPreviewTimestamps({
+        start: movie.shortPreview.start,
+        end: movie.shortPreview.end,
+      });
+    } 
+    // else {
+    //   // Fetch video duration and set random 10–15-second preview
+    //   const video = document.createElement('video');
+    //   video.src = movie?.video || '';
+    //   video.preload = 'metadata';
+
+    //   video.onloadedmetadata = () => {
+    //     const duration = video.duration || 300; // Default to 5 minutes if duration unavailable
+    //     const previewLength = Math.floor(Math.random() * 6) + 10; // Random 10–15 seconds
+    //     const maxStart = Math.max(0, duration - previewLength); // Ensure start doesn't exceed duration
+    //     const start = Math.floor(Math.random() * maxStart); // Random start time
+    //     const end = start + previewLength;
+
+    //     setPreviewTimestamps({ start, end });
+    //     video.remove(); // Clean up
+    //   };
+
+    //   video.onerror = () => {
+    //     console.error('Error loading video metadata:', movie?.video);
+    //     // Fallback to default 10-second preview from start
+    //     setPreviewTimestamps({ start: 0, end: 10 });
+    //     video.remove();
+    //   };
+
+    //   return () => {
+    //     video.remove();
+    //   };
+    // }
+  }, [movie]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -37,16 +77,16 @@ const Slidercontent = React.memo(function Slidercontent({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const handleHover = () => {
+ const handleHover = () => {
     setHover(true);
     setIsVideoPlaying(true);
-    setHoveredContent(movie); // Set hovered content in context
+    onHoverStart && onHoverStart(); // Notify parent
   };
 
-  const handleHoverOut = () => {
+const handleHoverOut = () => {
     setHover(false);
     setIsVideoPlaying(false);
-    setHoveredContent(null); // Clear hovered content on mouse leave
+    onHoverEnd && onHoverEnd(); // Notify parent
   };
 
   const handleClick = (e) => {
@@ -67,7 +107,7 @@ const Slidercontent = React.memo(function Slidercontent({
       onVideoClick();
       setHover(false);
       setIsVideoPlaying(false);
-      setHoveredContent(null); // Clear on video click
+      setHoveredContent(null);
     }
   };
 
@@ -134,7 +174,8 @@ const Slidercontent = React.memo(function Slidercontent({
   const handleCopyLink = (e) => {
     e.stopPropagation();
     const pageUrl = window.location.href;
-    navigator.clipboard.writeText(pageUrl)
+    navigator.clipboard
+      .writeText(pageUrl)
       .then(() => {
         setCopyModal({ show: true, message: 'Link copied to clipboard!', isError: false });
         setTimeout(() => setCopyModal({ show: false, message: '', isError: false }), 3000);
@@ -160,7 +201,7 @@ const Slidercontent = React.memo(function Slidercontent({
 
   return (
     <div
-      className="relative overflow-hidden w-full h-[78%] mr-0.5"
+      className="relative overflow-hidden md:w-full h-[78%] w-60  md:mr-0.5 "
       onMouseEnter={!isMobile ? handleHover : null}
       onMouseLeave={!isMobile ? handleHoverOut : null}
     >
@@ -170,17 +211,21 @@ const Slidercontent = React.memo(function Slidercontent({
           <button onClick={handleCloseCopyModal}>Close</button>
         </CopyModal>
       )}
+
       <div className="absolute top-2.5 w-full px-1 flex justify-between"></div>
       {!hover && !isVideoPlaying ? (
         <>
-          <img
-            className="w-full h-full object-cover cursor-pointer"
+        <div className='h-[70%]'>
+              <img
+            className="w-full h-full object-cover  cursor-pointer"
             src={img}
             alt={title}
             onClick={handleClick}
           />
-          <div className="absolute bottom-0 w-full bg-black bg-opacity-70 flex justify-between p-3 gap-2.5">
-            <h3 className="text-white text-base font-normal leading-6 w-4/5" style={customStyle || {}}>
+        </div>
+
+          <div className="absolute bottom-0 w-full bg-black bg-opacity-50 flex justify-between p-3 gap-2.5">
+            <h3 className="text-white text-base font-normal leading-6 w-[80%]" style={customStyle || {}}>
               {titleSpliced}
             </h3>
             {isMobile && (
@@ -195,6 +240,7 @@ const Slidercontent = React.memo(function Slidercontent({
         <div className="flex flex-col justify-between h-full w-full">
           <div className="h-20 w-full bg-black"></div>
           <video
+            ref={videoRef}
             playsInline
             loop
             autoPlay={isVideoPlaying}
@@ -202,7 +248,13 @@ const Slidercontent = React.memo(function Slidercontent({
             className="w-full object-cover h-36 cursor-pointer"
             onClick={handleVideoClick}
           >
-            <source src={movie?.video ? `${movie.video}#t=0,15` : ''} />
+            <source
+              src={
+                movie?.video
+                  ? `${movie.video}#t=${previewTimestamps.start},${previewTimestamps.end}`
+                  : ''
+              }
+            />
           </video>
           <div
             className="h-52 w-full bg-black p-2 flex flex-col gap-2 mb-8"
