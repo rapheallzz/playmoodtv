@@ -112,7 +112,7 @@ export default function SoonPlaymood() {
                   
                   {/* FOOTER  */}
 
-              <div className="h-auto w-full bg-black flex flex-col md:flex-row justify-between items-center gap-4 md:gap-2 px-4 md:px-10 py-4 md:py-5 fixed bottom-0 ">
+           <div className="h-auto w-full bg-black flex flex-col md:flex-row justify-between items-center gap-4 md:gap-2 px-4 md:px-10 py-4 md:py-5 fixed bottom-0 ">
   
         <div className='flex flex-column'>
         <div className="flex-shrink-0">
@@ -137,6 +137,24 @@ export default function SoonPlaymood() {
         <img className="h-7 w-7" src={instagram} alt="Instagram" />
       </a>
       <p><a className="no-underline text-white" href="https://www.instagram.com/playmoodmx/" target="_blank" rel="noopener noreferrer">MX</a></p>
+    </div>
+        <div className="flex items-center text-white gap-2">
+      <a className="no-underline text-white" href="https://www.instagram.com/playmoodindia/" target="_blank" rel="noopener noreferrer">
+        <img className="h-7 w-7" src={instagram} alt="Instagram" />
+      </a>
+      <p><a className="no-underline text-white" href="https://www.instagram.com/playmoodindia/" target="_blank" rel="noopener noreferrer">IN</a></p>
+    </div>
+        <div className="flex items-center text-white gap-2">
+      <a className="no-underline text-white" href="https://www.instagram.com/playmoodargentina/" target="_blank" rel="noopener noreferrer">
+        <img className="h-7 w-7" src={instagram} alt="Instagram" />
+      </a>
+      <p><a className="no-underline text-white" href="https://www.instagram.com/playmoodargentina/" target="_blank" rel="noopener noreferrer">AR</a></p>
+    </div>
+        <div className="flex items-center text-white gap-2">
+      <a className="no-underline text-white" href="https://www.instagram.com/playmoodcolombia/" target="_blank" rel="noopener noreferrer">
+        <img className="h-7 w-7" src={instagram} alt="Instagram" />
+      </a>
+      <p><a className="no-underline text-white" href="https://www.instagram.com/playmoodcolombia/" target="_blank" rel="noopener noreferrer">COL</a></p>
     </div>
   </div>
         </div>

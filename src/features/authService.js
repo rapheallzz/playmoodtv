@@ -57,20 +57,58 @@ const register = async (userData) => {
 // Login user
 const login = async (userData) => {
   try {
-    const response = await axios.post(API_URL + 'login', userData);
-
-    // console.log('Login response:', response.data);
-    if (response.data) {
-      localStorage.setItem('user', JSON.stringify({ ...response.data, role: response.data.role }));
-    }
-
-    return response.data;
+    const response = await axios.post(`${API_URL}login`, userData);
+    console.log('authService login response:', response.data);
+    const user = {
+      userId: response.data._id,
+      name: response.data.name,
+      email: response.data.email,
+      role: response.data.role,
+      profileImage: response.data.profileImage,
+      cloudinary_id: response.data.cloudinary_id,
+      likes: response.data.likes,
+      watchlist: response.data.watchlist,
+      history: response.data.history,
+      verified: response.data.verified,
+      hasReadPrivacyPolicy: response.data.hasReadPrivacyPolicy,
+    };
+    const token = response.data.token;
+    const userWithToken = { ...user, token };
+    localStorage.setItem('user', JSON.stringify(userWithToken));
+    console.log('authService stored in localStorage:', userWithToken);
+    return { user, token };
   } catch (error) {
-    console.error('Login failed:', error);
+    console.error('authService login failed:', {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status,
+    });
     throw error;
   }
 };
 
+const updateUser = async (userData, token) => {
+  if (!token) {
+    throw new Error('No token provided');
+  }
+  const userId = userData.userId || userData._id;
+  if (!userId) {
+    throw new Error('No userId provided');
+  }
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': userData instanceof FormData ? 'multipart/form-data' : 'application/json',
+    },
+  };
+  try {
+    const response = await axios.put(`${API_URL}${userId}`, userData, config);
+    return { ...response.data.user, userId: response.data.user._id };
+  } catch (error) {
+    console.error('authService.updateUser error:', error.response?.data || error.message);
+    throw error;
+  }
+};
 
 // Logout user
 const logout = () => {
@@ -101,6 +139,7 @@ const authService = {
   login,
   verifyEmail,
   resendVerificationCode,
+  updateUser,
   // likeVideo,
 };
 

@@ -1,6 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import authService from './authService';
 import contentService from './contentService';
+import { jwtDecode } from 'jwt-decode';
+import axios from 'axios';
 
 const API_URL = 'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/user/';
 
@@ -10,30 +12,51 @@ try {
   const storedUser = localStorage.getItem('user');
   if (storedUser && storedUser !== 'undefined') {
     user = JSON.parse(storedUser);
+    if (user?.token) {
+      const decoded = jwtDecode(user.token);
+      const currentTime = Date.now() / 1000;
+      if (decoded.exp < currentTime) {
+        console.log('authSlice: Token expired on init, clearing localStorage');
+        localStorage.removeItem('user');
+        user = null;
+      } else {
+        // Map token's id to userId if not present
+        user.userId = user.userId || decoded.id || user._id;
+        localStorage.setItem('user', JSON.stringify(user));
+      }
+    }
   }
 } catch (error) {
   console.error('Error parsing user from localStorage:', error);
   localStorage.removeItem('user');
 }
 
+
 const initialState = {
-  user: user ? { ...user, role: user.role || 'defaultRole' } : null,
+  user: user || null,
+  userToken: user?.token || null,
   isError: false,
   isSuccess: false,
   isLoading: false,
   message: '',
-  contentError: null, // Store content-specific errors
+  contentError: null,
 };
 
 // Register user
 export const registerUser = createAsyncThunk('auth/register', async (userData, thunkAPI) => {
   try {
     const response = await authService.register(userData);
+    const decoded = jwtDecode(response.token);
+    const currentTime = Date.now() / 1000;
+    if (decoded.exp < currentTime) {
+      throw new Error('Received expired token');
+    }
     const user = {
-      userId: response.userId,
+      userId: decoded.id || response.userId || response._id,
       email: userData.email,
-      role: response.role || 'defaultRole',
-      token: response.token, // Ensure token is stored
+      role: response.role || 'user',
+      token: response.token,
+      name: userData.name || response.name,
     };
     localStorage.setItem('user', JSON.stringify(user));
     return user;
@@ -46,13 +69,33 @@ export const registerUser = createAsyncThunk('auth/register', async (userData, t
   }
 });
 
-// Login user
-export const login = createAsyncThunk('auth/login', async (user, thunkAPI) => {
+export const login = createAsyncThunk('auth/login', async (userData, thunkAPI) => {
   try {
-    const response = await authService.login(user);
-    return { ...response, role: response.role || 'defaultRole' };
+    const response = await authService.login(userData);
+    console.log('authSlice login response:', response);
+    const decoded = jwtDecode(response.token);
+    const currentTime = Date.now() / 1000;
+    if (decoded.exp < currentTime) {
+      throw new Error('Received expired token');
+    }
+    const userWithToken = {
+      ...response.user,
+      userId: decoded.id || response.user._id,
+      token: response.token,
+    };
+    localStorage.setItem('user', JSON.stringify(userWithToken));
+    console.log('authSlice stored in localStorage:', userWithToken);
+    return { user: userWithToken, token: response.token };
   } catch (error) {
-    return thunkAPI.rejectWithValue(error.message || 'Login failed');
+    console.error('authSlice login error:', {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status,
+    });
+    const message =
+      error.response?.data?.message ||
+      (error.response?.status === 401 ? 'Invalid email or password' : 'Login failed');
+    return thunkAPI.rejectWithValue(message);
   }
 });
 
@@ -116,11 +159,7 @@ export const removeFromWatchlist = createAsyncThunk('content/removeFromWatchlist
   }
 });
 
-export const logout = createAsyncThunk('auth/logout', async (_, thunkAPI) => {
-  await authService.logout();
-  thunkAPI.dispatch(reset());
-  localStorage.removeItem('user');
-});
+
 
 // Verify email
 export const verifyEmail = createAsyncThunk(
@@ -156,6 +195,42 @@ export const resendVerificationCode = createAsyncThunk(
   }
 );
 
+export const updateAuthUser = createAsyncThunk('auth/updateAuthUser', async (userData, thunkAPI) => {
+  try {
+    const token = thunkAPI.getState().auth.userToken || userData.token;
+    if (!token) {
+      throw new Error('No token found');
+    }
+    const decoded = jwtDecode(token);
+    const currentTime = Date.now() / 1000;
+    if (decoded.exp < currentTime) {
+      throw new Error('Token expired');
+    }
+    const response = await authService.updateUser(userData, token);
+    console.log('authSlice updateAuthUser response:', response);
+    const userWithToken = {
+      ...response,
+      userId: decoded.id || response._id,
+      token,
+    };
+    localStorage.setItem('user', JSON.stringify(userWithToken));
+    console.log('authSlice updateAuthUser stored in localStorage:', userWithToken);
+    return userWithToken;
+  } catch (error) {
+    console.error('authSlice updateAuthUser error:', error);
+    if (error.message === 'Token expired') {
+      localStorage.removeItem('user');
+      return thunkAPI.rejectWithValue('Token expired, please log in again');
+    }
+    return thunkAPI.rejectWithValue(error.response?.data?.message || 'Failed to update user');
+  }
+});
+
+export const logout = createAsyncThunk('auth/logout', async () => {
+  localStorage.removeItem('user');
+  return null;
+});
+
 export const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -165,26 +240,93 @@ export const authSlice = createSlice({
       state.isSuccess = false;
       state.isError = false;
       state.message = '';
-      state.contentError = null;
+      
+    },
+    logout: (state) => {
+      state.user = null;
+      state.userToken = null;
+      localStorage.removeItem('user');
     },
     updateAuthUser: (state, action) => {
-      state.user = action.payload;
+      const payload = action.payload;
+      const decoded = payload.token ? jwtDecode(payload.token) : {};
+      state.user = {
+        ...payload,
+        userId: payload.userId || decoded.id || payload._id,
+        _id: payload._id || decoded.id || payload.userId,
+      };
+      state.userToken = payload.token;
     },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(registerUser.pending, (state) => {
+     .addCase(registerUser.pending, (state) => {
         state.isLoading = true;
       })
       .addCase(registerUser.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.user = action.payload;
+        state.user = {
+          ...action.payload,
+          userId: action.payload.userId || action.payload._id,
+          _id: action.payload._id || action.payload.userId,
+        };
+        state.userToken = action.payload.token;
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
+      })
+      .addCase(login.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(login.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.user = {
+          ...action.payload.user,
+          userId: action.payload.user.userId || action.payload.user._id,
+          _id: action.payload.user._id || action.payload.user.userId, // Add _id alias
+        };
+        state.userToken = action.payload.token;
+      })
+      .addCase(login.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+        state.user = null;
+        state.userToken = null;
+      })
+      .addCase(logout.fulfilled, (state) => {
+        state.user = null;
+        state.userToken = null;
+        state.isError = false;
+        state.isSuccess = false;
+        state.isLoading = false;
+        state.message = '';
+      })
+      .addCase(updateAuthUser.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(updateAuthUser.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.user = {
+          ...action.payload,
+          userId: action.payload.userId || action.payload._id,
+          _id: action.payload._id || action.payload.userId,
+        };
+        state.userToken = action.payload.token;
+      })
+      .addCase(updateAuthUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+        if (action.payload === 'Token expired, please log in again') {
+          state.user = null;
+          state.userToken = null;
+        }
       })
       .addCase(verifyEmail.pending, (state) => {
         state.isLoading = true;
@@ -212,27 +354,7 @@ export const authSlice = createSlice({
         state.isError = true;
         state.message = action.payload;
       })
-      .addCase(login.pending, (state) => {
-        state.isLoading = true;
-      })
-      .addCase(login.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.isSuccess = true;
-        state.user = action.payload;
-      })
-      .addCase(login.rejected, (state, action) => {
-        state.isLoading = false;
-        state.isError = true;
-        state.message = action.payload;
-        state.user = null;
-      })
-      .addCase(logout.fulfilled, (state) => {
-        state.user = null;
-        state.isSuccess = false;
-        state.isError = false;
-        state.message = '';
-        state.contentError = null;
-      })
+  
       .addCase(likeContent.pending, (state) => {
         state.isLoading = true;
       })
@@ -288,9 +410,10 @@ export const authSlice = createSlice({
       .addCase(removeFromWatchlist.rejected, (state, action) => {
         state.isLoading = false;
         state.contentError = action.payload;
-      });
+      })
+  
   },
 });
 
-export const { reset, updateAuthUser } = authSlice.actions;
+export const { reset, updateAuthUser: updateAuthUserReducer} = authSlice.actions;
 export default authSlice.reducer;

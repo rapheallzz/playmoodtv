@@ -3,70 +3,214 @@ import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import ContentModal from '../ContentModal'; 
+import styled, { keyframes } from 'styled-components';
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import CreatorContentModal from '../CreatorContentModal';
+import Slidercirclecontent from '../Slidercirclecontent';
 
-export default function SliderSpace() {
-  const navigate = useNavigate();
-  const [data, setData] = useState([]);
-  const [error, setError] = useState(null);
-    const [modalContent, setModalContent] = useState(null); 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+// Pulse animation for right arrow
+const pulse = keyframes`
+  0% {
+    transform: translateY(-50%) scale(1);
+  }
+  50% {
+    transform: translateY(-50%) scale(1.1);
+  }
+  100% {
+    transform: translateY(-50%) scale(1);
+  }
+`;
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        console.log('Requesting data from API');
+// Custom Arrow Components
+const CustomPrevArrow = (props) => {
+  const { onClick } = props;
+  return (
+    <div className="custom-arrow prev-arrow" onClick={onClick}>
+      <FaChevronLeft className="arrow-icon" />
+    </div>
+  );
+};
 
-        // Fetch all data
-        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
-        
-        console.log('API response:', response);
+const CustomNextArrow = (props) => {
+  const { onClick } = props;
+  return (
+    <div className="custom-arrow next-arrow" onClick={onClick}>
+      <FaChevronRight className="arrow-icon" />
+    </div>
+  );
+};
 
-        // Filter data by category 'Documentaries'
-        if (response.data && Array.isArray(response.data)) {
-          const filteredData = response.data.filter(content => content.category === 'Top 10');
-          setData(filteredData);
-        } else {
-          console.error('Unexpected data format:', response.data);
-          setError('Unexpected data format.');
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        setError('Error fetching data.');
+// Styled Container for Slider
+const SliderContainer = styled.div`
+  position: relative;
+  width: 100%;
+  padding: 0 20px;
+  margin: 0 auto;
+
+  .slick-slider {
+    position: relative;
+    touch-action: pan-y; /* Allow vertical scrolling, enable horizontal swipe */
+  }
+
+  .slick-prev,
+  .slick-next {
+    display: none !important;
+  }
+
+  .custom-arrow {
+    display: none;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 50px;
+    height: 120px;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    z-index: 10;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.3s ease, background-color 0.3s ease;
+    opacity: 0;
+
+    &.prev-arrow {
+      left: -10px;
+    }
+
+    &.next-arrow {
+      right: -10px;
+      &:hover {
+        animation: ${pulse} 1s infinite;
+        background: rgba(0, 0, 0, 0.7);
       }
     }
 
-    fetchData();
+    .arrow-icon {
+      font-size: 24px;
+    }
+  }
+
+  &:hover .custom-arrow {
+    display: flex;
+    opacity: 1;
+  }
+
+  .slick-slide {
+    padding: 0 12px;
+    min-height: 160px;
+    @media (min-width: 768px) {
+      min-height: 200px;
+    }
+    @media (max-width: 480px) {
+      min-height: 40vw;
+      max-height: 140px;
+    }
+    @media (max-width: 360px) {
+      min-height: 35vw;
+      max-height: 120px;
+    }
+  }
+
+  .slidescircle {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    user-select: none;
+    -webkit-touch-callout: none;
+    width: 160px;
+    height: 160px;
+    @media (min-width: 768px) {
+      width: 200px;
+      height: 200px;
+    }
+    @media (max-width: 480px) {
+      width: 40vw;
+      height: 40vw;
+      max-width: 140px;
+      max-height: 140px;
+    }
+    @media (max-width: 360px) {
+      width: 35vw;
+      height: 35vw;
+      max-width: 120px;
+      max-height: 120px;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    padding: 0 15px;
+  }
+
+  @media (max-width: 600px) {
+    padding: 0 10px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0 10px;
+    .custom-arrow {
+      display: none !important;
+    }
+  }
+`;
+
+export default function SliderSpace() {
+  const [data, setData] = useState([]);
+  const [error, setError] = useState(null);
+  const [modalCreator, setModalCreator] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchCreators = async () => {
+      try {
+        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/creators', {
+          headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache',
+            'Expires': '0',
+          },
+        });
+        if (Array.isArray(response.data)) {
+          setData(response.data);
+        } else {
+          console.error('Response data is not an array:', response.data);
+          setError('Unexpected data format.');
+        }
+      } catch (error) {
+        console.error('Error fetching creators:', error);
+        setError('Error fetching creators.');
+      }
+    };
+
+    fetchCreators();
   }, []);
 
-  const createSlug = (title, _id) => {
-    if (!title) {
-      console.error('Missing title for content:', _id);
-      return _id; // Fallback to just using the ID if the title is missing
-    }
-    const formattedTitle = title.toLowerCase().replace(/[^a-z0-9]+/g, '-'); 
-    return `${formattedTitle}-${_id}`;
+  const handleOpenModal = (creator) => {
+    setModalCreator(creator);
+    setIsModalOpen(true);
   };
 
-  const handleNavigateToMovie = (content) => {
-    const slug = createSlug(content.title, content._id); 
-    console.log('Navigating to movie with slug:', slug);
-    navigate(`/movie/${slug}`);
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setModalCreator(null);
   };
 
   const settings = {
     dots: false,
     infinite: true,
-    speed: 500,
+    speed: 300,
     slidesToShow: 4,
     slidesToScroll: 1,
     initialSlide: 0,
-    autoplay: true,
-    speed: 3000,
     autoplaySpeed: 3000,
-    cssEase: "linear",
-    arrows: false,
+    cssEase: 'linear',
+    arrows: true,
+    prevArrow: <CustomPrevArrow />,
+    nextArrow: <CustomNextArrow />,
+    swipeToSlide: true,
+    lazyLoad: 'ondemand',
     responsive: [
       {
         breakpoint: 1024,
@@ -74,38 +218,68 @@ export default function SliderSpace() {
           slidesToShow: 3,
           slidesToScroll: 1,
           infinite: true,
-          dots: true
-        }
+          dots: true,
+          arrows: true,
+        },
       },
       {
         breakpoint: 600,
         settings: {
-          slidesToShow: 2,
+          slidesToShow: 2.5,
           slidesToScroll: 1,
-          initialSlide: 2
-        }
+          arrows: true,
+          centerMode: true,
+          centerPadding: '20px',
+        },
       },
       {
         breakpoint: 480,
         settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1
-        }
-      }
-    ]
+          slidesToShow: 2.2,
+          slidesToScroll: 1,
+          arrows: false,
+          centerMode: true,
+          centerPadding: '30px',
+        },
+      },
+      {
+        breakpoint: 360,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1,
+          arrows: false,
+          centerMode: true,
+          centerPadding: '20px',
+        },
+      },
+    ],
   };
 
   return (
-    <Slider {...settings}>
-      {Array.isArray(data) && data.map((content, index ) => (
-        <div
-          key={content._id}
-          className="slidescircle"
-          onClick={() => handleNavigateToMovie(content)}
-        >
-          <img src={content.thumbnail} alt={`Thumbnail ${index}`} />
-        </div>
-      ))}
-    </Slider>
+    <SliderContainer>
+      {error ? (
+        <div className="error-message">{error}</div>
+      ) : (
+        <>
+          <Slider {...settings}>
+            {Array.isArray(data) &&
+              data.map((creator, index) => (
+                <div key={creator._id} className="slidescircle">
+                  <Slidercirclecontent
+                    img={creator.profileImage}
+                    movie={creator}
+                    onVideoClick={() => handleOpenModal(creator)}
+                  />
+                </div>
+              ))}
+          </Slider>
+          <CreatorContentModal
+            isOpen={isModalOpen}
+            creator={modalCreator}
+            onClose={handleCloseModal}
+          />
+        </>
+      )}
+    </SliderContainer>
   );
 }

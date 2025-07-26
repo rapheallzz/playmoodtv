@@ -1,569 +1,1107 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { toast } from 'react-toastify';
-import styled from 'styled-components';
-import MobileBurger from '../components/headers/MobileBurger';
+import React, { useState, useEffect } from 'react';
+import MobileBurger from "../components/headers/MobileBurger";
 import DesktopHeader from '../components/headers/DesktopHeader';
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
-import Slidertop10 from '../components/sliders/SliderTop10';
-import SliderNew from '../components/sliders/SliderNew';
-import SliderChannel from '../components/sliders/SliderChannels';
-import SliderDiaries from '../components/sliders/SliderDaries';
-import SliderSpace from '../components/sliders/SliderSpace';
-import SlideRecommended from '../components/sliders/SliderRecommend';
-import SliderInterview from '../components/sliders/SliderInterview';
-import SliderFashion from '../components/sliders/SliderFashion';
-import SliderDocumentaries from '../components/sliders/SliderDocumentaries';
-import SliderCamera from '../components/sliders/SliderCameras';
-import SliderSoon from '../components/sliders/SliderSoon';
-import SliderTeens from '../components/sliders/SliderTeens';
-import SliderOnly from '../components/sliders/SliderOnly';
-import SliderSocial from '../components/sliders/SliderSocial';
-import ShareModal from '../components/ShareModal';
-import WelcomePopup from '../components/Welcomepop';
-import instagram from '/instagram.png';
-import channelsimg from '../assets/channels.png';
-import logo from '/PLAYMOOD_DEF.png';
+import styled from "styled-components";
+import logo from "/PLAYMOOD_DEF.png";
+import editicon from "/edit.png";
+import Modal from '../components/Modal';
+import Slidertopsidebar from '../components/Slidertopsidebar';
+import Sliderfriends from '../components/Sliderfriends';
+import TermsModal from '../components/Terms';
 import { useNavigate } from 'react-router-dom';
-import playbutton from '/play-button2.png';
-import plusbutton from '/addbutton.png';
-import whiteheart from '/whiteheart.png';
-import redheart from '/redheart.png';
-import sendmessage from '/sendmessage.png';
-import { AiOutlineClose } from 'react-icons/ai';
-import LikedContentCard from '../components/LikedContentCard';
+import instagram from "/instagram.png";
+import { useSelector, useDispatch } from 'react-redux';
+import channelsimg from "../assets/channels.png";
+import { AiOutlineClose, AiOutlineUser } from 'react-icons/ai';
+import SliderRecommended from '../components/sliders/SliderRecommend';
+import SliderLiked from '../components/sliders/SlideLiked';
+import UserWatchlist from '../components/sliders/UserSliderWatchlist';
+import { AiOutlineHeart, AiOutlineStar, AiOutlineEye } from 'react-icons/ai';
+import useMediaQuery from '../hooks/useMediaQuery';
+import { VideoModal } from '../components/ModalVU';
 import axios from 'axios';
-import { likeContent, unlikeContent, addToWatchlist, removeFromWatchlist } from '../features/authSlice';
+import MessageModal from '../components/MessageModal';
+import { updateAuthUser } from '../features/authSlice';
+import { FaEdit } from 'react-icons/fa';
+import DonationModal from '../components/DonationModal';
+import UserFavourite from '../components/sliders/UserSliderFavourite';
+import UserRecommended from '../components/miscSlider/UserSliderRecommended';
+import Footer from '../components/footer/Footer';
 
-export default function Home() {
-  const [channels, set_channels] = useState(false);
-  const navigate = useNavigate();
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const [showCookiesPopup, setShowCookiesPopup] = useState(false);
-  const [isLiked, setIsLiked] = useState(false);
-  const dispatch = useDispatch();
-  const user = useSelector((state) => state.auth.user);
-  const [homePageData, setHomePageData] = useState([]);
-  const [contentIndex, setContentIndex] = useState(0);
-  const [shareModalOpen, setShareModalOpen] = useState(false);
-  const [shareUrl, setShareUrl] = useState('');
-  const [showWelcomePopup, setShowWelcomePopup] = useState(false);
-  const [likedContent, setLikedContent] = useState([]);
-  const FALLBACK_VIDEO_URL = 'https://res.cloudinary.com/di97mcvbu/video/upload/v1708430555/contents/q1xhinruadpovy0jxf6f.mp4';
-  const sliderContainerRef = useRef(null);
+// Default profile icon
+const defaultProfileIcon = '/default-profile.png';
 
-  useEffect(() => {
-    if (isMobile) return; // Skip on mobile since banner is not fixed
-
-    const sliderContainer = sliderContainerRef.current;
-    if (!sliderContainer) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const rect = entry.boundingClientRect;
-          const fadeStart = 435; // Start fading 300px from top
-          const fadeEnd = 435; // Fully transparent 100px from top
-
-          if (rect.top <= fadeStart && rect.top >= fadeEnd) {
-            const opacity = 1 - (fadeStart - rect.top) / (fadeStart - fadeEnd);
-            entry.target.style.opacity = Math.max(0, Math.min(1, opacity));
-          } else if (rect.top < fadeEnd) {
-            entry.target.style.opacity = 0;
-          } else {
-            entry.target.style.opacity = 1;
-          }
-        });
-      },
-      {
-        root: null,
-        threshold: Array.from({ length: 101 }, (_, i) => i / 100),
-      }
-    );
-
-    const sliders = sliderContainer.querySelectorAll(
-      '.video-category, .video-category-this, .video-category-1, .video-category-circle'
-    );
-    sliders.forEach((slider) => observer.observe(slider));
-
-    return () => {
-      sliders.forEach((slider) => observer.unobserve(slider));
+function Dashboardpage() {
+    const [edit, show_edit] = useState(false);
+    const handle_edit = () => {
+        show_edit(!edit);
     };
-  }, [isMobile, homePageData]);
 
-  useEffect(() => {
-    const cookiesAccepted = localStorage.getItem('cookiesAccepted');
-    if (!cookiesAccepted) {
-      setShowCookiesPopup(true);
-    }
-  }, []);
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
 
-  useEffect(() => {
+    const [billing, set_billing] = useState(false);
+    const handle_billing_clicked = () => {
+        set_billing(!billing);
+    };
+    const [channels, set_channels] = useState(false);
+
+    const [user, setUser] = useState(null);
+    const { user: authUser, userToken } = useSelector((state) => state.auth);
+    const isAdmin = authUser && authUser.role === 'admin';
+    const isCreator = authUser && authUser.role === 'creator';
+    const userId = authUser && authUser._id;
+    const [showDonationModal, setShowDonationModal] = useState(false);
+
+    const [showVideoModal, setShowVideoModal] = useState(false);
+    const [videoDetails, setVideoDetails] = useState({
+        title: '',
+        description: '',
+        productionCredits: '',
+        category: '',
+        file: null,
+    });
+
+    const [message, setMessage] = useState('');
+    const [showMessageModal, setShowMessageModal] = useState(false);
+    const [hasPendingRequest, setHasPendingRequest] = useState(false);
+
+    // State for personal data
+    const [personalData, setPersonalData] = useState({
+        name: '',
+        email: '',
+        phone: '',
+        dateOfBirth: '',
+        city: '',
+        age: '',
+        address: '',
+    });
+
+    // State for profile image preview and file
+    const [profileImage, setProfileImage] = useState(null);
+    const [profileImagePreview, setProfileImagePreview] = useState(null);
+
+    // State for billing data
+    const [billingData, setBillingData] = useState({
+        bankLocation: 'United States',
+        accountHolderName: '',
+        beneficiaryName: '',
+        bankName: '',
+        routingNumber: '',
+        abaRouting: '',
+        accountHolderNameSecondary: '',
+    });
+
+    const handleClose = () => {
+        show_edit(false);
+        setProfileImage(null);
+        setProfileImagePreview(null);
+    };
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setVideoDetails((prevDetails) => ({
+            ...prevDetails,
+            [name]: value,
+        }));
+    };
+
+    // Handle personal data input changes
+    const handlePersonalInputChange = (e) => {
+        const { name, value } = e.target;
+        setPersonalData((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
+
+    // Handle profile image change
+    const handleProfileImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setProfileImage(file);
+            setProfileImagePreview(URL.createObjectURL(file));
+        }
+    };
+
+    // Handle billing data input changes
+    const handleBillingInputChange = (e) => {
+        const { name, value } = e.target;
+        setBillingData((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
+
+    // Use the provided profile response data
+    const profileResponse = {
+        id: "682b57474cd571b4e94f7e44",
+        name: "Assmosh Limited",
+        email: "jibzzade@gmail.com",
+        role: "admin",
+        profileImage: "https://res.cloudinary.com/di97mcvbu/image/upload/v1749379306/profile-images/682b57474cd571b4e94f7e44-1749379305824.png"
+    };
+
+    const fetchUserData = () => {
+        try {
+            const fetchedUser = {
+                _id: profileResponse.id,
+                name: profileResponse.name,
+                email: profileResponse.email,
+                role: profileResponse.role,
+                profile: profileResponse.profileImage,
+                phone: '', // Not provided in response, set default
+                dateOfBirth: '', // Not provided in response, set default
+                city: '', // Not provided in response, set default
+                age: '', // Not provided in response, set default
+                address: '', // Not provided in response, set default
+                billing: {} // Not provided in response, set default
+            };
+            setUser(fetchedUser);
+            dispatch(updateAuthUser(fetchedUser));
+            // Populate form fields with user data
+            setPersonalData({
+                name: fetchedUser.name || '',
+                email: fetchedUser.email || '',
+                phone: fetchedUser.phone || '',
+                dateOfBirth: fetchedUser.dateOfBirth || '',
+                city: fetchedUser.city || '',
+                age: fetchedUser.age || '',
+                address: fetchedUser.address || '',
+            });
+            setBillingData({
+                bankLocation: fetchedUser.billing?.bankLocation || 'United States',
+                accountHolderName: fetchedUser.billing?.accountHolderName || '',
+                beneficiaryName: fetchedUser.billing?.beneficiaryName || '',
+                bankName: fetchedUser.billing?.bankName || '',
+                routingNumber: fetchedUser.billing?.routingNumber || '',
+                abaRouting: fetchedUser.billing?.abaRouting || '',
+                accountHolderNameSecondary: fetchedUser.billing?.accountHolderNameSecondary || '',
+            });
+            setProfileImagePreview(fetchedUser.profile || defaultProfileIcon);
+        } catch (error) {
+            console.error('Failed to process user data:', error);
+        }
+    };
+
+    // Fetch creator request status
+    const fetchCreatorRequestStatus = async () => {
+        if (authUser && authUser.token && userId) {
+            try {
+                const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/rolechange/', {
+                    headers: {
+                        Authorization: `Bearer ${authUser.token}`,
+                    },
+                });
+                const requests = response.data;
+                const pendingRequest = requests.find(
+                    (request) => request.userId === userId && request.status === 'pending'
+                );
+                setHasPendingRequest(!!pendingRequest);
+            } catch (error) {
+                console.error('Error fetching creator request status:', error);
+            }
+        }
+    };
+
+    useEffect(() => {
+        fetchUserData();
+        fetchCreatorRequestStatus();
+    }, [authUser, dispatch]);
+
+    const updateProfileImage = async (userId, file, token) => {
+        try {
+            const formData = new FormData();
+            formData.append('profileImage', file);
+
+            const response = await axios.put(
+                `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/${userId}`,
+                formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            return response.data.user.profileImage;
+        } catch (error) {
+            console.error('Error updating profile image:', error.response?.data || error.message);
+            toast.error('Failed to update profile image.');
+            throw error;
+        }
+    };
+
+    // Validate personal data
+    const validatePersonalData = () => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const phoneRegex = /^\+?[\d\s-]{7,15}$/;
+        const nameRegex = /^[a-zA-Z\s]{2,}$/;
+
+        if (!personalData.name || !nameRegex.test(personalData.name)) {
+            toast.error('Please enter a valid name (at least 2 characters, letters only).');
+            return false;
+        }
+        if (!personalData.email || !emailRegex.test(personalData.email)) {
+            toast.error('Please enter a valid email address.');
+            return false;
+        }
+        if (personalData.phone && !phoneRegex.test(personalData.phone)) {
+            toast.error('Please enter a valid phone number.');
+            return false;
+        }
+        if (personalData.age && (isNaN(personalData.age) || personalData.age < 0 || personalData.age > 120)) {
+            toast.error('Please enter a valid age (0-120).');
+            return false;
+        }
+        return true;
+    };
+
+    // Validate billing data
+    const validateBillingData = () => {
+        const routingRegex = /^\d{9}$/;
+        if (billingData.routingNumber && !routingRegex.test(billingData.routingNumber)) {
+            toast.error('Routing number must be 9 digits.');
+            return false;
+        }
+        if (billingData.accountHolderName !== billingData.accountHolderNameSecondary) {
+            toast.error('Account holder names must match.');
+            return false;
+        }
+        return true;
+    };
+
+    // Update profile (personal data and optionally profile image)
+    const updateProfile = async () => {
+        if (!validatePersonalData()) return;
+
+        try {
+            let updatedProfileImage = authUser.profile;
+
+            // Update profile image if a new one is selected
+            if (profileImage) {
+                updatedProfileImage = await updateProfileImage(userId, profileImage, authUser.token);
+            }
+
+            // Update personal data
+            const response = await axios.put(
+                `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/${userId}`,
+                {
+                    name: personalData.name,
+                    email: personalData.email,
+                    phone: personalData.phone,
+                    dateOfBirth: personalData.dateOfBirth,
+                    city: personalData.city,
+                    age: personalData.age,
+                    address: personalData.address,
+                    profile: updatedProfileImage,
+                },
+                {
+                    headers: {
+                         Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            const updatedUser = response.data.user;
+            dispatch(updateAuthUser(updatedUser));
+            setUser(updatedUser);
+            localStorage.setItem('authUser', JSON.stringify(updatedUser));
+            handleClose();
+            toast.success('Profile updated successfully!');
+        } catch (error) {
+            console.error('Error updating profile:', error.response?.data || error.message);
+            toast.error('Failed to update profile.');
+        }
+    };
+
+    // Update billing info
+    const updateBillingInfo = async () => {
+        if (!validateBillingData()) return;
+        try {
+            const response = await axios.put(
+                `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/${userId}`,
+                {
+                    billing: {
+                        bankLocation: billingData.bankLocation,
+                        accountHolderName: billingData.accountHolderName,
+                        beneficiaryName: billingData.beneficiaryName,
+                        bankName: billingData.bankName,
+                        routingNumber: billingData.routingNumber,
+                        abaRouting: billingData.abaRouting,
+                    },
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${authUser.token}`,
+                    },
+                }
+            );
+            const updatedUser = response.data.user;
+            dispatch(updateAuthUser(updatedUser));
+            setUser(updatedUser);
+            localStorage.setItem('authUser', JSON.stringify(updatedUser));
+            toast.success('Billing information updated successfully!');
+            set_billing(false);
+        } catch (error) {
+            console.error('Error updating billing info:', error.response?.data || error.message);
+            toast.error('Failed to update billing information.');
+        }
+    };
+
+    const handleApplyAsCreator = async () => {
+        if (hasPendingRequest) return;
+
+        try {
+            const response = await axios.post(
+                'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/rolechange',
+                {
+                    userId,
+                    requestedRole: 'creator',
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${authUser.token}`,
+                    },
+                }
+            );
+            if (response.status === 201) {
+                setMessage('Your request to become a creator has been submitted.');
+                setHasPendingRequest(true);
+                await fetchCreatorRequestStatus();
+            } else {
+                setMessage('There was an issue submitting your request. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error applying as creator:', error);
+            setMessage('There was an issue submitting your request. Please try again.');
+        }
+        setShowMessageModal(true);
+    };
+
+    const [showTermsModal, setShowTermsModal] = useState(false);
+
+    const handleAddVideo = () => {
+        setShowVideoModal(true);
+    };
+
+    const handleVideoModalClose = () => {
+        setShowVideoModal(false);
+    };
+
+    const handleDonationClick = () => {
+        setShowDonationModal(true);
+    };
+
+    const handleDonationClose = () => {
+        setShowDonationModal(false);
+    };
+
+    const handleSubscriptionSubmit = (event) => {
+        event.preventDefault();
+        console.log('Email submitted');
+        setShowDonationModal(false);
+    };
+
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
     const handleResize = () => {
-      const mobile = window.innerWidth <= 768;
-      setIsMobile(mobile);
-      console.log('isMobile:', mobile);
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  useEffect(() => {
-    let timeoutId;
-    if (!user) {
-      timeoutId = setTimeout(() => {
-        setShowWelcomePopup(true);
-      }, 15000);
-    }
-    return () => clearTimeout(timeoutId);
-  }, [user]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
-        setHomePageData(response.data);
-        console.log('homePageData:', response.data);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        toast.error('Failed to load content');
-      }
+        setIsMobile(window.innerWidth <= 768);
     };
 
-    fetchData();
-  }, []);
+    useEffect(() => {
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
 
-  useEffect(() => {
-    if (user && user.like && homePageData.length > 0) {
-      const liked = homePageData.filter((content) => user.like.includes(content._id));
-      setLikedContent(liked);
-      console.log('likedContent:', liked);
-      console.log('user.like:', user.like);
-    } else {
-      setLikedContent([]);
-      console.log('No liked content: user.like or homePageData empty');
-    }
-  }, [user, homePageData]);
+    const [activeAction, setActiveAction] = useState('LIKES');
+    const handleActionClick = (action) => {
+        setActiveAction(action);
+    };
 
-  useEffect(() => {
-    if (homePageData.length > 0) {
-      const intervalId = setInterval(() => {
-        setContentIndex((prevIndex) => (prevIndex + 1) % homePageData.length);
-      }, 30000);
-      return () => clearInterval(intervalId);
-    }
-  }, [homePageData.length]);
-
-  const handleAcceptCookies = () => {
-    localStorage.setItem('cookiesAccepted', 'true');
-    setShowCookiesPopup(false);
-  };
-
-  const handleOptOutCookies = () => {
-    localStorage.setItem('cookiesAccepted', 'false');
-    setShowCookiesPopup(false);
-  };
-
-  const handleLike = async () => {
-    setIsLiked(!isLiked);
-    try {
-      if (user && user._id) {
-        const currentContent = homePageData[contentIndex];
-        if (currentContent) {
-          const contentId = currentContent._id;
-          const isLiked = user.like && user.like.includes(contentId);
-          if (isLiked) {
-            await dispatch(unlikeContent({ userId: user._id, contentId }));
-          } else {
-            await dispatch(likeContent({ userId: user._id, contentId }));
-          }
-        }
-      } else {
-        setShowWelcomePopup(true);
-      }
-    } catch (error) {
-      console.error('Error liking/unliking content:', error);
-      toast.error('Error updating like status');
-    }
-  };
-
-  const handleWatchlist = async () => {
-    try {
-      if (user && user._id) {
-        const currentContent = homePageData[contentIndex];
-        if (currentContent) {
-          const contentId = currentContent._id;
-          const isWatchlisted = user.watchlist && user.watchlist.includes(contentId);
-          if (isWatchlisted) {
-            await dispatch(removeFromWatchlist({ userId: user._id, contentId }));
-          } else {
-            await dispatch(addToWatchlist({ userId: user._id, contentId }));
-          }
-        }
-      } else {
-        setShowWelcomePopup(true);
-      }
-    } catch (error) {
-      console.error('Error adding/removing from watchlist:', error);
-      toast.error('Error updating watchlist');
-    }
-  };
-
-  const handleWatchNow = () => {
-    const currentContent = homePageData[contentIndex];
-    if (currentContent) {
-      navigate(`/movie/${currentContent._id}`, {
-        state: {
-          movie: currentContent.video,
-          title: currentContent.title || '',
-          desc: currentContent.description || '',
-          credits: currentContent.credit || '',
-        },
-      });
-    }
-  };
-
-  const truncateTitle = (title, maxLength) => {
-    return title && title.length > maxLength ? title.slice(0, maxLength) + '...' : title || '';
-  };
-
-  const CookiesPopup = ({ onAccept, onOptOut }) => (
-    <div className="fixed bottom-0 left-0 right-0 flex justify-center items-end bg-gray-800 bg-opacity-50 z-50 p-4">
-      <div className="bg-white p-5 rounded-t-lg shadow-lg text-center w-full">
-        <h2 className="text-x font-bold mb-1">Cookies Policy</h2>
-        <p className="mb-1 text-sm">We use cookies to enhance your experience. Please accept our cookies policy.</p>
-        <div className="flex justify-center gap-4">
-          <button
-            className="bg-[#541011] text-xs text-white py-1 px-2 rounded hover:bg-[#6b1516] transition-colors"
-            onClick={onAccept}
-          >
-            Accept
-          </button>
-          <button
-            className="bg-gray-500 text-xs text-white py-1 px-2 rounded hover:bg-gray-600 transition-colors"
-            onClick={onOptOut}
-          >
-            Opt Out
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-
-  return (
-    <Homecontent>
-      {showCookiesPopup && <CookiesPopup onAccept={handleAcceptCookies} onOptOut={handleOptOutCookies} />}
-      {isMobile ? (
-        <Hamburger>
-          <MobileBurger channels={channels} set_channels={set_channels} />
-        </Hamburger>
-      ) : (
-        <DesktopHeader channels={channels} set_channels={set_channels} />
-      )}
-      {channels && (
-        <div className="h-[500px] w-[1000px] absolute top-[100px] left-[250px] z-[1001] overflow-hidden flex justify-center items-center rounded-2xl md:w-4/5 md:h-4/5 md:left-20 md:top-[100px]">
-          <button
-            className="absolute w-5 h-5 top-2.5 right-2.5 bg-red-500 border-none rounded-full text-white text-lg cursor-pointer"
-            onClick={() => set_channels(false)}
-          >
-            <AiOutlineClose />
-          </button>
-          <img
-            src={channelsimg}
-            alt=""
-            className="w-full h-full absolute object-cover top-0 left-0 z-[-1]"
-          />
-          <div className="h-fit w-4/5 flex justify-center items-center flex-col gap-2.5">
-            <h2 className="text-white text-2xl md:text-xl" style={{ textShadow: '2px 2px red' }}>
-              This feature is Coming Soon
-            </h2>
-            <p className="text-white text-xl md:text-sm" style={{ textShadow: '1px 1px red' }}>
-              Our content creators are doing great, and we are building a special platform for them!
-            </p>
-            <form className="flex justify-center items-center gap-5 w-1/2 mx-auto md:flex-col">
-              <input
-                name="name"
-                placeholder="Name"
-                type="text"
-                className="px-5 py-2.5 rounded-full"
-              />
-              <input
-                name="email"
-                placeholder="Email"
-                type="email"
-                className="px-5 py-2.5 rounded-full"
-              />
-              <button className="bg-red-500 px-5 py-2.5 text-white border-none rounded-full cursor-pointer">
-                Subscribe
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
-      <Content>
-        {isMobile ? (
-          <LikedContentCardWrapper>
-            {homePageData.length === 0 ? (
-              <p style={{ color: 'white', textAlign: 'center' }}>Loading content...</p>
-            ) : (
-              <LikedContentCard
-                likedContent={likedContent}
-                homePageData={homePageData}
-                contentIndex={contentIndex}
-                isVisibleOnMobile={isMobile}
-              />
-            )}
-          </LikedContentCardWrapper>
-        ) : (
-          <Banner>
-            <BannerVideoContainer>
-              {homePageData.length > 0 && homePageData[contentIndex]?.video ? (
-                <video
-                  key={`banner-${contentIndex}`}
-                  className="banner-video"
-                  muted
-                  loop
-                  autoPlay
-                  playsInline
-                  onError={(e) => {
-                    console.error('Banner video error:', e);
-                    e.target.src = FALLBACK_VIDEO_URL;
-                  }}
-                >
-                  <source src={homePageData[contentIndex].video} type="video/mp4" />
-                </video>
-              ) : (
-                <video
-                  key="banner-fallback"
-                  className="banner-video"
-                  muted
-                  loop
-                  autoPlay
-                  playsInline
-                  onError={(e) => console.error('Fallback banner video error:', e)}
-                >
-                  <source src={FALLBACK_VIDEO_URL} type="video/mp4" />
-                </video>
-              )}
-            </BannerVideoContainer>
-            <BannerContent>
-              <div className="title-truncate">
-                <h1>{truncateTitle(homePageData[contentIndex]?.title, 20)}</h1>
-              </div>
-              <div className="description-truncate">
-                <p>{homePageData[contentIndex]?.description || ''}</p>
-                {homePageData[contentIndex]?.description?.length > 150 && (
-                  <button className="view-more-btn">View more</button>
+    return (
+        <Dashboard>
+            <Mainsection>
+                {isMobile ? (
+                    <Hamburger onClick={() => handle_sidebar_hover()}>
+                        <MobileBurger channels={channels} set_channels={set_channels} />
+                    </Hamburger>
+                ) : (
+                    <DesktopHeader channels={channels} set_channels={set_channels} />
                 )}
-              </div>
-              <div className="flex gap-5">
-                <button
-                  className="flex items-center justify-center p-1 bg-transparent border border-white rounded text-white cursor-pointer"
-                  onClick={handleWatchNow}
-                >
-                  WATCH N<span className="relative top-[1px] ml-1">
-                    <img src={playbutton} className="h-3 w-3" alt="play" />
-                  </span>W
-                </button>
-                <button
-                  className="flex items-center justify-center p-1 bg-transparent border border-white rounded text-white cursor-pointer"
-                  onClick={handleWatchlist}
-                >
-                  ADD T<span className="relative top-[1px] ml-1">
-                    <img src={plusbutton} className="h-3 w-3" alt="add" />
-                  </span> WATCHLIST
-                </button>
-              </div>
-              <div className="flex gap-5 mt-2">
-                <button
-                  className="flex items-center justify-center p-1 bg-transparent border border-white rounded text-white cursor-pointer"
-                  onClick={handleLike}
-                >
-                  <span className="relative top-[1px] -left-1">
-                    <img
-                      src={isLiked ? redheart : whiteheart}
-                      alt="heart"
-                      className="h-[15px] w-[15px]"
+
+                {channels && (
+                    <div className="h-[500px] w-[1000px] absolute top-[100px] left-[250px] z-[1001] overflow-hidden flex justify-center items-center rounded-2xl md:w-4/5 md:h-4/5 md:left-20 md:top-[100px]">
+                        <button
+                            className="absolute w-5 h-5 top-2.5 right-2.5 bg-red-500 border-none rounded-full text-white text-lg cursor-pointer"
+                            onClick={() => set_channels(false)}
+                        >
+                            <AiOutlineClose />
+                        </button>
+                        <img
+                            src={channelsimg}
+                            alt=""
+                            className="w-full h-full absolute object-cover top-0 left-0 z-[-1]"
+                        />
+                        <div className="h-fit w-4/5 flex justify-center items-center flex-col gap-2.5">
+                            <h2 className="text-white text-2xl md:text-xl" style={{ textShadow: "2px 2px red" }}>
+                                This feature is Coming Soon
+                            </h2>
+                            <p className="text-white text-xl md:text-sm" style={{ textShadow: "1px 1px red" }}>
+                                Our content creators are doing great, and we are building a special platform for them!
+                            </p>
+                            <form className="flex justify-center items-center gap-5 w-1/2 mx-auto md:flex-col">
+                                <input
+                                    name="name"
+                                    placeholder="Name"
+                                    type="text"
+                                    className="px-5 py-2.5 rounded-full"
+                                />
+                                <input
+                                    name="email"
+                                    placeholder="Email"
+                                    type="email"
+                                    className="px-5 py-2.5 rounded-full"
+                                />
+                                <button className="bg-red-500 px-5 py-2.5 text-white border-none rounded-full cursor-pointer">
+                                    Subscribe
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                )}
+
+                <User className="w-4/5 mx-auto my-20 flex justify-between items-center">
+                    {!edit ? (
+                        <>
+                            <div
+                                className="w-36 h-36 rounded-full bg-white flex items-center justify-center font-semibold"
+                                onClick={() => document.getElementById('profileImage').click()}
+                            >
+                                {authUser && authUser.profile ? (
+                                    <img
+                                        src={`${authUser.profile}?${new Date().getTime()}`}
+                                        alt="Profile"
+                                        className="w-32 h-32 rounded-full object-cover"
+                                        onError={(e) => {
+                                            e.target.src = defaultProfileIcon;
+                                        }}
+                                    />
+                                ) : (
+                                    <img
+                                        src={defaultProfileIcon}
+                                        alt="Default Profile"
+                                        className="w-32 h-32 rounded-full object-cover"
+                                    />
+                                )}
+                            </div>
+                            <input
+                                type="file"
+                                id="profileImage"
+                                className="hidden"
+                                onChange={(e) => {
+                                    const file = e.target.files[0];
+                                    if (file) {
+                                        setProfileImage(file);
+                                        setProfileImagePreview(URL.createObjectURL(file));
+                                        updateProfileImage(userId, file, authUser.token).then(() => fetchUserData());
+                                    }
+                                }}
+                            />
+                            <h1 className='text-white'>{authUser && authUser.name}</h1>
+                        </>
+                    ) : (
+                        <div className="flex items-center text-white gap-12">
+                            <div className="bg-[#541011] rounded-full p-5">
+                                <FaEdit />
+                            </div>
+                            <h1>{authUser && authUser.name}</h1>
+                        </div>
+                    )}
+
+                    <div className="flex flex-row justify-center align-middle gap-2">
+                        <h3 className="text-white text-base">EDIT PROFILE</h3>
+                        <div
+                            className="h-15 w-12 flex items-center justify-center cursor-pointer text-white text-[20px]"
+                            onClick={handle_edit}
+                        >
+                            <FaEdit />
+                        </div>
+                    </div>
+
+                    <div className="dash-btn flex">
+                        {isAdmin && (
+                            <button
+                                className="bg-[#541011] text-[#f3f3f3] py-2 px-8 border-none rounded cursor-pointer text-base font-normal transition-colors duration-300 ease-in-out m-2 hover:bg-white hover:text-[#541011]"
+                                onClick={() => navigate('/admin')}
+                            >
+                                Admin Page
+                            </button>
+                        )}
+                        {!isCreator && (
+                            <button
+                                className={`bg-[#541011] text-[#f3f3f3] py-2 px-8 border-none rounded text-base font-normal transition-colors duration-300 ease-in-out m-2 ${
+                                    hasPendingRequest ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white hover:text-[#541011]'
+                                }`}
+                                onClick={handleApplyAsCreator}
+                                disabled={hasPendingRequest}
+                            >
+                                {hasPendingRequest ? 'Pending Request' : 'Become a Creator'}
+                            </button>
+                        )}
+                        {isCreator && (
+                            <>
+                                <button
+                                    className="bg-[#541011] text-[#f3f3f3] py-2 px-8 border-none rounded cursor-pointer text-base font-normal transition-colors duration-300 ease-in-out m-2 hover:bg-white hover:text-[#541011]"
+                                    onClick={() => navigate('/creatorpage')}
+                                >
+                                    View Channel
+                                </button>
+                                <button
+                                    className="bg-[#541011] text-[#f3f3f3] py-2 px-8 border-none rounded cursor-pointer text-base font-normal transition-colors duration-300 ease-in-out m-2 hover:bg-white hover:text-[#541011]"
+                                    onClick={handleAddVideo}
+                                >
+                                    Upload a Video for Review
+                                </button>
+                            </>
+                        )}
+                    </div>
+
+                    {showTermsModal && (
+                        <TermsModal onClose={() => setShowTermsModal(false)}>
+                            <h2>Terms and Agreements</h2>
+                            <p>
+                                Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam,
+                                eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia
+                                voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est,
+                                qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat
+                                voluptatem. Ut enim ad minima veniam
+                            </p>
+                        </TermsModal>
+                    )}
+                    {showVideoModal && <VideoModal onClose={handleVideoModalClose} />}
+                    <MessageModal
+                        show={showMessageModal}
+                        onClose={() => setShowMessageModal(false)}
+                        message={message}
                     />
-                  </span>
-                  LIKE
-                </button>
-                <button
-                  className="flex items-center justify-center p-1 bg-transparent border border-white rounded text-white cursor-pointer"
-                  onClick={() => setShareModalOpen(!shareModalOpen)}
-                >
-                  <span className="relative top-[2px] -left-1">
-                    <img src={sendmessage} className="h-[15px] w-[15px]" alt="share" />
-                  </span>
-                  SHARE
-                </button>
-                <button
-                  className="flex items-center justify-center p-1 bg-transparent border border-white rounded text-white cursor-pointer"
-                  onClick={() => set_channels(!channels)}
-                >
-                  ADD TO FAVOURITE +
-                </button>
-              </div>
-              {shareModalOpen && (
-                <ShareModal
-                  open={shareModalOpen}
-                  onClose={() => setShareModalOpen(false)}
-                  shareUrl={shareUrl}
-                />
-              )}
-            </BannerContent>
-          </Banner>
-        )}
-        <SliderContainer ref={sliderContainerRef}>
-          <VideoCategory className="video-category" id="top10">
-            <Videocategorytitle>Top 10</Videocategorytitle>
-            <Slidertop10 />
-          </VideoCategory>
-          {user && (
-            <VideoCategorythis className="video-category-this" id="continue">
-              <Videocategorytitle>Continue Watching</Videocategorytitle>
-              <SliderNew />
-            </VideoCategorythis>
-          )}
-          <VideoCategorythis className="video-category-this" id="newonplay">
-            <Videocategorytitle>New on Playmood</Videocategorytitle>
-            <SliderNew />
-          </VideoCategorythis>
-          <VideoCategoryCircle className="video-category-circle" id="channel">
-            <Videocategorytitle>Channels</Videocategorytitle>
-            <SliderChannel />
-          </VideoCategoryCircle>
-          <VideoCategoryCircle className="video-category-circle" id="diaries">
-            <Videocategorytitle>Diaries</Videocategorytitle>
-            <SliderDiaries />
-          </VideoCategoryCircle>
-          <VideoCategoryCircle className="video-category-circle" id="spaces">
-            <Videocategorytitle>Spaces</Videocategorytitle>
-            <SliderSpace />
-          </VideoCategoryCircle>
-          <VideoCategory1 className="video-category-1" id="recommended">
-            <Videocategorytitle>Recommended for you</Videocategorytitle>
-            <SlideRecommended />
-          </VideoCategory1>
-          <VideoCategory1 className="video-category-1" id="interviews">
-            <Videocategorytitle>Interviews</Videocategorytitle>
-            <SliderInterview />
-          </VideoCategory1>
-          <VideoCategory1 className="video-category-1" id="fashion">
-            <Videocategorytitle>Fashion Shows</Videocategorytitle>
-            <SliderFashion />
-          </VideoCategory1>
-          <VideoCategory1 className="video-category-1" id="social">
-            <Videocategorytitle>Social</Videocategorytitle>
-            <SliderSocial />
-          </VideoCategory1>
-          <VideoCategory1 className="video-category-1" id="documentaries">
-            <Videocategorytitle>Documentaries and Reports</Videocategorytitle>
-            <SliderDocumentaries />
-          </VideoCategory1>
-          <VideoCategory1 className="video-category-1" id="documentaries">
-            <Videocategorytitle>Behind the Cameras</Videocategorytitle>
-            <SliderCamera />
-          </VideoCategory1>
-          <VideoCategory1 className="video-category-1" id="documentaries">
-            <Videocategorytitle>Soon in Playmood</Videocategorytitle>
-            <SliderSoon />
-          </VideoCategory1>
-          <VideoCategory1 className="video-category-1" id="teens">
-            <Videocategorytitle>Teens</Videocategorytitle>
-            <SliderTeens />
-          </VideoCategory1>
-          <VideoCategory1 className="video-category-1" id="social">
-            <Videocategorytitle>Best in Fashion</Videocategorytitle>
-            <SliderFashion />
-          </VideoCategory1>
-          <VideoCategory1 className="video-category-1" id="infashion">
-            <Videocategorytitle>Only in playmood</Videocategorytitle>
-            <SliderOnly />
-          </VideoCategory1>
-        </SliderContainer>
-        <WelcomePopup
-          showPopup={showWelcomePopup}
-          onClose={() => setShowWelcomePopup(false)}
-          onLogin={() => setShowWelcomePopup(false)}
-          onRegister={() => setShowWelcomePopup(false)}
-        />
-        <Footer>
-          <div>
-            <img src={logo} alt="PlaymoodTV Logo" />
-          </div>
-          <div className="instagrams">
-            <div className="instagram-official">
-              <a href="https://instagram.com/playmoodtv?igshid=MzRlODBiNWFlZA==">
-                <img src={instagram} alt="Instagram" />
-              </a>
-              <p className="instagram-links">
-                <a href="https://instagram.com/playmoodtv?igshid=MzRlODBiNWFlZA==" target="_blank" rel="noopener noreferrer">
-                  Official
-                </a>
-              </p>
-            </div>
-            <div className="instagram-official">
-              <a href="https://www.instagram.com/playmoodlat/">
-                <img src={instagram} alt="Instagram" />
-              </a>
-              <p className="instagram-links">
-                <a href="https://www.instagram.com/playmoodlat/" target="_blank" rel="noopener noreferrer">
-                  Latam
-                </a>
-              </p>
-            </div>
-            <div className="instagram-official">
-              <a href="https://www.instagram.com/playmoodmx/">
-                <img src={instagram} alt="Instagram" />
-              </a>
-              <p className="instagram-links">
-                <a href="https://www.instagram.com/playmoodmx/" target="_blank" rel="noopener noreferrer">
-                  MX
-                </a>
-              </p>
-            </div>
-          </div>
-          <div></div>
-          <div className="contact-footer">
-            <h2>Contact us:</h2>
-            <h3>Creators@playmoodtv.com</h3>
-            <div>
-              <p onClick={() => navigate('/privacy-policy')}>Privacy Policy</p>
-              <p onClick={() => navigate('/cookies')}>Cookies Policy</p>
-            </div>
-            <div>
-              <p>All rights reserved to PlaymoodTV 2023</p>
-            </div>
-          </div>
-        </Footer>
-      </Content>
-    </Homecontent>
-  );
+                </User>
+
+                {!edit ? (
+                    <>
+                        <Useractions className="h-fit w-1/3 ml-36 flex justify-between gap-5 md:relative md:left-36 md:w-full md:my-1 md:ml-0 md:gap-0 md:justify-center md:text-xs">
+                            <button
+                                className="flex items-center justify-center mr-2 text-[#541011] bg-[#f3f3f3] py-2 px-4 border-none rounded cursor-pointer text-base font-normal transition-colors duration-300 ease-in-out m-2 hover:text-white hover:bg-[#541011]"
+                                onClick={() => handleActionClick('LIKES')}
+                            >
+                                <AiOutlineHeart />
+                                <span className="ml-1 text-xs">LIKES</span>
+                            </button>
+                            <button
+                                className="flex items-center justify-center mr-2 text-[#541011] bg-[#f3f3f3] py-2 px-4 border-none rounded cursor-pointer text-base font-normal transition-colors duration-300 ease-in-out m-2 hover:text-white hover:bg-[#541011]"
+                                onClick={() => handleActionClick('FAVORITES')}
+                            >
+                                <AiOutlineStar />
+                                <span className="ml-1 text-xs">FAVORITES</span>
+                            </button>
+                            <button
+                                className="flex items-center justify-center mr-2 text-[#541011] bg-[#f3f3f3] py-2 px-4 border-none rounded cursor-pointer text-base font-normal transition-colors duration-300 ease-in-out m-2 hover:text-white hover:bg-[#541011]"
+                                onClick={() => handleActionClick('FOR YOU')}
+                            >
+                                <AiOutlineUser />
+                                <span className="ml-1 text-xs">FOR_YOU</span>
+                            </button>
+                            <button
+                                className="flex items-center justify-center mr-2 text-[#541011] bg-[#f3f3f3] py-2 px-4 border-none rounded cursor-pointer text-base font-normal transition-colors duration-300 ease-in-out m-2 hover:text-white hover:bg-[#541011]"
+                                onClick={() => handleActionClick('WATCHLIST')}
+                            >
+                                <AiOutlineEye />
+                                <span className="ml-1 text-xs">WATCHLIST</span>
+                            </button>
+                        </Useractions>
+
+                        <UserSlider className="w-4/5 mx-auto my-2 h-72 md:w-[90%] md:mx-auto">
+                            {activeAction === 'LIKES' && <SliderLiked />}
+                            {activeAction === 'FAVORITES' && <UserFavourite />}
+                            {activeAction === 'FOR YOU' && <UserRecommended />}
+                            {activeAction === 'WATCHLIST' && <UserWatchlist />}
+                        </UserSlider>
+
+                        <UseractionsInteraction>
+                            <button onClick={handleDonationClick} className='text-white text-sm font-medium'>
+                                DONATIONS
+                            </button>
+                            <button onClick={handleDonationClick} className='text-white text-sm font-medium'>
+                                SUBSCRIPTION
+                            </button>
+                            <button onClick={handleDonationClick} className='text-white text-sm font-medium'>
+                                FRIENDS
+                            </button>
+                            <button onClick={handleDonationClick} className='text-white text-sm font-medium'>
+                                FRIENDS REQUEST
+                            </button>
+                            <button onClick={handleDonationClick} className='text-white text-sm font-medium'>
+                                BLOCK USERS
+                            </button>
+                        </UseractionsInteraction>
+
+                        <DonationModal
+                            isOpen={showDonationModal}
+                            onClose={handleDonationClose}
+                            onSubmit={handleSubscriptionSubmit}
+                        />
+
+                        <Friendsslider>
+                            <Sliderfriends />
+                        </Friendsslider>
+
+                        <div className="w-4/5 mx-auto my-12 h-72 flex justify-between sm:w-9/10 sm:flex-col sm:ml-32 sm:items-center">
+                            <div className="w-1/5 h-full flex flex-col gap-2.5">
+                                <button className="py-1 bg-none text-white rounded-sm border border-white cursor-pointer hover:text-red-500">
+                                    Activity history
+                                </button>
+                                <button className="py-1 bg-none text-white rounded-sm border border-white cursor-pointer hover:text-red-500">
+                                    Manage cookies
+                                </button>
+                                <button className="py-1 bg-none text-white rounded-sm border border-white cursor-pointer hover:text-red-500">
+                                    Remove cache
+                                </button>
+                            </div>
+                            <div className="w-3/4 h-full border border-white p-4 rounded-md">
+                                <div className="flex gap-5 text-white">
+                                    <h4>History</h4>
+                                    <button className="bg-none border border-white py-1 px-1.5 text-white rounded-sm">
+                                        Remove history
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </>
+                ) : (
+                    // Edit Profile Section
+                    <div className="w-4/5 h-fit bg-black mx-auto my-10 rounded-lg flex flex-col p-8 relative shadow-lg">
+                        <button className="absolute top-4 right-4 text-white text-2xl hover:text-red-500" onClick={handleClose}>
+                            ×
+                        </button>
+                        <h2 className="text-white text-3xl font-semibold mb-6">Edit Profile</h2>
+                        <form className="flex flex-col gap-6">
+                            {/* Profile Image */}
+                            <div className="flex flex-col items-center">
+                                <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-white">
+                                    <img
+                                        src={profileImagePreview || defaultProfileIcon}
+                                        alt="Profile Preview"
+                                        className="w-full h-full object-cover"
+                                    />
+                                </div>
+                                <label className="mt-2 text-white text-sm cursor-pointer hover:text-[#541011]">
+                                    Change Profile Picture
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        className="hidden"
+                                        onChange={handleProfileImageChange}
+                                    />
+                                </label>
+                            </div>
+
+                            {/* Personal Information */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="flex flex-col">
+                                    <label className="text-white text-sm mb-1">Full Name *</label>
+                                    <input
+                                        type="text"
+                                        name="name"
+                                        value={personalData.name}
+                                        onChange={handlePersonalInputChange}
+                                        placeholder="Enter your full name"
+                                        className="w-full py-3 px-4 bg-transparent text-white border border-white rounded-md placeholder-white focus:outline-none focus:border-[#541011]"
+                                        required
+                                    />
+                                </div>
+                                <div className="flex flex-col">
+                                    <label className="text-white text-sm mb-1">Email *</label>
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        value={personalData.email}
+                                        onChange={handlePersonalInputChange}
+                                        placeholder="Enter your email"
+                                        className="w-full py-3 px-4 bg-transparent text-white border border-white rounded-md placeholder-white focus:outline-none focus:border-[#541011]"
+                                        required
+                                    />
+                                </div>
+                                <div className="flex flex-col">
+                                    <label className="text-white text-sm mb-1">Phone Number</label>
+                                    <input
+                                        type="tel"
+                                        name="phone"
+                                        value={personalData.phone}
+                                        onChange={handlePersonalInputChange}
+                                        placeholder="Enter your phone number"
+                                        className="w-full py-3 px-4 bg-transparent text-white border border-white rounded-md placeholder-white focus:outline-none focus:border-[#541011]"
+                                    />
+                                </div>
+                                <div className="flex flex-col">
+                                    <label className="text-white text-sm mb-1">Date of Birth</label>
+                                    <input
+                                        type="date"
+                                        name="dateOfBirth"
+                                        value={personalData.dateOfBirth}
+                                        onChange={handlePersonalInputChange}
+                                        className="w-full py-3 px-4 bg-transparent text-white border border-white rounded-md placeholder-white focus:outline-none focus:border-[#541011]"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Save Profile Button */}
+                            <button
+                                type="button"
+                                className="w-52 mt-4 py-3 bg-transparent text-white border border-white rounded-md hover:bg-[#541011] hover:text-white transition-colors"
+                                onClick={updateProfile}
+                            >
+                                Save Profile
+                            </button>
+
+                            {/* Billing Info Toggle */}
+                            <button
+                                type="button"
+                                className="w-52 mt-2 py-3 bg-transparent text-white border border-white rounded-md hover:text-[#541011] transition-colors"
+                                onClick={handle_billing_clicked}
+                            >
+                                {billing ? 'Hide Billing Info' : 'Show Billing Info'}
+                            </button>
+
+                            {/* Billing Information */}
+                            {billing && (
+                                <div className="mt-6">
+                                    <h3 className="text-white text-xl font-medium mb-4">Billing Information</h3>
+                                    <p className="text-xs text-white mb-2">Why do we ask for your bank information?</p>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="flex flex-col">
+                                            <label className="text-white text-sm mb-1">Bank Location</label>
+                                            <select
+                                                name="bankLocation"
+                                                value={billingData.bankLocation}
+                                                onChange={handleBillingInputChange}
+                                                className="w-full py-3 px-4 bg-transparent text-white border border-white rounded-md focus:outline-none focus:border-[#541011]"
+                                            >
+                                                <option value="United States">United States</option>
+                                                <option value="United Kingdom">United Kingdom</option>
+                                                <option value="Others">Others</option>
+                                            </select>
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <label className="text-white text-sm mb-1">Account Holder's Name</label>
+                                            <input
+                                                type="text"
+                                                name="accountHolderName"
+                                                value={billingData.accountHolderName}
+                                                onChange={handleBillingInputChange}
+                                                placeholder="Name as on bank documents"
+                                                className="w-full py-3 px-4 bg-transparent text-white border border-white rounded-md placeholder-white focus:outline-none focus:border-[#541011]"
+                                            />
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <label className="text-white text-sm mb-1">Beneficiary Name</label>
+                                            <input
+                                                type="text"
+                                                name="beneficiaryName"
+                                                value={billingData.beneficiaryName}
+                                                onChange={handleBillingInputChange}
+                                                placeholder="Beneficiary Name"
+                                                className="w-full py-3 px-4 bg-transparent text-white border border-white rounded-md placeholder-white focus:outline-none focus:border-[#541011]"
+                                            />
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <label className="text-white text-sm mb-1">Bank Name</label>
+                                            <input
+                                                type="text"
+                                                name="bankName"
+                                                value={billingData.bankName}
+                                                onChange={handleBillingInputChange}
+                                                placeholder="Bank Name"
+                                                className="w-full py-3 px-4 bg-transparent text-white border border-white rounded-md placeholder-white focus:outline-none focus:border-[#541011]"
+                                            />
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <label className="text-white text-sm mb-1">9-Digit Routing Number</label>
+                                            <input
+                                                type="text"
+                                                name="routingNumber"
+                                                value={billingData.routingNumber}
+                                                onChange={handleBillingInputChange}
+                                                placeholder="9 digits"
+                                                className="w-full py-3 px-4 bg-transparent text-white border border-white rounded-md placeholder-white focus:outline-none focus:border-[#541011]"
+                                            />
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <label className="text-white text-sm mb-1">Routing (ABA)</label>
+                                            <input
+                                                type="text"
+                                                name="abaRouting"
+                                                value={billingData.abaRouting}
+                                                onChange={handleBillingInputChange}
+                                                placeholder="Routing (ABA)"
+                                                className="w-full py-3 px-4 bg-transparent text-white border border-white rounded-md placeholder-white focus:outline-none focus:border-[#541011]"
+                                            />
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <label className="text-white text-sm mb-1">Confirm Account Holder's Name</label>
+                                            <input
+                                                type="text"
+                                                name="accountHolderNameSecondary"
+                                                value={billingData.accountHolderNameSecondary}
+                                                onChange={handleBillingInputChange}
+                                                placeholder="Name as on bank documents"
+                                                className="w-full py-3 px-4 bg-transparent text-white border border-white rounded-md placeholder-white focus:outline-none focus:border-[#541011]"
+                                            />
+                                        </div>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        className="w-52 mt-6 py-3 bg-transparent text-white border border-white rounded-md hover:bg-[#541011] hover:text-white transition-colors"
+                                        onClick={updateBillingInfo}
+                                    >
+                                        Save Billing
+                                    </button>
+                                </div>
+                            )}
+                        </form>
+                    </div>
+                )}
+                  
+                  <div>
+                        <Footer/>
+                  </div>
+   
+            </Mainsection>
+        </Dashboard>
+    );
 }
 
-const Homecontent = styled.div`
-  width: 100vw;
-  min-height: 100vh; /* Allow content to extend beyond viewport */
-  overflow-x: hidden;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background-color: #000;
-`;
+export default Dashboardpage;
 
+// Styled components (unchanged)
+const Dashboard = styled.div`
+    height: fit-content;
+    width: 100%;
+    display: flex;
+`;
+const Mainsection = styled.div`
+    width: 100%;
+    height: 100%;
+    background-color: #191818;
+    display: flex;
+    flex-direction: column;
+    .edit-profile{
+        width: 55vw;
+        height: fit-content;
+        background-color: grey;
+        margin: 10px auto 10px auto;
+        border-radius: 10px;
+        display: flex;
+        padding: 60px 20px 20px 40px;
+        flex-direction: column;
+        .billing_information_section{
+            display: flex;
+            height: fit-content;
+            width: 100%;
+            .billing_section{
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                margin-top: 20px;
+                width: 100%;
+                .billing_infos{
+                    display: flex;
+                    width: 100%;
+                    height: fit-content;
+                    justify-content: space-between;
+                    align-items: center;
+                    gap: 20px;
+                    .billing_infos_section_one{
+                        .billing_info_enter{
+                            color: white;
+                            font-size: 1rem;
+                        }
+                        .billing_info_why{
+                            font-size: 0.6rem;
+                            color: white;
+                        }
+                        .billing_info_location{
+                            font-size: 0.8rem;
+                            color: white;
+                        }
+                        .billing_info_country{
+                            width: 15vw;
+                            padding: 4px;
+                        }
+                        .billing_info_name{
+                            font-size: 0.8rem;
+                            color: white;
+                        }
+                        .billing_info_inputs{
+                            width: 20vw;
+                            padding: 4px;
+                        }
+                    }
+                    .billing_section_secondsection{
+                        .billing_info_enter{
+                            color: white;
+                            font-size: 1rem;
+                        }
+                        .billing_info_why{
+                            font-size: 0.6rem;
+                            color: white;
+                        }
+                        .billing_info_location{
+                            font-size: 0.8rem;
+                            color: white;
+                        }
+                        .billing_info_country{
+                            width: 15vw;
+                            padding: 4px;
+                        }
+                        .billing_info_name{
+                            font-size: 0.8rem;
+                            color: white;
+                        }
+                        .billing_info_inputs{
+                            width: 20vw;
+                            padding: 4px;
+                        }
+                    }
+                }
+                .billing_info_enter{
+                    color: white;
+                    font-size: 1rem;
+                }
+                .billing_info_why{
+                    font-size: 0.6rem;
+                    color: white;
+                }
+                .billing_info_location{
+                    font-size: 0.8rem;
+                    color: white;
+                }
+                .billing_info_country{
+                    width: 15vw;
+                    padding: 4px;
+                }
+                .billing_info_name{
+                    font-size: 0.8rem;
+                    color: white;
+                }
+                .billing_info_inputs{
+                    width: 20vw;
+                    padding: 4px;
+                }
+            }
+            .billing_section_secondsection{
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                margin-top: 20px;
+                .billing_info_enter{
+                    color: white;
+                    font-size: 1rem;
+                }
+                .billing_info_why{
+                    font-size: 0.6rem;
+                    color: white;
+                }
+                .billing_info_location{
+                    font-size: 0.8rem;
+                    color: white;
+                }
+                .billing_info_country{
+                    width: 15vw;
+                    padding: 4px;
+                }
+                .billing_info_name{
+                    font-size: 0.8rem;
+                    color: white;
+                }
+                .billing_info_inputs{
+                    width: 20vw;
+                    padding: 4px;
+                }
+            }
+        }
+        .billing-btn{
+            width: 200px;
+            margin-top: 20px;
+            height: 50px;
+            background: none;
+            color: white;
+            border: 1px solid white;
+            &:hover{
+                color: #541011;
+                cursor: pointer;
+            }
+        }
+        .user-data{
+            color: white;
+            font-size: 2rem;
+            font-weight: 400;
+        }
+        .user-info{
+            width: 100%;
+            height: fit-content;
+            margin-top: 10px;
+            display: flex; 
+            justify-content: space-between;
+            .user-info-first{
+                display: flex;
+                flex-direction: column;
+                width: 50%;
+                padding: 0px 20px 0px 0px;
+                gap: 10px;
+                input{
+                    width: 100%;
+                    padding: 15px;
+                    background: none;
+                    color: white;
+                    border: 1px solid white;
+                    &::placeholder{
+                        color: white;
+                    }
+                }
+            }
+            .user-info-second{
+                display: flex;
+                flex-direction: column;
+                width: 50%;
+                padding: 0px 0px 0px 20px;
+                gap: 10px;
+                input{
+                    width: 100%;
+                    padding: 15px;
+                    background: none;
+                    color: #fff;
+                    border: 1px solid white;
+                    &::placeholder{
+                        color: white;
+                    }
+                }
+            }
+        }
+    }
+`;
 const Hamburger = styled.div`
   display: none;
   @media (max-width: 768px) {
     display: block;
     position: relative;
     font-size: 30px;
-    top: 60px;
-    left: 8px;
+    top:60px;
+    left:8px;
     cursor: pointer;
     color: white;
-    &:hover {
+    &:hover{
       color: #541011;
     }
     z-index: 1000;
@@ -572,292 +1110,235 @@ const Hamburger = styled.div`
     }
   }
 `;
-
-const Banner = styled.div`
-  width: 100vw;
-  height: 100vh;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 100;
-  background-color: transparent;
-  overflow: hidden;
-
-  @media screen and (max-width: 768px) {
-    position: relative;
-    height: auto;
-    width: 100%;
-  }
-`;
-
-const BannerVideoContainer = styled.div`
-  width: 100vw;
-  height: 100vh;
-  position: fixed;
-  top: 0;
-  left: 0;
-  overflow: hidden;
-  z-index: 101;
-
-  .banner-video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    mask-image: linear-gradient(to left, rgba(0, 0, 0, 0) 20%, rgba(0, 0, 0, 1) 60%);
-    -webkit-mask-image: linear-gradient(to left, rgba(0, 0, 0, 0) 20%, rgba(0, 0, 0, 1) 60%);
-  }
-
-  @media screen and (max-width: 768px) {
-    position: relative;
-    width: 100%;
-    height: 300px;
-    .banner-video {
-      mask-image: linear-gradient(to left, rgba(0, 0, 0, 0) 10%, rgba(0, 0, 0, 1) 50%);
-      -webkit-mask-image: linear-gradient(to left, rgba(0, 0, 0, 0) 10%, rgba(0, 0, 0, 1) 50%);
-    }
-  }
-`;
-
-const BannerContent = styled.div`
-  position: absolute;
-  top: 35%;
-  right: 15%;
-  transform: translateY(-50%);
-  width: 400px;
-  max-width: 90%;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  padding: 20px;
-  background: rgba(0, 0, 0, 0.7);
-  border-radius: 8px;
-  z-index: 300;
-  color: white;
-
-  h1 {
-    font-size: 2.5rem;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
-  }
-
-  p {
-    font-size: 1rem;
-    line-height: 1.5;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
-  }
-
-  .view-more-btn {
-    background: none;
-    border: none;
-    color: white;
-    cursor: pointer;
-    text-decoration: underline;
-    font-size: 0.9rem;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
-  }
-
-  @media screen and (max-width: 1000px) {
-    h1 {
-      font-size: 1.8rem;
-    }
-    p {
-      font-size: 0.8rem;
-    }
-  }
-
-  @media screen and (max-width: 768px) {
-    position: relative;
-    top: auto;
-    left: auto;
-    transform: none;
-    width: 100%;
-    max-width: 100%;
-    padding: 15px;
-    background: rgba(0, 0, 0, 0.8);
-    border-radius: 0;
-  }
-`;
-
-const Content = styled.div`
-  height: fit-content;
-  width: 100%;
-  margin-top: calc(100vh - 200px); /* Show 200px of SliderContainer at bottom of banner */
-  position: relative;
-  z-index: 200;
-
-  @media screen and (max-width: 768px) {
-    margin-top: 0; /* Stack below banner on mobile */
-  }
-`;
-
-const LikedContentCardWrapper = styled.div`
-  width: 90%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-  color: white;
-  min-height: 400px;
-
-  @media screen and (max-width: 768px) {
-    padding: 10px;
-    margin-top: 20px;
-  }
-`;
-
-const SliderContainer = styled.div`
-  width: 100%;
-  position: relative;
-  z-index: 200;
-`;
-
-const VideoCategory = styled.div`
-  height: 390px;
-  width: 92%;
-  margin: 30px 20px 100px 20px;
-  display: flex;
-  gap: 0px;
-  flex-direction: column;
-  transition: opacity 0.5s ease;
-
-  @media screen and (max-width: 495px) {
-    margin-top: 70px;
-  }
-`;
-
-const VideoCategorythis = styled.div`
-  height: 395px;
-  width: 92%;
-  margin: 0px 20px 100px 20px;
-  display: flex;
-  gap: 0px;
-  flex-direction: column;
-  transition: opacity 0.5s ease;
-
-  @media screen and (max-width: 395px) {
-    margin-top: 80px;
-  }
-`;
-
-const VideoCategory1 = styled.div`
-  height: 350px;
-  width: 92%;
-  margin: 10px 20px 100px 20px;
-  display: flex;
-  gap: 0px;
-  flex-direction: column;
-  transition: opacity 0.5s ease;
-`;
-
-const VideoCategoryCircle = styled.div`
-  height: 230px;
-  width: 92%;
-  margin: 50px 20px 150px;
-  display: flex;
-  gap: 0px;
-  flex-direction: column;
-  transition: opacity 0.5s ease;
-
-  @media screen and (max-width: 768px) {
-    margin: 0px 20px 80px 20px;
-  }
-`;
-
-const Videocategorytitle = styled.h3`
-  font-size: 1.5rem;
-  color: white;
-  padding-bottom: 30px;
-  font-weight: 600;
-
-  @media only screen and (min-width: 300px) {
-    font-size: 1.5rem;
-    padding: 5px 5px 20px 25px;
-  }
-
-  @media only screen and (min-width: 800px) {
-    font-size: 1.8rem;
-    padding: 5px 5px 20px 60px;
-  }
-`;
-
-const Footer = styled.div`
-  height: fit-content;
-  width: 100%;
-  background-color: black;
+const User = styled.div`
+  width: 80%;
+  margin: 100px auto 20px auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 20px;
-  padding: 20px 60px 20px 60px;
-  position: relative;
-  z-index: 200;
-
-  .contact-footer {
+  .user-edits {
     display: flex;
-    flex-direction: column;
-    gap: 10px;
-
-    div {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
+    align-items: center;
+    color: white;
+    gap: 50px;
+    .user-edits-container {
+      background-color: #541011;
+      border-radius: 100%;
+      padding: 20px;
     }
   }
-
-  .instagrams {
+  .picture-placeholder {
+    width: 150px;
+    height: 150px;
+    border-radius: 100%;
+    background-color: white;
     display: flex;
-    gap: 5px;
-
-    .instagram-official {
-      display: flex;
-      height: fit-content;
-      align-items: center;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+  }
+  .edit-user-dashboard {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    h3 {
+        padding-top:20px;
       color: white;
-
-      .instagram-links {
-        a {
-          text-decoration: none;
-          color: white;
+      font-size: 1.0rem;
+    }
+    .edit-button-dashboard {
+      height: 60px;
+      width: 50px;
+      background-color:;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      img {
+        height: 25px;
+        width: 25px;
+      }
+    }
+  }
+  @media screen and (max-width: 768px) {
+    flex-direction: column;
+    align-items: center;
+    .user-edits {
+      margin-top: 20px;
+      text-align: center;
+      gap: 20px;
+    }
+    .picture-placeholder {
+      width: 100px;
+      height: 100px;
+      font-size: 1.2rem;
+    }
+    .edit-user-dashboard {
+      margin-top: 20px;
+      flex-direction: column;
+      align-items: center;
+      h3 {
+        margin-bottom: 10px;
+      }
+      .edit-button-dashboard {
+        width: 30px;
+        height: 30px;
+        img {
+          height: 15px;
         }
       }
-
-      img {
-        height: 20px;
-        width: 20px;
-      }
     }
   }
-
-  div {
-    height: fit-content;
-    display: flex;
-    gap: 10px;
+`;
+const Useractions = styled.div`
+  height: fit-content;
+  width: 30%;
+  margin-left: 150px;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  p {
     color: white;
-
+    cursor: pointer;
+  }
+  @media screen and (max-width: 768px) {
+    position:relative;
+    left:150px;
+    margin: 2px 0;
+    margin-left: 0px;
+    gap: 0px;
+    justify-content: center;
+    flex-direction: column;
+    font-size:8px;
+  }
+`;
+const UserSlider = styled.div`
+  width: 80%;
+  margin: 10px auto;
+  height: 300px;
+  @media screen and (max-width: 768px) {
+    width: 90%;
+    margin: 10px auto;
+  }
+`;
+const UseractionsInteraction = styled.div`
+  height: fit-content;
+  width: 50%;
+  margin-left: 150px;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  p {
+    color: white;
+    cursor: pointer;
+  }
+  @media screen and (max-width: 768px) {
+    width: 85%;
+    margin: 20px auto;
+    flex-direction: column;
+    align-items: center;
+    font-size:15px;
     p {
-      font-size: 0.7rem;
-      cursor: pointer;
-    }
-
-    img {
-      height: 80px;
-      width: 100%;
-      cursor: pointer;
+      margin-bottom: 10px;
     }
   }
-
-  @media screen and (max-width: 600px) {
-    flex-direction: column;
-    padding-bottom: 10px;
-    text-align: center;
+`;
+const Friendsslider = styled.div`
+  width: 80%;
+  margin: 50px auto 20px auto;
+  height: 200px;
+  @media screen and (max-width: 768px) {
+    width: 90%;
+    margin: 50px auto;
   }
 `;
 
-export {
-  Homecontent,
-  Content,
-  Banner,
-  VideoCategory,
-  Videocategorytitle,
-  Footer,
-  LikedContentCardWrapper,
-  SliderContainer,
-};
+const Popup = styled.div`
+    height: 500px;
+    width: 1000px;
+    position: absolute;
+    top: 100px;
+    left: 250px;
+    z-index: 1001;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 20px;
+    @media screen and (max-width: 1000px) {
+        width: 70%;
+        height: 70%;
+        left: 80px;
+        top: 100px;
+    }
+    img {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        object-fit: cover;
+        top: 0;
+        left: 0;
+        z-index: -1;
+    }
+    div {
+        height: fit-content;
+        width: 70%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        gap: 10px;
+        h2 {
+            color: white;
+            font-size: 2rem;
+            text-shadow: 2px 2px red;
+            @media screen and (max-width: 1000px) {
+                font-size: 1.2rem;
+            }
+        }
+        p {
+            color: white;
+            font-size: 1.2rem;
+            text-shadow: 1px 1px red;
+            @media screen and (max-width: 1000px) {
+                font-size: 0.9rem;
+            }
+        }
+        .form {
+            display: flex;
+            justify-content: center;
+            align-item: center;
+            gap: 20px;
+            width: 50%;
+            margin: 0px auto 0px auto;
+            @media screen and (max-width: 1000px) {
+                flex-direction: column;
+            }
+            .inputfield {
+                padding: 10px 20px;
+                border-radius: 20px;
+            }
+            .subscribe-button {
+                background-color: red;
+                padding: 10px 20px;
+                color: white;
+                border: none;
+                border-radius: 20px;
+                cursor: pointer;
+            }
+        }
+    }
+`;
+const CloseButton = styled.button`
+  position: absolute;
+  width:20px;
+  height:20px;
+  top: 10px;
+  right: 10px;
+  background: red;
+  border: none;
+  border-radius: 100%;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+`;

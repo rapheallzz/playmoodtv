@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { HiDotsVertical } from 'react-icons/hi';
 import { FaPaperPlane, FaHeart, FaPlus, FaCheck } from 'react-icons/fa';
 import axios from 'axios';
@@ -25,6 +25,8 @@ const SideBarSlidercont = React.memo(function SideBarSlidercont({
   const [contentIndex, setContentIndex] = useState(0);
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
   const { user, isError, message } = useSelector((state) => state.auth);
+  const touchStart = useRef({ x: 0, y: 0 });
+  const touchTimeout = useRef(null);
 
   useEffect(() => {
     const handleResize = () => {
@@ -67,6 +69,49 @@ const SideBarSlidercont = React.memo(function SideBarSlidercont({
   const handleHoverOut = () => {
     setHover(false);
     setIsVideoPlaying(false);
+  };
+
+  // Track touch start position
+  const handleTouchStart = (e) => {
+    const clientX = e.type === 'mousedown' ? e.clientX : e.touches[0].clientX;
+    const clientY = e.type === 'mousedown' ? e.clientY : e.touches[0].clientY;
+    touchStart.current = { x: clientX, y: clientY };
+  };
+
+  // Handle touch end to detect tap vs. drag
+  const handleTouchEnd = (e) => {
+    clearTimeout(touchTimeout.current);
+    touchTimeout.current = setTimeout(() => {
+      const clientX = e.type === 'mouseup' ? e.clientX : e.changedTouches[0].clientX;
+      const clientY = e.type === 'mouseup' ? e.clientY : e.changedTouches[0].clientY;
+      const distance = Math.sqrt(
+        Math.pow(clientX - touchStart.current.x, 2) +
+        Math.pow(clientY - touchStart.current.y, 2)
+      );
+
+      // Check if the tap target is the image or its container, not the dots icon
+      const target = e.target;
+      const isDotsIcon = target.closest('svg')?.classList.contains('text-white') || false;
+
+      if (distance < 10 && !isDotsIcon) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (isMobile) {
+          if (!isVideoPlaying) {
+            setHover(true);
+            setIsVideoPlaying(true);
+            setShowPopup(false); // Ensure popup closes when video preview is triggered
+          } else {
+            onVideoClick();
+            setHover(false);
+            setIsVideoPlaying(false);
+            setShowPopup(false); // Ensure popup closes when video preview is closed
+          }
+        } else {
+          onVideoClick();
+        }
+      }
+    }, 100);
   };
 
   const handleClick = (e) => {
@@ -152,9 +197,13 @@ const SideBarSlidercont = React.memo(function SideBarSlidercont({
   return (
     <div
       className="relative overflow-hidden w-full h-full"
-      style={{ maxWidth: '150px', height: '200px' }} // Constrain size for sidebar
+      style={{ maxWidth: '150px', height: '100px' }} // Constrain size for sidebar
       onMouseEnter={!isMobile ? handleHover : null}
       onMouseLeave={!isMobile ? handleHoverOut : null}
+      onMouseDown={handleTouchStart}
+      onTouchStart={handleTouchStart}
+      onMouseUp={handleTouchEnd}
+      onTouchEnd={handleTouchEnd}
     >
       <div className="absolute top-2 w-full px-1 flex justify-between z-10"></div>
       {!hover && !isVideoPlaying ? (
@@ -165,7 +214,7 @@ const SideBarSlidercont = React.memo(function SideBarSlidercont({
             alt={title}
             onClick={handleClick} // Handle click for mobile and desktop
           />
-          <div className="absolute bottom-0 w-full bg-black bg-opacity-70 flex justify-between p-2 gap-2 z-10">
+          {/* <div className="absolute bottom-0 w-full bg-black bg-opacity-70 flex justify-between p-2 gap-2 z-10">
             <h3
               className="text-white text-sm font-normal leading-5 w-4/5 truncate"
               style={customStyle || {}}
@@ -178,11 +227,11 @@ const SideBarSlidercont = React.memo(function SideBarSlidercont({
                 onClick={handleDotsClick}
               />
             )}
-          </div>
+          </div> */}
         </>
       ) : (
         <div className="flex flex-col justify-between h-full w-full">
-          <div className="h-10 w-full bg-black"></div>
+          {/* <div className="h-10 w-full bg-black"></div> */}
           <video
             playsInline
             loop
@@ -193,7 +242,7 @@ const SideBarSlidercont = React.memo(function SideBarSlidercont({
           >
             <source src={`${movie?.video || movie}#t=0,15`} />
           </video>
-          <div
+          {/* <div
             className="h-36 w-full bg-black p-2 flex flex-col gap-1"
             onClick={(e) => e.stopPropagation()} // Prevent modal trigger on info/icons
           >
@@ -232,7 +281,7 @@ const SideBarSlidercont = React.memo(function SideBarSlidercont({
                 ></div>
               </div>
             )}
-          </div>
+          </div> */}
         </div>
       )}
       {showPopup && (

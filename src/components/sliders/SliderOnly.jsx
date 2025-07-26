@@ -57,7 +57,7 @@ const navigate = useNavigate();
         const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
         console.log('API response:', response);
         if (response.data && Array.isArray(response.data)) {
-          const filteredData = response.data.filter((content) => content.category === 'Documentarie');
+          const filteredData = response.data.filter((content) => content.category === 'Top 10');
           console.log('Filtered Documentaries data:', filteredData);
           setData(filteredData);
         } else {
@@ -103,6 +103,8 @@ const navigate = useNavigate();
     initialSlide: 0,
     prevArrow: <CustomPrevArrow />,
     nextArrow: <CustomNextArrow />,
+     swipeToSlide: true,
+    lazyLoad: 'ondemand',
     responsive: [
       {
         breakpoint: 1024,
@@ -126,9 +128,11 @@ const navigate = useNavigate();
       {
         breakpoint: 480,
         settings: {
-          slidesToShow: 1,
+          slidesToShow: 1.5,
           slidesToScroll: 1,
           arrows: false,
+          centerMode: true,
+        centerPadding: '20px',
         },
       },
     ],

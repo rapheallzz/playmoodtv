@@ -77,7 +77,7 @@ const unlikeContent = async ({ contentId, token }) => {
 const addToWatchlist = async ({ userId, contentId, token }) => {
   try {
     const response = await axios.post(
-      `${API_URL}/watchlist/${userId}`,
+      `${API_URL}/watchlist/add`,
       { contentId },
       {
         headers: {
@@ -99,7 +99,7 @@ const addToWatchlist = async ({ userId, contentId, token }) => {
 const removeFromWatchlist = async ({ userId, contentId, token }) => {
   try {
     const response = await axios.put(
-      `${API_URL}/unwatch/${userId}`,
+      `${API_URL}/watchlist/remove${userId}`,
       { contentId },
       {
         headers: {

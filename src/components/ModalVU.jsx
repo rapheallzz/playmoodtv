@@ -119,84 +119,91 @@ const VideoModal = ({ onClose }) => {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+ const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    if (!files.length) {
-      setError('Please select at least one file to upload.');
-      return;
-    }
+  if (!files.length) {
+    setError('Please select at least one file to upload.');
+    return;
+  }
 
-    const previewDuration = previewEnd - previewStart;
-    if (previewDuration < 10 || previewDuration > 15) {
-      setError('Preview must be between 10 and 15 seconds.');
-      return;
-    }
+  const previewDuration = previewEnd - previewStart;
+  if (previewDuration < 10 || previewDuration > 15) {
+    setError('Preview must be between 10 and 15 seconds.');
+    return;
+  }
 
-    const { userId, authToken } = getAuthData();
-    console.log('Submitting with:', { userId, authToken });
+  const { userId, authToken } = getAuthData();
+  if (!userId || !authToken) {
+    setError('You must be logged in to upload videos. Redirecting to login...');
+    setTimeout(() => {
+      navigate('/login');
+    }, 2000);
+    return;
+  }
 
-    if (!userId || !authToken) {
-      setError('You must be logged in to upload videos. Redirecting to login...');
-      setTimeout(() => {
-        navigate('/login');
-      }, 2000);
-      return;
-    }
+  setLoading(true);
+  setError('');
+  setSuccess(false);
 
-    setLoading(true);
-    setError('');
-    setSuccess(false);
+  const maxSize = 500 * 1024 * 1024; // 500MB
+  const oversizedFiles = files.filter((file) => file.size > maxSize);
+  if (oversizedFiles.length > 0) {
+    setError('One or more files exceed the maximum size (500MB).');
+    setLoading(false);
+    return;
+  }
 
-    const formData = new FormData();
-    formData.append('title', videoData.title);
-    formData.append('description', videoData.description);
-    formData.append('credit', videoData.credit);
-    formData.append('category', videoData.category);
-    formData.append('userId', userId);
-    formData.append('previewStart', previewStart);
-    formData.append('previewEnd', previewEnd);
-    files.forEach((file) => {
-      formData.append('files', file);
-    });
+  const formData = new FormData();
+  formData.append('title', videoData.title);
+  formData.append('description', videoData.description);
+  formData.append('credit', videoData.credit);
+  formData.append('category', videoData.category);
+  formData.append('userId', userId);
+  formData.append('previewStart', previewStart);
+  formData.append('previewEnd', previewEnd);
+  files.forEach((file) => {
+    formData.append('files', file);
+  });
 
-    try {
-      console.log('Sending request with token:', authToken);
-      const response = await axios.post(
-        'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content',
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-            'Content-Type': 'multipart/form-data',
-          },
-          timeout: 600000,
-          onUploadProgress: (progressEvent) => {
-            const progress = Math.round((progressEvent.loaded / progressEvent.total) * 100);
-            console.log(`Upload Progress: ${progress}%`);
-            setUploadProgress(progress);
-          },
-        }
-      );
-
-      console.log('Video submitted successfully:', response.data);
-      setSuccess(true);
-      setTimeout(() => {
-        onClose();
-      }, 2000);
-    } catch (error) {
-      console.error('Error submitting video:', error);
-      if (error.code === 'ECONNABORTED') {
-        setError('Request timed out. Please check your network or try again later.');
-      } else if (error.response) {
-        setError(`Failed to upload video: ${error.response.data.message || error.response.statusText}`);
-      } else {
-        setError('An error occurred while uploading. Please try again.');
+  try {
+    const response = await axios.post(
+      'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content',
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+          'Content-Type': 'multipart/form-data',
+        },
+        timeout: 1200000, // 20 minutes
+        onUploadProgress: (progressEvent) => {
+          const progress = progressEvent.total
+            ? Math.round((progressEvent.loaded / progressEvent.total) * 100)
+            : 0;
+          console.log(`Upload Progress: ${progress}%`);
+          setUploadProgress(progress);
+        },
       }
-    } finally {
-      setLoading(false);
+    );
+
+    console.log('Video submitted successfully:', response.data);
+    setSuccess(true);
+    setTimeout(() => {
+      onClose();
+    }, 2000);
+  } catch (error) {
+    console.error('Error submitting video:', error, error.response);
+    if (error.code === 'ECONNABORTED') {
+      setError('Request timed out. Please check your network or try again later.');
+    } else if (error.response) {
+      setError(`Failed to upload video: ${error.response.data.message || error.response.statusText} (Status: ${error.response.status})`);
+    } else {
+      setError('An error occurred while uploading. Please try again.');
     }
-  };
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <>

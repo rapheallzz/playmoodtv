@@ -12,6 +12,7 @@ import Sliderinterviews from '../components/miscSlider/SliderInterview';
 import SliderDocumentaries from '../components/miscSlider/SliderDocumentaries';
 import WelcomePopup from '../components/Welcomepop';
 import MovieHeader from '../components/headers/MovieHeader';
+import Footer from '../components/footer/Footer';
 
 export default function MoviePage() {
   const [info, setInfo] = useState(false);
@@ -36,7 +37,7 @@ export default function MoviePage() {
   const contentId = slug && /^[0-9a-fA-F]{24}$/.test(slug.split('-').pop()) ? slug.split('-').pop() : null;
   const videoRef = useRef(null);
 
-  // Save video progress
+  // Save video progress (only for signed-in users)
   const saveProgress = async (currentTime) => {
     if (!user || !user.token || !contentId) {
       console.warn('Cannot save progress: Missing user, token, or contentId', { user, contentId, currentTime });
@@ -57,7 +58,7 @@ export default function MoviePage() {
 
   // Handle video time updates
   const handleTimeUpdate = () => {
-    if (videoRef.current) {
+    if (videoRef.current && user) {
       const currentTime = videoRef.current.currentTime;
       if (Math.floor(currentTime) % 5 === 0 && currentTime > 0) {
         saveProgress(currentTime);
@@ -67,7 +68,7 @@ export default function MoviePage() {
 
   useEffect(() => {
     const video = videoRef.current;
-    if (video) {
+    if (video && user) {
       video.addEventListener('timeupdate', handleTimeUpdate);
       video.addEventListener('pause', () => {
         if (video.currentTime > 0) {
@@ -76,7 +77,7 @@ export default function MoviePage() {
       });
     }
     return () => {
-      if (video && video.currentTime > 0) {
+      if (video && user && video.currentTime > 0) {
         video.removeEventListener('timeupdate', handleTimeUpdate);
         video.removeEventListener('pause', () => saveProgress(video.currentTime));
         saveProgress(video.currentTime);
@@ -97,14 +98,14 @@ export default function MoviePage() {
         console.log('Fetching movie data for contentId:', contentId);
         const response = await axios.get(
           `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${contentId}?page=${page}&limit=${COMMENTS_PER_PAGE}`,
-          { headers: { Authorization: `Bearer ${user?.token || ''}` } }
+          { headers: user?.token ? { Authorization: `Bearer ${user.token}` } : {} }
         );
         setMovie(response.data);
         setComments(response.data.comments || []);
         setHasMore(response.data.comments?.length === COMMENTS_PER_PAGE);
       } catch (error) {
         console.error('Error fetching movie:', error.response?.data || error.message);
-        setError(error.response?.status === 401 ? 'Please sign in to view this content.' : 'Failed to load movie data.');
+        setError('Failed to load movie data.');
       } finally {
         setLoading(false);
       }
@@ -119,7 +120,7 @@ export default function MoviePage() {
       const nextPage = page + 1;
       const response = await axios.get(
         `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${contentId}/comments?page=${nextPage}&limit=${COMMENTS_PER_PAGE}`,
-        { headers: { Authorization: `Bearer ${user?.token || ''}` } }
+        { headers: user?.token ? { Authorization: `Bearer ${user.token}` } : {} }
       );
       setComments([...comments, ...response.data.comments]);
       setPage(nextPage);
@@ -211,6 +212,10 @@ export default function MoviePage() {
 
   // Unsubscribe from creator
   const handleUnsubscribeClick = async () => {
+    if (!user) {
+      setShowWelcomePopup(true);
+      return;
+    }
     try {
       const response = await axios.put(
         'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/subscribe/',
@@ -228,12 +233,12 @@ export default function MoviePage() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen bg-black text-white">
-        <div className="flex flex-col items-center">
-          <img src={logo} alt="Loading logo" className="w-32 mb-5 animate-bounce" />
-          <p className="text-lg font-semibold animate-pulse">Loading...</p>
-        </div>
-      </div>
+         <LoadingOverlay>
+              <LoadingSpinner />
+              <Loading>
+                    <img src={logo} alt="Loading logo" className="w-32 mb-5 animate-bounce" />
+                </Loading>
+            </LoadingOverlay>
     );
   }
 
@@ -243,9 +248,9 @@ export default function MoviePage() {
         <h1 className="text-2xl font-semibold mb-4 text-white">{error}</h1>
         <button
           className="px-4 py-2 bg-[#541011] text-white rounded-lg hover:bg-white hover:text-[#541011] transition duration-200"
-          onClick={() => navigate('/login')}
+          onClick={() => navigate('/')}
         >
-          Sign In
+          Go to Home
         </button>
       </div>
     );
@@ -286,7 +291,18 @@ export default function MoviePage() {
     setInfo(!info);
   };
 
-  const { title, description, credits, views, like, user: movieUser } = movie;
+  const { title, description, credit, views, like, user: movieUser } = movie;
+
+     const handleCreatorClick = () => {
+    if (movieUser?._id) {
+      navigate('/creator', { state: { creatorId: movieUser._id } });
+    } else {
+      console.warn('Creator ID not available for navigation.');
+      // Optionally, show a message to the user
+      alert('Creator information is not available.');
+    }
+  };
+
 
   return (
     <Movie>
@@ -302,7 +318,7 @@ export default function MoviePage() {
             ref={videoRef}
             controlsList="nodownload"
             className={`object-cover z-1 ${isMinimized ? 'bottom-0 right-0 w-52' : 'w-full h-[550px] static'} md:${
-              isMinimized ? 'h-auto' : 'h-[200px]'
+              isMinimized ? 'h-auto' : 'h-[900px]'
             }`}
           >
             <source src={movie?.video} type="video/mp4" />
@@ -322,7 +338,7 @@ export default function MoviePage() {
           />
         </div>
         {/* Main Section */}
-        <div className="flex flex-col md:flex-row w-full gap-[3rem] md:gap-[8rem] h-auto my-[2rem] mx-12">
+        <div className="flex flex-col  md:flex-row w-full gap-[3rem] md:gap-[8rem] h-auto my-[2rem] mx-12">
           {/* Left Section */}
           <div className="w-[100%] md:w-[30%]">
             <div className="mb-3">
@@ -358,7 +374,11 @@ export default function MoviePage() {
             </div>
             {/* Buttons */}
             <div className="h-[50px] w-[300px] flex gap-[10px] relative md:flex-col p-[5px] mb-0 md:mb-8">
-              <button className="md:w-[40%] gap-2 bg-[#541011] text-[#f3f3f3] p-[10px] border-none rounded-[5px] cursor-pointer text-[10px] font-normal transition-colors duration-300 ease-in-out hover:bg-white hover:text-[#541011] flex items-center justify-center m-[1px]">
+                <button
+                className="md:w-[40%] gap-2 bg-[#541011] text-[#f3f3f3] p-[10px] border-none rounded-[5px] cursor-pointer text-[10px] font-normal transition-colors duration-300 ease-in-out hover:bg-white hover:text-[#541011] flex items-center justify-center m-[1px]"
+                onClick={handleCreatorClick}
+                disabled={!movieUser?._id} // Disable button if creator ID is not available
+              >
                 <FaUser /> By: {movieUser ? movieUser.name : 'Anonymous'}
               </button>
               <button
@@ -379,9 +399,9 @@ export default function MoviePage() {
           </div>
           {/* Right Section */}
           <div className="mt-1 md:mt-0 h-auto w-[100%] md:w-[30%]">
-            <div className="movie-right-cont h-auto">
-              <div className="menutitle ml-[18px] flex items-center gap-[30px] h-[50px] mx-auto">
-                <p className="production_par cursor-pointer text-white hover:text-red-500" onClick={() => setInfo(false)}>
+            <div className="h-auto mr-10 ">
+              <div className="flex items-center gap-[30px] h-[50px]">
+                <p className="cursor-pointer text-white hover:text-red-500" onClick={() => setInfo(false)}>
                   Information
                 </p>
                 <button
@@ -391,21 +411,21 @@ export default function MoviePage() {
                   Production ~ Credits
                 </button>
               </div>
-              {showFavoriteMessage && (
+              {/* {showFavoriteMessage && (
                 <div className="popup-message fixed top-[200px] right-[100px] bg-[rgba(0,0,0,0.8)] text-white p-[10px_20px] rounded z-[9999] text-[12px] animate-fadeOut">
                   Added to favorites!
                 </div>
-              )}
-              <div>
+              )} */}
+              <div className='md:mr-0 mr-16'>
                 {info ? (
                   <div className="flex items-center justify-between text-white w-[90%] mx-auto">
                     <p>
-                      <b>Credits: </b>
-                      {credits}
+                      {/* <b>Credits: </b> */}
+                      {credit}
                     </p>
                   </div>
                 ) : (
-                  <div className="movieinformation text-white w-[90%] h-auto flex mx-auto relative md:text-[12px]">
+                  <div className="text-white w-[100%] h-auto flex md:text-[12px] ">
                     <p>{description}</p>
                   </div>
                 )}
@@ -413,8 +433,8 @@ export default function MoviePage() {
             </div>
           </div>
           {/* Comment Section */}
-          <div className="w-[30%]">
-            <div className="mt-1 md:mt-0 h-auto w-[100%] md:w-[70%]">
+          <div className="md:w-[30%] w-[70%] ">
+            <div className="mt-1 md:mt-0 h-auto w-[100%] md:w-[70%] flex flex-col  items-center md:block">
               <h3 className="text-sm font-semibold mt-4 mb-2 text-white">Comments</h3>
               {commentError && <ErrorMessage>{commentError}</ErrorMessage>}
               <CommentForm onSubmit={handleAddComment}>
@@ -493,55 +513,10 @@ export default function MoviePage() {
           />
         </div>
         {/* Footer */}
-        <Footer>
+          
           <div>
-            <img src={logo} />
+            <Footer/>
           </div>
-          <div className="instagrams">
-            <div className="instagram-official">
-              <a href="https://instagram.com/playmoodtv?igshid=MzRlODBiNWFlZA==">
-                <img src={instagram} />
-              </a>
-              <p className="instagram-links">
-                <a href="https://instagram.com/playmoodtv?igshid=MzRlODBiNWFlZA==" target="_blank">
-                  Official
-                </a>
-              </p>
-            </div>
-            <div className="instagram-official">
-              <a href="https://www.instagram.com/playmoodlat/">
-                <img src={instagram} />
-              </a>
-              <p className="instagram-links">
-                <a href="https://www.instagram.com/playmoodlat/" target="_blank">
-                  Latam
-                </a>
-              </p>
-            </div>
-            <div className="instagram-official">
-              <a href="https://www.instagram.com/playmoodmx/">
-                <img src={instagram} />
-              </a>
-              <p className="instagram-links">
-                <a href="https://www.instagram.com/playmoodmx/" target="_blank">
-                  MX
-                </a>
-              </p>
-            </div>
-          </div>
-          <div></div>
-          <div className="contact-footer">
-            <h2>Contact us:</h2>
-            <h3>Creators@playmoodtv.com</h3>
-            <div>
-              <p onClick={() => navigate('/privacy-policy')}>Privacy Policy</p>
-              <p onClick={() => navigate('/cookies')}>Cookies Policy</p>
-            </div>
-            <div>
-              <p>All rights reserved to PlaymoodTV 2023</p>
-            </div>
-          </div>
-        </Footer>
       </div>
     </Movie>
   );
@@ -586,64 +561,6 @@ const Hamburger = styled.div`
   }
 `;
 
-const Footer = styled.div`
-  height: fit-content;
-  width: 100%;
-  background-color: black;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 20px;
-  padding: 20px 60px;
-  .contact-footer {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    div {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-  }
-  .instagrams {
-    display: flex;
-    gap: 5px;
-    .instagram-official {
-      display: flex;
-      height: fit-content;
-      align-items: center;
-      color: white;
-      .instagram-links a {
-        text-decoration: none;
-        color: white;
-      }
-      img {
-        height: 20px;
-        width: 20px;
-      }
-    }
-  }
-  div {
-    height: fit-content;
-    display: flex;
-    gap: 10px;
-    color: white;
-    p {
-      font-size: 0.7rem;
-      cursor: pointer;
-    }
-    img {
-      height: 80px;
-      width: 100%;
-      cursor: pointer;
-    }
-  }
-  @media screen and (max-width: 600px) {
-    flex-direction: column;
-    padding: 10px;
-    text-align: center;
-  }
-`;
 
 const CommentForm = styled.form`
   display: flex;
@@ -687,6 +604,10 @@ const CommentList = styled.div`
   flex-direction: column;
   gap: 0.5rem;
   padding-right: 0.25rem;
+
+   @media screen and (max-width: 768px) {
+   
+  }
 `;
 
 const LoadMoreButton = styled.button`
@@ -763,4 +684,39 @@ const ErrorMessage = styled.div`
   margin-bottom: 0.5rem;
   font-size: 0.75rem;
   text-align: center;
+`;
+
+const LoadingOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+`;
+
+const LoadingSpinner = styled.div`
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #541011;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 10px;
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+`;
+
+const Loading = styled.div`
+  color: #fff;
+  text-align: center;
+  font-size: 1.2rem;
 `;

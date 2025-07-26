@@ -24,43 +24,28 @@ export default function Channels() {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
-
   useEffect(() => {
-    const fetchCreators = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/user/creators', {
-          headers: {
-            'Cache-Control': 'no-cache',
-            'Pragma': 'no-cache',
-            'Expires': '0'
-          }
-        });
-        console.log('Response:', response);
-        if (Array.isArray(response.data)) {
-          setData(response.data);
-        } else {
-          console.error('Response data is not an array:', response.data);
-        }
+        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
+        setData(response.data);
       } catch (error) {
-        console.error('Error fetching creators:', error);
+        console.error('Error fetching data:', error);
       }
     };
 
-    fetchCreators();
+    fetchData();
   }, []);
 
   const filteredData = data.filter((content) => content.category === 'Top 10');
 
-  const handleSlideClick = (creator) => {
-    console.log('Slide clicked', creator); 
-    navigate('/creator', {
+  const handleSlideClick = (content) => {
+    navigate(`/newplaymood`, {
       state: {
-        name: creator.name || '',
-        profileImage: creator.profileImage || '',
-        bannerImage: creator.bannerImage || '',
-        content: creator.content || '',
-        subscribers: creator.subscribers || 0,
-        socialMedia: creator.socialMedia || {},
+        movie: content.video,
+        title: content.title || '',
+        desc: content.description || '',
+        credits: content.credit || '',
       },
     });
   };
@@ -99,28 +84,20 @@ export default function Channels() {
 
 
          <div className='h-full relative  md:right-[-40%] w-full md:w-3/5 mt-[28%]  mb-36 md:mt-[8%] md:mb-8'>
-         <h3 className='pl-16 pb-2 text-white text-[1.5rem] font-bold'>CHANNELS</h3>  
+         <h3 className='pl-16 pb-2 text-white text-[1.5rem] font-bold'>DIARIES</h3>  
         
         
          <Content>
              
          
 
-         {Array.isArray(data) && data.map((creator, index) => (
+         {filteredData.map((content, index) => (
         <div
-          key={creator._id}
-          className="slidescircle relative"
-          onClick={() => handleSlideClick(creator)}
+          key={content.id}
+          className="slidescircle"
+          onClick={(e) => handleSlideClick(e, content)}
         >
-          <img src={creator.profileImage} alt={`Thumbnail ${index}`} />
-          <div className="absolute inset-0 flex flex-col justify-center items-center space-y-2">
-        <button className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-700">
-          View Content
-        </button>
-        <button className="bg-[#541011] text-white px-4 py-2 rounded hover:bg-[#461718]">
-          Subscribe
-        </button>
-      </div>
+          <img src={content.thumbnail} alt={`Thumbnail ${index}`} />
         </div>
       ))}
            </Content>
@@ -129,55 +106,73 @@ export default function Channels() {
           </div>  
               </div> 
 
+
                   {/* FOOTER  */}
 
-                  <div className="h-auto w-full bg-black flex flex-col md:flex-row justify-between items-center gap-4 md:gap-2 px-4 md:px-10 py-4 md:py-5 fixed bottom-0 ">
+           <div className="h-auto w-full bg-black flex flex-col md:flex-row justify-between items-center gap-4 md:gap-2 px-4 md:px-10 py-4 md:py-5 fixed bottom-0 ">
   
-  <div className='flex flex-column'>
-  <div className="flex-shrink-0">
-<img className="md:h-20 md:w-auto h-10 w-28 cursor-pointer" src={logo} alt="Logo" />
-</div>
-
-<div className="flex flex-row md:flex-row gap-4 md:gap-5">
-<div className="flex items-center text-white gap-2">
-<a className="no-underline text-white" href="https://instagram.com/playmoodtv?igshid=MzRlODBiNWFlZA==" target="_blank" rel="noopener noreferrer">
-  <img className="h-7 w-7" src={instagram} alt="Instagram" />
-</a>
-<p><a className="no-underline text-white" href="https://instagram.com/playmoodtv?igshid=MzRlODBiNWFlZA==" target="_blank" rel="noopener noreferrer">Official</a></p>
-</div>
-<div className="flex items-center text-white gap-2">
-<a className="no-underline text-white" href="https://www.instagram.com/playmoodlat/" target="_blank" rel="noopener noreferrer">
-  <img className="h-7 w-7" src={instagram} alt="Instagram" />
-</a>
-<p><a className="no-underline text-white" href="https://www.instagram.com/playmoodlat/" target="_blank" rel="noopener noreferrer">Latam</a></p>
-</div>
-<div className="flex items-center text-white gap-2">
-<a className="no-underline text-white" href="https://www.instagram.com/playmoodmx/" target="_blank" rel="noopener noreferrer">
-  <img className="h-7 w-7" src={instagram} alt="Instagram" />
-</a>
-<p><a className="no-underline text-white" href="https://www.instagram.com/playmoodmx/" target="_blank" rel="noopener noreferrer">MX</a></p>
-</div>
-</div>
+        <div className='flex flex-column'>
+        <div className="flex-shrink-0">
+    <img className="md:h-20 md:w-auto h-10 w-28 cursor-pointer" src={logo} alt="Logo" />
   </div>
 
+  <div className="flex flex-row md:flex-row gap-4 md:gap-5">
+    <div className="flex items-center text-white gap-2">
+      <a className="no-underline text-white" href="https://instagram.com/playmoodtv?igshid=MzRlODBiNWFlZA==" target="_blank" rel="noopener noreferrer">
+        <img className="h-7 w-7" src={instagram} alt="Instagram" />
+      </a>
+      <p><a className="no-underline text-white" href="https://instagram.com/playmoodtv?igshid=MzRlODBiNWFlZA==" target="_blank" rel="noopener noreferrer">Official</a></p>
+    </div>
+    <div className="flex items-center text-white gap-2">
+      <a className="no-underline text-white" href="https://www.instagram.com/playmoodlat/" target="_blank" rel="noopener noreferrer">
+        <img className="h-7 w-7" src={instagram} alt="Instagram" />
+      </a>
+      <p><a className="no-underline text-white" href="https://www.instagram.com/playmoodlat/" target="_blank" rel="noopener noreferrer">Latam</a></p>
+    </div>
+    <div className="flex items-center text-white gap-2">
+      <a className="no-underline text-white" href="https://www.instagram.com/playmoodmx/" target="_blank" rel="noopener noreferrer">
+        <img className="h-7 w-7" src={instagram} alt="Instagram" />
+      </a>
+      <p><a className="no-underline text-white" href="https://www.instagram.com/playmoodmx/" target="_blank" rel="noopener noreferrer">MX</a></p>
+    </div>
+        <div className="flex items-center text-white gap-2">
+      <a className="no-underline text-white" href="https://www.instagram.com/playmoodindia/" target="_blank" rel="noopener noreferrer">
+        <img className="h-7 w-7" src={instagram} alt="Instagram" />
+      </a>
+      <p><a className="no-underline text-white" href="https://www.instagram.com/playmoodindia/" target="_blank" rel="noopener noreferrer">IN</a></p>
+    </div>
+        <div className="flex items-center text-white gap-2">
+      <a className="no-underline text-white" href="https://www.instagram.com/playmoodargentina/" target="_blank" rel="noopener noreferrer">
+        <img className="h-7 w-7" src={instagram} alt="Instagram" />
+      </a>
+      <p><a className="no-underline text-white" href="https://www.instagram.com/playmoodargentina/" target="_blank" rel="noopener noreferrer">AR</a></p>
+    </div>
+        <div className="flex items-center text-white gap-2">
+      <a className="no-underline text-white" href="https://www.instagram.com/playmoodcolombia/" target="_blank" rel="noopener noreferrer">
+        <img className="h-7 w-7" src={instagram} alt="Instagram" />
+      </a>
+      <p><a className="no-underline text-white" href="https://www.instagram.com/playmoodcolombia/" target="_blank" rel="noopener noreferrer">COL</a></p>
+    </div>
+  </div>
+        </div>
 
 
-<div className="flex flex-row text-white text-xs gap-2 md:mr-10">
-<div>
-<h2 className="cursor-pointer">Contact us:</h2>
-<h3 className="cursor-pointer">Creators@playmoodtv.com</h3>
-</div>
 
-<div className="flex flex-row md:flex-col gap-1">
-<p className="cursor-pointer" onClick={() => navigate('/privacy-policy')}>Privacy Policy</p>
-<p className="cursor-pointer" onClick={() => navigate('/cookies')}>Cookies Policy</p>
-</div>
-<div>
-<p className="cursor-pointer">All rights reserved to PlaymoodTV 2023</p>
-</div>
-</div>
-         </div>
-             
+  <div className="flex flex-row text-white text-xs gap-2 md:mr-10">
+    <div>
+    <h2 className="cursor-pointer">Contact us:</h2>
+    <h3 className="cursor-pointer">Creators@playmoodtv.com</h3>
+    </div>
+
+    <div className="flex flex-row md:flex-col gap-1">
+      <p className="cursor-pointer" onClick={() => navigate('/privacy-policy')}>Privacy Policy</p>
+      <p className="cursor-pointer" onClick={() => navigate('/cookies')}>Cookies Policy</p>
+    </div>
+    <div>
+      <p className="cursor-pointer">All rights reserved to PlaymoodTV 2023</p>
+    </div>
+  </div>
+               </div>
 
     </Homecontent>
   );

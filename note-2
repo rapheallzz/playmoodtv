@@ -1,321 +1,910 @@
-import React, { useState, useEffect } from 'react';
-import { HiDotsVertical } from 'react-icons/hi';
-import { FaPaperPlane, FaHeart, FaPlus, FaCheck, FaEye } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState, useEffect, useRef } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import styled, { keyframes } from 'styled-components';
+import MobileBurger from '../components/headers/MobileBurger';
+import DesktopHeader from '../components/headers/DesktopHeader';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
+import Slidertop10 from '../components/sliders/SliderTop10';
+import SliderNew from '../components/sliders/SliderNew';
+import SliderChannel from '../components/sliders/SliderChannels';
+import SliderDiaries from '../components/sliders/SliderDaries';
+import SliderSpace from '../components/sliders/SliderSpace';
+import SlideRecommended from '../components/sliders/SliderRecommend';
+import SliderInterview from '../components/sliders/SliderInterview';
+import SliderFashion from '../components/sliders/SliderFashion';
+import SliderDocumentaries from '../components/sliders/SliderDocumentaries';
+import SliderCamera from '../components/sliders/SliderCameras';
+import SliderSoon from '../components/sliders/SliderSoon';
+import SliderTeens from '../components/sliders/SliderTeens';
+import SliderOnly from '../components/sliders/SliderOnly';
+import SliderSocial from '../components/sliders/SliderSocial';
+import ShareModal from '../components/ShareModal';
 import WelcomePopup from '../components/Welcomepop';
+import instagram from '/instagram.png';
+import channelsimg from '../assets/channels.png';
+import logo from '/PLAYMOOD_DEF.png';
+import { useNavigate } from 'react-router-dom';
+import playbutton from '/play-button2.png';
+import plusbutton from '/addbutton.png';
+import whiteheart from '/whiteheart.png';
+import redheart from '/redheart.png';
+import sendmessage from '/sendmessage.png';
+import { AiOutlineClose } from 'react-icons/ai';
+import LikedContentCard from '../components/LikedContentCard';
+import axios from 'axios';
 import { likeContent, unlikeContent, addToWatchlist, removeFromWatchlist } from '../features/authSlice';
-import styled from 'styled-components';
-import { useHoveredContent } from '../HoveredContentContext'; 
+import Footer from '../components/footer/Footer';
 
-const Slidercontent = React.memo(function Slidercontent({
-  img,
-  title,
-  movie,
-  views,
-  desc,
-  customStyle,
-  progress,
-  onVideoClick,
-  onHoverContent,
+// CookiesPopupContainer styled component
+const CookiesPopupContainer = styled.div`
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  padding: 1rem;
+
+  .popup-content {
+    background-color: white;
+    padding: 1.25rem;
+    border-radius: 0.5rem 0.5rem 0 0;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: 100%;
+    max-width: 500px;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+  }
+
+  .button-group {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  button {
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .accept-btn {
+    background-color: #541011;
+    &:hover {
+      background-color: #6b1516;
+    }
+  }
+
+  .opt-out-btn {
+    background-color: #6b7280;
+    &:hover {
+      background-color: #4b5563;
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: 0.5rem;
+
+    .popup-content {
+      padding: 1rem;
+    }
+
+    h2 {
+      font-size: 1rem;
+    }
+
+    p {
+      font-size: 0.75rem;
+    }
+
+    button {
+      font-size: 0.7rem;
+      padding: 0.4rem 0.8rem;
+    }
+  }
+`;
+
+const breathe = keyframes`
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+`;
+
+const NeonButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid #ffffff;
+  border-radius: 4px;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+
+  img {
+    height: 15px;
+    width: 15px;
+    margin-left: 4px;
+    position: relative;
+    top: 1px;
+  }
+
+  &:hover {
+    animation: ${breathe} 1.5s infinite;
+    box-shadow: 0 0 8px 2px #541011, 0 0 16px 4px #54101180;
+    border-color: #541011;
+    color: #ffffff;
+  }
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  gap: 20px;
+  margin-top: ${(props) => (props.marginTop ? '8px' : '0')};
+`;
+
+const Homecontent = styled.div`
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #000;
+  overflow-y: auto;
+`;
+
+const Hamburger = styled.div`
+  display: none;
+  @media (max-width: 768px) {
+    display: block;
+    position: relative;
+    font-size: 30px;
+    top: 60px;
+    left: 8px;
+    cursor: pointer;
+    color: white;
+    &:hover {
+      color: #541011;
+    }
+    z-index: 1000;
+    svg {
+      font-size: 40px;
+    }
+  }
+`;
+
+const Banner = styled.div`
+  width: 100vw;
+  height: 55vh;
+  position: relative; /* Always relative, no fixed positioning */
+  top: 0;
+  left: 0;
+  z-index: 300;
+  background-color: transparent;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+
+  @media screen and (max-width: 768px) {
+    height: auto;
+    flex-direction: column;
+    z-index: 200;
+  }
+`;
+
+const BannerVideoContainer = styled.div`
+  width: 60vw;
+  height: 55vh;
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  z-index: 301;
+
+  .banner-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.8);
+  }
+
+  @media screen and (max-width: 768px) {
+    position: relative;
+    width: 100%;
+    height: 300px;
+  }
+`;
+
+const BannerContent = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 60vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 70px 100px 70px 60%;
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.0) 0%,
+    rgba(0, 0, 0.0, 1.2) 60%,
+    rgba(0, 0, 0, 0.9) 70%,
+    rgba(0, 0, 0, 0.95) 100%
+  );
+  z-index: 303;
+  color: white;
+
+  h1 {
+    font-size: 1.9rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    max-width: 500px;
+  }
+
+  p {
+    font-size: 1rem;
+    line-height: 1.5;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+    max-width: 500px;
+  }
+
+  .view-more-btn {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    text-decoration: underline;
+    font-size: 0.9rem;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+  }
+
+  .flex {
+    max-width: 500px;
+  }
+
+  @media screen and (max-width: 1000px) {
+    padding: 50px 60px 50px 40%;
+    h1 {
+      font-size: 1.8rem;
+    }
+    p {
+      font-size: 0.9rem;
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    position: relative;
+    width: 100%;
+    height: auto;
+    padding: 20px;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.85);
+    text-align: center;
+
+    h1,
+    p,
+    .flex {
+      max-width: 100%;
+    }
+  }
+`;
+
+const SliderWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  position: relative;
+`;
+
+const Slide = styled.div`
+  width: 100%;
+  height: 100%;
+  display: ${(props) => (props.active ? 'flex' : 'none')};
+  align-items: center;
+`;
+
+const RadioButtons = styled.div`
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 304;
+
+  input[type="radio"] {
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    background-color: #ffffff80;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    &:checked {
+      background-color: #541011;
+    }
+
+    &:hover {
+      background-color: #54101180;
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    bottom: 10px;
+
+    input[type="radio"] {
+      width: 10px;
+      height: 10px;
+    }
+  }
+`;
+
+const Content = styled.div`
+  height: fit-content;
+  width: 100%;
+  position: relative;
+  z-index: 200;
+  background-color: black;
+  padding-top: 80px;
+
+  @media screen and (max-width: 768px) {
+    padding-top: 0;
+    overflow-y: auto; /* Ensure scrolling on mobile */
+  }
+`;
+
+const LikedContentCardWrapper = styled.div`
+  width: 90%;
+  max-width: 1200px;
+  margin: 50px auto;
+  padding: 20px;
+  color: white;
+  min-height: 400px;
+
+  @media screen and (max-width: 768px) {
+    padding: 10px;
+    margin-top: 80px;
+    margin-bottom: 0px;
+  }
+`;
+
+const SliderContainer = styled.div`
+  width: 100%;
+  height: auto;
+  position: relative;
+  z-index: 200;
+  box-sizing: border-box;
+  margin-top: 0; /* Removed margin-top since banner is no longer fixed */
+
+  @media screen and (max-width: 768px) {
+    padding: 10px;
+    margin-top: 0;
+    margin-bottom: 0;
+    overflow-y: auto; /* Enable vertical scrolling on mobile */
+    touch-action: pan-y; /* Allow vertical touch scrolling */
+  }
+`;
+
+const VideoCategory = styled.div`
+  height: 340px;
+  width: 92%;
+  margin: 0px 20px 5px 20px;
+  display: flex;
+  gap: 0px;
+  flex-direction: column;
+
+  @media screen and (max-width: 495px) {
+     height: 180px;
+  margin-top: 120px;
+ 
+
+  }
+`;
+
+// const VideoCategoryNew = styled.div`
+//   height: 340px;
+//   width: 92%;
+//   margin: 0px 20px 5px 20px;
+//   display: flex;
+//   gap: 0px;
+//   flex-direction: column;
+
+//   @media screen and (max-width: 495px) {
+//       height: 180px;
+//   margin-top: 120px;
+
+//   }
+// `;
+
+const Videocategorytitle = styled.h3`
+  font-size: 1.5rem;
+  color: white;
+  padding-bottom: 30px;
+  font-weight: 600;
+
+  @media only screen and (min-width: 300px) {
+    font-size: 1.5rem;
+    padding: 5px 5px 20px 25px;
+  }
+
+  @media only screen and (min-width: 800px) {
+    font-size: 1.8rem;
+    padding: 5px 5px 20px 60px;
+  }
+`;
+
+function HomeContent({
+  channels,
+  set_channels,
+  isMobile,
+  setIsMobile,
+  showCookiesPopup,
+  setShowCookiesPopup,
+  isLiked,
+  setIsLiked,
+  user,
+  homePageData,
+  setHomePageData,
+  contentIndex,
+  setContentIndex,
+  shareModalOpen,
+  setShareModalOpen,
+  shareUrl,
+  showWelcomePopup,
+  setShowWelcomePopup,
+  likedContent,
+  setLikedContent,
+  sliderContainerRef,
 }) {
-  const [hover, setHover] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-  const [showPopup, setShowPopup] = useState(false);
-  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
-  const [localError, setLocalError] = useState(null);
-  const [copyModal, setCopyModal] = useState({ show: false, message: '', isError: false });
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.auth);
-  const { setHoveredContent } = useHoveredContent(); // Use context
+  const navigate = useNavigate();
+  const FALLBACK_VIDEO_URL = 'https://res.cloudinary.com/di97mcvbu/video/upload/v1708430555/contents/q1xhinruadpovy0jxf6f.mp4';
+  const [activeSlide, setActiveSlide] = useState(0);
+
+  useEffect(() => {
+    const cookiesAccepted = localStorage.getItem('cookiesAccepted');
+    if (!cookiesAccepted) {
+      setShowCookiesPopup(true);
+    }
+  }, [setShowCookiesPopup]);
 
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
     };
     window.addEventListener('resize', handleResize);
-    handleResize();
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  }, [setIsMobile]);
 
-  const handleHover = () => {
-    setHover(true);
-    setIsVideoPlaying(true);
-    setHoveredContent(movie); // Set hovered content in context
-  };
+  useEffect(() => {
+    let timeoutId;
+    if (!user) {
+      timeoutId = setTimeout(() => {
+        setShowWelcomePopup(true);
+      }, 15000);
+    }
+    return () => clearTimeout(timeoutId);
+  }, [user, setShowWelcomePopup]);
 
-  const handleHoverOut = () => {
-    setHover(false);
-    setIsVideoPlaying(false);
-    setHoveredContent(null); // Clear hovered content on mouse leave
-  };
-
-  const handleClick = (e) => {
-    e.preventDefault();
-    if (isMobile) {
-      if (!isVideoPlaying) {
-        setHover(true);
-        setIsVideoPlaying(true);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
+        setHomePageData(response.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
       }
+    };
+
+    fetchData();
+  }, [setHomePageData]);
+
+  useEffect(() => {
+    if (user && user.like && homePageData.length > 0) {
+      const liked = homePageData.filter((content) => user.like.includes(content._id));
+      setLikedContent(liked);
     } else {
-      onVideoClick();
+      setLikedContent([]);
     }
+  }, [user, homePageData, setLikedContent]);
+
+  useEffect(() => {
+    if (homePageData.length > 0) {
+      const intervalId = setInterval(() => {
+        setActiveSlide((prevIndex) => (prevIndex + 1) % Math.min(3, homePageData.length));
+      }, 30000);
+      return () => clearInterval(intervalId);
+    }
+  }, [homePageData.length]);
+
+  const handleAcceptCookies = () => {
+    localStorage.setItem('cookiesAccepted', 'true');
+    setShowCookiesPopup(false);
   };
 
-  const handleVideoClick = (e) => {
-    e.stopPropagation();
-    if (isVideoPlaying) {
-      onVideoClick();
-      setHover(false);
-      setIsVideoPlaying(false);
-      setHoveredContent(null); // Clear on video click
-    }
+  const handleOptOutCookies = () => {
+    localStorage.setItem('cookiesAccepted', 'false');
+    setShowCookiesPopup(false);
   };
 
-  const handleLike = async (e) => {
-    e.stopPropagation();
-    setLocalError(null);
+  const handleLike = async () => {
+    setIsLiked(!isLiked);
     try {
-      if (!user) {
-        setShowWelcomePopup(true);
-        return;
-      }
-      const contentId = movie?._id;
-      if (!contentId) {
-        setLocalError('Content ID is missing. Please try again.');
-        console.error('Content ID not found in movie object:', movie);
-        return;
-      }
-      if (isLiked) {
-        await dispatch(unlikeContent({ contentId })).unwrap();
+      if (user && user._id) {
+        const currentContent = homePageData[activeSlide];
+        if (currentContent) {
+          const contentId = currentContent._id;
+          const isContentLiked = user.like && user.like.includes(contentId);
+          if (isContentLiked) {
+            await dispatch(unlikeContent({ userId: user._id, contentId }));
+          } else {
+            await dispatch(likeContent({ userId: user._id, contentId }));
+          }
+        }
       } else {
-        await dispatch(likeContent({ contentId })).unwrap();
+        setShowWelcomePopup(true);
       }
     } catch (error) {
-      console.error('Like error:', error);
-      setLocalError('Failed to like/unlike content. Please try again.');
+      console.error('Error liking/unliking content:', error);
     }
   };
 
-  const handleWatchlist = async (e) => {
-    e.stopPropagation();
-    setLocalError(null);
+  const handleWatchlist = async () => {
     try {
-      if (!user) {
-        setShowWelcomePopup(true);
-        return;
-      }
-      const contentId = movie?._id;
-      if (!contentId) {
-        setLocalError('Content ID is missing. Please try again.');
-        return;
-      }
-      const userId = user.userId || user._id;
-      if (!userId) {
-        setLocalError('User ID is missing. Please log in again.');
-        setShowWelcomePopup(true);
-        return;
-      }
-      if (isInWatchlist) {
-        await dispatch(removeFromWatchlist({ userId, contentId })).unwrap();
+      if (user && user._id) {
+        const currentContent = homePageData[activeSlide];
+        if (currentContent) {
+          const contentId = currentContent._id;
+          const isWatchlisted = user.watchlist && user.watchlist.includes(contentId);
+          if (isWatchlisted) {
+            await dispatch(removeFromWatchlist({ userId: user._id, contentId }));
+          } else {
+            await dispatch(addToWatchlist({ userId: user._id, contentId }));
+          }
+        }
       } else {
-        await dispatch(addToWatchlist({ userId, contentId })).unwrap();
+        setShowWelcomePopup(true);
       }
     } catch (error) {
-      console.error('Watchlist error:', error);
-      setLocalError('Failed to update watchlist. Please try again.');
+      console.error('Error adding/removing from watchlist:', error);
     }
   };
 
-  const handleDotsClick = (e) => {
-    e.stopPropagation();
-    setShowPopup(!showPopup);
-  };
-
-  const handleCopyLink = (e) => {
-    e.stopPropagation();
-    const pageUrl = window.location.href;
-    navigator.clipboard.writeText(pageUrl)
-      .then(() => {
-        setCopyModal({ show: true, message: 'Link copied to clipboard!', isError: false });
-        setTimeout(() => setCopyModal({ show: false, message: '', isError: false }), 3000);
-      })
-      .catch((err) => {
-        console.error('Failed to copy: ', err);
-        setCopyModal({ show: true, message: 'Failed to copy link. Please try again.', isError: true });
-        setTimeout(() => setCopyModal({ show: false, message: '', isError: false }), 3000);
+  const handleWatchNow = () => {
+    const currentContent = homePageData[activeSlide];
+    if (currentContent) {
+      navigate(`/movie/${currentContent._id}`, {
+        state: {
+          movie: currentContent.video,
+          title: currentContent.title || '',
+          desc: currentContent.description || '',
+          credits: currentContent.credit || '',
+        },
       });
+    }
   };
 
-  const handleCloseCopyModal = () => {
-    setCopyModal({ show: false, message: '', isError: false });
+  const truncateTitle = (title, maxLength) => {
+    return title && title.length > maxLength ? title.slice(0, maxLength) + '...' : title || '';
   };
 
-  const titleSpliced = title?.slice(0, 30) + '...';
-  const description = desc?.slice(0, 100) + '...';
-  const isLiked = user?.like?.includes(movie?._id) || false;
-  const isInWatchlist = user?.watchlist?.includes(movie?._id) || false;
-  const movieUser = movie?.user;
+  const handleSlideChange = (index) => {
+    setActiveSlide(index);
+  };
 
-  const [showWelcomePopup, setShowWelcomePopup] = useState(false);
+  const CookiesPopup = () => (
+    <CookiesPopupContainer>
+      <div className="popup-content">
+        <h2>Cookies Policy</h2>
+        <p>We use cookies to enhance your experience. Please accept our cookies policy.</p>
+        <div className="button-group">
+          <button className="accept-btn" onClick={handleAcceptCookies}>
+            Accept
+          </button>
+          <button className="opt-out-btn" onClick={handleOptOutCookies}>
+            Opt Out
+          </button>
+        </div>
+      </div>
+    </CookiesPopupContainer>
+  );
 
   return (
-    <div
-      className="relative overflow-hidden w-full h-[78%] mr-0.5"
-      onMouseEnter={!isMobile ? handleHover : null}
-      onMouseLeave={!isMobile ? handleHoverOut : null}
-    >
-      {copyModal.show && (
-        <CopyModal isError={copyModal.isError}>
-          <p>{copyModal.message}</p>
-          <button onClick={handleCloseCopyModal}>Close</button>
-        </CopyModal>
-      )}
-      <div className="absolute top-2.5 w-full px-1 flex justify-between"></div>
-      {!hover && !isVideoPlaying ? (
-        <>
-          <img
-            className="w-full h-full object-cover cursor-pointer"
-            src={img}
-            alt={title}
-            onClick={handleClick}
-          />
-          <div className="absolute bottom-0 w-full bg-black bg-opacity-70 flex justify-between p-3 gap-2.5">
-            <h3 className="text-white text-base font-normal leading-6 w-4/5" style={customStyle || {}}>
-              {titleSpliced}
-            </h3>
-            {isMobile && (
-              <HiDotsVertical
-                className="text-white w-1/5 h-10 cursor-pointer"
-                onClick={handleDotsClick}
-              />
-            )}
-          </div>
-        </>
+    <Homecontent>
+      {showCookiesPopup && <CookiesPopup />}
+      {isMobile ? (
+        <Hamburger>
+          <MobileBurger channels={channels} set_channels={set_channels} />
+        </Hamburger>
       ) : (
-        <div className="flex flex-col justify-between h-full w-full">
-          <div className="h-20 w-full bg-black"></div>
-          <video
-            playsInline
-            loop
-            autoPlay={isVideoPlaying}
-            muted
-            className="w-full object-cover h-36 cursor-pointer"
-            onClick={handleVideoClick}
+        <DesktopHeader channels={channels} set_channels={set_channels} />
+      )}
+      {channels && (
+        <div className="h-[500px] w-[1000px] absolute top-[100px] left-[250px] z-[1001] overflow-hidden flex justify-center items-center rounded-2xl md:w-4/5 md:h-4/5 md:left-20 md:top-[100px]">
+          <button
+            className="absolute w-5 h-5 top-2.5 right-2.5 bg-red-500 border-none rounded-full text-white text-lg cursor-pointer"
+            onClick={() => set_channels(false)}
           >
-            <source src={movie?.video ? `${movie.video}#t=0,15` : ''} />
-          </video>
-          <div
-            className="h-52 w-full bg-black p-2 flex flex-col gap-2 mb-8"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex justify-between align-middle">
-              <div className="flex items-center gap-2">
-                <div className="flex w-20 h-4 rounded-sm bg-white justify-center gap-1 items-center">
-                  <h6 className="text-black text-[0.35rem]">
-                    By: {movieUser?.name || 'Anonymous'}
-                  </h6>
-                </div>
-                <div className="flex items-center gap-1 text-white text-[0.5rem]">
-                  <FaEye className="text-white" />
-                  <span>{views || 0}</span>
-                </div>
-              </div>
-              <div className="flex justify-end gap-1 items-center">
-                <FaHeart
-                  className={`cursor-pointer ${isLiked ? 'text-red-600 fill-current' : 'text-gray-400'}`}
-                  onClick={handleLike}
-                />
-                <span
-                  className={`cursor-pointer ${isInWatchlist ? 'text-green-600' : 'text-gray-400'}`}
-                  onClick={handleWatchlist}
-                >
-                  {isInWatchlist ? <FaCheck /> : <FaPlus />}
-                </span>
-                <FaPaperPlane
-                  className="text-white cursor-pointer"
-                  onClick={handleCopyLink}
-                />
-              </div>
-            </div>
-            <h4 className="text-white text-sm font-semibold" style={customStyle || {}}>
-              {titleSpliced}
-            </h4>
-            <p className="text-white text-xs font-light">{description}</p>
-            {progress > 0 && (
-              <div className="w-full bg-gray-700 rounded-full h-2">
-                <div
-                  className="bg-red-600 h-2 rounded-full"
-                  style={{ width: `${(progress / 300) * 100}%` }}
-                ></div>
-              </div>
-            )}
+            <AiOutlineClose />
+          </button>
+          <img
+            src={channelsimg}
+            alt=""
+            className="w-full h-full absolute object-cover top-0 left-0 z-[-1]"
+          />
+          <div className="h-fit w-4/5 flex justify-center items-center flex-col gap-2.5">
+            <h2 className="text-white text-2xl md:text-xl" style={{ textShadow: '2px 2px red' }}>
+              This feature is Coming Soon
+            </h2>
+            <p className="text-white text-xl md:text-sm" style={{ textShadow: '1px 1px red' }}>
+              Our content creators are doing great, and we are building a special platform for them!
+            </p>
+            <form className="flex justify-center items-center gap-5 w-1/2 mx-auto md:flex-col">
+              <input
+                name="name"
+                placeholder="Name"
+                type="text"
+                className="px-5 py-2.5 rounded-full"
+              />
+              <input
+                name="email"
+                placeholder="Email"
+                type="email"
+                className="px-5 py-2.5 rounded-full"
+              />
+              <button className="bg-red-500 px-5 py-2.5 text-white border-none rounded-full cursor-pointer">
+                Subscribe
+              </button>
+            </form>
           </div>
         </div>
       )}
-      {showPopup && (
-        <div
-          className="absolute bottom-12 right-5 p-2 bg-black bg-opacity-80 text-white rounded-lg shadow-lg flex flex-col items-center space-y-2"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <FaHeart
-            className={`cursor-pointer ${isLiked ? 'text-red-600 fill-current' : 'text-gray-400'}`}
-            onClick={handleLike}
-          />
-          <span
-            className={`cursor-pointer ${isInWatchlist ? 'text-green-600' : 'text-gray-400'}`}
-            onClick={handleWatchlist}
-          >
-            {isInWatchlist ? <FaCheck /> : <FaPlus />}
-          </span>
-          <FaPaperPlane
-            className="text-white cursor-pointer"
-            onClick={handleCopyLink}
-          />
+      <Content>
+        {isMobile ? (
+          <>
+            <LikedContentCardWrapper>
+              {homePageData.length === 0 ? (
+                <p style={{ color: 'white', textAlign: 'center' }}>Loading content...</p>
+              ) : (
+                <LikedContentCard
+                  likedContent={likedContent}
+                  homePageData={homePageData}
+                  contentIndex={contentIndex}
+                  isVisibleOnMobile={isMobile}
+                />
+              )}
+            </LikedContentCardWrapper>
+          </>
+        ) : (
+          <Banner>
+            <SliderWrapper>
+              {homePageData.slice(0, 3).map((content, index) => (
+                <Slide key={`slide-${content._id}`} active={index === activeSlide}>
+                  <BannerVideoContainer>
+                    <video
+                      key={`banner-${content._id}`}
+                      className="banner-video"
+                      muted
+                      loop
+                      autoPlay
+                      playsInline
+                      onError={(e) => {
+                        console.error('Banner video error:', e);
+                        e.target.src = FALLBACK_VIDEO_URL;
+                      }}
+                    >
+                      <source src={content.video} type="video/mp4" />
+                    </video>
+                  </BannerVideoContainer>
+                  <BannerContent>
+                    <div className="title-truncate mb-4">
+                      <h1 className="font-semibold">{truncateTitle(content.title, 20)}</h1>
+                    </div>
+                    <div className="description-truncate mb-8">
+                      <p>{content.description || ''}</p>
+                      {content.description?.length > 150 && (
+                        <button className="view-more-btn">View more</button>
+                      )}
+                    </div>
+                    <ButtonContainer>
+                      <NeonButton onClick={handleWatchNow}>
+                        WATCH NOW
+                        <img src={playbutton} alt="play" />
+                      </NeonButton>
+                      <NeonButton onClick={handleWatchlist}>
+                        ADD TO WATCHLIST
+                        <img src={plusbutton} alt="add" />
+                      </NeonButton>
+                    </ButtonContainer>
+                    <ButtonContainer marginTop>
+                      <NeonButton onClick={handleLike}>
+                        LIKE
+                        <img src={isLiked ? redheart : whiteheart} alt="heart" />
+                      </NeonButton>
+                      <NeonButton onClick={() => setShareModalOpen((prev) => !prev)}>
+                        SHARE
+                        <img src={sendmessage} alt="share" />
+                      </NeonButton>
+                      <NeonButton onClick={() => set_channels((prev) => !prev)}>
+                        ADD TO FAVOURITE +
+                      </NeonButton>
+                    </ButtonContainer>
+                    {shareModalOpen && (
+                      <ShareModal
+                        open={shareModalOpen}
+                        onClose={() => setShareModalOpen(false)}
+                        shareUrl={shareUrl}
+                      />
+                    )}
+                  </BannerContent>
+                </Slide>
+              ))}
+              <RadioButtons>
+                {[0, 1, 2].map((index) => (
+                  <input
+                    key={`radio-${index}`}
+                    type="radio"
+                    name="banner-slide"
+                    checked={activeSlide === index}
+                    onChange={() => handleSlideChange(index)}
+                  />
+                ))}
+              </RadioButtons>
+            </SliderWrapper>
+          </Banner>
+        )}
+        <div className='mb-28 md:mb-0' ref={sliderContainerRef}>
+          <div className=" my-28 md:h-[250px] h-[220px] mx-[20px]" id="top10">
+            <Videocategorytitle>Top 10</Videocategorytitle>
+            <Slidertop10 />
+          </div>
+
+          <div className=" my-28 md:h-[250px] h-[220px] mx-[20px]" id="newonplay">
+            <Videocategorytitle>New on Playmood</Videocategorytitle>
+            <SliderNew />
+          </div>
+          <div className="my-28 md:h-[250px] h-[130px] mx-[20px]" id="channel">
+            <Videocategorytitle>Channels</Videocategorytitle>
+            <SliderChannel />
+          </div>
+          <div className="my-28 md:h-[250px] h-[130px] mx-[20px]" id="diaries">
+            <Videocategorytitle>Diaries</Videocategorytitle>
+            <SliderDiaries />
+          </div>
+          <div className="my-28 md:h-[250px] h-[140px] mx-[20px]" id="spaces">
+            <Videocategorytitle>Spaces</Videocategorytitle>
+            <SliderSpace />
+          </div>
+          <VideoCategory className="video-category-1" id="recommended">
+            <Videocategorytitle>Recommended for you</Videocategorytitle>
+            <SlideRecommended />
+          </VideoCategory>
+          <VideoCategory className="video-category-1" id="interviews">
+            <Videocategorytitle>Interviews</Videocategorytitle>
+            <SliderInterview />
+          </VideoCategory>
+          <VideoCategory className="video-category-1" id="fashion">
+            <Videocategorytitle>Fashion Shows</Videocategorytitle>
+            <SliderFashion />
+          </VideoCategory>
+          <VideoCategory className="video-category-1" id="social">
+            <Videocategorytitle>Social</Videocategorytitle>
+            <SliderSocial />
+          </VideoCategory>
+          <VideoCategory className="video-category-1" id="documentaries">
+            <Videocategorytitle>Documentaries and Reports</Videocategorytitle>
+            <SliderDocumentaries />
+          </VideoCategory>
+          <VideoCategory className="video-category-1" id="documentaries">
+            <Videocategorytitle>Behind the Cameras</Videocategorytitle>
+            <SliderCamera />
+          </VideoCategory>
+          <VideoCategory className="video-category-1" id="documentaries">
+            <Videocategorytitle>Soon in Playmood</Videocategorytitle>
+            <SliderSoon />
+          </VideoCategory>
+          <VideoCategory className="video-category-1" id="teens">
+            <Videocategorytitle>Teens</Videocategorytitle>
+            <SliderTeens />
+          </VideoCategory>
+          <VideoCategory className="video-category-1" id="social">
+            <Videocategorytitle>Best in Fashion</Videocategorytitle>
+            <SliderFashion />
+          </VideoCategory>
+          <VideoCategory className="video-category-1" id="infashion">
+            <Videocategorytitle>Only in playmood</Videocategorytitle>
+            <SliderOnly />
+          </VideoCategory>
         </div>
-      )}
-      {showWelcomePopup && (
         <WelcomePopup
           showPopup={showWelcomePopup}
           onClose={() => setShowWelcomePopup(false)}
           onLogin={() => setShowWelcomePopup(false)}
           onRegister={() => setShowWelcomePopup(false)}
         />
-      )}
-    </div>
+         <div>
+          <Footer/>
+         </div>
+      </Content>
+    </Homecontent>
   );
-});
+}
 
-const CopyModal = styled.div`
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background: ${({ isError }) => (isError ? '#541011' : '#541011')};
-  color: white;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  align-items: center;
-  max-width: 300px;
+export default function Home() {
+  const [channels, set_channels] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [showCookiesPopup, setShowCookiesPopup] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
+  const [homePageData, setHomePageData] = useState([]);
+  const [contentIndex, setContentIndex] = useState(0);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [shareUrl] = useState('');
+  const [showWelcomePopup, setShowWelcomePopup] = useState(false);
+  const [likedContent, setLikedContent] = useState([]);
+  const sliderContainerRef = useRef(null);
+  const user = useSelector((state) => state.auth.user);
 
-  p {
-    margin: 0;
-    font-size: 14px;
-    text-align: center;
-  }
+  return (
+    <HomeContent
+      channels={channels}
+      set_channels={set_channels}
+      isMobile={isMobile}
+      setIsMobile={setIsMobile}
+      showCookiesPopup={showCookiesPopup}
+      setShowCookiesPopup={setShowCookiesPopup}
+      isLiked={isLiked}
+      setIsLiked={setIsLiked}
+      user={user}
+      homePageData={homePageData}
+      setHomePageData={setHomePageData}
+      contentIndex={contentIndex}
+      setContentIndex={setContentIndex}
+      shareModalOpen={shareModalOpen}
+      setShareModalOpen={setShareModalOpen}
+      shareUrl={shareUrl}
+      showWelcomePopup={showWelcomePopup}
+      setShowWelcomePopup={setShowWelcomePopup}
+      likedContent={likedContent}
+      setLikedContent={setLikedContent}
+      sliderContainerRef={sliderContainerRef}
+    />
+  );
+}
 
-  button {
-    background: #fff;
-    color: ${({ isError }) => (isError ? '#ff4d4f' : '#28a745')};
-    border: none;
-    padding: 6px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 12px;
-  }
-`;
-
-export default Slidercontent;
+export {
+  Homecontent,
+  Content,
+  Banner,
+  VideoCategory,
+  Videocategorytitle,
+  LikedContentCardWrapper,
+  SliderContainer,
+};

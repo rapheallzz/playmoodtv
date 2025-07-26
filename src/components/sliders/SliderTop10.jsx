@@ -95,45 +95,53 @@ export default function Slidertop10() {
     navigate(`/movie/${slug}`);
   };
 
-  const settings = {
-    dots: false,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 5,
-    slidesToScroll: 1,
-    initialSlide: 0,
-    prevArrow: <CustomPrevArrow />,
-    nextArrow: <CustomNextArrow />,
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 3,
-          slidesToScroll: 1,
-          infinite: true,
-          dots: true,
-          arrows: true,
-        },
+ const settings = {
+  dots: false,
+  infinite: true,
+  speed: 500,
+  slidesToShow: 5,
+  slidesToScroll: 1,
+  initialSlide: 0,
+  prevArrow: <CustomPrevArrow />,
+  nextArrow: <CustomNextArrow />,
+  touchThreshold: 10,
+   swipeToSlide: true,
+    lazyLoad: 'ondemand',
+  responsive: [
+    {
+      breakpoint: 1024,
+      settings: {
+        slidesToShow: 3,
+        slidesToScroll: 1,
+        infinite: true,
+        dots: true,
+        arrows: true,
       },
-      {
-        breakpoint: 600,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 1,
-          initialSlide: 2,
-          arrows: true,
-        },
+    },
+    {
+      breakpoint: 600,
+      settings: {
+        slidesToShow: 2,
+        slidesToScroll: 1,
+        initialSlide: 2,
+        arrows: true,
       },
-      {
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
-          arrows: false,
-        },
+    },
+    {
+      breakpoint: 480,
+      settings: {
+        slidesToShow: 1.5,
+        slidesToScroll: 1,
+        arrows: false,
+        centerMode: true, // Center the slide
+        centerPadding: '20px', // Add padding to prevent content from touching screen edges
+          prevArrow: <CustomPrevArrow />,
+  nextArrow: <CustomNextArrow />,
+  touchThreshold: 10,
       },
-    ],
-  };
+    },
+  ],
+};
 
   return (
     <SliderContainer>
@@ -276,6 +284,8 @@ const SliderContainer = styled.div`
 
   @media (max-width: 480px) {
     padding: 0 10px;
+    width: 100%; /* Reduce width for mobile */
+    margin: 0 auto;
 
     .custom-arrow {
       display: none !important;
@@ -285,7 +295,11 @@ const SliderContainer = styled.div`
       left: -20px;
       width: 20px;
       height: 20px;
-      font-size: 14px;
+      font-size: 24px;
+    }
+
+    .slick-slide {
+      padding: 0 2px; /* Reduce padding between slides */
     }
   }
 `;

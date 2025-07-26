@@ -103,6 +103,8 @@ export default function SliderRecommended() {
     initialSlide: 0,
     prevArrow: <CustomPrevArrow />,
     nextArrow: <CustomNextArrow />,
+     swipeToSlide: true,
+    lazyLoad: 'ondemand',
     responsive: [
       {
         breakpoint: 1024,
@@ -126,9 +128,11 @@ export default function SliderRecommended() {
       {
         breakpoint: 480,
         settings: {
-          slidesToShow: 1,
+         slidesToShow: 1.5,
           slidesToScroll: 1,
           arrows: false,
+          centerMode: true,
+        centerPadding: '20px',
         },
       },
     ],

@@ -3,7 +3,7 @@ import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import axios from 'axios';
-import Slidercontent from '../SlidercontPlain';
+import Slidercontent from '../Slidercont';
 import { useNavigate } from 'react-router-dom';
 import ContentModal from '../ContentModal'; 
 

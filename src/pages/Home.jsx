@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { toast } from 'react-toastify';
 import styled, { keyframes } from 'styled-components';
 import MobileBurger from '../components/headers/MobileBurger';
 import DesktopHeader from '../components/headers/DesktopHeader';
@@ -35,6 +34,7 @@ import { AiOutlineClose } from 'react-icons/ai';
 import LikedContentCard from '../components/LikedContentCard';
 import axios from 'axios';
 import { likeContent, unlikeContent, addToWatchlist, removeFromWatchlist } from '../features/authSlice';
+import Footer from '../components/footer/Footer';
 
 // CookiesPopupContainer styled component
 const CookiesPopupContainer = styled.div`
@@ -173,11 +173,11 @@ const ButtonContainer = styled.div`
 const Homecontent = styled.div`
   width: 100%;
   min-height: 100vh;
-  overflow-x: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
   background-color: #000;
+  overflow-y: auto;
 `;
 
 const Hamburger = styled.div`
@@ -203,7 +203,7 @@ const Hamburger = styled.div`
 const Banner = styled.div`
   width: 100vw;
   height: 55vh;
-  position: ${(props) => (props.isFixed ? 'fixed' : 'relative')};
+  position: relative;
   top: 0;
   left: 0;
   z-index: 300;
@@ -211,10 +211,8 @@ const Banner = styled.div`
   overflow: hidden;
   display: flex;
   align-items: center;
-  transition: position 0.3s ease; /* Smooth transition for position change */
 
   @media screen and (max-width: 768px) {
-    position: relative;
     height: auto;
     flex-direction: column;
     z-index: 200;
@@ -269,7 +267,6 @@ const BannerContent = styled.div`
     font-size: 1.9rem;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
     max-width: 500px;
-    // color:#541011;
   }
 
   p {
@@ -371,15 +368,18 @@ const RadioButtons = styled.div`
 `;
 
 const Content = styled.div`
-  height: fit-content;
   width: 100%;
   position: relative;
   z-index: 200;
   background-color: black;
   padding-top: 80px;
+  box-sizing: border-box;
 
   @media screen and (max-width: 768px) {
-    padding-top: 0;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    overflow-y: auto;
+    min-height: 100vh;
   }
 `;
 
@@ -394,7 +394,7 @@ const LikedContentCardWrapper = styled.div`
   @media screen and (max-width: 768px) {
     padding: 10px;
     margin-top: 80px;
-    margin-bottom: 0px;
+    margin-bottom: 60px;
   }
 `;
 
@@ -403,28 +403,40 @@ const SliderContainer = styled.div`
   position: relative;
   z-index: 200;
   box-sizing: border-box;
-  overflow-x: hidden;
-  margin-top: 378px;
+  margin: 20px 0;
+  padding: 0 10px;
 
-  @media screen and (max-width: 768px) {
-    padding: 10px;
-    margin-top: 0px;
-    margin-bottom: 0px;
+  @media screen and (max-width: 495px) {
+    margin: 130px 0 20px 0;
+    padding: 0 5px;
+    overflow-y: visible;
+    touch-action: pan-y;
   }
 `;
 
 const VideoCategory = styled.div`
-  height: 340px;
   width: 92%;
-  margin: 0px 20px 5px 20px;
+  margin: 20px;
   display: flex;
-  gap: 0px;
   flex-direction: column;
+  height:380px;
+  min-height: 220px;
+  box-sizing: border-box;
+  z-index: 210;
+
+  @media screen and (max-width: 768px) {
+    min-height: 180px;
+    margin: 10px 10px 20px 10px;
+    padding-bottom: 20px;
+    z-index: 210;
+  }
 
   @media screen and (max-width: 495px) {
-    margin-top: 120px;
-    margin-bottom: 0px;
-    height: 240px;
+    min-height: 180px;
+    height:280px;
+    margin: 10px 10px 30px 10px;
+    padding-bottom: 30px;
+    z-index: 210;
   }
 `;
 
@@ -445,86 +457,18 @@ const Videocategorytitle = styled.h3`
   }
 `;
 
-const Footer = styled.div`
-  height: fit-content;
+const FooterContainer = styled.footer`
   width: 100%;
-  background-color: black;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 20px;
-  padding: 20px 60px 20px 60px;
-  position: relative;
-  z-index: 200;
+  background-color: #000;
+  color: white;
+  padding: 20px 0;
+  margin-top: 40px;
 
-  .contact-footer {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-
-    div {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-  }
-
-  .instagrams {
-    display: flex;
-    gap: 5px;
-
-    .instagram-official {
-      display: flex;
-      height: fit-content;
-      align-items: center;
-      color: white;
-
-      .instagram-links {
-        a {
-          text-decoration: none;
-          color: white;
-        }
-      }
-
-      img {
-        height: 20px;
-        width: 20px;
-      }
-    }
-  }
-
-  div {
-    height: fit-content;
-    display: flex;
-    gap: 10px;
-    color: white;
-
-    p {
-      font-size: 0.7rem;
-      cursor: pointer;
-    }
-
-    img {
-      height: 80px;
-      width: 100%;
-      cursor: pointer;
-    }
-  }
-
-  @media screen and (max-width: 600px) {
-    flex-direction: column;
-    padding-bottom: 10px;
-    text-align: center;
+  @media screen and (max-width: 768px) {
+    margin-top: 30px;
+    padding: 15px 0;
   }
 `;
-
-const debounce = (func, wait) => {
-  let timeout;
-  return (...args) => {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func.apply(null, args), wait);
-  };
-};
 
 function HomeContent({
   channels,
@@ -553,7 +497,6 @@ function HomeContent({
   const navigate = useNavigate();
   const FALLBACK_VIDEO_URL = 'https://res.cloudinary.com/di97mcvbu/video/upload/v1708430555/contents/q1xhinruadpovy0jxf6f.mp4';
   const [activeSlide, setActiveSlide] = useState(0);
-  const [isBannerFixed, setIsBannerFixed] = useState(true);
 
   useEffect(() => {
     const cookiesAccepted = localStorage.getItem('cookiesAccepted');
@@ -587,7 +530,6 @@ function HomeContent({
         setHomePageData(response.data);
       } catch (error) {
         console.error('Error fetching data:', error);
-        toast.error('Failed to load content');
       }
     };
 
@@ -611,20 +553,6 @@ function HomeContent({
       return () => clearInterval(intervalId);
     }
   }, [homePageData.length]);
-
-    useEffect(() => {
-    const handleScroll = debounce(() => {
-      const fourthSlider = document.getElementById('channel');
-      if (fourthSlider) {
-        const rect = fourthSlider.getBoundingClientRect();
-        const isPastFourthSlider = rect.top <= 0;
-        setIsBannerFixed(!isPastFourthSlider);
-      }
-    }, 100); // 100ms debounce
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   const handleAcceptCookies = () => {
     localStorage.setItem('cookiesAccepted', 'true');
@@ -655,7 +583,6 @@ function HomeContent({
       }
     } catch (error) {
       console.error('Error liking/unliking content:', error);
-      toast.error('Error updating like status');
     }
   };
 
@@ -677,7 +604,6 @@ function HomeContent({
       }
     } catch (error) {
       console.error('Error adding/removing from watchlist:', error);
-      toast.error('Error updating watchlist');
     }
   };
 
@@ -787,7 +713,7 @@ function HomeContent({
             </LikedContentCardWrapper>
           </>
         ) : (
-          <Banner isFixed={isBannerFixed}>
+          <Banner>
             <SliderWrapper>
               {homePageData.slice(0, 3).map((content, index) => (
                 <Slide key={`slide-${content._id}`} active={index === activeSlide}>
@@ -808,8 +734,8 @@ function HomeContent({
                     </video>
                   </BannerVideoContainer>
                   <BannerContent>
-                    <div className="title-truncate mb-">
-                      <h1 className='font-semibold'>{truncateTitle(content.title, 20)}</h1>
+                    <div className="title-truncate mb-4">
+                      <h1 className="font-semibold">{truncateTitle(content.title, 20)}</h1>
                     </div>
                     <div className="description-truncate mb-8">
                       <p>{content.description || ''}</p>
@@ -865,72 +791,64 @@ function HomeContent({
           </Banner>
         )}
         <SliderContainer ref={sliderContainerRef}>
-          <VideoCategory className="video-category" id="top10">
+          <VideoCategory id="top10">
             <Videocategorytitle>Top 10</Videocategorytitle>
             <Slidertop10 />
           </VideoCategory>
-
-          {/* {user && (
-            <VideoCategory className="video-category-this" id="continue">
-              <Videocategorytitle>Continue Watching</Videocategorytitle>
-              <SliderNew />
-            </VideoCategory>
-          )} */}
-          
-          <VideoCategory className="video-category-this" id="newonplay">
+          <VideoCategory id="newonplay">
             <Videocategorytitle>New on Playmood</Videocategorytitle>
             <SliderNew />
           </VideoCategory>
-          <VideoCategory className="video-category-circle" id="channel">
+          <VideoCategory id="channel">
             <Videocategorytitle>Channels</Videocategorytitle>
             <SliderChannel />
           </VideoCategory>
-          <VideoCategory className="video-category-circle" id="diaries">
+          <VideoCategory id="diaries">
             <Videocategorytitle>Diaries</Videocategorytitle>
             <SliderDiaries />
           </VideoCategory>
-          <VideoCategory className="video-category-circle" id="spaces">
+          <VideoCategory id="spaces">
             <Videocategorytitle>Spaces</Videocategorytitle>
             <SliderSpace />
           </VideoCategory>
-          <VideoCategory className="video-category-1" id="recommended">
+          <VideoCategory id="recommended">
             <Videocategorytitle>Recommended for you</Videocategorytitle>
             <SlideRecommended />
           </VideoCategory>
-          <VideoCategory className="video-category-1" id="interviews">
+          <VideoCategory id="interviews">
             <Videocategorytitle>Interviews</Videocategorytitle>
             <SliderInterview />
           </VideoCategory>
-          <VideoCategory className="video-category-1" id="fashion">
+          <VideoCategory id="fashion">
             <Videocategorytitle>Fashion Shows</Videocategorytitle>
             <SliderFashion />
           </VideoCategory>
-          <VideoCategory className="video-category-1" id="social">
+          <VideoCategory id="social">
             <Videocategorytitle>Social</Videocategorytitle>
             <SliderSocial />
           </VideoCategory>
-          <VideoCategory className="video-category-1" id="documentaries">
+          <VideoCategory id="documentaries">
             <Videocategorytitle>Documentaries and Reports</Videocategorytitle>
             <SliderDocumentaries />
           </VideoCategory>
-          <VideoCategory className="video-category-1" id="documentaries">
+          <VideoCategory id="cameras">
             <Videocategorytitle>Behind the Cameras</Videocategorytitle>
             <SliderCamera />
           </VideoCategory>
-          <VideoCategory className="video-category-1" id="documentaries">
+          <VideoCategory id="soon">
             <Videocategorytitle>Soon in Playmood</Videocategorytitle>
             <SliderSoon />
           </VideoCategory>
-          <VideoCategory className="video-category-1" id="teens">
+          <VideoCategory id="teens">
             <Videocategorytitle>Teens</Videocategorytitle>
             <SliderTeens />
           </VideoCategory>
-          <VideoCategory className="video-category-1" id="social">
+          <VideoCategory id="bestfashion">
             <Videocategorytitle>Best in Fashion</Videocategorytitle>
             <SliderFashion />
           </VideoCategory>
-          <VideoCategory className="video-category-1" id="infashion">
-            <Videocategorytitle>Only in playmood</Videocategorytitle>
+          <VideoCategory id="infashion">
+            <Videocategorytitle>Only in Playmood</Videocategorytitle>
             <SliderOnly />
           </VideoCategory>
         </SliderContainer>
@@ -940,55 +858,9 @@ function HomeContent({
           onLogin={() => setShowWelcomePopup(false)}
           onRegister={() => setShowWelcomePopup(false)}
         />
-        <Footer>
-          <div>
-            <img src={logo} alt="PlaymoodTV Logo" />
-          </div>
-          <div className="instagrams">
-            <div className="instagram-official">
-              <a href="https://instagram.com/playmoodtv?igshid=MzRlODBiNWFlZA==">
-                <img src={instagram} alt="Instagram" />
-              </a>
-              <p className="instagram-links">
-                <a href="https://instagram.com/playmoodtv?igshid=MzRlODBiNWFlZA==" target="_blank" rel="noopener noreferrer">
-                  Official
-                </a>
-              </p>
-            </div>
-            <div className="instagram-official">
-              <a href="https://www.instagram.com/playmoodlat/">
-                <img src={instagram} alt="Instagram" />
-              </a>
-              <p className="instagram-links">
-                <a href="https://www.instagram.com/playmoodlat/" target="_blank" rel="noopener noreferrer">
-                  Latam
-                </a>
-              </p>
-            </div>
-            <div className="instagram-official">
-              <a href="https://www.instagram.com/playmoodmx/">
-                <img src={instagram} alt="Instagram" />
-              </a>
-              <p className="instagram-links">
-                <a href="https://www.instagram.com/playmoodmx/" target="_blank" rel="noopener noreferrer">
-                  MX
-                </a>
-              </p>
-            </div>
-          </div>
-          <div></div>
-          <div className="contact-footer">
-            <h2>Contact us:</h2>
-            <h3>Creators@playmoodtv.com</h3>
-            <div>
-              <p onClick={() => navigate('/privacy-policy')}>Privacy Policy</p>
-              <p onClick={() => navigate('/cookies')}>Cookies Policy</p>
-            </div>
-            <div>
-              <p>All rights reserved to PlaymoodTV 2023</p>
-            </div>
-          </div>
-        </Footer>
+        <FooterContainer>
+          <Footer />
+        </FooterContainer>
       </Content>
     </Homecontent>
   );
@@ -1041,7 +913,7 @@ export {
   Banner,
   VideoCategory,
   Videocategorytitle,
-  Footer,
   LikedContentCardWrapper,
   SliderContainer,
+  FooterContainer,
 };

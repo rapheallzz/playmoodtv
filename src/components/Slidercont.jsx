@@ -27,7 +27,7 @@ const Slidercontent = React.memo(function Slidercontent({
   const { user } = useSelector((state) => state.auth);
   const videoRef = useRef(null);
   const touchStart = useRef({ x: 0, y: 0 });
-  const isDragging = useRef(false);
+  const touchTimeout = useRef(null);
 
   // Compute preview timestamps when movie changes
   useEffect(() => {
@@ -62,45 +62,47 @@ const Slidercontent = React.memo(function Slidercontent({
     }
   };
 
-  // Track touch/mouse start position
+  // Track touch start position
   const handleTouchStart = (e) => {
     const clientX = e.type === 'mousedown' ? e.clientX : e.touches[0].clientX;
     const clientY = e.type === 'mousedown' ? e.clientY : e.touches[0].clientY;
     touchStart.current = { x: clientX, y: clientY };
-    isDragging.current = false;
   };
 
-  // Detect if the touch/mouse moved significantly
-  const handleTouchMove = () => {
-    isDragging.current = true;
-  };
+  // Handle touch end to detect tap vs. drag
+  const handleTouchEnd = (e) => {
+    clearTimeout(touchTimeout.current);
+    touchTimeout.current = setTimeout(() => {
+      const clientX = e.type === 'mouseup' ? e.clientX : e.changedTouches[0].clientX;
+      const clientY = e.type === 'mouseup' ? e.clientY : e.changedTouches[0].clientY;
+      const distance = Math.sqrt(
+        Math.pow(clientX - touchStart.current.x, 2) +
+        Math.pow(clientY - touchStart.current.y, 2)
+      );
 
-  // Handle click only if not dragging
-  const handleClick = (e) => {
-    e.preventDefault();
-    e.stopPropagation(); // Prevent event bubbling to parent elements
-    const clientX = e.type === 'click' ? e.clientX : e.changedTouches[0].clientX;
-    const clientY = e.type === 'click' ? e.clientY : e.changedTouches[0].clientY;
-    const distance = Math.sqrt(
-      Math.pow(clientX - touchStart.current.x, 2) +
-      Math.pow(clientY - touchStart.current.y, 2)
-    );
+      // Check if the tap target is the image or its container, not the dots icon
+      const target = e.target;
+      const isDotsIcon = target.closest('svg')?.classList.contains('text-white') || false;
 
-    // Only trigger click if movement is minimal (e.g., less than 10 pixels)
-    if (!isDragging.current && distance < 10) {
-      if (isMobile) {
-        if (!isVideoPlaying) {
-          setHover(true);
-          setIsVideoPlaying(true);
+      if (distance < 10 && !isDotsIcon) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (isMobile) {
+          if (!isVideoPlaying) {
+            setHover(true);
+            setIsVideoPlaying(true);
+            setShowPopup(false); // Ensure popup closes when video preview is triggered
+          } else {
+            onVideoClick();
+            setHover(false);
+            setIsVideoPlaying(false);
+            setShowPopup(false); // Ensure popup closes when video preview is closed
+          }
         } else {
-          onVideoClick(); // Trigger modal on second tap
-          setHover(false);
-          setIsVideoPlaying(false);
+          onVideoClick();
         }
-      } else {
-        onVideoClick(); // Trigger modal on single click for desktop
       }
-    }
+    }, 100);
   };
 
   const handleLike = async (e) => {
@@ -160,6 +162,7 @@ const Slidercontent = React.memo(function Slidercontent({
 
   const handleDotsClick = (e) => {
     e.stopPropagation();
+    e.preventDefault(); // Prevent default to avoid triggering parent touch events
     setShowPopup(!showPopup);
   };
 
@@ -193,14 +196,13 @@ const Slidercontent = React.memo(function Slidercontent({
 
   return (
     <div
-      className="relative overflow-hidden md:w-full h-[78%] w-60 md:mr-0.5"
+      className="relative overflow-hidden md:w-full h-[78%] w-full max-w-[200px] md:max-w-none md:mr-0.5"
       onMouseEnter={handleHover}
       onMouseLeave={handleHoverOut}
       onMouseDown={handleTouchStart}
-      onMouseMove={handleTouchMove}
       onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleClick}
+      onMouseUp={handleTouchEnd}
+      onTouchEnd={handleTouchEnd}
     >
       {copyModal.show && (
         <CopyModal isError={copyModal.isError}>
@@ -212,21 +214,20 @@ const Slidercontent = React.memo(function Slidercontent({
       <div className="absolute top-2.5 w-full px-1 flex justify-between"></div>
       {!hover && !isVideoPlaying ? (
         <>
-          <div className="h-[70%]">
+          <div className="md:h-[70%] h-[50%]">
             <img
               className="w-full h-full object-cover cursor-pointer"
               src={img}
               alt={title}
-              onClick={handleClick} // Handle clicks on image
             />
           </div>
-          <div className="absolute bottom-3 w-full bg-black bg-opacity-50 flex justify-between p-3 gap-2.5">
-            <h3 className="text-white text-base font-normal leading-6 w-[80%]" style={customStyle || {}}>
+          <div className="absolute md:bottom-3  w-full bg-black bg-opacity-50 flex justify-between p-3 gap-2.5">
+            <h3 className="text-white text-[8px] md:text-[16px]  font-normal  w-[80%]" style={customStyle || {}}>
               {titleSpliced}
             </h3>
-            {isMobile && (
+            {isMobile && !hover && !isVideoPlaying && (
               <HiDotsVertical
-                className="text-white w-1/5 h-10 cursor-pointer"
+                className="text-white w-1/5 cursor-pointer"
                 onClick={handleDotsClick}
               />
             )}
@@ -241,8 +242,7 @@ const Slidercontent = React.memo(function Slidercontent({
             loop
             autoPlay={isVideoPlaying}
             muted
-            className="w-full object-cover h-36 cursor-pointer"
-            onClick={handleClick} // Handle clicks on video
+            className="w-full object-cover h-36 cursor-pointer max-w-[200px] md:max-w-none mx-auto"
           >
             <source
               src={
@@ -254,7 +254,7 @@ const Slidercontent = React.memo(function Slidercontent({
           </video>
           <div
             className="h-52 w-full bg-black p-2 flex flex-col gap-2 mb-8"
-            onClick={(e) => e.stopPropagation()} // Prevent clicks on details from triggering modal
+            onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between align-middle">
               <div className="flex items-center gap-2">
@@ -285,10 +285,10 @@ const Slidercontent = React.memo(function Slidercontent({
                 />
               </div>
             </div>
-            <h4 className="text-white text-sm font-semibold" style={customStyle || {}}>
+            <h4 className="text-white text-[12px] md:text-[16px] font-semibold" style={customStyle || {}}>
               {titleSpliced}
             </h4>
-            <p className="text-white text-xs font-light">{description}</p>
+            <p className="text-white text-[8px] md:text-[12px] font-light">{description}</p>
             {progress > 0 && (
               <div className="w-full bg-gray-700 rounded-full h-2">
                 <div

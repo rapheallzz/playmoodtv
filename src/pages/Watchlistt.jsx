@@ -32,19 +32,17 @@ export default function Watchlist() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // const userId = '65a1b29e81e997cff7fa0bca';
-        const userId = user._id;
-        const response = await axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/user/watchlist/${userId}`);
-        setData(response.data.watchList);
+        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
+        setData(response.data);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
-  
+
     fetchData();
   }, []);
 
-  // const filteredData = data.filter((content) => content.category === 'Top 10');
+  const filteredData = data.filter((content) => content.category === 'Top 10');
 
   const createSlug = (title, _id) => {
     const formattedTitle = title.toLowerCase().replace(/[^a-z0-9]+/g, '-'); 
@@ -98,7 +96,7 @@ export default function Watchlist() {
              
          
 
-             {data.map((content) => (
+             {filteredData.map((content) => (
                <div className="flex-grow w-[210px] max-h-[310px] max-w-[210px] md:flex-none md:w-[250px] md:max-w-[250px] md:max-h-[350px] box-border cursor-pointer transition-transform duration-300 ease-in-out hover:scale-105" key={content._id} onClick={() => handleNavigateToMovie(content)}>
                  <Slidercontent
                    img={content.thumbnail}
@@ -110,7 +108,7 @@ export default function Watchlist() {
                  />
                </div>
              ))}
-           </Content>
+         </Content>
 
 
           </div>  
@@ -143,6 +141,24 @@ export default function Watchlist() {
         <img className="h-7 w-7" src={instagram} alt="Instagram" />
       </a>
       <p><a className="no-underline text-white" href="https://www.instagram.com/playmoodmx/" target="_blank" rel="noopener noreferrer">MX</a></p>
+    </div>
+        <div className="flex items-center text-white gap-2">
+      <a className="no-underline text-white" href="https://www.instagram.com/playmoodindia/" target="_blank" rel="noopener noreferrer">
+        <img className="h-7 w-7" src={instagram} alt="Instagram" />
+      </a>
+      <p><a className="no-underline text-white" href="https://www.instagram.com/playmoodindia/" target="_blank" rel="noopener noreferrer">IN</a></p>
+    </div>
+        <div className="flex items-center text-white gap-2">
+      <a className="no-underline text-white" href="https://www.instagram.com/playmoodargentina/" target="_blank" rel="noopener noreferrer">
+        <img className="h-7 w-7" src={instagram} alt="Instagram" />
+      </a>
+      <p><a className="no-underline text-white" href="https://www.instagram.com/playmoodargentina/" target="_blank" rel="noopener noreferrer">AR</a></p>
+    </div>
+        <div className="flex items-center text-white gap-2">
+      <a className="no-underline text-white" href="https://www.instagram.com/playmoodcolombia/" target="_blank" rel="noopener noreferrer">
+        <img className="h-7 w-7" src={instagram} alt="Instagram" />
+      </a>
+      <p><a className="no-underline text-white" href="https://www.instagram.com/playmoodcolombia/" target="_blank" rel="noopener noreferrer">COL</a></p>
     </div>
   </div>
         </div>

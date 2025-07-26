@@ -138,6 +138,24 @@ export default function Recommended() {
       </a>
       <p><a className="no-underline text-white" href="https://www.instagram.com/playmoodmx/" target="_blank" rel="noopener noreferrer">MX</a></p>
     </div>
+        <div className="flex items-center text-white gap-2">
+      <a className="no-underline text-white" href="https://www.instagram.com/playmoodindia/" target="_blank" rel="noopener noreferrer">
+        <img className="h-7 w-7" src={instagram} alt="Instagram" />
+      </a>
+      <p><a className="no-underline text-white" href="https://www.instagram.com/playmoodindia/" target="_blank" rel="noopener noreferrer">IN</a></p>
+    </div>
+        <div className="flex items-center text-white gap-2">
+      <a className="no-underline text-white" href="https://www.instagram.com/playmoodargentina/" target="_blank" rel="noopener noreferrer">
+        <img className="h-7 w-7" src={instagram} alt="Instagram" />
+      </a>
+      <p><a className="no-underline text-white" href="https://www.instagram.com/playmoodargentina/" target="_blank" rel="noopener noreferrer">AR</a></p>
+    </div>
+        <div className="flex items-center text-white gap-2">
+      <a className="no-underline text-white" href="https://www.instagram.com/playmoodcolombia/" target="_blank" rel="noopener noreferrer">
+        <img className="h-7 w-7" src={instagram} alt="Instagram" />
+      </a>
+      <p><a className="no-underline text-white" href="https://www.instagram.com/playmoodcolombia/" target="_blank" rel="noopener noreferrer">COL</a></p>
+    </div>
   </div>
         </div>
 

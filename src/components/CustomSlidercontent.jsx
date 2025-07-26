@@ -1,114 +1,96 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, memo } from 'react';
 import { HiDotsVertical } from 'react-icons/hi';
 import { FaPaperPlane, FaHeart, FaPlus, FaCheck, FaEye } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import WelcomePopup from '../components/Welcomepop';
 import { likeContent, unlikeContent, addToWatchlist, removeFromWatchlist } from '../features/authSlice';
 import styled from 'styled-components';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
-const Slidercontent = React.memo(function Slidercontent({
-  img,
-  title,
-  movie,
-  views,
-  desc,
-  customStyle,
-  progress,
-  onVideoClick,
-  onHoverStart,
-  onHoverEnd,
-}) {
+const Slidercontent = memo(({ img, title, movie, views, desc, customStyle, progress, onVideoClick }) => {
   const [hover, setHover] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [showPopup, setShowPopup] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [localError, setLocalError] = useState(null);
   const [copyModal, setCopyModal] = useState({ show: false, message: '', isError: false });
-  const [previewTimestamps, setPreviewTimestamps] = useState({ start: 0, end: 15 }); // Default preview
+  const [previewTimestamps, setPreviewTimestamps] = useState({ start: 0, end: 15 });
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const videoRef = useRef(null);
+  const touchStart = useRef({ x: 0, y: 0 });
+  const touchTimeout = useRef(null);
 
-  // Compute preview timestamps when movie changes
+  // Handle window resize
   useEffect(() => {
-    if (movie?.shortPreview?.start && movie?.shortPreview?.end) {
-      // Use shortPreview if available
-      setPreviewTimestamps({
-        start: movie.shortPreview.start,
-        end: movie.shortPreview.end,
-      });
-    } 
-    // else {
-    //   // Fetch video duration and set random 10–15-second preview
-    //   const video = document.createElement('video');
-    //   video.src = movie?.video || '';
-    //   video.preload = 'metadata';
-
-    //   video.onloadedmetadata = () => {
-    //     const duration = video.duration || 300; // Default to 5 minutes if duration unavailable
-    //     const previewLength = Math.floor(Math.random() * 6) + 10; // Random 10–15 seconds
-    //     const maxStart = Math.max(0, duration - previewLength); // Ensure start doesn't exceed duration
-    //     const start = Math.floor(Math.random() * maxStart); // Random start time
-    //     const end = start + previewLength;
-
-    //     setPreviewTimestamps({ start, end });
-    //     video.remove(); // Clean up
-    //   };
-
-    //   video.onerror = () => {
-    //     console.error('Error loading video metadata:', movie?.video);
-    //     // Fallback to default 10-second preview from start
-    //     setPreviewTimestamps({ start: 0, end: 10 });
-    //     video.remove();
-    //   };
-
-    //   return () => {
-    //     video.remove();
-    //   };
-    // }
-  }, [movie]);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener('resize', handleResize);
     handleResize();
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
- const handleHover = () => {
-    setHover(true);
-    setIsVideoPlaying(true);
-    onHoverStart && onHoverStart(); // Notify parent
-  };
+  // Update preview timestamps
+  useEffect(() => {
+    if (movie?.shortPreview?.start && movie?.shortPreview?.end) {
+      setPreviewTimestamps({
+        start: movie.shortPreview.start,
+        end: movie.shortPreview.end,
+      });
+    }
+  }, [movie]);
 
-const handleHoverOut = () => {
-    setHover(false);
-    setIsVideoPlaying(false);
-    onHoverEnd && onHoverEnd(); // Notify parent
-  };
+  // Handle video play/pause
+  useEffect(() => {
+    const video = videoRef.current;
+    if (video && isVideoPlaying) {
+      video.play().catch((err) => console.error('Video play error:', err));
+    } else if (video) {
+      video.pause();
+    }
+  }, [isVideoPlaying]);
 
-  const handleClick = (e) => {
-    e.preventDefault();
-    if (isMobile) {
-      if (!isVideoPlaying) {
-        setHover(true);
-        setIsVideoPlaying(true);
-      }
-    } else {
-      onVideoClick();
+  const handleHover = () => {
+    if (!isMobile) {
+      setHover(true);
+      setIsVideoPlaying(true);
     }
   };
 
-  const handleVideoClick = (e) => {
-    e.stopPropagation();
-    if (isVideoPlaying) {
-      onVideoClick();
+  const handleHoverOut = () => {
+    if (!isMobile) {
       setHover(false);
       setIsVideoPlaying(false);
-      setHoveredContent(null);
     }
+  };
+
+  const handleTouchStart = (e) => {
+    const clientX = e.type === 'mousedown' ? e.clientX : e.touches[0].clientX;
+    const clientY = e.type === 'mousedown' ? e.clientY : e.touches[0].clientY;
+    touchStart.current = { x: clientX, y: clientY };
+  };
+
+  const handleTouchEnd = (e) => {
+    clearTimeout(touchTimeout.current);
+    touchTimeout.current = setTimeout(() => {
+      const clientX = e.type === 'mouseup' ? e.clientX : e.changedTouches[0].clientX;
+      const clientY = e.type === 'mouseup' ? e.clientY : e.changedTouches[0].clientY;
+      const distance = Math.sqrt(
+        Math.pow(clientX - touchStart.current.x, 2) +
+        Math.pow(clientY - touchStart.current.y, 2)
+      );
+
+      if (distance < 10) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (isMobile) {
+          setHover(!hover);
+          setIsVideoPlaying(!isVideoPlaying);
+        } else {
+          onVideoClick();
+        }
+      }
+    }, 100);
   };
 
   const handleLike = async (e) => {
@@ -120,18 +102,13 @@ const handleHoverOut = () => {
         return;
       }
       const contentId = movie?._id;
-      if (!contentId) {
-        setLocalError('Content ID is missing. Please try again.');
-        console.error('Content ID not found in movie object:', movie);
-        return;
-      }
+      if (!contentId) throw new Error('Content ID is missing');
       if (isLiked) {
         await dispatch(unlikeContent({ contentId })).unwrap();
       } else {
         await dispatch(likeContent({ contentId })).unwrap();
       }
     } catch (error) {
-      console.error('Like error:', error);
       setLocalError('Failed to like/unlike content. Please try again.');
     }
   };
@@ -145,23 +122,14 @@ const handleHoverOut = () => {
         return;
       }
       const contentId = movie?._id;
-      if (!contentId) {
-        setLocalError('Content ID is missing. Please try again.');
-        return;
-      }
       const userId = user.userId || user._id;
-      if (!userId) {
-        setLocalError('User ID is missing. Please log in again.');
-        setShowWelcomePopup(true);
-        return;
-      }
+      if (!contentId || !userId) throw new Error('Missing content or user ID');
       if (isInWatchlist) {
         await dispatch(removeFromWatchlist({ userId, contentId })).unwrap();
       } else {
         await dispatch(addToWatchlist({ userId, contentId })).unwrap();
       }
     } catch (error) {
-      console.error('Watchlist error:', error);
       setLocalError('Failed to update watchlist. Please try again.');
     }
   };
@@ -173,142 +141,113 @@ const handleHoverOut = () => {
 
   const handleCopyLink = (e) => {
     e.stopPropagation();
-    const pageUrl = window.location.href;
     navigator.clipboard
-      .writeText(pageUrl)
-      .then(() => {
-        setCopyModal({ show: true, message: 'Link copied to clipboard!', isError: false });
-        setTimeout(() => setCopyModal({ show: false, message: '', isError: false }), 3000);
-      })
-      .catch((err) => {
-        console.error('Failed to copy: ', err);
-        setCopyModal({ show: true, message: 'Failed to copy link. Please try again.', isError: true });
-        setTimeout(() => setCopyModal({ show: false, message: '', isError: false }), 3000);
-      });
+      .writeText(window.location.href)
+      .then(() =>
+        setCopyModal({ show: true, message: 'Link copied to clipboard!', isError: false })
+      )
+      .catch(() =>
+        setCopyModal({ show: true, message: 'Failed to copy link.', isError: true })
+      );
+    setTimeout(() => setCopyModal({ show: false, message: '', isError: false }), 3000);
   };
 
-  const handleCloseCopyModal = () => {
-    setCopyModal({ show: false, message: '', isError: false });
-  };
-
-  const titleSpliced = title?.slice(0, 30) + '...';
-  const description = desc?.slice(0, 100) + '...';
+  const titleSpliced = title?.slice(0, 30) + (title?.length > 30 ? '...' : '');
+  const description = desc?.slice(0, 100) + (desc?.length > 100 ? '...' : '');
   const isLiked = user?.like?.includes(movie?._id) || false;
   const isInWatchlist = user?.watchlist?.includes(movie?._id) || false;
-  const movieUser = movie?.user;
-
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
 
   return (
-    <div
-      className="relative overflow-hidden md:w-full h-[78%] w-60  md:mr-0.5 "
-      onMouseEnter={!isMobile ? handleHover : null}
-      onMouseLeave={!isMobile ? handleHoverOut : null}
+    <SlideWrapper
+      onMouseEnter={handleHover}
+      onMouseLeave={handleHoverOut}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      role="button"
+      tabIndex={0}
+      aria-label={`View details for ${title}`}
     >
       {copyModal.show && (
         <CopyModal isError={copyModal.isError}>
           <p>{copyModal.message}</p>
-          <button onClick={handleCloseCopyModal}>Close</button>
+          <button onClick={() => setCopyModal({ show: false, message: '', isError: false })}>
+            Close
+          </button>
         </CopyModal>
       )}
-
-      <div className="absolute top-2.5 w-full px-1 flex justify-between"></div>
       {!hover && !isVideoPlaying ? (
-        <>
-        <div className='h-[70%]'>
-              <img
-            className="w-full h-full object-cover  cursor-pointer"
+        <ImageWrapper>
+          <LazyLoadImage
             src={img}
             alt={title}
-            onClick={handleClick}
+            effect="blur"
+            className="w-full h-full object-cover cursor-pointer"
+            placeholderSrc="/placeholder.jpg"
           />
-        </div>
-
-          <div className="absolute bottom-0 w-full bg-black bg-opacity-50 flex justify-between p-3 gap-2.5">
-            <h3 className="text-white text-base font-normal leading-6 w-[80%]" style={customStyle || {}}>
-              {titleSpliced}
-            </h3>
+          <Overlay>
+            <Title style={customStyle}>{titleSpliced}</Title>
             {isMobile && (
               <HiDotsVertical
                 className="text-white w-1/5 h-10 cursor-pointer"
                 onClick={handleDotsClick}
+                aria-label="More options"
               />
             )}
-          </div>
-        </>
+          </Overlay>
+        </ImageWrapper>
       ) : (
-        <div className="flex flex-col justify-between h-full w-full">
-          <div className="h-20 w-full bg-black"></div>
+        <ContentWrapper>
           <video
             ref={videoRef}
             playsInline
             loop
-            autoPlay={isVideoPlaying}
             muted
             className="w-full object-cover h-36 cursor-pointer"
-            onClick={handleVideoClick}
-          >
-            <source
-              src={
-                movie?.video
-                  ? `${movie.video}#t=${previewTimestamps.start},${previewTimestamps.end}`
-                  : ''
-              }
-            />
-          </video>
-          <div
-            className="h-52 w-full bg-black p-2 flex flex-col gap-2 mb-8"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex justify-between align-middle">
-              <div className="flex items-center gap-2">
-                <div className="flex w-20 h-4 rounded-sm bg-white justify-center gap-1 items-center">
-                  <h6 className="text-black text-[0.35rem]">
-                    By: {movieUser?.name || 'Anonymous'}
-                  </h6>
-                </div>
-                <div className="flex items-center gap-1 text-white text-[0.5rem]">
-                  <FaEye className="text-white" />
-                  <span>{views || 0}</span>
-                </div>
-              </div>
-              <div className="flex justify-end gap-1 items-center">
-                <FaHeart
-                  className={`cursor-pointer ${isLiked ? 'text-red-600 fill-current' : 'text-gray-400'}`}
-                  onClick={handleLike}
-                />
-                <span
-                  className={`cursor-pointer ${isInWatchlist ? 'text-green-600' : 'text-gray-400'}`}
-                  onClick={handleWatchlist}
-                >
-                  {isInWatchlist ? <FaCheck /> : <FaPlus />}
-                </span>
-                <FaPaperPlane
-                  className="text-white cursor-pointer"
-                  onClick={handleCopyLink}
-                />
-              </div>
-            </div>
-            <h4 className="text-white text-sm font-semibold" style={customStyle || {}}>
-              {titleSpliced}
-            </h4>
-            <p className="text-white text-xs font-light">{description}</p>
+            src={movie?.video ? `${movie.video}#t=${previewTimestamps.start},${previewTimestamps.end}` : ''}
+            onClick={onVideoClick}
+            aria-label={`Preview for ${title}`}
+          />
+          <DetailsWrapper onClick={(e) => e.stopPropagation()}>
+            <MetaData>
+              <UserInfo>
+                By: {movie?.user?.name || 'Anonymous'}
+              </UserInfo>
+              <ViewCount>
+                <FaEye /> {views || 0}
+              </ViewCount>
+            </MetaData>
+            <Actions>
+              <FaHeart
+                className={`cursor-pointer ${isLiked ? 'text-red-600 fill-current' : 'text-gray-400'}`}
+                onClick={handleLike}
+                aria-label={isLiked ? 'Unlike' : 'Like'}
+              />
+              <span
+                className={`cursor-pointer ${isInWatchlist ? 'text-green-600' : 'text-gray-400'}`}
+                onClick={handleWatchlist}
+                aria-label={isInWatchlist ? 'Remove from watchlist' : 'Add to watchlist'}
+              >
+                {isInWatchlist ? <FaCheck /> : <FaPlus />}
+              </span>
+              <FaPaperPlane
+                className="text-white cursor-pointer"
+                onClick={handleCopyLink}
+                aria-label="Share link"
+              />
+            </Actions>
+            <Title style={customStyle}>{titleSpliced}</Title>
+            <Description>{description}</Description>
             {progress > 0 && (
-              <div className="w-full bg-gray-700 rounded-full h-2">
-                <div
-                  className="bg-red-600 h-2 rounded-full"
-                  style={{ width: `${(progress / 300) * 100}%` }}
-                ></div>
-              </div>
+              <ProgressBar>
+                <Progress style={{ width: `${(progress / 300) * 100}%` }} />
+              </ProgressBar>
             )}
-          </div>
-        </div>
+          </DetailsWrapper>
+        </ContentWrapper>
       )}
       {showPopup && (
-        <div
-          className="absolute bottom-12 right-5 p-2 bg-black bg-opacity-80 text-white rounded-lg shadow-lg flex flex-col items-center space-y-2"
-          onClick={(e) => e.stopPropagation()}
-        >
+        <Popup onClick={(e) => e.stopPropagation()}>
           <FaHeart
             className={`cursor-pointer ${isLiked ? 'text-red-600 fill-current' : 'text-gray-400'}`}
             onClick={handleLike}
@@ -319,11 +258,8 @@ const handleHoverOut = () => {
           >
             {isInWatchlist ? <FaCheck /> : <FaPlus />}
           </span>
-          <FaPaperPlane
-            className="text-white cursor-pointer"
-            onClick={handleCopyLink}
-          />
-        </div>
+          <FaPaperPlane className="text-white cursor-pointer" onClick={handleCopyLink} />
+        </Popup>
       )}
       {showWelcomePopup && (
         <WelcomePopup
@@ -333,16 +269,133 @@ const handleHoverOut = () => {
           onRegister={() => setShowWelcomePopup(false)}
         />
       )}
-    </div>
+      {localError && <ErrorMessage>{localError}</ErrorMessage>}
+    </SlideWrapper>
   );
 });
 
-const CopyModal = styled.div`
+const SlideWrapper = styled.div`
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+
+  &:focus {
+    outline: 2px solid #007bff;
+  }
+
+  @media (max-width: 768px) {
+    max-width: 200px;
+  }
+`;
+
+const ImageWrapper = styled.div`
+  position: relative;
+  height: 70%;
+`;
+
+const Overlay = styled.div`
   position: absolute;
+  bottom: 0;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  align-items: center;
+`;
+
+const ContentWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+`;
+
+const DetailsWrapper = styled.div`
+  background: #000;
+  padding: 10px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
+const MetaData = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const UserInfo = styled.span`
+  font-size: 0.7rem;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 2px 8px;
+  border-radius: 4px;
+`;
+
+const ViewCount = styled.span`
+  font-size: 0.7rem;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+`;
+
+const Actions = styled.div`
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+`;
+
+const Title = styled.h4`
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+`;
+
+const Description = styled.p`
+  color: #fff;
+  font-size: 0.8rem;
+  margin: 0;
+`;
+
+const ProgressBar = styled.div`
+  width: 100%;
+  background: #444;
+  height: 4px;
+  border-radius: 2px;
+`;
+
+const Progress = styled.div`
+  background: #e50914;
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+`;
+
+const Popup = styled.div`
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 10px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
+const CopyModal = styled.div`
+  position: fixed;
   top: 20px;
   right: 20px;
-  background: ${({ isError }) => (isError ? '#541011' : '#541011')};
-  color: white;
+  background: ${({ isError }) => (isError ? '#ff4d4f' : '#28a745')};
+  color: #fff;
   padding: 15px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -350,24 +403,16 @@ const CopyModal = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
-  align-items: center;
-  max-width: 300px;
+`;
 
-  p {
-    margin: 0;
-    font-size: 14px;
-    text-align: center;
-  }
-
-  button {
-    background: #fff;
-    color: ${({ isError }) => (isError ? '#ff4d4f' : '#28a745')};
-    border: none;
-    padding: 6px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 12px;
-  }
+const ErrorMessage = styled.div`
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: #ff4d4f;
+  color: #fff;
+  padding: 8px;
+  border-radius: 4px;
 `;
 
 export default Slidercontent;

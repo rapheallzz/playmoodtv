@@ -9,12 +9,14 @@ import styled from 'styled-components';
 const Slidercontent = React.memo(function Slidercontent({
   img,
   title,
-  movie,
+  movie, // Expect movie to be the video URL string
   views,
   desc,
   customStyle,
   progress,
   onVideoClick,
+  id, // Added to ensure content ID is passed
+  shortPreview, // Added to pass shortPreview explicitly
 }) {
   const [hover, setHover] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -22,26 +24,26 @@ const Slidercontent = React.memo(function Slidercontent({
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [localError, setLocalError] = useState(null);
   const [copyModal, setCopyModal] = useState({ show: false, message: '', isError: false });
-  const [previewTimestamps, setPreviewTimestamps] = useState({ start: 0, end: 15 }); // Default preview
+  const [previewTimestamps, setPreviewTimestamps] = useState({ start: 0, end: 15 });
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const videoRef = useRef(null);
 
-  // Compute preview timestamps when movie changes
+  // Compute preview timestamps
   useEffect(() => {
-    if (movie?.shortPreview?.start && movie?.shortPreview?.end) {
+    if (shortPreview?.start && shortPreview?.end) {
       setPreviewTimestamps({
-        start: movie.shortPreview.start,
-        end: movie.shortPreview.end,
+        start: shortPreview.start,
+        end: shortPreview.end,
       });
     } else {
       const video = document.createElement('video');
-      video.src = movie?.video || '';
+      video.src = movie || '';
       video.preload = 'metadata';
 
       video.onloadedmetadata = () => {
-        const duration = video.duration || 300; // Default to 5 minutes if duration unavailable
-        const previewLength = Math.floor(Math.random() * 6) + 10; // Random 10–15 seconds
+        const duration = video.duration || 300; // Default to 5 minutes
+        const previewLength = Math.floor(Math.random() * 6) + 10; // 10–15 seconds
         const maxStart = Math.max(0, duration - previewLength);
         const start = Math.floor(Math.random() * maxStart);
         const end = start + previewLength;
@@ -51,17 +53,17 @@ const Slidercontent = React.memo(function Slidercontent({
       };
 
       video.onerror = () => {
-        console.error('Error loading video metadata:', movie?.video);
+        console.error('Error loading video metadata for:', movie);
         setPreviewTimestamps({ start: 0, end: 10 });
+        setLocalError('Failed to load video preview.');
         video.remove();
       };
 
-      return () => {
-        video.remove();
-      };
+      return () => video.remove();
     }
-  }, [movie]);
+  }, [movie, shortPreview]);
 
+  // Detect mobile device
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
@@ -71,7 +73,13 @@ const Slidercontent = React.memo(function Slidercontent({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Handle hover for video playback
   const handleHover = () => {
+    if (!movie) {
+      console.error('No video URL provided for preview.');
+      setLocalError('No video available for preview.');
+      return;
+    }
     setHover(true);
     setIsVideoPlaying(true);
     if (videoRef.current) {
@@ -79,6 +87,7 @@ const Slidercontent = React.memo(function Slidercontent({
       videoRef.current.play().catch((error) => {
         console.error('Error playing video on hover:', error);
         setIsVideoPlaying(false);
+        setLocalError('Failed to play video preview.');
       });
     }
   };
@@ -88,7 +97,7 @@ const Slidercontent = React.memo(function Slidercontent({
     setIsVideoPlaying(false);
     if (videoRef.current) {
       videoRef.current.pause();
-      videoRef.current.currentTime = previewTimestamps.start; // Reset to start
+      videoRef.current.currentTime = previewTimestamps.start;
     }
   };
 
@@ -103,6 +112,7 @@ const Slidercontent = React.memo(function Slidercontent({
           videoRef.current.play().catch((error) => {
             console.error('Error playing video on click:', error);
             setIsVideoPlaying(false);
+            setLocalError('Failed to play video preview.');
           });
         }
       }
@@ -131,16 +141,15 @@ const Slidercontent = React.memo(function Slidercontent({
         setShowWelcomePopup(true);
         return;
       }
-      const contentId = movie?._id;
-      if (!contentId) {
+      if (!id) {
         setLocalError('Content ID is missing. Please try again.');
-        console.error('Content ID not found in movie object:', movie);
+        console.error('Content ID not found:', { movie, id });
         return;
       }
       if (isLiked) {
-        await dispatch(unlikeContent({ contentId })).unwrap();
+        await dispatch(unlikeContent({ contentId: id })).unwrap();
       } else {
-        await dispatch(likeContent({ contentId })).unwrap();
+        await dispatch(likeContent({ contentId: id })).unwrap();
       }
     } catch (error) {
       console.error('Like error:', error);
@@ -156,8 +165,7 @@ const Slidercontent = React.memo(function Slidercontent({
         setShowWelcomePopup(true);
         return;
       }
-      const contentId = movie?._id;
-      if (!contentId) {
+      if (!id) {
         setLocalError('Content ID is missing. Please try again.');
         return;
       }
@@ -168,19 +176,14 @@ const Slidercontent = React.memo(function Slidercontent({
         return;
       }
       if (isInWatchlist) {
-        await dispatch(removeFromWatchlist({ userId, contentId })).unwrap();
+        await dispatch(removeFromWatchlist({ userId, contentId: id })).unwrap();
       } else {
-        await dispatch(addToWatchlist({ userId, contentId })).unwrap();
+        await dispatch(addToWatchlist({ userId, contentId: id })).unwrap();
       }
     } catch (error) {
       console.error('Watchlist error:', error);
       setLocalError('Failed to update watchlist. Please try again.');
     }
-  };
-
-  const handleDotsClick = (e) => {
-    e.stopPropagation();
-    setShowPopup(!showPopup);
   };
 
   const handleCopyLink = (e) => {
@@ -199,15 +202,16 @@ const Slidercontent = React.memo(function Slidercontent({
       });
   };
 
-  const handleCloseCopyModal = () => {
-    setCopyModal({ show: false, message: '', isError: false });
+  const handleDotsClick = (e) => {
+    e.stopPropagation();
+    setShowPopup(!showPopup);
   };
 
-  const titleSpliced = title?.slice(0, 30) + '...';
-  const description = desc?.slice(0, 100) + '...';
-  const isLiked = user?.like?.includes(movie?._id) || false;
-  const isInWatchlist = user?.watchlist?.includes(movie?._id) || false;
-  const movieUser = movie?.user;
+  const titleSpliced = title?.slice(0, 30) + (title?.length > 30 ? '...' : '');
+  const description = desc?.slice(0, 100) + (desc?.length > 100 ? '...' : '');
+  const isLiked = user?.like?.includes(id) || false;
+  const isInWatchlist = user?.watchlist?.includes(id) || false;
+  const movieUser = movie?.user || { name: 'Anonymous' };
 
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
 
@@ -217,10 +221,15 @@ const Slidercontent = React.memo(function Slidercontent({
       onMouseEnter={!isMobile ? handleHover : null}
       onMouseLeave={!isMobile ? handleHoverOut : null}
     >
+      {localError && (
+        <ErrorMessage>{localError}</ErrorMessage>
+      )}
       {copyModal.show && (
         <CopyModal isError={copyModal.isError}>
           <p>{copyModal.message}</p>
-          <button onClick={handleCloseCopyModal}>Close</button>
+          <button onClick={() => setCopyModal({ show: false, message: '', isError: false })}>
+            Close
+          </button>
         </CopyModal>
       )}
       <div className="absolute top-2.5 w-full px-1 flex justify-between"></div>
@@ -229,8 +238,8 @@ const Slidercontent = React.memo(function Slidercontent({
           <div className="h-[70%]">
             <img
               className="w-full h-full object-cover cursor-pointer"
-              src={img}
-              alt={title}
+              src={img || 'https://via.placeholder.com/300x200'}
+              alt={title || 'No title'}
               onClick={handleClick}
             />
           </div>
@@ -259,11 +268,8 @@ const Slidercontent = React.memo(function Slidercontent({
             onClick={handleVideoClick}
           >
             <source
-              src={
-                movie?.video
-                  ? `${movie.video}#t=${previewTimestamps.start},${previewTimestamps.end}`
-                  : ''
-              }
+              src={movie ? `${movie}#t=${previewTimestamps.start},${previewTimestamps.end}` : ''}
+              type="video/mp4"
             />
           </video>
           <div
@@ -378,6 +384,18 @@ const CopyModal = styled.div`
     cursor: pointer;
     font-size: 12px;
   }
+`;
+
+const ErrorMessage = styled.div`
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: #ff4d4f;
+  color: white;
+  padding: 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  z-index: 1001;
 `;
 
 export default Slidercontent;

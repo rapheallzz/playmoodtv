@@ -106,17 +106,17 @@ const EmailVerification = () => {
           onClick={handleResend}
           disabled={isResendDisabled || isLoading || !email}
         >
-          Resend Code
+          {isLoading ? 'Resending...' : 'Resend Code'}
         </ResendButton>
         <VerifyButton onClick={handleSubmit} disabled={isLoading || !userId}>
-          Verify
+          {isLoading ? 'Verifying...' : 'Verify'}
         </VerifyButton>
       </Form>
     </Container>
   );
 };
 
-// Styled components
+// Styled components (unchanged)
 const Container = styled.div`
   display: flex;
   justify-content: center;

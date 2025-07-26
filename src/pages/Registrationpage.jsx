@@ -1,43 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { registerUser, reset } from '../features/authSlice';
-import Spinner from '../components/LoadSpinner';
 import styled from 'styled-components';
 import playmood from '/PLAYMOOD_DEF.png';
-import axios from 'axios';
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
+import countryList from 'react-select-country-list';
 
 const Register = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [countryCodes, setCountryCodes] = useState([]);
-  const [countries, setCountries] = useState([]);
-  const [selectedCountry, setSelectedCountry] = useState('');
-  const [selectedCode, setSelectedCode] = useState('');
+  const countries = useMemo(() => countryList().getData(), []);
   const [errorMessage, setErrorMessage] = useState('');
-
-  useEffect(() => {
-    const fetchCountries = async () => {
-      try {
-        const response = await axios.get('https://restcountries.com/v3.1/all');
-        const fetchedCountries = response.data.map((country) => ({
-          name: country.name.common,
-          code: country.idd?.root
-            ? `${country.idd.root}${country.idd.suffixes ? country.idd.suffixes[0] : ''}`
-            : '',
-        }));
-        setCountries(fetchedCountries);
-        setCountryCodes(
-          fetchedCountries.map((country) => country.code).filter((code) => code)
-        );
-      } catch (error) {
-        console.error('Error fetching countries:', error);
-        setErrorMessage('Failed to load countries. Please try again.');
-      }
-    };
-    fetchCountries();
-  }, []);
-
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -50,11 +25,9 @@ const Register = () => {
   });
 
   const { user, isLoading, isSuccess } = useSelector((state) => state.auth);
-
-  const { name, email, password, age, country, address, phoneNumber } = formData;
+  const { name, email, password, age, address, phoneNumber, country } = formData;
 
   useEffect(() => {
-    console.log('useEffect triggered:', { isSuccess, user });
     if (isSuccess) {
       navigate('/emailverify', { state: { userId: user?.userId, email } });
       dispatch(reset());
@@ -65,16 +38,12 @@ const Register = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleCountryChange = (e) => {
-    const selected = e.target.value;
-    setSelectedCountry(selected);
-    setFormData({ ...formData, country: selected });
-  };
-
-  const handleCodeChange = (e) => {
-    const code = e.target.value;
-    setSelectedCode(code);
-    setFormData({ ...formData, selectedCode: code });
+  const handlePhoneChange = (value, countryData) => {
+    setFormData({
+      ...formData,
+      phoneNumber: value,
+      selectedCode: `+${countryData.dialCode}`,
+    });
   };
 
   const handleSignup = async (e) => {
@@ -88,13 +57,9 @@ const Register = () => {
 
     try {
       const result = await dispatch(registerUser(formData)).unwrap();
-      console.log('Signup result:', result);
       navigate('/emailverify', { state: { userId: result.userId, email } });
     } catch (error) {
-      console.error('Signup error:', error);
-      setErrorMessage(
-        error.message || 'Registration failed. Please try again later.'
-      );
+      setErrorMessage(error.message || 'Registration failed. Please try again.');
       dispatch(reset());
     }
   };
@@ -126,14 +91,28 @@ const Register = () => {
           value={password}
           onChange={handleChange}
         />
-        <Select value={selectedCountry} onChange={handleCountryChange}>
+        <Select
+          name="country"
+          value={country}
+          onChange={handleChange}
+        >
           <option value="">Select Country</option>
-          {countries.map((country, index) => (
-            <option key={index} value={country.name}>
-              {country.name}
+          {countries.map((country) => (
+            <option key={country.value} value={country.label}>
+              {country.label}
             </option>
           ))}
         </Select>
+        <PhoneInput
+          country={'us'}
+          value={phoneNumber}
+          onChange={handlePhoneChange}
+          inputProps={{
+            name: 'phoneNumber',
+            required: false,
+          }}
+          containerStyle={{ marginBottom: '15px' }}
+        />
         <Input
           type="text"
           name="age"
@@ -148,21 +127,6 @@ const Register = () => {
           value={address}
           onChange={handleChange}
         />
-        <Select value={selectedCode} onChange={handleCodeChange}>
-          <option value="">Select Code</option>
-          {countryCodes.map((code, index) => (
-            <option key={index} value={code}>
-              {code}
-            </option>
-          ))}
-        </Select>
-        <Input
-          type="tel"
-          name="phoneNumber"
-          placeholder="Phone Number (Optional)"
-          value={phoneNumber}
-          onChange={handleChange}
-        />
         <SignupButton type="submit" disabled={isLoading}>
           {isLoading ? 'Signing Up...' : 'Sign Up'}
         </SignupButton>
@@ -171,7 +135,6 @@ const Register = () => {
           <SignInLink onClick={() => navigate('/login')}>Sign In</SignInLink>
         </SignInText>
       </Form>
-      {isLoading && <Spinner />}
     </RegisterContainer>
   );
 };

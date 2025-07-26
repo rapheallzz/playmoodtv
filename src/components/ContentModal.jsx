@@ -1,17 +1,19 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { createPortal } from 'react-dom'; // Added for portal
+import { createPortal } from 'react-dom';
 import { FaPaperPlane, FaHeart, FaPlus, FaCheck } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { likeContent, unlikeContent, addToWatchlist, removeFromWatchlist } from '../features/authSlice';
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode'; // Add jwt-decode
 import styled from 'styled-components';
 
 const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
   const [commentText, setCommentText] = useState('');
   const [commentError, setCommentError] = useState('');
+  const [actionError, setActionError] = useState(''); // Add state for like/watchlist errors
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.auth);
+  const { user, userToken } = useSelector((state) => state.auth);
   const videoRef = useRef(null);
   const [copyModal, setCopyModal] = useState({ show: false, message: '', isError: false });
 
@@ -20,11 +22,25 @@ const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
     console.log('Content prop:', content);
   }, [content]);
 
+  // Derive userId from user or token
+  const getUserId = () => {
+    if (user?.userId) return user.userId;
+    if (userToken) {
+      try {
+        const decoded = jwtDecode(userToken);
+        return decoded.id || user?._id;
+      } catch (error) {
+        console.error('Error decoding token:', error);
+      }
+    }
+    return null;
+  };
+
   // Function to save video progress
   const saveProgress = async (currentTime) => {
-    if (!user || !user.token || !content?._id) {
-      console.warn('Cannot save progress: Missing user, token, or content._id', {
-        user,
+    if (!userToken || !content?._id) {
+      console.warn('Cannot save progress: Missing userToken or content._id', {
+        userToken,
         contentId: content?._id,
         currentTime,
       });
@@ -40,7 +56,7 @@ const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
         },
         {
           headers: {
-            Authorization: `Bearer ${user.token}`,
+            Authorization: `Bearer ${userToken}`,
           },
         }
       );
@@ -79,65 +95,64 @@ const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
         saveProgress(video.currentTime);
       }
     };
-  }, [content, user]);
+  }, [content, userToken]);
 
   // Handle comment submission
-const handleAddComment = async (e) => {
-  e.preventDefault();
-  if (!user || !user.token) {
-    setShowWelcomePopup(true);
-    return;
-  }
-  if (!commentText.trim()) {
-    setCommentError('Comment cannot be empty.');
-    return;
-  }
-  if (!content?._id || typeof content._id !== 'string' || content._id.trim() === '') {
-    setCommentError('Invalid content ID. Please try again.');
-    console.error('Invalid content._id:', content?._id);
-    return;
-  }
+  const handleAddComment = async (e) => {
+    e.preventDefault();
+    if (!userToken) {
+      setShowWelcomePopup(true);
+      return;
+    }
+    if (!commentText.trim()) {
+      setCommentError('Comment cannot be empty.');
+      return;
+    }
+    if (!content?._id || typeof content._id !== 'string' || content._id.trim() === '') {
+      setCommentError('Invalid content ID. Please try again.');
+      console.error('Invalid content._id:', content?._id);
+      return;
+    }
 
-  try {
-    const commentUrl = `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${content._id}/comment`;
-    const payload = { 
-      contentId: content._id, 
-      text: commentText 
-    };
-    console.log('Submitting comment:', {
-      url: commentUrl,
-      payload,
-      contentId: content._id,
-      token: user.token.substring(0, 10) + '...',
-    });
-    const response = await axios.post(
-      commentUrl,
-      payload,
-      {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-    console.log('Comment response:', response.data);
-    // Use local state or Redux for comments instead of mutating prop
-    content.comments = [
-      ...(content.comments || []),
-      response.data.comment,
-    ];
-    setCommentText('');
-    setCommentError('');
-  } catch (error) {
-    console.error('Error adding comment:', {
-      response: error.response?.data,
-      status: error.response?.status,
-      message: error.message,
-    });
-    const errorMessage = error.response?.data?.error || 'Failed to add comment. Please try again.';
-    setCommentError(errorMessage);
-  }
-};
+    try {
+      const commentUrl = `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${content._id}/comment`;
+      const payload = { 
+        contentId: content._id, 
+        text: commentText 
+      };
+      console.log('Submitting comment:', {
+        url: commentUrl,
+        payload,
+        contentId: content._id,
+        token: userToken.substring(0, 10) + '...',
+      });
+      const response = await axios.post(
+        commentUrl,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      console.log('Comment response:', response.data);
+      content.comments = [
+        ...(content.comments || []),
+        response.data.comment,
+      ];
+      setCommentText('');
+      setCommentError('');
+    } catch (error) {
+      console.error('Error adding comment:', {
+        response: error.response?.data,
+        status: error.response?.status,
+        message: error.message,
+      });
+      const errorMessage = error.response?.data?.error || 'Failed to add comment. Please try again.';
+      setCommentError(errorMessage);
+    }
+  };
 
   // Early return after hooks
   if (!isOpen || !content || !content._id || typeof content._id !== 'string' || content._id.trim() === '') {
@@ -145,40 +160,51 @@ const handleAddComment = async (e) => {
     return null;
   }
 
-  const isLiked = user?.like?.includes(content._id);
+  const isLiked = user?.likes?.includes(content._id); // Fixed from user.like
   const isInWatchlist = user?.watchlist?.includes(content._id);
 
   const handleLike = async () => {
     try {
-      if (user && user._id) {
+      const userId = getUserId();
+      if (userId && userToken) {
         const contentId = content._id;
+        console.log('handleLike:', { isLiked, contentId, userId });
         if (isLiked) {
-          await dispatch(unlikeContent({ userId: user._id, contentId })).unwrap();
+          await dispatch(unlikeContent({ contentId, token: userToken })).unwrap();
         } else {
-          await dispatch(likeContent({ userId: user._id, contentId })).unwrap();
+          await dispatch(likeContent({ contentId, token: userToken })).unwrap();
         }
+        setActionError('');
       } else {
         setShowWelcomePopup(true);
       }
     } catch (error) {
       console.error('Error liking/unliking content:', error);
+      const errorMessage = error.message || 'Failed to like/unlike content. Please try again.';
+      setActionError(errorMessage);
+      setTimeout(() => setActionError(''), 3000); // Clear error after 3s
     }
   };
 
   const handleWatchlist = async () => {
     try {
-      if (user && user._id) {
+      const userId = getUserId();
+      if (userId && userToken) {
         const contentId = content._id;
         if (isInWatchlist) {
-          await dispatch(removeFromWatchlist({ userId: user._id, contentId })).unwrap();
+          await dispatch(removeFromWatchlist({ userId, contentId, token: userToken })).unwrap();
         } else {
-          await dispatch(addToWatchlist({ userId: user._id, contentId })).unwrap();
+          await dispatch(addToWatchlist({ userId, contentId, token: userToken })).unwrap();
         }
+        setActionError('');
       } else {
         setShowWelcomePopup(true);
       }
     } catch (error) {
       console.error('Error adding/removing from watchlist:', error);
+      const errorMessage = error.message || 'Failed to update watchlist. Please try again.';
+      setActionError(errorMessage);
+      setTimeout(() => setActionError(''), 3000);
     }
   };
 
@@ -220,6 +246,7 @@ const handleAddComment = async (e) => {
         <ModalContent>
           <h2 className="text-base sm:text-lg md:text-xl font-semibold">{content.title}</h2>
           <p className="text-xs sm:text-sm md:text-base text-black mt-2 line-clamp-2">{content.description}</p>
+          {actionError && <ErrorMessage>{actionError}</ErrorMessage>} {/* Display action errors */}
           <ActionRow>
             <WatchButton onClick={() => handleNavigateToMovie(content)}>
               Watch
@@ -244,7 +271,6 @@ const handleAddComment = async (e) => {
               />
             </ActionIcons>
           </ActionRow>
-          {/* Comment Section */}
           <CommentSection>
             <h3 className="text-sm sm:text-base font-semibold mt-4 mb-2">Comments</h3>
             {commentError && <ErrorMessage>{commentError}</ErrorMessage>}
@@ -311,9 +337,9 @@ const handleAddComment = async (e) => {
     </ModalOverlay>
   );
 
-  // Render modal content directly into document.body using createPortal
   return isOpen ? createPortal(modalContent, document.body) : null;
 };
+
 
 // Styled Components (unchanged)
 const ModalOverlay = styled.div`

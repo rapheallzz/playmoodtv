@@ -52,13 +52,9 @@ export default function SliderNew() {
   useEffect(() => {
     async function fetchData() {
       try {
-        console.log('Requesting data from API');
-        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
-        console.log('API response:', response);
+        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/new');
         if (response.data && Array.isArray(response.data)) {
-          const filteredData = response.data.filter((content) => content.category === 'Documentarie');
-          console.log('Filtered Documentaries data:', filteredData);
-          setData(filteredData);
+          setData(response.data); // Set all data without filtering
         } else {
           console.error('Unexpected data format:', response.data);
           setError('Unexpected data format.');
@@ -89,7 +85,6 @@ export default function SliderNew() {
 
   const handleNavigateToMovie = (content) => {
     const slug = createSlug(content.title, content._id);
-    console.log('Navigating to movie with slug:', slug);
     navigate(`/movie/${slug}`);
   };
 
@@ -102,6 +97,8 @@ export default function SliderNew() {
     initialSlide: 0,
     prevArrow: <CustomPrevArrow />,
     nextArrow: <CustomNextArrow />,
+    swipeToSlide: true,
+    lazyLoad: 'ondemand',
     responsive: [
       {
         breakpoint: 1024,
@@ -125,9 +122,11 @@ export default function SliderNew() {
       {
         breakpoint: 480,
         settings: {
-          slidesToShow: 1,
+          slidesToShow: 1.5,
           slidesToScroll: 1,
           arrows: false,
+          centerMode: true,
+        centerPadding: '20px',
         },
       },
     ],

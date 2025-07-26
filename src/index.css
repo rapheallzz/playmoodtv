@@ -692,9 +692,9 @@
 .movie-right-cont{
   /* position: relative; */
   /* background-color: blue; */
-  left: -20px;
+  /* left: -20px;
   height: 250px;
-  width:450px;
+  width:450px; */
 }
 
 
@@ -722,14 +722,15 @@
   .slides,
   .thisslides {
 
-    width: 100px;
-    height: 300px;
+    width: 10px;
+    height: 260px;
     object-fit: contain !important;
+    
   }
 
   .slidescircle {
-    width: 200px !important; /* Adjusted width for smaller screens */
-    height: 200px; /* Adjusted height for smaller screens */
+    width: 170px !important; /* Adjusted width for smaller screens */
+    height: 120px;
   }
 
   .slidesh {
@@ -827,7 +828,7 @@
   }
 
   .movie-right-cont{
-    height: 250px;
+    /* height: 250px; */
     /* width:220px; */
   }
 
@@ -998,3 +999,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+.swal2-popup {
+  background-color: #191818;
+  color: #ffffff;
+}
+.swal2-title {
+  color: #ffffff;
+}
+.swal2-content {
+  color: #ffffff;
+}
+.swal2-confirm {
+  background-color: #541011 !important;
+  border: none !important;
+}

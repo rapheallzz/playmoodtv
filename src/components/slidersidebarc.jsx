@@ -69,7 +69,9 @@ export default function SidebarSliderc() {
     autoplay: true,
     autoplaySpeed: 3000,
     cssEase: 'linear',
-    arrows: true, // Enable default arrows
+    arrows: false, 
+    swipeToSlide: true,
+    lazyLoad: 'ondemand',
     responsive: [
       {
         breakpoint: 1024,
@@ -134,7 +136,6 @@ export default function SidebarSliderc() {
 const SliderContainer = styled.div`
   .sidebar-slide {
     width: 300px; /* Increased width for better visibility */
-    height: 200px; /* Fixed height for consistency */
     margin: 0 4px; /* Horizontal spacing */
     cursor: pointer;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);

@@ -110,52 +110,70 @@ export default function Diaries() {
 
                   {/* FOOTER  */}
 
-                  <div className="h-auto w-full bg-black flex flex-col md:flex-row justify-between items-center gap-4 md:gap-2 px-4 md:px-10 py-4 md:py-5 fixed bottom-0 ">
+           <div className="h-auto w-full bg-black flex flex-col md:flex-row justify-between items-center gap-4 md:gap-2 px-4 md:px-10 py-4 md:py-5 fixed bottom-0 ">
   
-  <div className='flex flex-column'>
-  <div className="flex-shrink-0">
-<img className="md:h-20 md:w-auto h-10 w-28 cursor-pointer" src={logo} alt="Logo" />
-</div>
-
-<div className="flex flex-row md:flex-row gap-4 md:gap-5">
-<div className="flex items-center text-white gap-2">
-<a className="no-underline text-white" href="https://instagram.com/playmoodtv?igshid=MzRlODBiNWFlZA==" target="_blank" rel="noopener noreferrer">
-  <img className="h-7 w-7" src={instagram} alt="Instagram" />
-</a>
-<p><a className="no-underline text-white" href="https://instagram.com/playmoodtv?igshid=MzRlODBiNWFlZA==" target="_blank" rel="noopener noreferrer">Official</a></p>
-</div>
-<div className="flex items-center text-white gap-2">
-<a className="no-underline text-white" href="https://www.instagram.com/playmoodlat/" target="_blank" rel="noopener noreferrer">
-  <img className="h-7 w-7" src={instagram} alt="Instagram" />
-</a>
-<p><a className="no-underline text-white" href="https://www.instagram.com/playmoodlat/" target="_blank" rel="noopener noreferrer">Latam</a></p>
-</div>
-<div className="flex items-center text-white gap-2">
-<a className="no-underline text-white" href="https://www.instagram.com/playmoodmx/" target="_blank" rel="noopener noreferrer">
-  <img className="h-7 w-7" src={instagram} alt="Instagram" />
-</a>
-<p><a className="no-underline text-white" href="https://www.instagram.com/playmoodmx/" target="_blank" rel="noopener noreferrer">MX</a></p>
-</div>
-</div>
+        <div className='flex flex-column'>
+        <div className="flex-shrink-0">
+    <img className="md:h-20 md:w-auto h-10 w-28 cursor-pointer" src={logo} alt="Logo" />
   </div>
 
+  <div className="flex flex-row md:flex-row gap-4 md:gap-5">
+    <div className="flex items-center text-white gap-2">
+      <a className="no-underline text-white" href="https://instagram.com/playmoodtv?igshid=MzRlODBiNWFlZA==" target="_blank" rel="noopener noreferrer">
+        <img className="h-7 w-7" src={instagram} alt="Instagram" />
+      </a>
+      <p><a className="no-underline text-white" href="https://instagram.com/playmoodtv?igshid=MzRlODBiNWFlZA==" target="_blank" rel="noopener noreferrer">Official</a></p>
+    </div>
+    <div className="flex items-center text-white gap-2">
+      <a className="no-underline text-white" href="https://www.instagram.com/playmoodlat/" target="_blank" rel="noopener noreferrer">
+        <img className="h-7 w-7" src={instagram} alt="Instagram" />
+      </a>
+      <p><a className="no-underline text-white" href="https://www.instagram.com/playmoodlat/" target="_blank" rel="noopener noreferrer">Latam</a></p>
+    </div>
+    <div className="flex items-center text-white gap-2">
+      <a className="no-underline text-white" href="https://www.instagram.com/playmoodmx/" target="_blank" rel="noopener noreferrer">
+        <img className="h-7 w-7" src={instagram} alt="Instagram" />
+      </a>
+      <p><a className="no-underline text-white" href="https://www.instagram.com/playmoodmx/" target="_blank" rel="noopener noreferrer">MX</a></p>
+    </div>
+        <div className="flex items-center text-white gap-2">
+      <a className="no-underline text-white" href="https://www.instagram.com/playmoodindia/" target="_blank" rel="noopener noreferrer">
+        <img className="h-7 w-7" src={instagram} alt="Instagram" />
+      </a>
+      <p><a className="no-underline text-white" href="https://www.instagram.com/playmoodindia/" target="_blank" rel="noopener noreferrer">IN</a></p>
+    </div>
+        <div className="flex items-center text-white gap-2">
+      <a className="no-underline text-white" href="https://www.instagram.com/playmoodargentina/" target="_blank" rel="noopener noreferrer">
+        <img className="h-7 w-7" src={instagram} alt="Instagram" />
+      </a>
+      <p><a className="no-underline text-white" href="https://www.instagram.com/playmoodargentina/" target="_blank" rel="noopener noreferrer">AR</a></p>
+    </div>
+        <div className="flex items-center text-white gap-2">
+      <a className="no-underline text-white" href="https://www.instagram.com/playmoodcolombia/" target="_blank" rel="noopener noreferrer">
+        <img className="h-7 w-7" src={instagram} alt="Instagram" />
+      </a>
+      <p><a className="no-underline text-white" href="https://www.instagram.com/playmoodcolombia/" target="_blank" rel="noopener noreferrer">COL</a></p>
+    </div>
+  </div>
+        </div>
 
 
-<div className="flex flex-row text-white text-xs gap-2 md:mr-10">
-<div>
-<h2 className="cursor-pointer">Contact us:</h2>
-<h3 className="cursor-pointer">Creators@playmoodtv.com</h3>
-</div>
 
-<div className="flex flex-row md:flex-col gap-1">
-<p className="cursor-pointer" onClick={() => navigate('/privacy-policy')}>Privacy Policy</p>
-<p className="cursor-pointer" onClick={() => navigate('/cookies')}>Cookies Policy</p>
-</div>
-<div>
-<p className="cursor-pointer">All rights reserved to PlaymoodTV 2023</p>
-</div>
-</div>
-         </div>
+  <div className="flex flex-row text-white text-xs gap-2 md:mr-10">
+    <div>
+    <h2 className="cursor-pointer">Contact us:</h2>
+    <h3 className="cursor-pointer">Creators@playmoodtv.com</h3>
+    </div>
+
+    <div className="flex flex-row md:flex-col gap-1">
+      <p className="cursor-pointer" onClick={() => navigate('/privacy-policy')}>Privacy Policy</p>
+      <p className="cursor-pointer" onClick={() => navigate('/cookies')}>Cookies Policy</p>
+    </div>
+    <div>
+      <p className="cursor-pointer">All rights reserved to PlaymoodTV 2023</p>
+    </div>
+  </div>
+               </div>
 
     </Homecontent>
   );

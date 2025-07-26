@@ -222,7 +222,7 @@ const TitleText = styled.p`
   text-align: center;
   font-weight: bold;
   color: #ffffff; /* White for better contrast */
-  background-color: rgba(0, 0, 0, 0.5); /* Slightly darker background for readability */
+  // background-color: rgba(0, 0, 0, 0.5);
   padding: 5px 30px;
   margin: 5px 10px;
   border-radius: 4px;
