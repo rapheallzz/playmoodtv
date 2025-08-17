@@ -214,7 +214,7 @@ const Slidercontent = React.memo(function Slidercontent({
       <div className="absolute top-2.5 w-full px-1 flex justify-between"></div>
       {!hover && !isVideoPlaying ? (
         <>
-          <div className="md:h-[70%] h-[50%]">
+          <div className="md:h-[70%] h-[70%]">
             <img
               className="w-full h-full object-cover cursor-pointer"
               src={img}
@@ -256,10 +256,10 @@ const Slidercontent = React.memo(function Slidercontent({
             className="h-52 w-full bg-black p-2 flex flex-col gap-2 mb-8"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex justify-between align-middle">
+            <div className="flex justify-between align-middle ">
               <div className="flex items-center gap-2">
-                <div className="flex w-20 h-4 rounded-sm bg-white justify-center gap-1 items-center">
-                  <h6 className="text-black text-[0.35rem]">
+                <div className="flex w-8 h-4  md:w-20 md:h-4  rounded-sm bg-white justify-center gap-1 items-center">
+                  <h6 className="text-black text-[0.15rem] md:text-[0.40rem] text-center">
                     By: {movieUser?.name || 'Anonymous'}
                   </h6>
                 </div>
@@ -268,7 +268,7 @@ const Slidercontent = React.memo(function Slidercontent({
                   <span>{views || 0}</span>
                 </div>
               </div>
-              <div className="flex justify-end gap-1 items-center">
+              <div className="flex justify-end gap-1 items-center text-[10px]  md:text-[16px]">
                 <FaHeart
                   className={`cursor-pointer ${isLiked ? 'text-red-600 fill-current' : 'text-gray-400'}`}
                   onClick={handleLike}
@@ -280,7 +280,7 @@ const Slidercontent = React.memo(function Slidercontent({
                   {isInWatchlist ? <FaCheck /> : <FaPlus />}
                 </span>
                 <FaPaperPlane
-                  className="text-white cursor-pointer"
+                  className="text-white text-[10px]  md:text-[16px] cursor-pointer"
                   onClick={handleCopyLink}
                 />
               </div>

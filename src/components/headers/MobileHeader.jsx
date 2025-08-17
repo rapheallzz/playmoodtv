@@ -29,11 +29,15 @@ import schedule_white from '/schedule_white.png';
 import schedule_red from '/schedule_red.png';
 import plus from '/plus.png';
 import favourite_red from '/star_red.png';
-import SidebarSlider from '../slidersidebar';
-import SidebarSliderc from '../slidersidebarc';
+import SidebarSlider from '../sidebarSliders/slidersidebar';
+import SidebarSliderc from '../sidebarSliders/slidersidebarc';
 import { useSelector, useDispatch } from 'react-redux'
 import { logout, reset } from '.././../features/authSlice'
 import DonationModal from '../DonationModal';
+import Slidertop10 from '../sidebarSliders/SliderTop10';
+import SliderNew from '../sidebarSliders/SliderNew';
+import SliderChannel from '../sidebarSliders/SliderChannels';
+import SliderDairies from '../sidebarSliders/SliderDaries';
 
 export default function MobileHeader({ channels, set_channels }) {
   const [dropbar, set_drop_bar] = useState(false);
@@ -436,15 +440,15 @@ export default function MobileHeader({ channels, set_channels }) {
               {mountcategory && (
                 <div className="categories_subsection">
                 <h3 onClick={handleTop10Toggle}>TOP 10</h3>
-                {top10Toggled && <SidebarSlider />}
+                {top10Toggled && <Slidertop10 />}
                 <h3 onClick={handleNewPlaymoodToggle}>New on Playmood</h3>
-                {newPlaymoodToggled && <SidebarSliderc />}
+                {newPlaymoodToggled && <SliderNew />}
                 <h3 onClick={handleChannelsToggle}>Channels</h3>
-                {channelsToggled && <SidebarSliderc />}
+                {channelsToggled && <SliderChannel/>}
                 <h3 onClick={handleDiariesToggle}>Diaries</h3>
-                {diariesToggled && <SidebarSliderc />}
+                {diariesToggled && < SliderDairies />}
                 <h3 onClick={handleSpacesToggle}>Spaces</h3>
-                {spacesToggled && <SidebarSliderc />}
+                {spacesToggled && < SliderSpace />}
                 <h3 onClick={handleRecommendationsToggle}>Recommendations for you</h3>
                 {recommendationsToggled && <SidebarSliderc />}
                 <h3 onClick={handleInterviewsToggle}>Interviews</h3>

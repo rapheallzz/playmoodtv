@@ -35,6 +35,23 @@ import { logout, reset } from '.././../features/authSlice';
 import DonationModal from '../DonationModal';
 import { FaPlus } from 'react-icons/fa';
 
+// sliders
+
+import Slidertop10 from '../sidebarSliders/SliderTop10';
+import SliderNew from '../sidebarSliders/SliderNew';
+import SliderChannel from '../sidebarSliders/SliderChannels';
+import SliderDairies from '../sidebarSliders/SliderDaries';
+import SliderSpace from '../sidebarSliders/SliderSpace';
+import SliderRecommended from '../sidebarSliders/SliderRecommend';
+import SliderInterview from '../sidebarSliders/SliderInterview';
+import SliderFashion from '../sidebarSliders/SliderFashion';
+import SliderDocumentaries from '../sidebarSliders/SliderDocumentaries';
+import SliderCamera from '../sidebarSliders/SliderCameras';
+import SliderSoon from '../sidebarSliders/SliderSoon';
+import SliderTeens from '../sidebarSliders/SliderTeens';
+import SliderOnly from '../sidebarSliders/SliderOnly';
+
+
 export default function DesktopHeader({ }) {
   const [dropbar, set_drop_bar] = useState(false);
   const navigate = useNavigate();
@@ -372,35 +389,35 @@ export default function DesktopHeader({ }) {
               {mountcategory && (
                 <div className="categories_subsection">
                   <h3 onClick={() => handleToggle('top10')}>TOP 10</h3>
-                  {openCategory === 'top10' && <SidebarSlider />}
+                  {openCategory === 'top10' && <Slidertop10 />}
                   <h3 onClick={() => handleToggle('newPlaymood')}>New on Playmood</h3>
-                  {openCategory === 'newPlaymood' && <SidebarSliderc />}
+                  {openCategory === 'newPlaymood' && <SliderNew />}
                   <h3 onClick={() => handleToggle('channels')}>Channels</h3>
-                  {openCategory === 'channels' && <SidebarSliderc />}
+                  {openCategory === 'channels' && <SliderChannel />}
                   <h3 onClick={() => handleToggle('diaries')}>Diaries</h3>
-                  {openCategory === 'diaries' && <SidebarSliderc />}
+                  {openCategory === 'diaries' && <SliderDairies />}
                   <h3 onClick={() => handleToggle('spaces')}>Spaces</h3>
-                  {openCategory === 'spaces' && <SidebarSliderc />}
+                  {openCategory === 'spaces' && <SliderSpace />}
                   <h3 onClick={() => handleToggle('recommendations')}>Recommendations for you</h3>
-                  {openCategory === 'recommendations' && <SidebarSliderc />}
+                  {openCategory === 'recommendations' && <SliderRecommended />}
                   <h3 onClick={() => handleToggle('interviews')}>Interviews</h3>
-                  {openCategory === 'interviews' && <SidebarSliderc />}
+                  {openCategory === 'interviews' && <SliderInterview />}
                   <h3 onClick={() => handleToggle('fashionShows')}>Fashion Shows Stories</h3>
-                  {openCategory === 'fashionShows' && <SidebarSliderc />}
+                  {openCategory === 'fashionShows' && <SliderFashion />}
                   <h3 onClick={() => handleToggle('documentaries')}>Documentaries and Reports</h3>
-                  {openCategory === 'documentaries' && <SidebarSliderc />}
+                  {openCategory === 'documentaries' && <SliderDocumentaries />}
                   <h3 onClick={() => handleToggle('behindTheCameras')}>Behind the cameras</h3>
-                  {openCategory === 'behindTheCameras' && <SidebarSliderc />}
+                  {openCategory === 'behindTheCameras' && <SliderCamera />}
                   <h3 onClick={() => handleToggle('soonInPlaymood')}>Soon in Playmood</h3>
-                  {openCategory === 'soonInPlaymood' && <SidebarSliderc />}
+                  {openCategory === 'soonInPlaymood' && <SliderSoon />}
                   <h3 onClick={() => handleToggle('teen')}>Teen</h3>
-                  {openCategory === 'teen' && <SidebarSliderc />}
+                  {openCategory === 'teen' && <SliderTeens />}
                   <h3 onClick={() => handleToggle('bestInFashion')}>Best in Fashion</h3>
-                  {openCategory === 'bestInFashion' && <SidebarSliderc />}
+                  {openCategory === 'bestInFashion' && <SliderFashion />}
                   <h3 onClick={() => handleToggle('onlyInPlaymood')}>Only in Playmood</h3>
-                  {openCategory === 'onlyInPlaymood' && <SidebarSliderc />}
+                  {openCategory === 'onlyInPlaymood' && <SliderOnly />}
                   <h3 onClick={() => handleToggle('watchlist')}>Watchlist</h3>
-                  {openCategory === 'watchlist' && <SidebarSliderc />}
+                  {openCategory === 'watchlist' && <SidebarSlider />}
                 </div>
               )}
             </SidebarClicked>

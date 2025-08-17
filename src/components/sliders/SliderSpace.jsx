@@ -229,17 +229,17 @@ export default function SliderSpace() {
           slidesToScroll: 1,
           arrows: true,
           centerMode: true,
-          centerPadding: '20px',
+          centerPadding: '15px',
         },
       },
       {
         breakpoint: 480,
         settings: {
-          slidesToShow: 2.2,
+          slidesToShow: 2,
           slidesToScroll: 1,
           arrows: false,
           centerMode: true,
-          centerPadding: '30px',
+          centerPadding: '0px',
         },
       },
       {

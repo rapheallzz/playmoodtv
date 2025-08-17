@@ -130,11 +130,11 @@ export default function Slidertop10() {
     {
       breakpoint: 480,
       settings: {
-        slidesToShow: 1.5,
+        slidesToShow: 2,
         slidesToScroll: 1,
         arrows: false,
         centerMode: true, // Center the slide
-        centerPadding: '20px', // Add padding to prevent content from touching screen edges
+        centerPadding: '0px', // Add padding to prevent content from touching screen edges
           prevArrow: <CustomPrevArrow />,
   nextArrow: <CustomNextArrow />,
   touchThreshold: 10,

@@ -12,7 +12,7 @@ const sliderSettings = {
   dots: false,
   infinite: true,
   speed: 300,
-  slidesToShow: 3,
+  slidesToShow: 5,
   slidesToScroll: 1,
   initialSlide: 0,
   prevArrow: <CustomPrevArrow />,

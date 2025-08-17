@@ -5,7 +5,7 @@ import 'slick-carousel/slick/slick-theme.css';
 import axios from 'axios';
 import Slidercontent from '../Slidercont';
 import { useNavigate } from 'react-router-dom';
-import ContentModal from '../ContentModal'; 
+import ContentModal from '../ContentModal';
 import styled, { keyframes } from 'styled-components';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
@@ -41,7 +41,6 @@ const CustomNextArrow = (props) => {
   );
 };
 
-
 export default function SliderSocial() {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
@@ -57,8 +56,8 @@ export default function SliderSocial() {
         const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
         console.log('API response:', response);
         if (response.data && Array.isArray(response.data)) {
-          const filteredData = response.data.filter((content) => content.category === 'Top 10');
-          console.log('Filtered Documentaries data:', filteredData);
+          const filteredData = response.data.filter((content) => content.category === 'Fashion Show');
+          console.log('Filtered Fashion Show data:', filteredData);
           setData(filteredData);
         } else {
           console.error('Unexpected data format:', response.data);
@@ -94,16 +93,20 @@ export default function SliderSocial() {
     navigate(`/movie/${slug}`);
   };
 
+  const handleViewMore = () => {
+    navigate('/fashion');
+  };
+
   const settings = {
     dots: false,
-    infinite: true,
+    infinite: false, 
     speed: 300,
     slidesToShow: 5,
     slidesToScroll: 1,
     initialSlide: 0,
     prevArrow: <CustomPrevArrow />,
     nextArrow: <CustomNextArrow />,
-     swipeToSlide: true,
+    swipeToSlide: true,
     lazyLoad: 'ondemand',
     responsive: [
       {
@@ -111,7 +114,7 @@ export default function SliderSocial() {
         settings: {
           slidesToShow: 3,
           slidesToScroll: 1,
-          infinite: true,
+          infinite: false,
           dots: true,
           arrows: true,
         },
@@ -121,18 +124,18 @@ export default function SliderSocial() {
         settings: {
           slidesToShow: 2,
           slidesToScroll: 1,
-          initialSlide: 2,
+          initialSlide: 0,
           arrows: true,
         },
       },
       {
         breakpoint: 480,
         settings: {
-          slidesToShow: 1.5,
+          slidesToShow: 2,
           slidesToScroll: 1,
           arrows: false,
           centerMode: true,
-        centerPadding: '20px',
+          centerPadding: '0px',
         },
       },
     ],
@@ -145,7 +148,7 @@ export default function SliderSocial() {
       ) : (
         <Slider {...settings} ref={sliderRef}>
           {Array.isArray(data) &&
-            data.map((content) => (
+            data.slice(0, 10).map((content) => ( // Limit to 10 slides
               <div key={content._id} className="slides">
                 <Slidercontent
                   img={content.thumbnail}
@@ -158,6 +161,13 @@ export default function SliderSocial() {
                 />
               </div>
             ))}
+          {data.length > 0 && ( // Only show View More if there is at least one item
+            <div className="slides view-more-slide">
+              <ViewMoreSlide>
+                <ViewMoreButton onClick={handleViewMore}>View More</ViewMoreButton>
+              </ViewMoreSlide>
+            </div>
+          )}
         </Slider>
       )}
 
@@ -182,7 +192,6 @@ const SliderContainer = styled.div`
     position: relative;
   }
 
-  // Hide default slick arrows
   .slick-prev,
   .slick-next {
     display: none !important;
@@ -212,8 +221,8 @@ const SliderContainer = styled.div`
     &.next-arrow {
       right: -10px;
       &:hover {
-        animation: ${pulse} 1s infinite; // Pulse effect on hover
-        background: rgba(0, 0, 0, 0.7); // Slightly darker on hover
+        animation: ${pulse} 1s infinite;
+        background: rgba(0, 0, 0, 0.7);
       }
     }
 
@@ -235,6 +244,14 @@ const SliderContainer = styled.div`
     position: relative;
     display: flex;
     align-items: center;
+    justify-content: center; /* Center content in slides */
+  }
+
+  .view-more-slide {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%; /* Match the height of other slides */
   }
 
   @media (max-width: 1024px) {
@@ -251,5 +268,41 @@ const SliderContainer = styled.div`
     .custom-arrow {
       display: none !important;
     }
+  }
+`;
+
+const ViewMoreSlide = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  max-width: 200px; /* Match Slidercontent max-width */
+  margin: 0 auto;
+`;
+
+const ViewMoreButton = styled.button`
+  padding: 10px 20px;
+  background-color: #541011;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 100%;
+  height: 70%; /* Match the height of the Slidercontent image container */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  &:hover {
+    background-color: #3d0c0e;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 12px;
+    padding: 8px 16px;
   }
 `;

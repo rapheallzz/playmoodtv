@@ -26,6 +26,7 @@ const VideoModal = ({ onClose }) => {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [showPopup, setShowPopup] = useState(false); // New state for popup
   const videoRef = useRef(null);
 
   // Fallback to local storage if Redux state is not available
@@ -119,91 +120,96 @@ const VideoModal = ({ onClose }) => {
     }
   };
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  if (!files.length) {
-    setError('Please select at least one file to upload.');
-    return;
-  }
-
-  const previewDuration = previewEnd - previewStart;
-  if (previewDuration < 10 || previewDuration > 15) {
-    setError('Preview must be between 10 and 15 seconds.');
-    return;
-  }
-
-  const { userId, authToken } = getAuthData();
-  if (!userId || !authToken) {
-    setError('You must be logged in to upload videos. Redirecting to login...');
-    setTimeout(() => {
-      navigate('/login');
-    }, 2000);
-    return;
-  }
-
-  setLoading(true);
-  setError('');
-  setSuccess(false);
-
-  const maxSize = 500 * 1024 * 1024; // 500MB
-  const oversizedFiles = files.filter((file) => file.size > maxSize);
-  if (oversizedFiles.length > 0) {
-    setError('One or more files exceed the maximum size (500MB).');
-    setLoading(false);
-    return;
-  }
-
-  const formData = new FormData();
-  formData.append('title', videoData.title);
-  formData.append('description', videoData.description);
-  formData.append('credit', videoData.credit);
-  formData.append('category', videoData.category);
-  formData.append('userId', userId);
-  formData.append('previewStart', previewStart);
-  formData.append('previewEnd', previewEnd);
-  files.forEach((file) => {
-    formData.append('files', file);
-  });
-
-  try {
-    const response = await axios.post(
-      'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content',
-      formData,
-      {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-          'Content-Type': 'multipart/form-data',
-        },
-        timeout: 1200000, // 20 minutes
-        onUploadProgress: (progressEvent) => {
-          const progress = progressEvent.total
-            ? Math.round((progressEvent.loaded / progressEvent.total) * 100)
-            : 0;
-          console.log(`Upload Progress: ${progress}%`);
-          setUploadProgress(progress);
-        },
-      }
-    );
-
-    console.log('Video submitted successfully:', response.data);
-    setSuccess(true);
-    setTimeout(() => {
-      onClose();
-    }, 2000);
-  } catch (error) {
-    console.error('Error submitting video:', error, error.response);
-    if (error.code === 'ECONNABORTED') {
-      setError('Request timed out. Please check your network or try again later.');
-    } else if (error.response) {
-      setError(`Failed to upload video: ${error.response.data.message || error.response.statusText} (Status: ${error.response.status})`);
-    } else {
-      setError('An error occurred while uploading. Please try again.');
+    if (!files.length) {
+      setError('Please select at least one file to upload.');
+      return;
     }
-  } finally {
-    setLoading(false);
-  }
-};
+
+    const previewDuration = previewEnd - previewStart;
+    if (previewDuration < 10 || previewDuration > 15) {
+      setError('Preview must be between 10 and 15 seconds.');
+      return;
+    }
+
+    const { userId, authToken } = getAuthData();
+    if (!userId || !authToken) {
+      setError('You must be logged in to upload videos. Redirecting to login...');
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+    setSuccess(false);
+    setShowPopup(false); // Reset popup state
+
+    const maxSize = 500 * 1024 * 1024; // 500MB
+    const oversizedFiles = files.filter((file) => file.size > maxSize);
+    if (oversizedFiles.length > 0) {
+      setError('One or more files exceed the maximum size (500MB).');
+      setLoading(false);
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('title', videoData.title);
+    formData.append('description', videoData.description);
+    formData.append('credit', videoData.credit);
+    formData.append('category', videoData.category);
+    formData.append('userId', userId);
+    formData.append('previewStart', previewStart);
+    formData.append('previewEnd', previewEnd);
+    files.forEach((file) => {
+      formData.append('files', file);
+    });
+
+    try {
+      const response = await axios.post(
+        'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content',
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+            'Content-Type': 'multipart/form-data',
+          },
+          timeout: 1200000, // 20 minutes
+          onUploadProgress: (progressEvent) => {
+            const progress = progressEvent.total
+              ? Math.round((progressEvent.loaded / progressEvent.total) * 100)
+              : 0;
+            console.log(`Upload Progress: ${progress}%`);
+            setUploadProgress(progress);
+          },
+        }
+      );
+
+      console.log('Video submitted successfully:', response.data);
+      setSuccess(true);
+      setShowPopup(true); // Show popup on successful upload
+    } catch (error) {
+      console.error('Error submitting video:', error, error.response);
+      if (error.code === 'ECONNABORTED') {
+        setError('Request timed out. Please check your network or try again later.');
+      } else if (error.response) {
+        setError(`Failed to upload video: ${error.response.data.message || error.response.statusText} (Status: ${error.response.status})`);
+      } else {
+        setError('An error occurred while uploading. Please try again.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle popup close and modal close
+  const handlePopupClose = () => {
+    setShowPopup(false);
+    onClose(); // Close the modal after popup is closed
+  };
 
   return (
     <>
@@ -244,10 +250,9 @@ const VideoModal = ({ onClose }) => {
             value={videoData.category}
             onChange={handleInputChange}
           >
-            <option value="Top 10">Top 10</option>
+            {/* <option value="Top 10">Top 10</option> */}
             <option value="Fashion Show">Fashion Show</option>
             <option value="Teen">Teens</option>
-            <option value="Channels">Channels</option>
             <option value="Documentarie">Documentaries</option>
             <option value="Interview">Interviews</option>
             <option value="Social">Social</option>
@@ -327,7 +332,7 @@ const VideoModal = ({ onClose }) => {
             {loading ? 'Uploading...' : 'Upload'}
           </UploadButton>
 
-          {success && (
+          {success && !showPopup && (
             <SuccessNotification>
               <p>Video uploaded successfully!</p>
             </SuccessNotification>
@@ -339,10 +344,60 @@ const VideoModal = ({ onClose }) => {
             <Filler style={{ width: `${uploadProgress}%` }} />
           </ProgressBar>
         )}
+
+        {showPopup && (
+          <PopupContainer>
+            <PopupContent>
+              <h3>Upload Successful!</h3>
+              <p>Your video has been successfully uploaded. It will take up to 24 hours for approval. You will receive a notification via email once it is approved.</p>
+              <PopupButton onClick={handlePopupClose}>OK</PopupButton>
+            </PopupContent>
+          </PopupContainer>
+        )}
       </ModalContainer>
     </>
   );
 };
+
+// Styled components for the popup
+const PopupContainer = styled.div`
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.5);
+  width: 100%;
+  height: 100%;
+  z-index: 1001;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const PopupContent = styled.div`
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+`;
+
+const PopupButton = styled.button`
+  padding: 10px;
+  background-color: #541011;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 15px;
+
+  &:hover {
+    background-color: #3d0c0d;
+  }
+`;
 
 const ModalContainer = styled.div`
   position: fixed;
@@ -356,11 +411,10 @@ const ModalContainer = styled.div`
   z-index: 1000;
   max-width: 600px;
   width: 90%;
-  max-height: 80vh; /* Limit modal height to 80% of viewport */
-  overflow-y: auto; /* Enable vertical scrolling */
-  box-sizing: border-box; /* Include padding in width/height calculations */
+  max-height: 80vh;
+  overflow-y: auto;
+  box-sizing: border-box;
 
-  /* Responsive adjustments */
   @media (max-width: 600px) {
     max-width: 95%;
     padding: 15px;

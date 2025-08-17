@@ -1,16 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import styled, { keyframes } from 'styled-components';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import axios from 'axios';
-import MobileBurger from '../components/headers/MobileBurger';
-import DesktopHeader from '../components/headers/DesktopHeader';
-import Navigation from '../components/Navigation';
-import Slidercontent from '../components/Slidercont';
-import ContentModal from '../components/ContentModal';
-import Footer from '../components/footer/Footer';
+import Slidercontent from '../Slidercont';
+import { useNavigate } from 'react-router-dom';
+import ContentModal from '../ContentModal';
+import styled, { keyframes } from 'styled-components';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 // Pulse animation for right arrow
@@ -45,34 +41,20 @@ const CustomNextArrow = (props) => {
   );
 };
 
-export default function NewPlaymood() {
+export default function SliderTopTen() {
   const navigate = useNavigate();
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
   const [modalContent, setModalContent] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const sliderRef = useRef(null);
 
-  const handleResize = () => {
-    setIsMobile(window.innerWidth <= 768);
-    if (window.innerWidth > 768) setIsDropdownOpen(false);
-  };
-
-  useEffect(() => {
-    window.addEventListener('resize', handleResize);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
-
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/new');
+        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/top-ten');
         if (response.data && Array.isArray(response.data)) {
-          setData(response.data);
+          setData(response.data); // Set all data without filtering
         } else {
           console.error('Unexpected data format:', response.data);
           setError('Unexpected data format.');
@@ -82,6 +64,7 @@ export default function NewPlaymood() {
         setError('Error fetching data.');
       }
     }
+
     fetchData();
   }, []);
 
@@ -105,15 +88,11 @@ export default function NewPlaymood() {
     navigate(`/movie/${slug}`);
   };
 
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
-  };
-
   const settings = {
     dots: false,
     infinite: true,
     speed: 300,
-    slidesToShow: 4,
+    slidesToShow: 5,
     slidesToScroll: 1,
     initialSlide: 0,
     prevArrow: <CustomPrevArrow />,
@@ -136,135 +115,63 @@ export default function NewPlaymood() {
         settings: {
           slidesToShow: 2,
           slidesToScroll: 1,
-          initialSlide: 2,
+          initialSlide: 2, 
+          infinite: true,
           arrows: true,
         },
       },
       {
         breakpoint: 480,
         settings: {
-          slidesToShow: 1.5,
+          slidesToShow: 2,
           slidesToScroll: 1,
+          infinite: true,
           arrows: false,
           centerMode: true,
-          centerPadding: '20px',
+        centerPadding: '0px',
         },
       },
     ],
   };
 
   return (
-    <Homecontent>
-      {isMobile ? (
-        <Hamburger onClick={toggleDropdown}>
-          <MobileBurger />
-        </Hamburger>
+     <SliderContainer>
+      {error ? (
+        <div className="error-message">{error}</div>
       ) : (
-        <DesktopHeader />
+        <Slider {...settings} ref={sliderRef}>
+          {Array.isArray(data) &&
+            data.map((content, index) => (
+              <div key={content._id} className="slides">
+                <h1 className="movie-ids" aria-label={`Rank ${index + 1}`}>
+                  {index + 1}
+                </h1>
+                <Slidercontent
+                  img={content.thumbnail}
+                  title={content.title}
+                  movie={content}
+                  views={content.views}
+                  desc={content.description}
+                  customStyle={{}}
+                  onVideoClick={() => handleOpenModal(content)}
+                />
+              </div>
+            ))}
+        </Slider>
       )}
 
-      <MainContainer>
-        {/* Navigation Component */}
-        <Navigation
-          isMobile={isMobile}
-          isDropdownOpen={isDropdownOpen}
-          toggleDropdown={toggleDropdown}
-        />
-
-        {/* Main Content */}
-        <ContentWrapper isMobile={isMobile}>
-          {!isMobile && (
-            <HeaderWrapper>
-              <h3 className="text-white text-[1.5rem] font-bold">NEW ON PLAYMOOD</h3>
-            </HeaderWrapper>
-          )}
-
-          <SliderContainer>
-            {error ? (
-              <div className="error-message">{error}</div>
-            ) : (
-              <Slider {...settings} ref={sliderRef}>
-                {Array.isArray(data) &&
-                  data.map((content) => (
-                    <div key={content._id} className="slides">
-                      <Slidercontent
-                        img={content.thumbnail}
-                        title={content.title}
-                        movie={content}
-                        views={content.views}
-                        desc={content.description}
-                        customStyle={{ minWidth: '200px', height: 'auto' }}
-                        onVideoClick={() => handleOpenModal(content)}
-                      />
-                    </div>
-                  ))}
-              </Slider>
-            )}
-            <ContentModal
-              isOpen={isModalOpen}
-              content={modalContent}
-              onClose={handleCloseModal}
-              handleNavigateToMovie={handleNavigateToMovie}
-            />
-          </SliderContainer>
-        </ContentWrapper>
-      </MainContainer>
-
-      <Footer />
-    </Homecontent>
+      <ContentModal
+        isOpen={isModalOpen}
+        content={modalContent}
+        onClose={handleCloseModal}
+        handleNavigateToMovie={handleNavigateToMovie}
+      />
+    </SliderContainer>
   );
 }
 
 // Styled Components
-const Homecontent = styled.div`
-  width: 100vw;
-  height: 100vh;
-  overflow-x: hidden;
-  display: flex;
-  flex-direction: column;
-  background-color: rgba(0, 0, 0, 0.70);
-   @media (max-width: 768px) {
-
-   height: auto;
-  
-  }
-`;
-
-const MainContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  flex-grow: 1;
-
-  @media (min-width: 768px) {
-    flex-direction: row;
-    align-items: flex-start;
-  }
-`;
-
-const ContentWrapper = styled.div`
-  width: 100%;
-  padding: 0 20px;
-  margin-top: ${(props) => (props.isMobile ? '240px' : '8%')}; /* Increased for mobile */
-  margin-bottom: 2rem;
-
-  @media (min-width: 768px) {
-    width: calc(100% - 170px);
-    margin-left: 170px;
-    padding: 0 30px;
-  }
-`;
-
-const HeaderWrapper = styled.div`
-  padding-left: 1rem;
-  padding-bottom: 0.5rem;
-
-  @media (max-width: 768px) {
-    padding-left: 0;
-    text-align: center;
-  }
-`;
-
+// Styled Components
 const SliderContainer = styled.div`
   position: relative;
   width: 100%;
@@ -330,40 +237,61 @@ const SliderContainer = styled.div`
     align-items: center;
   }
 
+  .movie-ids {
+    position: absolute;
+    top: 40%;
+    transform: translateY(-50%);
+    left: -30px;
+    width: 40px;
+    height: 40px;
+    color: white;
+    font-size: 54px;
+    font-weight: bold;
+    z-index: 5;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+  }
+
   @media (max-width: 1024px) {
-    padding: 0 15px;
+    .movie-ids {
+      left: -30px;
+      width: 30px;
+      height: 30px;
+      font-size: 18px;
+    }
   }
 
   @media (max-width: 600px) {
-    padding: 0 10px;
+    .movie-ids {
+      left: -25px;
+      width: 25px;
+      height: 25px;
+      font-size: 16px;
+    }
   }
 
   @media (max-width: 480px) {
     padding: 0 10px;
+    width: 100%; /* Reduce width for mobile */
+    margin: 0 auto;
 
     .custom-arrow {
       display: none !important;
     }
-  }
-`;
-const Hamburger = styled.div`
-  display: none;
-  @media (max-width: 768px) {
-    display: block;
-    position: fixed;
-    top: 20px;
-    left: 8px;
-    cursor: pointer;
-    color: white;
-    z-index: 1000;
 
-    svg {
-      font-size: 40px;
+    .movie-ids {
+      left: -20px;
+      width: 20px;
+      height: 20px;
+      font-size: 24px;
     }
-    &:hover {
-      color: #541011;
+
+    .slick-slide {
+      padding: 0 2px; /* Reduce padding between slides */
     }
   }
 `;
-
-export { Homecontent };

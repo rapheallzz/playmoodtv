@@ -4,23 +4,41 @@ import { FaPaperPlane, FaHeart, FaPlus, FaCheck } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { likeContent, unlikeContent, addToWatchlist, removeFromWatchlist } from '../features/authSlice';
 import axios from 'axios';
-import { jwtDecode } from 'jwt-decode'; // Add jwt-decode
+import { jwtDecode } from 'jwt-decode';
 import styled from 'styled-components';
 
 const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
   const [commentText, setCommentText] = useState('');
   const [commentError, setCommentError] = useState('');
-  const [actionError, setActionError] = useState(''); // Add state for like/watchlist errors
+  const [actionError, setActionError] = useState('');
   const dispatch = useDispatch();
   const { user, userToken } = useSelector((state) => state.auth);
   const videoRef = useRef(null);
   const [copyModal, setCopyModal] = useState({ show: false, message: '', isError: false });
+  const modalRef = useRef(null); // Ref for modal container
 
   // Log content prop for debugging
   useEffect(() => {
     console.log('Content prop:', content);
   }, [content]);
+
+  // Handle click outside to close modal
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen, onClose]);
 
   // Derive userId from user or token
   const getUserId = () => {
@@ -160,7 +178,7 @@ const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
     return null;
   }
 
-  const isLiked = user?.likes?.includes(content._id); // Fixed from user.like
+  const isLiked = user?.likes?.includes(content._id);
   const isInWatchlist = user?.watchlist?.includes(content._id);
 
   const handleLike = async () => {
@@ -182,7 +200,7 @@ const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
       console.error('Error liking/unliking content:', error);
       const errorMessage = error.message || 'Failed to like/unlike content. Please try again.';
       setActionError(errorMessage);
-      setTimeout(() => setActionError(''), 3000); // Clear error after 3s
+      setTimeout(() => setActionError(''), 3000);
     }
   };
 
@@ -229,10 +247,12 @@ const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
 
   const modalContent = (
     <ModalOverlay>
-      <ModalContainer>
+      <CloseButtonWrapper>
         <CloseButton onClick={onClose} aria-label="Close modal">
           ×
         </CloseButton>
+      </CloseButtonWrapper>
+      <ModalContainer ref={modalRef}>
         <VideoContainer>
           <video
             ref={videoRef}
@@ -246,7 +266,7 @@ const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
         <ModalContent>
           <h2 className="text-base sm:text-lg md:text-xl font-semibold">{content.title}</h2>
           <p className="text-xs sm:text-sm md:text-base text-black mt-2 line-clamp-2">{content.description}</p>
-          {actionError && <ErrorMessage>{actionError}</ErrorMessage>} {/* Display action errors */}
+          {actionError && <ErrorMessage>{actionError}</ErrorMessage>}
           <ActionRow>
             <WatchButton onClick={() => handleNavigateToMovie(content)}>
               Watch
@@ -316,8 +336,8 @@ const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
         </ModalContent>
       </ModalContainer>
       {showWelcomePopup && (
-        <PopupOverlay>
-          <PopupContainer>
+        <PopupOverlay onClick={() => setShowWelcomePopup(false)}>
+          <PopupContainer onClick={(e) => e.stopPropagation()}>
             <p className="text-sm sm:text-base">Please log in to like, add to playlist, or comment.</p>
             <button
               className="mt-4 bg-[#541011] text-white py-2 px-4 rounded text-sm sm:text-base"
@@ -329,7 +349,7 @@ const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
         </PopupOverlay>
       )}
       {copyModal.show && (
-        <CopyModal isError={copyModal.isError}>
+        <CopyModal isError={copyModal.isError} onClick={handleCloseCopyModal}>
           <p>{copyModal.message}</p>
           <button onClick={handleCloseCopyModal}>Close</button>
         </CopyModal>
@@ -340,8 +360,7 @@ const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
   return isOpen ? createPortal(modalContent, document.body) : null;
 };
 
-
-// Styled Components (unchanged)
+// Styled Components
 const ModalOverlay = styled.div`
   position: fixed;
   inset: 0;
@@ -349,19 +368,48 @@ const ModalOverlay = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 10010; /* Increased to ensure above all elements */
+  z-index: 10010;
   padding: 1rem;
   animation: fade-in 0.3s ease-in;
 `;
 
+const CloseButtonWrapper = styled.div`
+  position: absolute;
+  top: calc(50% - 38vh); /* Align with top of modal, accounting for max-height */
+  right: calc(50% - 47.5vw + 1rem); /* Position to the right of modal */
+  z-index: 10013;
+  margin-right: 0.5rem;
+
+  @media (min-width: 640px) {
+    right: calc(50% - 300px + 1rem); /* Adjust for max-width: 600px */
+  }
+
+  @media (min-width: 768px) {
+    right: calc(50% - 400px + 1rem); /* Adjust for max-width: 800px */
+  }
+`;
+
+const CloseButton = styled.button`
+  background: #dc2626;
+  color: white;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  cursor: pointer;
+`;
+
 const ModalContainer = styled.div`
-  position: relative;
   background: white;
   border-radius: 8px;
   width: 100%;
   max-width: 95vw;
-  max-height: 90vh; /* Increased to allow more content */
-  overflow: hidden; /* Prevent overflow from affecting layout */
+  max-height: 90vh;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
 
@@ -376,9 +424,9 @@ const ModalContainer = styled.div`
 
 const VideoContainer = styled.div`
   width: 100%;
-  aspect-ratio: 16 / 9; /* Maintain consistent video aspect ratio */
-  max-height: 40vh; /* Limit max height */
-  min-height: 200px; /* Ensure minimum height */
+  aspect-ratio: 16 / 9;
+  max-height: 40vh;
+  min-height: 200px;
   overflow: hidden;
 
   video {
@@ -389,28 +437,10 @@ const VideoContainer = styled.div`
   }
 `;
 
-const CloseButton = styled.button`
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  background: #dc2626;
-  color: white;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 50%;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1rem;
-  cursor: pointer;
-  z-index: 10013; /* Increased to stay above all modal layers */
-`;
-
 const ModalContent = styled.div`
   padding: 1rem;
-  flex: 1; /* Take remaining space */
-  overflow-y: auto; /* Allow scrolling for content */
+  flex: 1;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -515,7 +545,7 @@ const CommentSubmit = styled.button`
 `;
 
 const CommentList = styled.div`
-  max-height: 200px; /* Increased max-height for comments */
+  max-height: 200px;
   overflow-y: auto;
   padding-right: 0.25rem;
   display: flex;
@@ -621,7 +651,7 @@ const PopupOverlay = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 10011; /* Above ModalOverlay */
+  z-index: 10011;
   padding: 1rem;
   animation: fade-in 0.3s ease-in;
 `;
@@ -649,7 +679,7 @@ const CopyModal = styled.div`
   padding: 0.75rem;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  z-index: 10012; /* Above PopupOverlay */
+  z-index: 10012;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;

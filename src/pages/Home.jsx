@@ -35,6 +35,7 @@ import LikedContentCard from '../components/LikedContentCard';
 import axios from 'axios';
 import { likeContent, unlikeContent, addToWatchlist, removeFromWatchlist } from '../features/authSlice';
 import Footer from '../components/footer/Footer';
+import SliderTopTen from '../components/sliders/SliderTopTen';
 
 // CookiesPopupContainer styled component
 const CookiesPopupContainer = styled.div`
@@ -407,7 +408,7 @@ const SliderContainer = styled.div`
   padding: 0 10px;
 
   @media screen and (max-width: 495px) {
-    margin: 130px 0 20px 0;
+    margin: 50px 0 20px 0;
     padding: 0 5px;
     overflow-y: visible;
     touch-action: pan-y;
@@ -433,12 +434,39 @@ const VideoCategory = styled.div`
 
   @media screen and (max-width: 495px) {
     min-height: 180px;
-    height:280px;
+    height:250px;
     margin: 10px 10px 30px 10px;
-    padding-bottom: 30px;
+    padding-bottom: 0px;
     z-index: 210;
   }
 `;
+
+const VideoCategoryCircle = styled.div`
+  width: 92%;
+  margin: 20px;
+  display: flex;
+  flex-direction: column;
+  height:300px;
+  min-height: 220px;
+  box-sizing: border-box;
+  z-index: 210;
+
+  @media screen and (max-width: 768px) {
+    min-height: 180px;
+    margin: 10px 10px 20px 10px;
+    padding-bottom: 20px;
+    z-index: 210;
+  }
+
+  @media screen and (max-width: 495px) {
+    min-height: 180px;
+    height:200px;
+    margin: 10px 10px 30px 10px;
+    padding-bottom: 0px;
+    z-index: 210;
+  }
+`;
+
 
 const Videocategorytitle = styled.h3`
   font-size: 1.5rem;
@@ -791,63 +819,63 @@ function HomeContent({
           </Banner>
         )}
         <SliderContainer ref={sliderContainerRef}>
-          <VideoCategory id="top10">
+          <VideoCategory>
             <Videocategorytitle>Top 10</Videocategorytitle>
-            <Slidertop10 />
+            <SliderTopTen />
           </VideoCategory>
-          <VideoCategory id="newonplay">
+          <VideoCategory >
             <Videocategorytitle>New on Playmood</Videocategorytitle>
             <SliderNew />
           </VideoCategory>
-          <VideoCategory id="channel">
+          <VideoCategoryCircle >
             <Videocategorytitle>Channels</Videocategorytitle>
             <SliderChannel />
-          </VideoCategory>
-          <VideoCategory id="diaries">
+          </VideoCategoryCircle>
+          <VideoCategoryCircle >
             <Videocategorytitle>Diaries</Videocategorytitle>
             <SliderDiaries />
-          </VideoCategory>
-          <VideoCategory id="spaces">
+          </VideoCategoryCircle>
+          <VideoCategoryCircle >
             <Videocategorytitle>Spaces</Videocategorytitle>
             <SliderSpace />
-          </VideoCategory>
-          <VideoCategory id="recommended">
+          </VideoCategoryCircle>
+          <VideoCategory>
             <Videocategorytitle>Recommended for you</Videocategorytitle>
             <SlideRecommended />
           </VideoCategory>
-          <VideoCategory id="interviews">
+          <VideoCategory >
             <Videocategorytitle>Interviews</Videocategorytitle>
             <SliderInterview />
           </VideoCategory>
-          <VideoCategory id="fashion">
+          <VideoCategory>
             <Videocategorytitle>Fashion Shows</Videocategorytitle>
             <SliderFashion />
           </VideoCategory>
-          <VideoCategory id="social">
+          <VideoCategory>
             <Videocategorytitle>Social</Videocategorytitle>
             <SliderSocial />
           </VideoCategory>
-          <VideoCategory id="documentaries">
+          <VideoCategory>
             <Videocategorytitle>Documentaries and Reports</Videocategorytitle>
             <SliderDocumentaries />
           </VideoCategory>
-          <VideoCategory id="cameras">
+          <VideoCategory>
             <Videocategorytitle>Behind the Cameras</Videocategorytitle>
             <SliderCamera />
           </VideoCategory>
-          <VideoCategory id="soon">
+          <VideoCategory>
             <Videocategorytitle>Soon in Playmood</Videocategorytitle>
             <SliderSoon />
           </VideoCategory>
-          <VideoCategory id="teens">
+          <VideoCategory>
             <Videocategorytitle>Teens</Videocategorytitle>
             <SliderTeens />
           </VideoCategory>
-          <VideoCategory id="bestfashion">
+          <VideoCategory>
             <Videocategorytitle>Best in Fashion</Videocategorytitle>
             <SliderFashion />
           </VideoCategory>
-          <VideoCategory id="infashion">
+          <VideoCategory>
             <Videocategorytitle>Only in Playmood</Videocategorytitle>
             <SliderOnly />
           </VideoCategory>

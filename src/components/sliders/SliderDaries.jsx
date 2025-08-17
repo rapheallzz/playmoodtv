@@ -209,13 +209,13 @@ export default function SliderDairies() {
     setModalCreator(null);
   };
 
-  const settings = {
+   const settings = {
     dots: false,
     infinite: true,
     speed: 300,
     slidesToShow: 4,
     slidesToScroll: 1,
-    initialSlide: initialSlide,
+    initialSlide: 0,
     autoplaySpeed: 3000,
     cssEase: 'linear',
     arrows: true,
@@ -237,21 +237,21 @@ export default function SliderDairies() {
       {
         breakpoint: 600,
         settings: {
-          slidesToShow: 2.5,
+          slidesToShow: 2,
           slidesToScroll: 1,
           arrows: true,
           centerMode: true,
-          centerPadding: '20px',
+          centerPadding: '15px',
         },
       },
       {
         breakpoint: 480,
         settings: {
-          slidesToShow: 2.2,
+          slidesToShow: 2,
           slidesToScroll: 1,
           arrows: false,
           centerMode: true,
-          centerPadding: '30px',
+          centerPadding: '5px',
         },
       },
       {

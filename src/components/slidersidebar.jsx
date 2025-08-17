@@ -22,7 +22,7 @@ export default function SidebarSlider() {
         const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
         console.log('API response:', response);
         if (response.data && Array.isArray(response.data)) {
-          const filteredData = response.data.filter(content => content.category === 'Top 10');
+          const filteredData = response.data.filter(content => content.category === 'Teen');
           setData(filteredData);
         } else {
           console.error('Unexpected data format:', response.data);
@@ -71,30 +71,34 @@ export default function SidebarSlider() {
     arrows: false, 
     swipeToSlide: true,
     lazyLoad: 'ondemand',
-    responsive: [
+     responsive: [
       {
         breakpoint: 1024,
         settings: {
-          slidesToShow: 2,
+          slidesToShow: 3,
           slidesToScroll: 1,
-          dots: false,
+          infinite: true,
+          dots: true,
           arrows: true,
         },
       },
       {
-        breakpoint: 768,
+        breakpoint: 600,
         settings: {
           slidesToShow: 2,
           slidesToScroll: 1,
+          initialSlide: 2,
           arrows: true,
         },
       },
       {
         breakpoint: 480,
         settings: {
-          slidesToShow: 1,
+          slidesToShow: 2,
           slidesToScroll: 1,
-          arrows: true,
+          arrows: false,
+          centerMode: true,
+        centerPadding: '20px',
         },
       },
     ],

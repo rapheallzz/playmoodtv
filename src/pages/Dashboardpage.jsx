@@ -13,13 +13,14 @@ import UserWatchlist from '../components/sliders/UserSliderWatchlist';
 import UserFavourite from '../components/sliders/UserSliderFavourite';
 import UserRecommended from '../components/miscSlider/UserSliderRecommended';
 import TermsModal from '../components/Terms';
-import { VideoModal } from '../components/ModalVU';
+import { VideoModal } from '../components/ModalVU'; // Ensure this import is correct
 import MessageModal from '../components/MessageModal';
 import DonationModal from '../components/DonationModal';
 import Sliderfriends from '../components/Sliderfriends';
 import Footer from '../components/footer/Footer';
 import { updateAuthUser, logout } from '../features/authSlice';
 import defaultImage from '../assets/default-image.jpg';
+import {jwtDecode} from 'jwt-decode'; // Ensure this import is present
 
 const defaultProfileIcon = '/default-profile.png';
 
@@ -35,8 +36,8 @@ function Dashboardpage() {
   const [profileImage, setProfileImage] = useState(null);
   const [profileImagePreview, setProfileImagePreview] = useState(null);
   const [activeAction, setActiveAction] = useState('LIKES');
-  const [isLoadingUser, setIsLoadingUser] = useState(true); // Add loading state
-const [showCreatorConfirmPopup, setShowCreatorConfirmPopup] = useState(false);
+  const [isLoadingUser, setIsLoadingUser] = useState(true);
+  const [showCreatorConfirmPopup, setShowCreatorConfirmPopup] = useState(false);
 
   const [personalData, setPersonalData] = useState({
     name: '',
@@ -486,46 +487,40 @@ const [showCreatorConfirmPopup, setShowCreatorConfirmPopup] = useState(false);
     }
   };
 
-const handleApplyAsCreator = () => {
-  if (hasPendingRequest) return;
-  if (!userId) {
-    console.error('handleApplyAsCreator: userId is undefined');
-    toast.error('User ID is missing. Please try logging in again.');
-    dispatch(logout());
-    navigate('/login');
-    return;
-  }
-  setShowCreatorConfirmPopup(true); // Show confirmation popup
-};
+  const handleApplyAsCreator = () => {
+    if (hasPendingRequest) return;
+    if (!userId) {
+      console.error('handleApplyAsCreator: userId is undefined');
+      toast.error('User ID is missing. Please try logging in again.');
+      dispatch(logout());
+      navigate('/login');
+      return;
+    }
+    setShowCreatorConfirmPopup(true);
+  };
 
-const confirmApplyAsCreator = async () => {
-  try {
-    const response = await axios.post(
-      'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/rolechange',
-      { userId, requestedRole: 'creator' },
-      { headers: { Authorization: `Bearer ${authUser.token}` } }
-    );
-    if (response.status === 201) {
-      setMessage('Your request to become a creator has been submitted.');
-      setHasPendingRequest(true);
-      await fetchCreatorRequestStatus();
-    } else {
+  const confirmApplyAsCreator = async () => {
+    try {
+      const response = await axios.post(
+        'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/rolechange',
+        { userId, requestedRole: 'creator' },
+        { headers: { Authorization: `Bearer ${authUser.token}` } }
+      );
+      if (response.status === 201) {
+        setMessage('Your request to become a creator has been submitted.');
+        setHasPendingRequest(true);
+        await fetchCreatorRequestStatus();
+      } else {
+        setMessage('There was an issue submitting your request. Please try again.');
+      }
+    } catch (error) {
+      console.error('confirmApplyAsCreator error:', error);
       setMessage('There was an issue submitting your request. Please try again.');
     }
-  } catch (error) {
-    console.error('confirmApplyAsCreator error:', error);
-    setMessage('There was an issue submitting your request. Please try again.');
-  }
-  setShowCreatorConfirmPopup(false); 
-  setShowMessageModal(true); 
-};
+    setShowCreatorConfirmPopup(false);
+    setShowMessageModal(true);
+  };
 
-
-
-
-
-
-  // Modified profile image input handler
   const handleProfileImageClick = async () => {
     if (isLoadingUser) {
       toast.info('Please wait, user data is still loading.');
@@ -655,27 +650,25 @@ const confirmApplyAsCreator = async () => {
           </div>
 
           <div className="dash-btn flex">
-          
-              {isAdmin && (
-            <button
-              className="bg-[#541011] text-[#f3f3f3] py-2 px-8 border-none rounded cursor-pointer text-base font-normal transition-colors duration-300 ease-in-out m-2 hover:bg-white hover:text-[#541011]"
-              onClick={() => navigate('/admin')}
-            >
-              Admin Page
-            </button>
-          )}
-          {!isCreator && (
-            <button
-              className={`bg-[#541011] text-[#f3f3f3] py-2 px-8 border-none rounded text-base font-normal transition-colors duration-300 ease-in-out m-2 ${
-                hasPendingRequest ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white hover:text-[#541011]'
-              }`}
-              onClick={handleApplyAsCreator}
-              disabled={hasPendingRequest}
-            >
-              {hasPendingRequest ? 'Pending Request' : 'Become a Creator'}
-            </button>
-          )}
-           
+            {isAdmin && (
+              <button
+                className="bg-[#541011] text-[#f3f3f3] py-2 px-8 border-none rounded cursor-pointer text-base font-normal transition-colors duration-300 ease-in-out m-2 hover:bg-white hover:text-[#541011]"
+                onClick={() => navigate('/admin')}
+              >
+                Admin Page
+              </button>
+            )}
+            {!isCreator && (
+              <button
+                className={`bg-[#541011] text-[#f3f3f3] py-2 px-8 border-none rounded text-base font-normal transition-colors duration-300 ease-in-out m-2 ${
+                  hasPendingRequest ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white hover:text-[#541011]'
+                }`}
+                onClick={handleApplyAsCreator}
+                disabled={hasPendingRequest}
+              >
+                {hasPendingRequest ? 'Pending Request' : 'Become a Creator'}
+              </button>
+            )}
             {isCreator && (
               <>
                 <button
@@ -693,10 +686,13 @@ const confirmApplyAsCreator = async () => {
               </>
             )}
           </div>
+        </User>
 
-          <MessageModal show={showMessageModal} onClose={() => setShowMessageModal(false)} message={message} />
-          
-             {showCreatorConfirmPopup && (
+        {showVideoModal && <VideoModal onClose={handleVideoModalClose} />}
+
+        <MessageModal show={showMessageModal} onClose={() => setShowMessageModal(false)} message={message} />
+
+        {showCreatorConfirmPopup && (
           <PopupOverlay>
             <PopupContainer>
               <CloseButton onClick={() => setShowCreatorConfirmPopup(false)} aria-label="Close confirmation popup">
@@ -723,7 +719,6 @@ const confirmApplyAsCreator = async () => {
             </PopupContainer>
           </PopupOverlay>
         )}
-        </User>
 
         {!edit ? (
           <>
@@ -1038,210 +1033,210 @@ export default Dashboardpage;
 
 // Styled components (unchanged)
 const Dashboard = styled.div`
-    height: fit-content;
-    width: 100%;
-    display: flex;
+  height: fit-content;
+  width: 100%;
+  display: flex;
 `;
 const Mainsection = styled.div`
-    width: 100%;
-    height: 100%;
-    background-color: #191818;
+  width: 100%;
+  height: 100%;
+  background-color: #191818;
+  display: flex;
+  flex-direction: column;
+  .edit-profile {
+    width: 55vw;
+    height: fit-content;
+    background-color: grey;
+    margin: 10px auto 10px auto;
+    border-radius: 10px;
     display: flex;
+    padding: 60px 20px 20px 40px;
     flex-direction: column;
-    .edit-profile{
-        width: 55vw;
-        height: fit-content;
-        background-color: grey;
-        margin: 10px auto 10px auto;
-        border-radius: 10px;
+    .billing_information_section {
+      display: flex;
+      height: fit-content;
+      width: 100%;
+      .billing_section {
         display: flex;
-        padding: 60px 20px 20px 40px;
         flex-direction: column;
-        .billing_information_section{
-            display: flex;
-            height: fit-content;
-            width: 100%;
-            .billing_section{
-                display: flex;
-                flex-direction: column;
-                gap: 8px;
-                margin-top: 20px;
-                width: 100%;
-                .billing_infos{
-                    display: flex;
-                    width: 100%;
-                    height: fit-content;
-                    justify-content: space-between;
-                    align-items: center;
-                    gap: 20px;
-                    .billing_infos_section_one{
-                        .billing_info_enter{
-                            color: white;
-                            font-size: 1rem;
-                        }
-                        .billing_info_why{
-                            font-size: 0.6rem;
-                            color: white;
-                        }
-                        .billing_info_location{
-                            font-size: 0.8rem;
-                            color: white;
-                        }
-                        .billing_info_country{
-                            width: 15vw;
-                            padding: 4px;
-                        }
-                        .billing_info_name{
-                            font-size: 0.8rem;
-                            color: white;
-                        }
-                        .billing_info_inputs{
-                            width: 20vw;
-                            padding: 4px;
-                        }
-                    }
-                    .billing_section_secondsection{
-                        .billing_info_enter{
-                            color: white;
-                            font-size: 1rem;
-                        }
-                        .billing_info_why{
-                            font-size: 0.6rem;
-                            color: white;
-                        }
-                        .billing_info_location{
-                            font-size: 0.8rem;
-                            color: white;
-                        }
-                        .billing_info_country{
-                            width: 15vw;
-                            padding: 4px;
-                        }
-                        .billing_info_name{
-                            font-size: 0.8rem;
-                            color: white;
-                        }
-                        .billing_info_inputs{
-                            width: 20vw;
-                            padding: 4px;
-                        }
-                    }
-                }
-                .billing_info_enter{
-                    color: white;
-                    font-size: 1rem;
-                }
-                .billing_info_why{
-                    font-size: 0.6rem;
-                    color: white;
-                }
-                .billing_info_location{
-                    font-size: 0.8rem;
-                    color: white;
-                }
-                .billing_info_country{
-                    width: 15vw;
-                    padding: 4px;
-                }
-                .billing_info_name{
-                    font-size: 0.8rem;
-                    color: white;
-                }
-                .billing_info_inputs{
-                    width: 20vw;
-                    padding: 4px;
-                }
+        gap: 8px;
+        margin-top: 20px;
+        width: 100%;
+        .billing_infos {
+          display: flex;
+          width: 100%;
+          height: fit-content;
+          justify-content: space-between;
+          align-items: center;
+          gap: 20px;
+          .billing_infos_section_one {
+            .billing_info_enter {
+              color: white;
+              font-size: 1rem;
             }
-            .billing_section_secondsection{
-                display: flex;
-                flex-direction: column;
-                gap: 8px;
-                margin-top: 20px;
-                .billing_info_enter{
-                    color: white;
-                    font-size: 1rem;
-                }
-                .billing_info_why{
-                    font-size: 0.6rem;
-                    color: white;
-                }
-                .billing_info_location{
-                    font-size: 0.8rem;
-                    color: white;
-                }
-                .billing_info_country{
-                    width: 15vw;
-                    padding: 4px;
-                }
-                .billing_info_name{
-                    font-size: 0.8rem;
-                    color: white;
-                }
-                .billing_info_inputs{
-                    width: 20vw;
-                    padding: 4px;
-                }
+            .billing_info_why {
+              font-size: 0.6rem;
+              color: white;
             }
+            .billing_info_location {
+              font-size: 0.8rem;
+              color: white;
+            }
+            .billing_info_country {
+              width: 15vw;
+              padding: 4px;
+            }
+            .billing_info_name {
+              font-size: 0.8rem;
+              color: white;
+            }
+            .billing_info_inputs {
+              width: 20vw;
+              padding: 4px;
+            }
+          }
+          .billing_section_secondsection {
+            .billing_info_enter {
+              color: white;
+              font-size: 1rem;
+            }
+            .billing_info_why {
+              font-size: 0.6rem;
+              color: white;
+            }
+            .billing_info_location {
+              font-size: 0.8rem;
+              color: white;
+            }
+            .billing_info_country {
+              width: 15vw;
+              padding: 4px;
+            }
+            .billing_info_name {
+              font-size: 0.8rem;
+              color: white;
+            }
+            .billing_info_inputs {
+              width: 20vw;
+              padding: 4px;
+            }
+          }
         }
-        .billing-btn{
-            width: 200px;
-            margin-top: 20px;
-            height: 50px;
-            background: none;
-            color: white;
-            border: 1px solid white;
-            &:hover{
-                color: #541011;
-                cursor: pointer;
-            }
+        .billing_info_enter {
+          color: white;
+          font-size: 1rem;
         }
-        .user-data{
-            color: white;
-            font-size: 2rem;
-            font-weight: 400;
+        .billing_info_why {
+          font-size: 0.6rem;
+          color: white;
         }
-        .user-info{
-            width: 100%;
-            height: fit-content;
-            margin-top: 10px;
-            display: flex; 
-            justify-content: space-between;
-            .user-info-first{
-                display: flex;
-                flex-direction: column;
-                width: 50%;
-                padding: 0px 20px 0px 0px;
-                gap: 10px;
-                input{
-                    width: 100%;
-                    padding: 15px;
-                    background: none;
-                    color: white;
-                    border: 1px solid white;
-                    &::placeholder{
-                        color: white;
-                    }
-                }
-            }
-            .user-info-second{
-                display: flex;
-                flex-direction: column;
-                width: 50%;
-                padding: 0px 0px 0px 20px;
-                gap: 10px;
-                input{
-                    width: 100%;
-                    padding: 15px;
-                    background: none;
-                    color: #fff;
-                    border: 1px solid white;
-                    &::placeholder{
-                        color: white;
-                    }
-                }
-            }
+        .billing_info_location {
+          font-size: 0.8rem;
+          color: white;
         }
+        .billing_info_country {
+          width: 15vw;
+          padding: 4px;
+        }
+        .billing_info_name {
+          font-size: 0.8rem;
+          color: white;
+        }
+        .billing_info_inputs {
+          width: 20vw;
+          padding: 4px;
+        }
+      }
+      .billing_section_secondsection {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 20px;
+        .billing_info_enter {
+          color: white;
+          font-size: 1rem;
+        }
+        .billing_info_why {
+          font-size: 0.6rem;
+          color: white;
+        }
+        .billing_info_location {
+          font-size: 0.8rem;
+          color: white;
+        }
+        .billing_info_country {
+          width: 15vw;
+          padding: 4px;
+        }
+        .billing_info_name {
+          font-size: 0.8rem;
+          color: white;
+        }
+        .billing_info_inputs {
+          width: 20vw;
+          padding: 4px;
+        }
+      }
     }
+    .billing-btn {
+      width: 200px;
+      margin-top: 20px;
+      height: 50px;
+      background: none;
+      color: white;
+      border: 1px solid white;
+      &:hover {
+        color: #541011;
+        cursor: pointer;
+      }
+    }
+    .user-data {
+      color: white;
+      font-size: 2rem;
+      font-weight: 400;
+    }
+    .user-info {
+      width: 100%;
+      height: fit-content;
+      margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      .user-info-first {
+        display: flex;
+        flex-direction: column;
+        width: 50%;
+        padding: 0px 20px 0px 0px;
+        gap: 10px;
+        input {
+          width: 100%;
+          padding: 15px;
+          background: none;
+          color: white;
+          border: 1px solid white;
+          &::placeholder {
+            color: white;
+          }
+        }
+      }
+      .user-info-second {
+        display: flex;
+        flex-direction: column;
+        width: 50%;
+        padding: 0px 0px 0px 20px;
+        gap: 10px;
+        input {
+          width: 100%;
+          padding: 15px;
+          background: none;
+          color: #fff;
+          border: 1px solid white;
+          &::placeholder {
+            color: white;
+          }
+        }
+      }
+    }
+  }
 `;
 const Hamburger = styled.div`
   display: none;
@@ -1249,11 +1244,11 @@ const Hamburger = styled.div`
     display: block;
     position: relative;
     font-size: 30px;
-    top:60px;
-    left:8px;
+    top: 60px;
+    left: 8px;
     cursor: pointer;
     color: white;
-    &:hover{
+    &:hover {
       color: #541011;
     }
     z-index: 1000;
@@ -1294,14 +1289,14 @@ const User = styled.div`
     flex-direction: row;
     gap: 10px;
     h3 {
-        padding-top:20px;
+      padding-top: 20px;
       color: white;
       font-size: 1.0rem;
     }
     .edit-button-dashboard {
       height: 60px;
       width: 50px;
-      background-color:;
+      background-color: ;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1354,14 +1349,14 @@ const Useractions = styled.div`
     cursor: pointer;
   }
   @media screen and (max-width: 768px) {
-    position:relative;
-    left:150px;
+    position: relative;
+    left: 150px;
     margin: 2px 0;
     margin-left: 0px;
     gap: 0px;
     justify-content: center;
     flex-direction: column;
-    font-size:8px;
+    font-size: 8px;
   }
 `;
 const UserSlider = styled.div`
@@ -1389,7 +1384,7 @@ const UseractionsInteraction = styled.div`
     margin: 20px auto;
     flex-direction: column;
     align-items: center;
-    font-size:15px;
+    font-size: 15px;
     p {
       margin-bottom: 10px;
     }
@@ -1404,84 +1399,82 @@ const Friendsslider = styled.div`
     margin: 50px auto;
   }
 `;
-
 const Popup = styled.div`
-    height: 500px;
-    width: 1000px;
-    position: absolute;
+  height: 500px;
+  width: 1000px;
+  position: absolute;
+  top: 100px;
+  left: 250px;
+  z-index: 1001;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 20px;
+  @media screen and (max-width: 1000px) {
+    width: 70%;
+    height: 70%;
+    left: 80px;
     top: 100px;
-    left: 250px;
-    z-index: 1001;
-    overflow: hidden;
+  }
+  img {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    object-fit: cover;
+    top: 0;
+    left: 0;
+    z-index: -1;
+  }
+  div {
+    height: fit-content;
+    width: 70%;
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 20px;
-    @media screen and (max-width: 1000px) {
-        width: 70%;
-        height: 70%;
-        left: 80px;
-        top: 100px;
+    flex-direction: column;
+    gap: 10px;
+    h2 {
+      color: white;
+      font-size: 2rem;
+      text-shadow: 2px 2px red;
+      @media screen and (max-width: 1000px) {
+        font-size: 1.2rem;
+      }
     }
-    img {
-        width: 100%;
-        height: 100%;
-        position: absolute;
-        object-fit: cover;
-        top: 0;
-        left: 0;
-        z-index: -1;
+    p {
+      color: white;
+      font-size: 1.2rem;
+      text-shadow: 1px 1px red;
+      @media screen and (max-width: 1000px) {
+        font-size: 0.9rem;
+      }
     }
-    div {
-        height: fit-content;
-        width: 70%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+    .form {
+      display: flex;
+      justify-content: center;
+      align-item: center;
+      gap: 20px;
+      width: 50%;
+      margin: 0px auto 0px auto;
+      @media screen and (max-width: 1000px) {
         flex-direction: column;
-        gap: 10px;
-        h2 {
-            color: white;
-            font-size: 2rem;
-            text-shadow: 2px 2px red;
-            @media screen and (max-width: 1000px) {
-                font-size: 1.2rem;
-            }
-        }
-        p {
-            color: white;
-            font-size: 1.2rem;
-            text-shadow: 1px 1px red;
-            @media screen and (max-width: 1000px) {
-                font-size: 0.9rem;
-            }
-        }
-        .form {
-            display: flex;
-            justify-content: center;
-            align-item: center;
-            gap: 20px;
-            width: 50%;
-            margin: 0px auto 0px auto;
-            @media screen and (max-width: 1000px) {
-                flex-direction: column;
-            }
-            .inputfield {
-                padding: 10px 20px;
-                border-radius: 20px;
-            }
-            .subscribe-button {
-                background-color: red;
-                padding: 10px 20px;
-                color: white;
-                border: none;
-                border-radius: 20px;
-                cursor: pointer;
-            }
-        }
+      }
+      .inputfield {
+        padding: 10px 20px;
+        border-radius: 20px;
+      }
+      .subscribe-button {
+        background-color: red;
+        padding: 10px 20px;
+        color: white;
+        border: none;
+        border-radius: 20px;
+        cursor: pointer;
+      }
     }
+  }
 `;
-
 const PopupOverlay = styled.div`
   position: fixed;
   inset: 0;
@@ -1492,7 +1485,6 @@ const PopupOverlay = styled.div`
   z-index: 1002; /* Above other modals */
   padding: 1rem;
 `;
-
 const PopupContainer = styled.div`
   background: #191818;
   padding: 2rem;
@@ -1503,7 +1495,6 @@ const PopupContainer = styled.div`
   position: relative;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 `;
-
 const CloseButton = styled.button`
   position: absolute;
   top: 10px;

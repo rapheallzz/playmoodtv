@@ -100,7 +100,7 @@ export default function SliderLiked() {
         setData(response.data.likedContents || []);
       } catch (error) {
         console.error('Error fetching data:', error);
-        setError('Failed to load liked content. Please try again later.');
+       
         setData([]);
         if (error.response?.status === 401) {
           console.warn('Unauthorized, redirecting to login');
@@ -167,7 +167,7 @@ export default function SliderLiked() {
       {
         breakpoint: 480,
         settings: {
-          slidesToShow: 1.5,
+          slidesToShow: 2,
           slidesToScroll: 1,
           arrows: false,
           centerMode: true,
@@ -180,7 +180,7 @@ export default function SliderLiked() {
   return (
     <SliderContainer>
       {error ? (
-        <div className="error-message">{error}</div>
+        <div className="error-message"></div>
       ) : data && data.length > 0 ? (
         <Slider {...settings} ref={sliderRef}>
           {data.map((content, index) => (
