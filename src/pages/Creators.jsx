@@ -6,14 +6,17 @@ import styled from 'styled-components';
 import MobileBurger from '../components/headers/MobileBurger';
 import DesktopHeader from '../components/headers/DesktopHeader';
 import instagram from '/instagram.png';
+import PlaylistSlider from '../components/sliders/PlaylistSlider';
 import logo from '/PLAYMOOD_DEF.png';
 import Slidercontent from '../components/Slidercont';
 
 export default function Creator() {
   const location = useLocation();
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const [data, setData] = useState([]);
+  const [activeTab, setActiveTab] = useState('Videos');
   const [creatorContent, setCreatorContent] = useState([]);
+  const [playlists, setPlaylists] = useState([]);
+  const [error, setError] = useState(null);
 
   const handleResize = () => {
     setIsMobile(window.innerWidth <= 768);
@@ -27,25 +30,28 @@ export default function Creator() {
   }, []);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
-        setData(response.data);
-      } catch (error) {
-        console.error('Error fetching data:', error);
+    const fetchCreatorData = async () => {
+      if (location.state?.creator?._id) {
+        const creatorId = location.state.creator._id;
+        try {
+          setError(null);
+          // Fetch creator's videos
+          const contentResponse = await axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/creator/${creatorId}`);
+          setCreatorContent(contentResponse.data);
+
+          // Fetch creator's public playlists
+          const playlistResponse = await axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/playlists/user/${creatorId}/public`);
+          setPlaylists(playlistResponse.data.playlists || []);
+
+        } catch (err) {
+          console.error('Error fetching creator data:', err);
+          setError('Failed to load creator data.');
+        }
       }
     };
 
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    if (location.state && location.state.creator) {
-      const creatorId = location.state.creator._id;
-      const filteredContent = data.filter((content) => content.creatorId === creatorId);
-      setCreatorContent(filteredContent);
-    }
-  }, [location.state, data]);
+    fetchCreatorData();
+  }, [location.state]);
 
   const handleCardClick = (content) => {
     navigate(`/movie/${content.id}`, {
@@ -89,27 +95,53 @@ export default function Creator() {
         </div>
 
         <div className='h-full relative  md:right-[-40%] w-full md:w-3/5 mt-[28%]  mb-36 md:mt-[8%] md:mb-8'>
-       <div className='flex justify-between'>
-       <h3 className='pl-16 pb-2 text-white text-[1.5rem] font-bold'>{location.state?.creator?.name || 'Creator Name'}</h3>  
-          <button className="bg-[#541011] text-white px-2 py-1 rounded hover:bg-[#461718]">
-      Subscribe
-    </button>
-       </div>
-          <Content>
-            {creatorContent.map((content) => (
-              <div className="flex-grow w-[210px] max-h-[310px] max-w-[210px] md:flex-none md:w-[250px] md:max-w-[250px] md:max-h-[350px] box-border cursor-pointer transition-transform duration-300 ease-in-out hover:scale-105" key={content.id} onClick={() => handleCardClick(content)}>
-                <Slidercontent
-                  img={content.thumbnail}
-                  title={content.title}
-                  movie={content.video}
-                  id={content.id}
-                  desc={content.description}
-                  customStyle={{}}
-                />
-              </div>
-            ))}
-          </Content>
-        </div>  
+          <div className='flex justify-between items-center mb-4'>
+            <h3 className='pl-16 pb-2 text-white text-[1.5rem] font-bold'>{location.state?.creator?.name || 'Creator Name'}</h3>
+            <button className="bg-[#541011] text-white px-2 py-1 rounded hover:bg-[#461718]">
+              Subscribe
+            </button>
+          </div>
+
+          <TabNav>
+            <TabButton onClick={() => setActiveTab('Videos')} active={activeTab === 'Videos'}>
+              Videos
+            </TabButton>
+            <TabButton onClick={() => setActiveTab('Playlists')} active={activeTab === 'Playlists'}>
+              Playlists
+            </TabButton>
+          </TabNav>
+
+          {error && <ErrorMessage>{error}</ErrorMessage>}
+
+          {activeTab === 'Videos' && (
+            <Content>
+              {creatorContent.map((content) => (
+                <div className="flex-grow w-[210px] max-h-[310px] max-w-[210px] md:flex-none md:w-[250px] md:max-w-[250px] md:max-h-[350px] box-border cursor-pointer transition-transform duration-300 ease-in-out hover:scale-105" key={content.id} onClick={() => handleCardClick(content)}>
+                  <Slidercontent
+                    img={content.thumbnail}
+                    title={content.title}
+                    movie={content.video}
+                    id={content.id}
+                    desc={content.description}
+                    customStyle={{}}
+                  />
+                </div>
+              ))}
+            </Content>
+          )}
+
+          {activeTab === 'Playlists' && (
+            <div data-testid="playlists-container">
+              {playlists.length > 0 ? (
+                playlists.map(playlist => (
+                  <PlaylistSlider key={playlist._id} playlist={playlist} />
+                ))
+              ) : (
+                <p className="text-center text-white">No public playlists found for this creator.</p>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="h-auto w-full bg-black flex flex-col md:flex-row justify-between items-center gap-4 md:gap-2 px-4 md:px-10 py-4 md:py-5 fixed bottom-0 ">
@@ -189,6 +221,34 @@ const Content = styled.div`
 `;
 
 
+
+const TabNav = styled.div`
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+  padding-left: 64px; // to align with creator name
+`;
+
+const TabButton = styled.button`
+  background: none;
+  border: none;
+  color: ${({ active }) => (active ? '#541011' : 'white')};
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding-bottom: 5px;
+  border-bottom: 2px solid ${({ active }) => (active ? '#541011' : 'transparent')};
+  transition: color 0.3s, border-bottom-color 0.3s;
+
+  &:hover {
+    color: #541011;
+  }
+`;
+
+const ErrorMessage = styled.p`
+  color: red;
+  text-align: center;
+`;
 
 const Hamburger = styled.div`
   display: none; /* Hide by default */
