@@ -997,17 +997,24 @@ export const SubTabButton = styled.button`
 `;
 
 export const PlaylistCard = styled.div`
-  background: #1a1a1a;
-  padding: 20px;
-  border-radius: 8px;
+  background: #2a2a2a;
+  padding: 16px;
+  border-radius: 12px;
   color: #fff;
   width: 100%;
-  max-width: 300px;
-  margin: 10px;
+  max-width: 320px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  border: 1px solid #444;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  }
 
   .playlist-title {
     font-size: 1.2rem;

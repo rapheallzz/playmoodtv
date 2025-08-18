@@ -31,21 +31,6 @@ const PlaylistSection = ({
   selectedPlaylistId,
 }) => {
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
-  const [videoDataCache, setVideoDataCache] = useState({});
-
-  useEffect(() => {
-    playlists.forEach(p => {
-      if (p.videos && !videoDataCache[p._id]) {
-        setVideoDataCache(prev => ({
-          ...prev,
-          [p._id]: {
-            videoCount: p.videos.length,
-            thumbnail: p.videos.length > 0 ? p.videos[0].thumbnail : '/placeholder-image.jpg',
-          }
-        }));
-      }
-    });
-  }, [playlists, videoDataCache]);
 
   const handleDeleteClick = (e, playlistId) => {
     e.stopPropagation();
@@ -73,12 +58,13 @@ const PlaylistSection = ({
       ) : (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
           {playlists.map((playlist) => {
-            const videoCount = videoDataCache[playlist._id]?.videoCount ?? 0;
-            const thumbnail = videoDataCache[playlist._id]?.thumbnail ?? '/placeholder-image.jpg';
+            const videoCount = Array.isArray(playlist.videos) ? playlist.videos.length : 0;
+            const thumbnail = videoCount > 0 ? playlist.videos[0].thumbnail : '/placeholder-image.jpg';
 
             return (
               <PlaylistCard
                 key={playlist._id}
+                data-testid="playlist-card"
                 onClick={() => fetchPlaylistById(playlist._id)}
                 style={{
                   cursor: 'pointer',

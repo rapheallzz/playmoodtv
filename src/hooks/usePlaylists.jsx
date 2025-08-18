@@ -113,9 +113,11 @@ const usePlaylists = (user) => {
           { headers: { Authorization: `Bearer ${user.token}` } }
         );
         // Replace temp playlist with real one from server
+        const newPlaylistFromServer = response.data.playlist;
         setPlaylists((prev) =>
-          prev.map((p) => (p._id === tempId ? response.data.playlist : p))
+          prev.map((p) => (p._id === tempId ? newPlaylistFromServer : p))
         );
+        return { success: true, playlist: newPlaylistFromServer };
       }
       setErrorMessage('');
       return { success: true };

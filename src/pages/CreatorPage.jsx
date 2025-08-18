@@ -278,7 +278,14 @@ export default function CreatorPage() {
         <CreatePlaylistModal
           newPlaylist={newPlaylist}
           setNewPlaylist={setNewPlaylist}
-          handleCreateOrUpdatePlaylist={handleCreateOrUpdatePlaylist}
+          handleCreateOrUpdatePlaylist={async () => {
+            const result = await handleCreateOrUpdatePlaylist();
+            if (result.success && result.playlist) {
+              closeAllModals();
+              setEditingPlaylist(result.playlist);
+              setShowEditPlaylistModal(true);
+            }
+          }}
           isLoadingPlaylists={isLoadingPlaylists}
           closeAllModals={closeAllModals}
           errorMessage={playlistErrorMessage}
