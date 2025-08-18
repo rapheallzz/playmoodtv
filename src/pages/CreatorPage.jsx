@@ -281,7 +281,12 @@ export default function CreatorPage() {
           handleCreateOrUpdatePlaylist={async () => {
             const result = await handleCreateOrUpdatePlaylist();
             if (result.success && result.playlist) {
-              closeAllModals();
+              setShowCreatePlaylistModal(false);
+              setNewPlaylist({
+                name: result.playlist.name,
+                description: result.playlist.description,
+                visibility: result.playlist.visibility,
+              });
               setEditingPlaylist(result.playlist);
               setShowEditPlaylistModal(true);
             }

@@ -129,8 +129,6 @@ const usePlaylists = (user) => {
       return { success: false, error: errorMsg };
     } finally {
       setIsLoadingPlaylists(false);
-      setNewPlaylist({ name: '', description: '', visibility: 'public' });
-      setEditingPlaylist(null);
     }
   };
 
