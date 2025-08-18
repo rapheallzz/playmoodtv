@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StlyedCommunitySection, PlaylistCard, NoPostsMessage } from '../../styles/CreatorPageStyles';
-import { FaEdit, FaTrash, FaPlus } from 'react-icons/fa';
+import { FaEdit, FaTrash } from 'react-icons/fa';
 import styled from 'styled-components';
 
-// Styled component for the thumbnail
 const PlaylistThumbnail = styled.img`
   width: 100px;
   height: 60px;
@@ -12,47 +11,57 @@ const PlaylistThumbnail = styled.img`
   margin-left: 10px;
 `;
 
+const DeleteConfirmation = styled.div`
+  margin-top: 10px;
+  font-size: 0.9rem;
+  & > button {
+    margin-left: 10px;
+    padding: 3px 8px;
+    cursor: pointer;
+  }
+`;
+
 const PlaylistSection = ({
   playlists,
   isLoadingPlaylists,
   handleEditPlaylist,
   handleDeletePlaylist,
-  handleOpenAddVideoModal,
-  handleRemoveVideoFromPlaylist,
-  handleOpenModal,
   errorMessage,
   fetchPlaylistById,
   selectedPlaylistId,
-  selectedPlaylistVideos,
 }) => {
-  // Local state to track loading and cached video data for each playlist
-  const [playlistVideoData, setPlaylistVideoData] = useState({});
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
+  const [videoDataCache, setVideoDataCache] = useState({});
 
-  // Fetch video data for playlists when component mounts or playlists change
   useEffect(() => {
-    const fetchMissingData = async () => {
-      for (const playlist of playlists) {
-        if (!playlistVideoData[playlist._id] && !playlist.videoCount && !playlist.thumbnail) {
-          try {
-            const videos = await fetchPlaylistById(playlist._id);
-            setPlaylistVideoData((prev) => ({
-              ...prev,
-              [playlist._id]: {
-                videoCount: Array.isArray(videos) ? videos.length : 0,
-                thumbnail: Array.isArray(videos) && videos.length > 0 ? videos[0].thumbnail : '/placeholder-image.jpg',
-              },
-            }));
-          } catch (error) {
-            // Errors are handled in fetchPlaylistById; avoid setting state here
+    playlists.forEach(p => {
+      if (p.videos && !videoDataCache[p._id]) {
+        setVideoDataCache(prev => ({
+          ...prev,
+          [p._id]: {
+            videoCount: p.videos.length,
+            thumbnail: p.videos.length > 0 ? p.videos[0].thumbnail : '/placeholder-image.jpg',
           }
-        }
+        }));
       }
-    };
+    });
+  }, [playlists, videoDataCache]);
 
-    if (playlists.length > 0) {
-      fetchMissingData();
-    }
-  }, [playlists, fetchPlaylistById, playlistVideoData]);
+  const handleDeleteClick = (e, playlistId) => {
+    e.stopPropagation();
+    setConfirmDeleteId(playlistId);
+  };
+
+  const cancelDelete = (e) => {
+    e.stopPropagation();
+    setConfirmDeleteId(null);
+  };
+
+  const confirmDelete = (e, playlistId) => {
+    e.stopPropagation();
+    handleDeletePlaylist(playlistId);
+    setConfirmDeleteId(null);
+  };
 
   return (
     <StlyedCommunitySection>
@@ -64,13 +73,8 @@ const PlaylistSection = ({
       ) : (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
           {playlists.map((playlist) => {
-            const isSelected = selectedPlaylistId === playlist._id;
-            const videoCount = isSelected && Array.isArray(selectedPlaylistVideos)
-              ? selectedPlaylistVideos.length
-              : playlistVideoData[playlist._id]?.videoCount || playlist.videoCount || 0;
-            const thumbnail = isSelected && Array.isArray(selectedPlaylistVideos) && selectedPlaylistVideos.length > 0
-              ? selectedPlaylistVideos[0].thumbnail
-              : playlistVideoData[playlist._id]?.thumbnail || playlist.thumbnail || '/placeholder-image.jpg';
+            const videoCount = videoDataCache[playlist._id]?.videoCount ?? 0;
+            const thumbnail = videoDataCache[playlist._id]?.thumbnail ?? '/placeholder-image.jpg';
 
             return (
               <PlaylistCard
@@ -98,27 +102,20 @@ const PlaylistSection = ({
                         handleEditPlaylist(playlist);
                       }}
                       title="Edit Playlist"
-                      aria-label="Edit Playlist"
                     />
                     <FaTrash
                       className="delete-icon"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeletePlaylist(playlist._id);
-                      }}
+                      onClick={(e) => handleDeleteClick(e, playlist._id)}
                       title="Delete Playlist"
-                      aria-label="Delete Playlist"
-                    />
-                    <FaPlus
-                      className="add-video-icon"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleOpenAddVideoModal(playlist._id);
-                      }}
-                      title="Add Video"
-                      aria-label="Add Video to Playlist"
                     />
                   </div>
+                  {confirmDeleteId === playlist._id && (
+                    <DeleteConfirmation>
+                      Are you sure?
+                      <button onClick={(e) => confirmDelete(e, playlist._id)}>Yes</button>
+                      <button onClick={cancelDelete}>No</button>
+                    </DeleteConfirmation>
+                  )}
                 </div>
                 {videoCount > 0 && (
                   <PlaylistThumbnail

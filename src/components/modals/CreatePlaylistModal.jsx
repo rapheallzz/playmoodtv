@@ -1,14 +1,6 @@
-import React, { useState } from 'react';
-import { Modal, StyledPlaylistModal, ModalTitle, ModalTextarea, ModalButtons, ModalButtonCancel, ModalButtonSubmit } from '../../styles/CreatorPageStyles';
+import React from 'react';
+import { Modal, StyledPlaylistModal, ModalTitle, ModalTextarea, ModalButtons, ModalButtonCancel, ModalButtonSubmit, NoPostsMessage } from '../../styles/CreatorPageStyles';
 import styled from 'styled-components';
-
-// Styled component for error message
-const ErrorMessage = styled.div`
-  color: red;
-  font-size: 0.9rem;
-  margin-top: 10px;
-  text-align: center;
-`;
 
 // Styled component for loading indicator
 const LoadingSpinner = styled.div`
@@ -33,26 +25,16 @@ const CreatePlaylistModal = ({
   handleCreateOrUpdatePlaylist,
   isLoadingPlaylists,
   closeAllModals,
+  errorMessage,
+  setErrorMessage,
 }) => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState('');
-
-  console.log('Rendering CreatePlaylistModal');
-
   const handleSubmit = async () => {
-    setIsSubmitting(true);
-    setError(''); // Clear previous errors
-    try {
-      console.log('Submitting create playlist');
-      await handleCreateOrUpdatePlaylist(); // Wait for the promise to resolve
-      console.log('Playlist creation successful');
-      closeAllModals(); // Close modal only on success
-    } catch (error) {
-      console.error('Playlist creation failed:', error);
-      setError(error.message || 'Failed to create playlist. Please try again.');
-    } finally {
-      setIsSubmitting(false);
+    setErrorMessage(''); // Clear previous errors
+    const result = await handleCreateOrUpdatePlaylist();
+    if (result.success) {
+      closeAllModals();
     }
+    // Error is handled by the errorMessage state
   };
 
   return (
@@ -69,7 +51,7 @@ const CreatePlaylistModal = ({
               placeholder="Playlist Name"
               style={{ width: '100%', padding: '8px', marginTop: '5px' }}
               aria-label="Playlist Name"
-              disabled={isSubmitting || isLoadingPlaylists}
+              disabled={isLoadingPlaylists}
             />
           </label>
           <label>
@@ -80,7 +62,7 @@ const CreatePlaylistModal = ({
               placeholder="Playlist Description"
               rows="4"
               aria-label="Playlist Description"
-              disabled={isSubmitting || isLoadingPlaylists}
+              disabled={isLoadingPlaylists}
             />
           </label>
           <label>
@@ -90,28 +72,28 @@ const CreatePlaylistModal = ({
               onChange={(e) => setNewPlaylist({ ...newPlaylist, visibility: e.target.value })}
               style={{ width: '100%', padding: '8px', marginTop: '5px' }}
               aria-label="Playlist Visibility"
-              disabled={isSubmitting || isLoadingPlaylists}
+              disabled={isLoadingPlaylists}
             >
               <option value="public">Public</option>
               <option value="private">Private</option>
             </select>
           </label>
         </div>
-        {error && <ErrorMessage>{error}</ErrorMessage>}
+        {errorMessage && <NoPostsMessage style={{ color: 'red', marginTop: '10px' }}>{errorMessage}</NoPostsMessage>}
         <ModalButtons>
           <ModalButtonCancel
             onClick={closeAllModals}
             aria-label="Cancel"
-            disabled={isSubmitting || isLoadingPlaylists}
+            disabled={isLoadingPlaylists}
           >
             Cancel
           </ModalButtonCancel>
           <ModalButtonSubmit
             onClick={handleSubmit}
-            disabled={!newPlaylist.name.trim() || isSubmitting || isLoadingPlaylists}
+            disabled={!newPlaylist.name.trim() || isLoadingPlaylists}
             aria-label="Create Playlist"
           >
-            {isSubmitting || isLoadingPlaylists ? (
+            {isLoadingPlaylists ? (
               <>
                 Saving
                 <LoadingSpinner />

@@ -15,7 +15,6 @@ import CommunityPostModal from '../components/modals/CommunityPostModal';
 import EditPostModal from '../components/modals/EditPostModal';
 import CreatePlaylistModal from '../components/modals/CreatePlaylistModal';
 import EditPlaylistModal from '../components/modals/EditPlaylistModal';
-import AddVideoModal from '../components/modals/AddVideoModal';
 import useChannelDetails from '../hooks/useChannelDetails';
 import usePlaylists from '../hooks/usePlaylists';
 import useCommunityPosts from '../hooks/useCommunityPosts';
@@ -33,7 +32,6 @@ export default function CreatorPage() {
   const [showEditPostModal, setShowEditPostModal] = useState(false);
   const [showCreatePlaylistModal, setShowCreatePlaylistModal] = useState(false);
   const [showEditPlaylistModal, setShowEditPlaylistModal] = useState(false);
-  const [showAddVideoModal, setShowAddVideoModal] = useState(false);
   const [modalContent, setModalContent] = useState(null);
 
   // Channel details hook
@@ -68,14 +66,14 @@ export default function CreatorPage() {
     setEditingPlaylist,
     selectedPlaylistId,
     setSelectedPlaylistId,
-    newPlaylistId,
-    setNewPlaylistId,
     availableVideos,
+    fetchAvailableVideos,
     handleCreateOrUpdatePlaylist,
     handleDeletePlaylist,
     handleAddVideoToPlaylist,
     handleRemoveVideoFromPlaylist,
     errorMessage: playlistErrorMessage,
+    setErrorMessage: setPlaylistErrorMessage,
     fetchPlaylistById,
     selectedPlaylistVideos,
     isLoadingPlaylistVideos,
@@ -104,10 +102,8 @@ export default function CreatorPage() {
 
   // Close all modals
   const closeAllModals = () => {
-    console.log('Closing all modals');
     setShowCreatePlaylistModal(false);
     setShowEditPlaylistModal(false);
-    setShowAddVideoModal(false);
     setShowCommunityModal(false);
     setShowEditModal(false);
     setShowVideoModal(false);
@@ -118,48 +114,13 @@ export default function CreatorPage() {
     setEditingPlaylist(null);
     setSelectedPlaylistId(null);
     setNewPlaylist({ name: '', description: '', visibility: 'public' });
+    setPlaylistErrorMessage('');
   };
 
   // Modal handlers
   const handleOpenCreatePlaylistModal = () => {
-    console.log('Opening CreatePlaylistModal');
-    closeAllModals();
     setNewPlaylist({ name: '', description: '', visibility: 'public' });
     setShowCreatePlaylistModal(true);
-  };
-
-  const handleOpenAddVideoModal = (playlistId) => {
-    if (!playlists.some(p => p._id === playlistId)) {
-      console.error('Invalid playlistId:', playlistId);
-      return;
-    }
-    console.log('Opening AddVideoModal for playlist:', playlistId);
-    closeAllModals();
-    setSelectedPlaylistId(playlistId);
-    setShowAddVideoModal(true);
-  };
-
-  const handleCancelAddVideo = () => {
-    console.log('Canceling AddVideoModal');
-    if (newPlaylistId) {
-      handleDeletePlaylist(newPlaylistId).then(() => {
-        setNewPlaylistId(null);
-        setNewPlaylist({ name: '', description: '', visibility: 'public' });
-      });
-    }
-    closeAllModals();
-    if (selectedPlaylistId) {
-      const playlist = playlists.find(p => p._id === selectedPlaylistId);
-      if (playlist) {
-        setEditingPlaylist(playlist);
-        setNewPlaylist({
-          name: playlist.name || '',
-          description: playlist.description || '',
-          visibility: playlist.visibility || 'public',
-        });
-        setShowEditPlaylistModal(true);
-      }
-    }
   };
 
   // Utility function for creating slug
@@ -173,7 +134,6 @@ export default function CreatorPage() {
 
   // Handler for navigating to movie page
   const handleNavigateToMovie = (content) => {
-    console.log('Navigating to movie:', content);
     navigate(`/movie/${createSlug(content.title, content._id)}`);
   };
 
@@ -218,32 +178,24 @@ export default function CreatorPage() {
         isLoadingPlaylists={isLoadingPlaylists}
         user={user}
         handleOpenModal={(content) => {
-          console.log('Opening VideoModal with content:', content);
           closeAllModals();
           setModalContent(content);
           setShowVideoModal(true);
         }}
         handleOpenContentModal={(content) => {
-          console.log('Opening ContentModal with content:', content);
           closeAllModals();
           setModalContent(content);
           setShowContentModal(true);
         }}
         handleCardClick={(content) => {
-          console.log('Card clicked, navigating:', content);
           navigate(`/movie/${createSlug(content.title, content._id)}`);
         }}
         handleEditPlaylist={(playlist) => {
-          console.log('Opening EditPlaylistModal for:', playlist._id);
-          closeAllModals();
           setNewPlaylist({ name: playlist.name, description: playlist.description || '', visibility: playlist.visibility || 'public' });
           setEditingPlaylist(playlist);
-          setSelectedPlaylistId(playlist._id);
-          fetchPlaylistById(playlist._id);
           setShowEditPlaylistModal(true);
         }}
         handleDeletePlaylist={handleDeletePlaylist}
-        handleOpenAddVideoModal={handleOpenAddVideoModal}
         handleRemoveVideoFromPlaylist={handleRemoveVideoFromPlaylist}
         handleLikePost={handleLikePost}
         handleDeletePost={handleDeletePost}
@@ -316,7 +268,6 @@ export default function CreatorPage() {
           setEditPostContent={setEditPostContent}
           handleUpdatePost={handleUpdatePost}
           onClose={() => {
-            console.log('Closing EditPostModal');
             closeAllModals();
             setEditPostContent('');
             setEditingPostId(null);
@@ -329,7 +280,9 @@ export default function CreatorPage() {
           setNewPlaylist={setNewPlaylist}
           handleCreateOrUpdatePlaylist={handleCreateOrUpdatePlaylist}
           isLoadingPlaylists={isLoadingPlaylists}
-          closeAllModals={closeAllModals} // Pass closeAllModals
+          closeAllModals={closeAllModals}
+          errorMessage={playlistErrorMessage}
+          setErrorMessage={setPlaylistErrorMessage}
         />
       )}
       {showEditPlaylistModal && (
@@ -339,29 +292,16 @@ export default function CreatorPage() {
           editingPlaylist={editingPlaylist}
           handleCreateOrUpdatePlaylist={handleCreateOrUpdatePlaylist}
           isLoadingPlaylists={isLoadingPlaylists}
-          closeAllModals={closeAllModals} // Pass closeAllModals
+          closeAllModals={closeAllModals}
           fetchPlaylistById={fetchPlaylistById}
           selectedPlaylistVideos={selectedPlaylistVideos}
           isLoadingPlaylistVideos={isLoadingPlaylistVideos}
           handleAddVideoToPlaylist={handleAddVideoToPlaylist}
           handleRemoveVideoFromPlaylist={handleRemoveVideoFromPlaylist}
           availableVideos={availableVideos}
-          selectedPlaylistId={selectedPlaylistId}
-          setShowAddVideoModal={setShowAddVideoModal}
-          setSelectedPlaylistId={setSelectedPlaylistId}
-        />
-      )}
-      {showAddVideoModal && (
-        <AddVideoModal
-          playlists={playlists}
-          selectedPlaylistId={selectedPlaylistId}
-          setSelectedPlaylistId={setSelectedPlaylistId}
-          availableVideos={availableVideos}
-          handleAddVideoToPlaylist={handleAddVideoToPlaylist}
-          isLoadingPlaylists={isLoadingPlaylists}
-          newPlaylistId={newPlaylistId}
-          onClose={handleCancelAddVideo}
+          fetchAvailableVideos={fetchAvailableVideos}
           errorMessage={playlistErrorMessage}
+          setErrorMessage={setPlaylistErrorMessage}
         />
       )}
       <Footer />

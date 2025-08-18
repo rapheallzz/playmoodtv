@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Modal, StyledPlaylistModal, ModalTitle, ModalTextarea, ModalButtons, ModalButtonCancel, ModalButtonSubmit, NoPostsMessage } from '../../styles/CreatorPageStyles';
 import styled from 'styled-components';
 
@@ -20,31 +20,24 @@ const VideoInfo = styled.div`
   flex: 1;
 `;
 
-const RemoveButton = styled.button`
+const ActionButton = styled.button`
   padding: 5px 10px;
   font-size: 0.8rem;
-  background-color: #ff4d4d;
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  background-color: ${({ actionType }) => actionType === 'add' ? '#007bff' : '#ff4d4d'};
   &:hover {
-    background-color: #cc0000;
+    background-color: ${({ actionType }) => actionType === 'add' ? '#0056b3' : '#cc0000'};
   }
 `;
 
-const AddVideoButton = styled.button`
-  padding: 8px 16px;
-  font-size: 0.9rem;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+const SearchInput = styled.input`
+  width: 100%;
+  padding: 8px;
   margin-bottom: 10px;
-  &:hover {
-    background-color: #0056b3;
-  }
+  box-sizing: border-box;
 `;
 
 const EditPlaylistModal = ({
@@ -60,60 +53,52 @@ const EditPlaylistModal = ({
   handleAddVideoToPlaylist,
   handleRemoveVideoFromPlaylist,
   availableVideos,
-  selectedPlaylistId,
-  setShowAddVideoModal,
-  setSelectedPlaylistId,
+  fetchAvailableVideos,
+  errorMessage,
+  setErrorMessage,
 }) => {
-  const hasFetched = useRef(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    if (editingPlaylist && editingPlaylist._id && !hasFetched.current) {
-      console.log('Fetching playlist videos for:', editingPlaylist._id);
-      hasFetched.current = true;
+    if (editingPlaylist?._id) {
       fetchPlaylistById(editingPlaylist._id);
+      fetchAvailableVideos();
     }
-    return () => {
-      hasFetched.current = false; // Reset on unmount
-    };
-  }, [editingPlaylist, fetchPlaylistById]);
-
-  const handleAddVideo = () => {
-    if (editingPlaylist && editingPlaylist._id) {
-      console.log('Opening AddVideoModal for playlist:', editingPlaylist._id);
-      setSelectedPlaylistId(editingPlaylist._id);
-      setShowAddVideoModal(true);
-      closeAllModals();
-    }
-  };
+  }, [editingPlaylist, fetchPlaylistById, fetchAvailableVideos]);
 
   const handleSubmit = async () => {
-    try {
-      console.log('Submitting edit playlist');
-      await handleCreateOrUpdatePlaylist();
-      console.log('Playlist update successful');
+    const result = await handleCreateOrUpdatePlaylist();
+    if (result.success) {
       closeAllModals();
-    } catch (error) {
-      console.error('Playlist update failed:', error);
-      // Optionally, display an error message to the user
     }
+    // Error is handled by the errorMessage state in the component
   };
 
-  console.log('Rendering EditPlaylistModal, videos:', selectedPlaylistVideos);
+  const filteredAvailableVideos = useMemo(() => {
+    const currentVideoIds = new Set(selectedPlaylistVideos.map(v => v._id));
+    return availableVideos.filter(video =>
+      !currentVideoIds.has(video._id) &&
+      video.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [availableVideos, selectedPlaylistVideos, searchTerm]);
 
   return (
     <Modal>
       <StyledPlaylistModal
         style={{
-          maxHeight: '70vh', // Limit modal height to 70% of viewport height
-          overflowY: 'auto', // Enable vertical scrolling if content overflows
-          maxWidth: '600px', // Set a reasonable width
-          width: '90%', // Responsive width for smaller screens
-          padding: '20px', // Consistent padding
-          boxSizing: 'border-box', // Ensure padding doesn't increase size
+          maxHeight: '80vh',
+          overflowY: 'auto',
+          maxWidth: '700px',
+          width: '90%',
+          padding: '20px',
+          boxSizing: 'border-box',
         }}
       >
         <ModalTitle>Edit Playlist</ModalTitle>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+        {errorMessage && <NoPostsMessage style={{ color: 'red' }}>{errorMessage}</NoPostsMessage>}
+
+        {/* Playlist Details Section */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginBottom: '20px' }}>
           <label>
             Name:
             <input
@@ -150,54 +135,53 @@ const EditPlaylistModal = ({
           </label>
         </div>
 
+        {/* Current Videos Section */}
         <ModalTitle style={{ marginTop: '20px' }}>Playlist Videos</ModalTitle>
         {isLoadingPlaylistVideos ? (
           <NoPostsMessage>Loading videos...</NoPostsMessage>
-        ) : Array.isArray(selectedPlaylistVideos) && selectedPlaylistVideos.length > 0 ? (
-          <div style={{ maxHeight: '150px', overflowY: 'auto', marginBottom: '15px' }}>
+        ) : selectedPlaylistVideos.length > 0 ? (
+          <div style={{ maxHeight: '150px', overflowY: 'auto', marginBottom: '15px', border: '1px solid #eee' }}>
             {selectedPlaylistVideos.map((video) => (
               <VideoItem key={video._id}>
-                <VideoThumbnail
-                  src={video.thumbnail}
-                  alt={video.title}
-                  onError={(e) => { e.target.src = '/placeholder-image.jpg'; }}
-                />
-                <VideoInfo>
-                  <div>{video.title}</div>
-                  <div style={{ fontSize: '0.8rem', color: '#999' }}>{video.description}</div>
-                </VideoInfo>
-                <RemoveButton
-                  onClick={() => {
-                    console.log('Removing video:', video._id, 'from playlist:', editingPlaylist._id);
-                    handleRemoveVideoFromPlaylist(editingPlaylist._id, video._id);
-                  }}
-                  aria-label={`Remove ${video.title} from Playlist`}
-                >
-                  Remove
-                </RemoveButton>
+                <VideoThumbnail src={video.thumbnail} alt={video.title} onError={(e) => { e.target.src = '/placeholder-image.jpg'; }} />
+                <VideoInfo><div>{video.title}</div></VideoInfo>
+                <ActionButton actionType="remove" onClick={() => handleRemoveVideoFromPlaylist(editingPlaylist._id, video._id)}>Remove</ActionButton>
               </VideoItem>
             ))}
           </div>
         ) : (
-          <NoPostsMessage>No videos in this playlist.</NoPostsMessage>
+          <NoPostsMessage>No videos in this playlist yet.</NoPostsMessage>
         )}
-        <AddVideoButton
-          onClick={handleAddVideo}
-          aria-label="Add Video to Playlist"
-        >
-          Add Video
-        </AddVideoButton>
+
+        {/* Add Videos Section */}
+        <ModalTitle style={{ marginTop: '20px' }}>Add Videos to Playlist</ModalTitle>
+        <SearchInput
+          type="text"
+          placeholder="Search your videos..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <div style={{ maxHeight: '150px', overflowY: 'auto', border: '1px solid #eee' }}>
+          {filteredAvailableVideos.length > 0 ? (
+            filteredAvailableVideos.map((video) => (
+              <VideoItem key={video._id}>
+                <VideoThumbnail src={video.thumbnail} alt={video.title} onError={(e) => { e.target.src = '/placeholder-image.jpg'; }} />
+                <VideoInfo><div>{video.title}</div></VideoInfo>
+                <ActionButton actionType="add" onClick={() => handleAddVideoToPlaylist(editingPlaylist._id, video._id)}>Add</ActionButton>
+              </VideoItem>
+            ))
+          ) : (
+            <NoPostsMessage>No more videos to add.</NoPostsMessage>
+          )}
+        </div>
 
         <ModalButtons>
-          <ModalButtonCancel onClick={closeAllModals} aria-label="Cancel">
-            Cancel
-          </ModalButtonCancel>
+          <ModalButtonCancel onClick={closeAllModals}>Cancel</ModalButtonCancel>
           <ModalButtonSubmit
             onClick={handleSubmit}
             disabled={!newPlaylist.name.trim() || isLoadingPlaylists}
-            aria-label="Save Playlist"
           >
-            {isLoadingPlaylists ? 'Saving...' : 'Save'}
+            {isLoadingPlaylists ? 'Saving...' : 'Save Changes'}
           </ModalButtonSubmit>
         </ModalButtons>
       </StyledPlaylistModal>

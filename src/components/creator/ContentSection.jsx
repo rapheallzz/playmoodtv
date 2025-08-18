@@ -65,7 +65,6 @@ const ContentSection = ({
   handleCardClick,
   handleEditPlaylist,
   handleDeletePlaylist,
-  handleOpenAddVideoModal,
   handleRemoveVideoFromPlaylist,
   handleLikePost,
   handleDeletePost,
@@ -84,8 +83,6 @@ const ContentSection = ({
 }) => {
   const approvedVideos = data.filter(content => content.isApproved === true);
   const pendingVideos = [...new Map(data.filter(content => content.isApproved === false).map(item => [item._id, item])).values()];
-
-  console.log('selectedPlaylistVideos:', selectedPlaylistVideos); // Debug playlist videos
 
   return (
     <StyledContentSection>
@@ -167,7 +164,6 @@ const ContentSection = ({
             isLoadingPlaylists={isLoadingPlaylists}
             handleEditPlaylist={handleEditPlaylist}
             handleDeletePlaylist={handleDeletePlaylist}
-            handleOpenAddVideoModal={handleOpenAddVideoModal}
             handleRemoveVideoFromPlaylist={handleRemoveVideoFromPlaylist}
             handleOpenModal={handleOpenModal}
             errorMessage={errorMessage}
