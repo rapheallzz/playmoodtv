@@ -151,6 +151,14 @@ const SliderContainer = styled.div`
   }
 `;
 
+const PlaylistTitle = styled.h3`
+  color: white;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 15px;
+  padding-left: 10px; /* Align with slider content */
+`;
+
 // Rest of the CreatorChannel component remains unchanged
 export default function CreatorChannel() {
   const { state } = useLocation();
@@ -163,13 +171,15 @@ export default function CreatorChannel() {
   const [data, setData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState(null);
-  const [showCommunity, setShowCommunity] = useState(false);
   const [communityPosts, setCommunityPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingPosts, setIsLoadingPosts] = useState(false);
   const [error, setError] = useState('');
   const [showErrorPopup, setShowErrorPopup] = useState(false);
   const [newComment, setNewComment] = useState({});
+  const [playlists, setPlaylists] = useState([]);
+  const [isLoadingPlaylists, setIsLoadingPlaylists] = useState(false);
+  const [activeTab, setActiveTab] = useState('VIDEOS'); // TABS: VIDEOS, PLAYLISTS, COMMUNITY
 
   // Fetch creator data, subscriber count, and subscription status
   useEffect(() => {
@@ -342,7 +352,30 @@ const fetchCommunityPosts = async () => {
   }
 };
 
+const fetchPlaylists = async () => {
+  if (!state || !state.creatorId) {
+    setError('Creator ID is missing.');
+    setShowErrorPopup(true);
+    return;
+  }
 
+  setIsLoadingPlaylists(true);
+  setError('');
+  try {
+    // No token is needed for public playlists, but if your API requires it, add it back.
+    const response = await axios.get(
+      `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/playlists/user/${state.creatorId}/public`
+    );
+    setPlaylists(response.data.playlists || []);
+  } catch (err) {
+    console.error('Error fetching playlists:', err.response?.data || err.message);
+    setError(err.response?.data?.message || 'Failed to load playlists.');
+    setShowErrorPopup(true);
+    setPlaylists([]);
+  } finally {
+    setIsLoadingPlaylists(false);
+  }
+};
 
   const handleLike = async (postId, isLiked) => {
     if (!currentUserId) {
@@ -427,15 +460,14 @@ const fetchCommunityPosts = async () => {
     }
   };
 
-  const toggleCommunity = () => {
-    if (!showCommunity) {
+  const handleTabClick = (tab) => {
+    setActiveTab(tab);
+    if (tab === 'PLAYLISTS' && playlists.length === 0) {
+      fetchPlaylists();
+    }
+    if (tab === 'COMMUNITY' && communityPosts.length === 0) {
       fetchCommunityPosts();
     }
-    setShowCommunity(!showCommunity);
-  };
-
-  const showVideos = () => {
-    setShowCommunity(false);
   };
 
   const handleCardClick = (content) => {
@@ -611,20 +643,20 @@ thing              </a>
             HOME
           </a>
           <button
-            className={`text-white text-[12px] md:text-sm font-medium bg-transparent border-none cursor-pointer ${!showCommunity ? 'underline' : ''}`}
-            onClick={showVideos}
+            className={`text-white text-[12px] md:text-sm font-medium bg-transparent border-none cursor-pointer ${activeTab === 'VIDEOS' ? 'underline' : ''}`}
+            onClick={() => handleTabClick('VIDEOS')}
           >
             VIDEOS
           </button>
           <button
-            className="text-white text-[12px] md:text-sm font-medium bg-transparent border-none cursor-pointer"
-            onClick={showVideos}
+            className={`text-white text-[12px] md:text-sm font-medium bg-transparent border-none cursor-pointer ${activeTab === 'PLAYLISTS' ? 'underline' : ''}`}
+            onClick={() => handleTabClick('PLAYLISTS')}
           >
             PLAYLIST
           </button>
           <button
-            className={`text-white text-[12px] md:text-sm font-medium bg-transparent border-none cursor-pointer ${showCommunity ? 'underline' : ''}`}
-            onClick={toggleCommunity}
+            className={`text-white text-[12px] md:text-sm font-medium bg-transparent border-none cursor-pointer ${activeTab === 'COMMUNITY' ? 'underline' : ''}`}
+            onClick={() => handleTabClick('COMMUNITY')}
           >
             COMMUNITY
           </button>
@@ -637,11 +669,77 @@ thing              </a>
         </div>
       </div>
 
-      {/* Content or Community Section */}
-      <div className="w-[100%] md:h-[500px] h-[300px] bg-[#541012]-400 px-10">
-        {showCommunity ? (
+      {/* Content Section */}
+      <div className="w-full min-h-[300px] md:min-h-[500px] bg-[#1a1a1a] px-4 md:px-10 py-8">
+        {activeTab === 'VIDEOS' && (
           <>
-            <h2 className="text-white font-semibold my-8">Community Posts</h2>
+            <h2 className="text-white font-semibold mb-8">Videos</h2>
+            {data.length === 0 ? (
+              <NoPosts>No videos available.</NoPosts>
+            ) : (
+              <SliderContainer>
+                <Slider {...sliderSettings}>
+                  {data.map((content) => (
+                    <div key={content._id} className="slides">
+                      <Slidercontent
+                        img={content.thumbnail}
+                        title={content.title}
+                        movie={content}
+                        views={content.views}
+                        desc={content.description}
+                        customStyle={{}}
+                        onVideoClick={() => handleOpenModal(content)}
+                      />
+                    </div>
+                  ))}
+                </Slider>
+              </SliderContainer>
+            )}
+          </>
+        )}
+
+        {activeTab === 'PLAYLISTS' && (
+          <div className="w-full">
+            {isLoadingPlaylists ? (
+              <Loading>Loading playlists...</Loading>
+            ) : playlists.length === 0 ? (
+              <NoPosts>No public playlists available.</NoPosts>
+            ) : (
+              playlists.map((playlist) => (
+                <div key={playlist._id} className="mb-8">
+                  <PlaylistTitle>{playlist.name}</PlaylistTitle>
+                  {playlist.videos.length > 0 ? (
+                    <SliderContainer>
+                      <Slider {...sliderSettings}>
+                        {playlist.videos.map((video) => (
+                          <div key={video._id} className="slides">
+                            <Slidercontent
+                              img={video.thumbnail}
+                              title={video.title}
+                              movie={video}
+                              views={video.views}
+                              desc={video.description}
+                              customStyle={{}}
+                              onVideoClick={() => handleOpenModal(video)}
+                            />
+                          </div>
+                        ))}
+                      </Slider>
+                    </SliderContainer>
+                  ) : (
+                    <NoPosts style={{ fontSize: '0.9rem', color: '#888' }}>
+                      This playlist has no videos.
+                    </NoPosts>
+                  )}
+                </div>
+              ))
+            )}
+          </div>
+        )}
+
+        {activeTab === 'COMMUNITY' && (
+          <>
+            <h2 className="text-white font-semibold mb-8">Community Posts</h2>
             {isLoadingPosts ? (
               <Loading>Loading posts...</Loading>
             ) : communityPosts.length === 0 ? (
@@ -709,39 +807,16 @@ thing              </a>
               </CommunitySection>
             )}
           </>
-        ) : (
-          <>
-            <h2 className="text-white font-semibold my-8">Videos</h2>
-            {data.length === 0 ? (
-              <NoPosts>No videos available.</NoPosts>
-            ) : (
-              <SliderContainer>
-                <Slider {...sliderSettings}>
-                  {data.map((content) => (
-                    <div key={content._id} className="slides">
-                      <Slidercontent
-                        img={content.thumbnail}
-                        title={content.title}
-                        movie={content}
-                        views={content.views}
-                        desc={content.description}
-                        customStyle={{}}
-                        onVideoClick={() => handleOpenModal(content)}
-                      />
-                    </div>
-                  ))}
-                </Slider>
-                <ContentModal
-                  isOpen={isModalOpen}
-                  content={modalContent}
-                  onClose={handleCloseModal}
-                  handleNavigateToMovie={handleCardClick}
-                />
-              </SliderContainer>
-            )}
-          </>
         )}
       </div>
+
+      {/* Modal for Video Click */}
+      <ContentModal
+        isOpen={isModalOpen}
+        content={modalContent}
+        onClose={handleCloseModal}
+        handleNavigateToMovie={handleCardClick}
+      />
 
       {/* Footer */}
      <div className='w-full'>
