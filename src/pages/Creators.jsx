@@ -137,7 +137,7 @@ export default function Creator() {
                   <PlaylistSlider key={playlist._id} playlist={playlist} />
                 ))
               ) : (
-                <p className="text-center text-white">No public playlists found for this creator.</p>
+                <NoContentMessage>No public playlists found for this creator.</NoContentMessage>
               )}
             </div>
           )}
@@ -248,6 +248,13 @@ const TabButton = styled.button`
 const ErrorMessage = styled.p`
   color: red;
   text-align: center;
+`;
+
+const NoContentMessage = styled.p`
+  color: #ccc;
+  text-align: center;
+  font-size: 1.1rem;
+  padding: 40px;
 `;
 
 const Hamburger = styled.div`
