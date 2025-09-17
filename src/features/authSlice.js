@@ -46,20 +46,15 @@ const initialState = {
 export const registerUser = createAsyncThunk('auth/register', async (userData, thunkAPI) => {
   try {
     const response = await authService.register(userData);
-    const decoded = jwtDecode(response.token);
-    const currentTime = Date.now() / 1000;
-    if (decoded.exp < currentTime) {
-      throw new Error('Received expired token');
+    // The response upon successful registration does not include a token.
+    // It returns a userId and a message. The token is obtained after email verification and login.
+    // We just need to return the relevant information for the next step (email verification).
+    if (response && response.userId) {
+      return { userId: response.userId, email: userData.email };
+    } else {
+      // This case handles unexpected responses from the server.
+      throw new Error(response.message || 'Registration failed: No user ID returned.');
     }
-    const user = {
-      userId: decoded.id || response.userId || response._id,
-      email: userData.email,
-      role: response.role || 'user',
-      token: response.token,
-      name: userData.name || response.name,
-    };
-    localStorage.setItem('user', JSON.stringify(user));
-    return user;
   } catch (error) {
     const message =
       (error.response && error.response.data && error.response.data.message) ||
@@ -266,12 +261,10 @@ export const authSlice = createSlice({
       .addCase(registerUser.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.user = {
-          ...action.payload,
-          userId: action.payload.userId || action.payload._id,
-          _id: action.payload._id || action.payload.userId,
-        };
-        state.userToken = action.payload.token;
+        // Do not set the user in the state on registration,
+        // as the user is not authenticated (no token).
+        // The user will be set upon login.
+        state.user = null;
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.isLoading = false;

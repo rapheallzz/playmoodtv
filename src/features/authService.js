@@ -38,13 +38,6 @@ const register = async (userData) => {
   try {
     const response = await axios.post(API_URL, userData);
     console.log('Register response:', response.data);
-    if (response.data) {
-      const userData = {
-        ...response.data,
-        role: response.data.role || 'defaultRole', // Add a fallback role
-      };
-      localStorage.setItem('user', JSON.stringify(userData));
-    }
     return response.data;
   } catch (error) {
     console.error('Registration failed:', error.response?.data || error.message);
