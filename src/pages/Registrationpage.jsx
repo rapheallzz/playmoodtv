@@ -13,29 +13,57 @@ const Register = () => {
   const dispatch = useDispatch();
   const countries = useMemo(() => countryList().getData(), []);
   const [errorMessage, setErrorMessage] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
-    age: '',
     country: '',
-    address: '',
     selectedCode: '',
     phoneNumber: '',
   });
 
   const { user, isLoading, isSuccess } = useSelector((state) => state.auth);
-  const { name, email, password, age, address, phoneNumber, country } = formData;
+  const { name, email, password, phoneNumber, country } = formData;
 
   useEffect(() => {
-    if (isSuccess) {
-      navigate('/emailverify', { state: { userId: user?.userId, email } });
+    if (isSuccess && user) {
+      navigate('/dashboard');
       dispatch(reset());
     }
-  }, [isSuccess, user, navigate, dispatch, email]);
+  }, [isSuccess, user, navigate, dispatch]);
+
+  const checkPasswordStrength = (password) => {
+    let strength = 0;
+    if (password.length >= 8) strength += 1;
+    if (password.match(/[a-z]/)) strength += 1;
+    if (password.match(/[A-Z]/)) strength += 1;
+    if (password.match(/[0-9]/)) strength += 1;
+    if (password.match(/[^a-zA-Z0-9]/)) strength += 1;
+
+    switch (strength) {
+      case 0:
+      case 1:
+      case 2:
+        return 'Weak';
+      case 3:
+        return 'Medium';
+      case 4:
+      case 5:
+        return 'Strong';
+      default:
+        return '';
+    }
+  };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+
+    if (name === 'password') {
+      setPasswordStrength(checkPasswordStrength(value));
+    }
   };
 
   const handlePhoneChange = (value, countryData) => {
@@ -54,10 +82,17 @@ const Register = () => {
       setErrorMessage('Please fill in all required fields.');
       return;
     }
+     if (!/\S+@\S+\.\S+/.test(email)) {
+      setErrorMessage('Please enter a valid email address.');
+      return;
+    }
+    if (checkPasswordStrength(password) !== 'Strong') {
+      setErrorMessage('Password is not strong enough.');
+      return;
+    }
 
     try {
-      const result = await dispatch(registerUser(formData)).unwrap();
-      navigate('/emailverify', { state: { userId: result.userId, email } });
+      await dispatch(registerUser(formData)).unwrap();
     } catch (error) {
       setErrorMessage(error.message || 'Registration failed. Please try again.');
       dispatch(reset());
@@ -84,13 +119,23 @@ const Register = () => {
           value={email}
           onChange={handleChange}
         />
-        <Input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={password}
-          onChange={handleChange}
-        />
+        <PasswordContainer>
+          <Input
+            type={showPassword ? 'text' : 'password'}
+            name="password"
+            placeholder="Password"
+            value={password}
+            onChange={handleChange}
+          />
+          <PasswordToggle onClick={() => setShowPassword(!showPassword)}>
+            {showPassword ? 'Hide' : 'Show'}
+          </PasswordToggle>
+        </PasswordContainer>
+        {password && (
+          <PasswordStrengthIndicator strength={passwordStrength}>
+            Password Strength: {passwordStrength}
+          </PasswordStrengthIndicator>
+        )}
         <Select
           name="country"
           value={country}
@@ -113,20 +158,6 @@ const Register = () => {
           }}
           containerStyle={{ marginBottom: '15px' }}
         />
-        <Input
-          type="text"
-          name="age"
-          placeholder="Age (Optional)"
-          value={age}
-          onChange={handleChange}
-        />
-        <Input
-          type="text"
-          name="address"
-          placeholder="Address (Optional)"
-          value={address}
-          onChange={handleChange}
-        />
         <SignupButton type="submit" disabled={isLoading}>
           {isLoading ? 'Signing Up...' : 'Sign Up'}
         </SignupButton>
@@ -139,7 +170,7 @@ const Register = () => {
   );
 };
 
-// Styled components (unchanged)
+// Styled components
 const RegisterContainer = styled.div`
   background-color: #fff;
   display: flex;
@@ -221,6 +252,32 @@ const ErrorMessage = styled.div`
   border-radius: 4px;
   margin-bottom: 15px;
   text-align: center;
+`;
+
+const PasswordContainer = styled.div`
+  position: relative;
+  width: 100%;
+`;
+
+const PasswordToggle = styled.span`
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #541011;
+`;
+
+const PasswordStrengthIndicator = styled.div`
+  margin-top: -10px;
+  margin-bottom: 10px;
+  font-size: 12px;
+  color: ${(props) => {
+    if (props.strength === 'Weak') return 'red';
+    if (props.strength === 'Medium') return 'orange';
+    if (props.strength === 'Strong') return 'green';
+    return 'grey';
+  }};
 `;
 
 export default Register;

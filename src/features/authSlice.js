@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import authService from './authService';
 import contentService from './contentService';
-import { jwtDecode } from 'jwt-decode';
+import { decodeToken } from '../utils/auth';
 import axios from 'axios';
 
 const API_URL = 'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/user/';
@@ -13,9 +13,8 @@ try {
   if (storedUser && storedUser !== 'undefined') {
     user = JSON.parse(storedUser);
     if (user?.token) {
-      const decoded = jwtDecode(user.token);
-      const currentTime = Date.now() / 1000;
-      if (decoded.exp < currentTime) {
+      const decoded = decodeToken(user.token);
+      if (!decoded) {
         console.log('authSlice: Token expired on init, clearing localStorage');
         localStorage.removeItem('user');
         user = null;
@@ -46,13 +45,12 @@ const initialState = {
 export const registerUser = createAsyncThunk('auth/register', async (userData, thunkAPI) => {
   try {
     const response = await authService.register(userData);
-    // The response upon successful registration does not include a token.
-    // It returns a userId and a message. The token is obtained after email verification and login.
-    // We just need to return the relevant information for the next step (email verification).
     if (response && response.userId) {
-      return { userId: response.userId, email: userData.email };
+      // Automatically log the user in after registration
+      const loginData = { email: userData.email, password: userData.password };
+      const loginResponse = await thunkAPI.dispatch(login(loginData));
+      return loginResponse.payload;
     } else {
-      // This case handles unexpected responses from the server.
       throw new Error(response.message || 'Registration failed: No user ID returned.');
     }
   } catch (error) {
@@ -68,9 +66,8 @@ export const login = createAsyncThunk('auth/login', async (userData, thunkAPI) =
   try {
     const response = await authService.login(userData);
     console.log('authSlice login response:', response);
-    const decoded = jwtDecode(response.token);
-    const currentTime = Date.now() / 1000;
-    if (decoded.exp < currentTime) {
+    const decoded = decodeToken(response.token);
+    if (!decoded) {
       throw new Error('Received expired token');
     }
     const userWithToken = {
@@ -196,9 +193,8 @@ export const updateAuthUser = createAsyncThunk('auth/updateAuthUser', async (use
     if (!token) {
       throw new Error('No token found');
     }
-    const decoded = jwtDecode(token);
-    const currentTime = Date.now() / 1000;
-    if (decoded.exp < currentTime) {
+    const decoded = decodeToken(token);
+    if (!decoded) {
       throw new Error('Token expired');
     }
     const response = await authService.updateUser(userData, token);
@@ -235,7 +231,7 @@ export const authSlice = createSlice({
       state.isSuccess = false;
       state.isError = false;
       state.message = '';
-      
+
     },
     logout: (state) => {
       state.user = null;
@@ -244,7 +240,7 @@ export const authSlice = createSlice({
     },
     updateAuthUser: (state, action) => {
       const payload = action.payload;
-      const decoded = payload.token ? jwtDecode(payload.token) : {};
+      const decoded = payload.token ? decodeToken(payload.token) : {};
       state.user = {
         ...payload,
         userId: payload.userId || decoded.id || payload._id,
@@ -261,10 +257,8 @@ export const authSlice = createSlice({
       .addCase(registerUser.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        // Do not set the user in the state on registration,
-        // as the user is not authenticated (no token).
-        // The user will be set upon login.
-        state.user = null;
+        state.user = action.payload.user;
+        state.userToken = action.payload.token;
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.isLoading = false;
@@ -347,7 +341,7 @@ export const authSlice = createSlice({
         state.isError = true;
         state.message = action.payload;
       })
-  
+
       .addCase(likeContent.pending, (state) => {
         state.isLoading = true;
       })
@@ -404,7 +398,7 @@ export const authSlice = createSlice({
         state.isLoading = false;
         state.contentError = action.payload;
       })
-  
+
   },
 });
 

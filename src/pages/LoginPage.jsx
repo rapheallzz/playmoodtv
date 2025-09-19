@@ -10,6 +10,7 @@ const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const dispatch = useDispatch();
   const { user, isLoading, isError, isSuccess, message } = useSelector((state) => state.auth);
@@ -73,13 +74,18 @@ const Login = () => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
-        <Input
-          type="password"
-          placeholder="Enter password"
-          id="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <PasswordContainer>
+          <Input
+            type={showPassword ? 'text' : 'password'}
+            placeholder="Enter password"
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <PasswordToggle onClick={() => setShowPassword(!showPassword)}>
+            {showPassword ? 'Hide' : 'Show'}
+          </PasswordToggle>
+        </PasswordContainer>
         <Button onClick={onClick} disabled={isLoading}>
           {isLoading ? 'Logging in...' : 'Login'}
         </Button>
@@ -94,7 +100,7 @@ const Login = () => {
   );
 };
 
-// Styled components (unchanged)
+// Styled components
 const LoginContainer = styled.div`
   background-color: #fff;
   display: flex;
@@ -177,6 +183,20 @@ const ErrorMessage = styled.div`
   border-radius: 4px;
   margin-bottom: 15px;
   text-align: center;
+`;
+
+const PasswordContainer = styled.div`
+  position: relative;
+  width: 100%;
+`;
+
+const PasswordToggle = styled.span`
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #541011;
 `;
 
 export default Login;

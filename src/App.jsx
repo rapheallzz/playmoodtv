@@ -30,6 +30,8 @@ import CreatorChannel from './pages/CreatorChannel';
 import CreatorPage from './pages/CreatorPage';
 import EmailVerification from './pages/EmailVerification';
 import PrivateRoute from './features/PrivateRoute';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 
 const router = createBrowserRouter([
   { path: '/', element: <Home /> },
@@ -69,6 +71,8 @@ const router = createBrowserRouter([
   { path: '/login', element: <Login /> },
   { path: '/register', element: <Register /> },
   { path: '/emailverify', element: <EmailVerification /> },
+  { path: '/forgot-password', element: <ForgotPasswordPage /> },
+  { path: '/reset-password/:token', element: <ResetPasswordPage /> },
   { path: '*', element: <PageNotFound /> },
 ]);
 

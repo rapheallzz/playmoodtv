@@ -18,7 +18,7 @@ import MessageModal from '../components/MessageModal';
 import DonationModal from '../components/DonationModal';
 import Sliderfriends from '../components/Sliderfriends';
 import Footer from '../components/footer/Footer';
-import { updateAuthUser, logout } from '../features/authSlice';
+import { updateAuthUser, logout, resendVerificationCode } from '../features/authSlice';
 import defaultImage from '../assets/default-image.jpg';
 import {jwtDecode} from 'jwt-decode'; // Ensure this import is present
 
@@ -38,6 +38,7 @@ function Dashboardpage() {
   const [activeAction, setActiveAction] = useState('LIKES');
   const [isLoadingUser, setIsLoadingUser] = useState(true);
   const [showCreatorConfirmPopup, setShowCreatorConfirmPopup] = useState(false);
+  const [showVerificationBanner, setShowVerificationBanner] = useState(false);
 
   const [personalData, setPersonalData] = useState({
     name: '',
@@ -145,6 +146,7 @@ function Dashboardpage() {
           accountHolderNameSecondary: cachedUser.billing?.accountHolderNameSecondary || '',
         });
         setProfileImagePreview(cachedUser.profileImage || defaultProfileIcon);
+        setShowVerificationBanner(!cachedUser.verified);
         setIsLoadingUser(false);
       } else {
         setIsLoadingUser(false);
@@ -191,6 +193,7 @@ function Dashboardpage() {
           accountHolderNameSecondary: fetchedUser.billing?.accountHolderNameSecondary || '',
         });
         setProfileImagePreview(imageUrl);
+        setShowVerificationBanner(!fetchedUser.verified);
       }
       setIsLoadingUser(false);
     } catch (error) {
@@ -230,6 +233,7 @@ function Dashboardpage() {
           accountHolderNameSecondary: cachedUser.billing?.accountHolderNameSecondary || '',
         });
         setProfileImagePreview(imageUrl);
+        setShowVerificationBanner(!cachedUser.verified);
       } else {
         navigate('/login');
       }
@@ -547,6 +551,15 @@ function Dashboardpage() {
     }
   };
 
+  const handleResendVerification = async () => {
+    try {
+      await dispatch(resendVerificationCode(authUser.email)).unwrap();
+      toast.success('Verification email sent!');
+    } catch (error) {
+      toast.error(error.message || 'Failed to resend verification email.');
+    }
+  };
+
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
@@ -563,6 +576,14 @@ function Dashboardpage() {
           </Hamburger>
         ) : (
           <DesktopHeader channels={channels} set_channels={set_channels} />
+        )}
+
+        {showVerificationBanner && (
+          <VerificationBanner>
+            <span>Please verify your email address.</span>
+            <ResendButton onClick={handleResendVerification}>Resend Email</ResendButton>
+            <CloseBannerButton onClick={() => setShowVerificationBanner(false)}>×</CloseBannerButton>
+          </VerificationBanner>
         )}
 
         {channels && (
@@ -1031,7 +1052,7 @@ function Dashboardpage() {
 
 export default Dashboardpage;
 
-// Styled components (unchanged)
+// Styled components
 const Dashboard = styled.div`
   height: fit-content;
   width: 100%;
@@ -1512,3 +1533,29 @@ const CloseButton = styled.button`
   cursor: pointer;
 `;
 
+const VerificationBanner = styled.div`
+  background-color: #541011;
+  color: white;
+  padding: 1rem;
+  text-align: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const ResendButton = styled.button`
+  background-color: white;
+  color: #541011;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+`;
+
+const CloseBannerButton = styled.button`
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+`;
