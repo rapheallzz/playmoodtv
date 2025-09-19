@@ -318,10 +318,13 @@ export const authSlice = createSlice({
       .addCase(verifyEmail.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(verifyEmail.fulfilled, (state) => {
+      .addCase(verifyEmail.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
         state.message = 'Email verified successfully';
+        if (state.user) {
+          state.user.verified = true;
+        }
       })
       .addCase(verifyEmail.rejected, (state, action) => {
         state.isLoading = false;
