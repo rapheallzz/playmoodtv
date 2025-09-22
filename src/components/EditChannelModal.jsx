@@ -71,7 +71,7 @@ const EditChannelModal = ({
 
   return (
     <div className="fixed z-10 inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white p-8 rounded shadow-md w-full max-w-lg">
+      <div className="bg-white p-8 rounded shadow-md w-full max-w-lg max-h-[90vh] overflow-y-auto">
         <h2 className="text-xl font-semibold mb-4">Edit Channel</h2>
 
         <div className="mb-4">
