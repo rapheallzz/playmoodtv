@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from 'react';
 import MobileBurger from '../components/headers/MobileBurger';
 import DesktopHeader from '../components/headers/DesktopHeader';
 import styled from 'styled-components';
@@ -6,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import React, { useState, useEffect, useRef } from 'react';
 import { AiOutlineClose, AiOutlineUser, AiOutlineHeart, AiOutlineStar, AiOutlineEye } from 'react-icons/ai';
 import { FaEdit } from 'react-icons/fa';
 import SliderLiked from '../components/sliders/SlideLiked';
@@ -22,6 +22,7 @@ import { updateAuthUser, logout } from '../features/authSlice';
 import defaultImage from '../assets/default-image.jpg';
 import {jwtDecode} from 'jwt-decode'; // Ensure this import is present
 import EmailVerificationModal from '../components/modals/EmailVerificationModal';
+import CreatorCongratsPopup from '../components/modals/CreatorCongratsPopup';
 
 const defaultProfileIcon = '/default-profile.png';
 
@@ -40,6 +41,8 @@ function Dashboardpage() {
   const [isLoadingUser, setIsLoadingUser] = useState(true);
   const [showCreatorConfirmPopup, setShowCreatorConfirmPopup] = useState(false);
   const [showEmailVerificationModal, setShowEmailVerificationModal] = useState(false);
+  const [showCongratsPopup, setShowCongratsPopup] = useState(false);
+  const [previousUserRole, setPreviousUserRole] = useState(null);
 
   const [personalData, setPersonalData] = useState({
     name: '',
@@ -64,6 +67,11 @@ function Dashboardpage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user: authUser, userToken } = useSelector((state) => state.auth);
+  const authUserRef = useRef(authUser);
+  useEffect(() => {
+    authUserRef.current = authUser;
+  }, [authUser]);
+
   const isAdmin = authUser && authUser.role === 'admin';
   const isCreator = authUser && authUser.role === 'creator';
   let userId = authUser && authUser.userId;
@@ -116,7 +124,8 @@ function Dashboardpage() {
   };
 
   const fetchUserData = async () => {
-    if (!authUser || !authUser.token) {
+    const currentAuthUser = authUserRef.current;
+    if (!currentAuthUser || !currentAuthUser.token) {
       console.log('fetchUserData: No authUser or token, checking localStorage');
       const cachedUser = JSON.parse(localStorage.getItem('user'));
       if (cachedUser && cachedUser.token) {
@@ -160,19 +169,19 @@ function Dashboardpage() {
 
     try {
       const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/profile/', {
-        headers: { Authorization: `Bearer ${authUser.token}` },
+        headers: { Authorization: `Bearer ${currentAuthUser.token}` },
       });
       const fetchedUser = response.data.user;
       if (fetchedUser) {
         const imageUrl = fetchedUser.profileImage
           ? `${fetchedUser.profileImage}?t=${new Date().getTime()}`
           : defaultProfileIcon;
-        const decoded = jwtDecode(authUser.token);
+        const decoded = jwtDecode(currentAuthUser.token);
         const updatedUser = {
           ...fetchedUser,
           userId: fetchedUser._id || decoded.id,
           profileImage: imageUrl,
-          token: authUser.token,
+          token: currentAuthUser.token,
         };
         dispatch(updateAuthUser(updatedUser));
         localStorage.setItem('user', JSON.stringify(updatedUser));
@@ -249,10 +258,11 @@ function Dashboardpage() {
   };
 
   const fetchCreatorRequestStatus = async () => {
-    if (authUser && authUser.token && userId) {
+    const currentAuthUser = authUserRef.current;
+    if (currentAuthUser && currentAuthUser.token && userId) {
       try {
         const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/rolechange/', {
-          headers: { Authorization: `Bearer ${authUser.token}` },
+          headers: { Authorization: `Bearer ${currentAuthUser.token}` },
         });
         const requests = response.data;
         const pendingRequest = requests.find((request) => request.userId === userId && request.status === 'pending');
@@ -262,6 +272,15 @@ function Dashboardpage() {
       }
     }
   };
+
+  useEffect(() => {
+    if (authUser && authUser.role) {
+      if (previousUserRole && previousUserRole !== 'creator' && authUser.role === 'creator') {
+        setShowCongratsPopup(true);
+      }
+      setPreviousUserRole(authUser.role);
+    }
+  }, [authUser]);
 
   useEffect(() => {
     console.log('Dashboard useEffect:', { authUser, userToken, userId });
@@ -297,10 +316,21 @@ function Dashboardpage() {
         return;
       }
     }
+
     if (authUser && authUser.token) {
       fetchUserData();
       fetchCreatorRequestStatus();
     }
+
+    const intervalId = setInterval(() => {
+      const currentAuthUser = authUserRef.current;
+      if (currentAuthUser && currentAuthUser.token) {
+        fetchUserData();
+        fetchCreatorRequestStatus();
+      }
+    }, 10000); // Poll every 10 seconds
+
+    return () => clearInterval(intervalId);
   }, [authUser, userToken, dispatch, navigate]);
 
   const updateProfileImage = async (userId, file, token) => {
@@ -582,6 +612,8 @@ function Dashboardpage() {
           email={authUser?.email}
           userId={userId}
         />
+
+        <CreatorCongratsPopup showPopup={showCongratsPopup} onClose={() => setShowCongratsPopup(false)} />
 
         {channels && (
           <div className="h-[500px] w-[1000px] absolute top-[100px] left-[250px] z-[1001] overflow-hidden flex justify-center items-center rounded-2xl md:w-4/5 md:h-4/5 md:left-20 md:top-[100px]">
