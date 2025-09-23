@@ -579,7 +579,7 @@ function Dashboardpage() {
       try {
         if (!authUser || !authUser.token) return;
 
-        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/profile/', {
+        const response = await axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/profile/?t=${new Date().getTime()}`, {
           headers: { Authorization: `Bearer ${authUser.token}` },
         });
         const fetchedUser = response.data.user;
