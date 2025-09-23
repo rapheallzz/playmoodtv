@@ -609,12 +609,12 @@ function Dashboardpage() {
           <DesktopHeader channels={channels} set_channels={set_channels} />
         )}
 
-        <EmailVerificationModal
+        {/* <EmailVerificationModal
           show={showEmailVerificationModal}
           onClose={() => setShowEmailVerificationModal(false)}
           email={authUser?.email}
           userId={userId}
-        />
+        /> */}
 
         <CreatorCongratsPopup showPopup={showCongratsPopup} onClose={() => setShowCongratsPopup(false)} />
 
