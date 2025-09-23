@@ -192,8 +192,8 @@ function Dashboardpage() {
       });
       const fetchedUser = response.data;
       if (fetchedUser) {
-        handleUserUpdate(fetchedUser);
-        console.log('fetchUserData stored in localStorage:', fetchedUser);
+        // Do not call handleUserUpdate here to prevent infinite loop
+        console.log('fetchUserData populating forms with:', fetchedUser);
         setPersonalData({
           name: fetchedUser.name || '',
           email: fetchedUser.email || '',
