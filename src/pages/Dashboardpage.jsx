@@ -169,7 +169,7 @@ function Dashboardpage() {
       const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/profile/', {
         headers: { Authorization: `Bearer ${authUser.token}` },
       });
-      const fetchedUser = response.data.user;
+      const fetchedUser = response.data;
       if (fetchedUser) {
         const imageUrl = fetchedUser.profileImage
           ? `${fetchedUser.profileImage}?t=${new Date().getTime()}`
@@ -589,7 +589,7 @@ function Dashboardpage() {
         const response = await axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/profile/?t=${new Date().getTime()}`, {
           headers: { Authorization: `Bearer ${authUser.token}` },
         });
-        const fetchedUser = response.data.user;
+        const fetchedUser = response.data;
         const condition = fetchedUser && fetchedUser.role === 'creator' && authUser.role !== 'creator';
 
         setDebugInfo({
