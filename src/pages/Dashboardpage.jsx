@@ -18,7 +18,7 @@ import MessageModal from '../components/MessageModal';
 import DonationModal from '../components/DonationModal';
 import Sliderfriends from '../components/Sliderfriends';
 import Footer from '../components/footer/Footer';
-import { updateAuthUser, logout } from '../features/authSlice';
+import { updateAuthUserReducer, logout } from '../features/authSlice';
 import defaultImage from '../assets/default-image.jpg';
 import {jwtDecode} from 'jwt-decode'; // Ensure this import is present
 import EmailVerificationModal from '../components/modals/EmailVerificationModal';
@@ -83,7 +83,7 @@ function Dashboardpage() {
       profileImage: imageUrl,
     };
 
-    dispatch(updateAuthUser(updatedUser));
+    dispatch(updateAuthUserReducer(updatedUser));
     localStorage.setItem('user', JSON.stringify(updatedUser));
   };
 
