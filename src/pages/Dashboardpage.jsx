@@ -574,43 +574,42 @@ function Dashboardpage() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const checkUserRole = async () => {
-    try {
-      const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/profile/', {
-        headers: { Authorization: `Bearer ${authUser.token}` },
-      });
-      const fetchedUser = response.data.user;
-
-      if (fetchedUser && fetchedUser.role === 'creator' && authUser.role !== 'creator') {
-        toast.success('Congratulations! You are now a creator.');
-
-        const imageUrl = fetchedUser.profileImage
-          ? `${fetchedUser.profileImage}?t=${new Date().getTime()}`
-          : defaultProfileIcon;
-        const decoded = jwtDecode(authUser.token);
-        const updatedUser = {
-          ...fetchedUser,
-          userId: fetchedUser._id || decoded.id,
-          profileImage: imageUrl,
-          token: authUser.token,
-        };
-        dispatch(updateAuthUser(updatedUser));
-        localStorage.setItem('user', JSON.stringify(updatedUser));
-      }
-    } catch (error) {
-      console.error('Error checking user role:', error);
-    }
-  };
-
   useEffect(() => {
-    if (authUser && authUser.role !== 'creator') {
-      const intervalId = setInterval(() => {
-        checkUserRole();
-      }, 30000); // Poll every 30 seconds
+    const checkUserRole = async () => {
+      try {
+        if (!authUser || !authUser.token) return;
 
+        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/profile/', {
+          headers: { Authorization: `Bearer ${authUser.token}` },
+        });
+        const fetchedUser = response.data.user;
+
+        if (fetchedUser && fetchedUser.role === 'creator' && authUser.role !== 'creator') {
+          toast.success('Congratulations! You are now a creator.');
+
+          const imageUrl = fetchedUser.profileImage
+            ? `${fetchedUser.profileImage}?t=${new Date().getTime()}`
+            : defaultProfileIcon;
+          const decoded = jwtDecode(authUser.token);
+          const updatedUser = {
+            ...fetchedUser,
+            userId: fetchedUser._id || decoded.id,
+            profileImage: imageUrl,
+            token: authUser.token,
+          };
+          dispatch(updateAuthUser(updatedUser));
+          localStorage.setItem('user', JSON.stringify(updatedUser));
+        }
+      } catch (error) {
+        console.error('Error checking user role:', error);
+      }
+    };
+
+    if (authUser && authUser.role !== 'creator') {
+      const intervalId = setInterval(checkUserRole, 30000); // Poll every 30 seconds
       return () => clearInterval(intervalId);
     }
-  }, [authUser]);
+  }, [authUser, dispatch]);
 
   return (
     <Dashboard>
