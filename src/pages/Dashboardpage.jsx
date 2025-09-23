@@ -256,11 +256,15 @@ function Dashboardpage() {
         });
         const requests = response.data;
         const pendingRequest = requests.find((request) => request.userId === userId && request.status === 'pending');
-        setHasPendingRequest(!!pendingRequest);
+        const hasPending = !!pendingRequest;
+        setHasPendingRequest(hasPending);
+        return hasPending;
       } catch (error) {
         console.error('fetchCreatorRequestStatus error:', error);
+        return false;
       }
     }
+    return false;
   };
 
   useEffect(() => {
@@ -299,7 +303,6 @@ function Dashboardpage() {
     }
     if (authUser && authUser.token) {
       fetchUserData();
-      fetchCreatorRequestStatus();
     }
   }, [authUser, userToken, dispatch, navigate]);
 
@@ -498,8 +501,7 @@ function Dashboardpage() {
     }
   };
 
-  const handleApplyAsCreator = () => {
-    if (hasPendingRequest) return;
+  const handleApplyAsCreator = async () => {
     if (!userId) {
       console.error('handleApplyAsCreator: userId is undefined');
       toast.error('User ID is missing. Please try logging in again.');
@@ -507,6 +509,13 @@ function Dashboardpage() {
       navigate('/login');
       return;
     }
+
+    const isPending = await fetchCreatorRequestStatus();
+    if (isPending) {
+      toast.info('You already have a pending request to become a creator.');
+      return;
+    }
+
     setShowCreatorConfirmPopup(true);
   };
 
