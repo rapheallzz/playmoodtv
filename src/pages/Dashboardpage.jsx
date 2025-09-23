@@ -41,6 +41,13 @@ function Dashboardpage() {
   const [showCreatorConfirmPopup, setShowCreatorConfirmPopup] = useState(false);
   const [showEmailVerificationModal, setShowEmailVerificationModal] = useState(false);
 
+  // --- DEBUG STATE ---
+  const [debugInfo, setDebugInfo] = useState({
+    lastFetchedRole: null,
+    lastPollTimestamp: null,
+    conditionMet: null,
+  });
+
   const [personalData, setPersonalData] = useState({
     name: '',
     email: '',
@@ -583,8 +590,15 @@ function Dashboardpage() {
           headers: { Authorization: `Bearer ${authUser.token}` },
         });
         const fetchedUser = response.data.user;
+        const condition = fetchedUser && fetchedUser.role === 'creator' && authUser.role !== 'creator';
 
-        if (fetchedUser && fetchedUser.role === 'creator' && authUser.role !== 'creator') {
+        setDebugInfo({
+          lastFetchedRole: fetchedUser ? fetchedUser.role : 'Error/Null',
+          lastPollTimestamp: new Date().toLocaleTimeString(),
+          conditionMet: condition ? 'Yes' : 'No',
+        });
+
+        if (condition) {
           toast.success('Congratulations! You are now a creator.');
 
           const imageUrl = fetchedUser.profileImage
@@ -614,6 +628,28 @@ function Dashboardpage() {
   return (
     <Dashboard>
       <Mainsection>
+        {/* --- DEBUG PANEL --- */}
+        <div style={{
+          position: 'fixed',
+          top: '80px',
+          left: '10px',
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          color: 'white',
+          padding: '10px',
+          border: '1px solid red',
+          borderRadius: '5px',
+          zIndex: 9999,
+          fontSize: '12px',
+          fontFamily: 'monospace'
+        }}>
+          <h4 style={{ margin: 0, marginBottom: '5px' }}>-- DEBUG PANEL --</h4>
+          <p>Current App Role: {authUser?.role}</p>
+          <p>Last Fetched Role: {debugInfo.lastFetchedRole}</p>
+          <p>Last Poll Time: {debugInfo.lastPollTimestamp}</p>
+          <p>Update Condition Met?: {debugInfo.conditionMet}</p>
+        </div>
+        {/* --- END DEBUG PANEL --- */}
+
         {isMobile ? (
           <Hamburger onClick={() => handle_sidebar_hover()}>
             <MobileBurger channels={channels} set_channels={set_channels} />
