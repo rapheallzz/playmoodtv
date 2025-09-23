@@ -42,7 +42,6 @@ function Dashboardpage() {
   const [showCreatorConfirmPopup, setShowCreatorConfirmPopup] = useState(false);
   const [showEmailVerificationModal, setShowEmailVerificationModal] = useState(false);
   const [showCongratsPopup, setShowCongratsPopup] = useState(false);
-  const [previousUserRole, setPreviousUserRole] = useState(null);
 
   const [personalData, setPersonalData] = useState({
     name: '',
@@ -67,9 +66,22 @@ function Dashboardpage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user: authUser, userToken } = useSelector((state) => state.auth);
+  const previousUserRoleRef = useRef(authUser?.role);
   const authUserRef = useRef(authUser);
+
   useEffect(() => {
     authUserRef.current = authUser;
+  }, [authUser]);
+
+  useEffect(() => {
+    if (
+      previousUserRoleRef.current &&
+      previousUserRoleRef.current !== 'creator' &&
+      authUser?.role === 'creator'
+    ) {
+      setShowCongratsPopup(true);
+    }
+    previousUserRoleRef.current = authUser?.role;
   }, [authUser]);
 
   const isAdmin = authUser && authUser.role === 'admin';
@@ -272,15 +284,6 @@ function Dashboardpage() {
       }
     }
   };
-
-  useEffect(() => {
-    if (authUser && authUser.role) {
-      if (previousUserRole && previousUserRole !== 'creator' && authUser.role === 'creator') {
-        setShowCongratsPopup(true);
-      }
-      setPreviousUserRole(authUser.role);
-    }
-  }, [authUser]);
 
   useEffect(() => {
     console.log('Dashboard useEffect:', { authUser, userToken, userId });
