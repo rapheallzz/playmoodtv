@@ -41,14 +41,6 @@ function Dashboardpage() {
   const [showCreatorConfirmPopup, setShowCreatorConfirmPopup] = useState(false);
   const [showEmailVerificationModal, setShowEmailVerificationModal] = useState(false);
 
-  // --- DEBUG STATE ---
-  const [debugInfo, setDebugInfo] = useState({
-    lastFetchedRole: null,
-    lastPollTimestamp: null,
-    conditionMet: null,
-  });
-  const [, setForceRender] = useState(0);
-
   const [personalData, setPersonalData] = useState({
     name: '',
     email: '',
@@ -93,7 +85,6 @@ function Dashboardpage() {
 
     dispatch(updateAuthUser(updatedUser));
     localStorage.setItem('user', JSON.stringify(updatedUser));
-    setForceRender(c => c + 1); // Force re-render
   };
 
   // Derive userId from token if not in authUser
@@ -175,7 +166,7 @@ function Dashboardpage() {
           accountHolderNameSecondary: cachedUser.billing?.accountHolderNameSecondary || '',
         });
         setProfileImagePreview(cachedUser.profileImage || defaultProfileIcon);
-        if (!cachedUser.verified) {
+        if (!cachedUser.isEmailVerified) {
           setShowEmailVerificationModal(true);
         }
         setIsLoadingUser(false);
@@ -213,7 +204,7 @@ function Dashboardpage() {
           accountHolderNameSecondary: fetchedUser.billing?.accountHolderNameSecondary || '',
         });
         setProfileImagePreview(fetchedUser.profileImage ? `${fetchedUser.profileImage}?t=${new Date().getTime()}` : defaultProfileIcon);
-        if (!fetchedUser.verified) {
+        if (!fetchedUser.isEmailVerified) {
           setShowEmailVerificationModal(true);
         }
       }
@@ -255,7 +246,7 @@ function Dashboardpage() {
           accountHolderNameSecondary: cachedUser.billing?.accountHolderNameSecondary || '',
         });
         setProfileImagePreview(imageUrl);
-        if (!cachedUser.verified) {
+        if (!cachedUser.isEmailVerified) {
           setShowEmailVerificationModal(true);
         }
       } else {
@@ -626,28 +617,6 @@ function Dashboardpage() {
   return (
     <Dashboard>
       <Mainsection>
-        {/* --- DEBUG PANEL --- */}
-        <div style={{
-          position: 'fixed',
-          top: '80px',
-          left: '10px',
-          backgroundColor: 'rgba(0, 0, 0, 0.8)',
-          color: 'white',
-          padding: '10px',
-          border: '1px solid red',
-          borderRadius: '5px',
-          zIndex: 9999,
-          fontSize: '12px',
-          fontFamily: 'monospace'
-        }}>
-          <h4 style={{ margin: 0, marginBottom: '5px' }}>-- DEBUG PANEL --</h4>
-          <p>Current App Role: {authUser?.role}</p>
-          <p>Last Fetched Role: {debugInfo.lastFetchedRole}</p>
-          <p>Last Poll Time: {debugInfo.lastPollTimestamp}</p>
-          <p>Update Condition Met?: {debugInfo.conditionMet}</p>
-        </div>
-        {/* --- END DEBUG PANEL --- */}
-
         {isMobile ? (
           <Hamburger onClick={() => handle_sidebar_hover()}>
             <MobileBurger channels={channels} set_channels={set_channels} />
