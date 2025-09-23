@@ -47,6 +47,7 @@ function Dashboardpage() {
     lastPollTimestamp: null,
     conditionMet: null,
   });
+  const [, setForceRender] = useState(0);
 
   const [personalData, setPersonalData] = useState({
     name: '',
@@ -74,6 +75,26 @@ function Dashboardpage() {
   const isAdmin = authUser && authUser.role === 'admin';
   const isCreator = authUser && authUser.role === 'creator';
   let userId = authUser && authUser.userId;
+
+  const handleUserUpdate = (fetchedUser) => {
+    if (!authUser) return;
+
+    const imageUrl = fetchedUser.profileImage
+      ? `${fetchedUser.profileImage}?t=${new Date().getTime()}`
+      : defaultProfileIcon;
+
+    const decoded = jwtDecode(authUser.token);
+    const updatedUser = {
+      ...authUser,
+      ...fetchedUser,
+      userId: fetchedUser._id || decoded.id,
+      profileImage: imageUrl,
+    };
+
+    dispatch(updateAuthUser(updatedUser));
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+    setForceRender(c => c + 1); // Force re-render
+  };
 
   // Derive userId from token if not in authUser
   if (!userId && userToken) {
@@ -171,19 +192,8 @@ function Dashboardpage() {
       });
       const fetchedUser = response.data;
       if (fetchedUser) {
-        const imageUrl = fetchedUser.profileImage
-          ? `${fetchedUser.profileImage}?t=${new Date().getTime()}`
-          : defaultProfileIcon;
-        const decoded = jwtDecode(authUser.token);
-        const updatedUser = {
-          ...fetchedUser,
-          userId: fetchedUser._id || decoded.id,
-          profileImage: imageUrl,
-          token: authUser.token,
-        };
-        dispatch(updateAuthUser(updatedUser));
-        localStorage.setItem('user', JSON.stringify(updatedUser));
-        console.log('fetchUserData stored in localStorage:', updatedUser);
+        handleUserUpdate(fetchedUser);
+        console.log('fetchUserData stored in localStorage:', fetchedUser);
         setPersonalData({
           name: fetchedUser.name || '',
           email: fetchedUser.email || '',
@@ -202,7 +212,7 @@ function Dashboardpage() {
           abaRouting: fetchedUser.billing?.abaRouting || '',
           accountHolderNameSecondary: fetchedUser.billing?.accountHolderNameSecondary || '',
         });
-        setProfileImagePreview(imageUrl);
+        setProfileImagePreview(fetchedUser.profileImage ? `${fetchedUser.profileImage}?t=${new Date().getTime()}` : defaultProfileIcon);
         if (!fetchedUser.verified) {
           setShowEmailVerificationModal(true);
         }
@@ -600,19 +610,7 @@ function Dashboardpage() {
 
         if (condition) {
           toast.success('Congratulations! You are now a creator.');
-
-          const imageUrl = fetchedUser.profileImage
-            ? `${fetchedUser.profileImage}?t=${new Date().getTime()}`
-            : defaultProfileIcon;
-          const decoded = jwtDecode(authUser.token);
-          const updatedUser = {
-            ...fetchedUser,
-            userId: fetchedUser._id || decoded.id,
-            profileImage: imageUrl,
-            token: authUser.token,
-          };
-          dispatch(updateAuthUser(updatedUser));
-          localStorage.setItem('user', JSON.stringify(updatedUser));
+          handleUserUpdate(fetchedUser);
         }
       } catch (error) {
         console.error('Error checking user role:', error);
