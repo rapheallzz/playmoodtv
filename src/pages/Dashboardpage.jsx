@@ -116,127 +116,6 @@ function Dashboardpage() {
     }
   };
 
-  const fetchUserData = async () => {
-    if (!authUser || !authUser.token) {
-      console.log('fetchUserData: No authUser or token, checking localStorage');
-      const cachedUser = JSON.parse(localStorage.getItem('user'));
-      if (cachedUser && cachedUser.token) {
-        console.log('fetchUserData: Found cached user with token, dispatching updateAuthUser');
-        const decoded = jwtDecode(cachedUser.token);
-        const updatedUser = {
-          ...cachedUser,
-          userId: cachedUser.userId || decoded.id || cachedUser._id,
-        };
-        dispatch(fetchUserProfile());
-        localStorage.setItem('user', JSON.stringify(updatedUser));
-        setPersonalData({
-          name: cachedUser.name || '',
-          email: cachedUser.email || '',
-          phone: cachedUser.phone || '',
-          dateOfBirth: cachedUser.dateOfBirth || '',
-          city: cachedUser.city || '',
-          age: cachedUser.age || '',
-          address: cachedUser.address || '',
-        });
-        setBillingData({
-          bankLocation: cachedUser.billing?.bankLocation || 'United States',
-          accountHolderName: cachedUser.billing?.accountHolderName || '',
-          beneficiaryName: cachedUser.billing?.beneficiaryName || '',
-          bankName: cachedUser.billing?.bankName || '',
-          routingNumber: cachedUser.billing?.routingNumber || '',
-          abaRouting: cachedUser.billing?.abaRouting || '',
-          accountHolderNameSecondary: cachedUser.billing?.accountHolderNameSecondary || '',
-        });
-        setProfileImagePreview(cachedUser.profileImage || defaultProfileIcon);
-        if (!cachedUser.isEmailVerified) {
-          setShowEmailVerificationModal(true);
-        }
-        setIsLoadingUser(false);
-      } else {
-        setIsLoadingUser(false);
-        navigate('/login');
-      }
-      return;
-    }
-
-    try {
-      const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/profile/', {
-        headers: { Authorization: `Bearer ${authUser.token}` },
-      });
-      const fetchedUser = response.data;
-      if (fetchedUser) {
-        // Do not call handleUserUpdate here to prevent infinite loop
-        console.log('fetchUserData populating forms with:', fetchedUser);
-        setPersonalData({
-          name: fetchedUser.name || '',
-          email: fetchedUser.email || '',
-          phone: fetchedUser.phone || '',
-          dateOfBirth: fetchedUser.dateOfBirth || '',
-          city: fetchedUser.city || '',
-          age: fetchedUser.age || '',
-          address: fetchedUser.address || '',
-        });
-        setBillingData({
-          bankLocation: fetchedUser.billing?.bankLocation || 'United States',
-          accountHolderName: fetchedUser.billing?.accountHolderName || '',
-          beneficiaryName: fetchedUser.billing?.beneficiaryName || '',
-          bankName: fetchedUser.billing?.bankName || '',
-          routingNumber: fetchedUser.billing?.routingNumber || '',
-          abaRouting: fetchedUser.billing?.abaRouting || '',
-          accountHolderNameSecondary: fetchedUser.billing?.accountHolderNameSecondary || '',
-        });
-        setProfileImagePreview(fetchedUser.profileImage ? `${fetchedUser.profileImage}?t=${new Date().getTime()}` : defaultProfileIcon);
-        if (!fetchedUser.isEmailVerified) {
-          setShowEmailVerificationModal(true);
-        }
-      }
-      setIsLoadingUser(false);
-    } catch (error) {
-      console.error('fetchUserData error:', error.response?.data || error.message);
-      toast.error('Failed to fetch user data. Using cached data.');
-      const cachedUser = JSON.parse(localStorage.getItem('user'));
-      if (cachedUser && cachedUser.token) {
-        const decoded = jwtDecode(cachedUser.token);
-        const imageUrl = cachedUser.profileImage
-          ? `${cachedUser.profileImage}?t=${new Date().getTime()}`
-          : defaultProfileIcon;
-        const updatedUser = {
-          ...cachedUser,
-          userId: cachedUser.userId || decoded.id || cachedUser._id,
-          profileImage: imageUrl,
-          token: cachedUser.token,
-        };
-        dispatch(fetchUserProfile());
-        localStorage.setItem('user', JSON.stringify(updatedUser));
-        console.log('fetchUserData stored cached user in localStorage:', updatedUser);
-        setPersonalData({
-          name: cachedUser.name || '',
-          email: cachedUser.email || '',
-          phone: cachedUser.phone || '',
-          dateOfBirth: cachedUser.dateOfBirth || '',
-          city: cachedUser.city || '',
-          age: cachedUser.age || '',
-          address: cachedUser.address || '',
-        });
-        setBillingData({
-          bankLocation: cachedUser.billing?.bankLocation || 'United States',
-          accountHolderName: cachedUser.billing?.accountHolderName || '',
-          beneficiaryName: cachedUser.billing?.beneficiaryName || '',
-          bankName: cachedUser.billing?.bankName || '',
-          routingNumber: cachedUser.billing?.routingNumber || '',
-          abaRouting: cachedUser.billing?.abaRouting || '',
-          accountHolderNameSecondary: cachedUser.billing?.accountHolderNameSecondary || '',
-        });
-        setProfileImagePreview(imageUrl);
-        if (!cachedUser.isEmailVerified) {
-          setShowEmailVerificationModal(true);
-        }
-      } else {
-        navigate('/login');
-      }
-      setIsLoadingUser(false);
-    }
-  };
 
   const fetchCreatorRequestStatus = async () => {
     if (authUser && authUser.token && userId) {
@@ -258,43 +137,40 @@ function Dashboardpage() {
   };
 
   useEffect(() => {
-    console.log('Dashboard useEffect:', { authUser, userToken, userId });
-    if (!authUser || !userToken) {
-      const cachedUser = JSON.parse(localStorage.getItem('user'));
-      if (cachedUser && cachedUser.token) {
-        console.log('Restoring user from localStorage:', cachedUser);
-        try {
-          const decoded = jwtDecode(cachedUser.token);
-          const currentTime = Date.now() / 1000;
-          if (decoded.exp < currentTime) {
-            console.log('useEffect: Token expired, clearing localStorage');
-            localStorage.removeItem('user');
-            dispatch(logout());
-            navigate('/login');
-            return;
-          }
-          const updatedUser = {
-            ...cachedUser,
-            userId: cachedUser.userId || decoded.id || cachedUser._id,
-          };
-          dispatch(updateAuthUser(updatedUser));
-          localStorage.setItem('user', JSON.stringify(updatedUser));
-        } catch (error) {
-          console.error('useEffect: Error decoding token:', error);
-          localStorage.removeItem('user');
-          dispatch(logout());
-          navigate('/login');
-          return;
-        }
-      } else {
-        navigate('/login');
-        return;
+    if (userToken) {
+      dispatch(fetchUserProfile());
+    } else {
+      navigate('/login');
+    }
+  }, [userToken, dispatch, navigate]);
+
+  useEffect(() => {
+    if (authUser) {
+      setPersonalData({
+        name: authUser.name || '',
+        email: authUser.email || '',
+        phone: authUser.phone || '',
+        dateOfBirth: authUser.dateOfBirth || '',
+        city: authUser.city || '',
+        age: authUser.age || '',
+        address: authUser.address || '',
+      });
+      setBillingData({
+        bankLocation: authUser.billing?.bankLocation || 'United States',
+        accountHolderName: authUser.billing?.accountHolderName || '',
+        beneficiaryName: authUser.billing?.beneficiaryName || '',
+        bankName: authUser.billing?.bankName || '',
+        routingNumber: authUser.billing?.routingNumber || '',
+        abaRouting: authUser.billing?.abaRouting || '',
+        accountHolderNameSecondary: authUser.billing?.accountHolderNameSecondary || '',
+      });
+      setProfileImagePreview(authUser.profileImage || defaultProfileIcon);
+      if (!authUser.isEmailVerified) {
+        setShowEmailVerificationModal(true);
       }
+      setIsLoadingUser(false);
     }
-    if (authUser && authUser.token) {
-      fetchUserData();
-    }
-  }, [authUser, userToken, dispatch, navigate]);
+  }, [authUser]);
 
   const updateProfileImage = async (userId, file, token) => {
     if (!userId) {
