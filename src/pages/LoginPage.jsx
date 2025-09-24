@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
+import { toast } from 'react-toastify';
 import playmood from '/PLAYMOOD_DEF.png';
 import { login, reset } from '../features/authSlice';
 import { FaGoogle } from 'react-icons/fa';
@@ -17,21 +17,15 @@ const Login = () => {
   const { user, isLoading, isError, isSuccess, message } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    console.log('Login useEffect triggered:', { isError, isSuccess, user, message });
     if (isError) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Login Error',
-        text: message,
-        confirmButtonColor: '#541011',
-      });
+      toast.error(message);
+      dispatch(reset());
     }
 
     if (isSuccess && user && user.role) {
-      console.log('Login successful, redirecting to /dashboard');
+      toast.success('Login successful!');
       localStorage.setItem('user', JSON.stringify({ ...user, token: user.token }));
-      console.log('Login stored in localStorage:', { ...user, token: user.token });
-      setTimeout(() => navigate('/dashboard'), 0);
+      setTimeout(() => navigate('/dashboard'), 1000);
       dispatch(reset());
     }
   }, [user, isError, isSuccess, message, navigate, dispatch]);
@@ -39,25 +33,14 @@ const Login = () => {
   const onClick = async (e) => {
     e.preventDefault();
     if (!email || !password) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Input Error',
-        text: 'Please enter both email and password',
-        confirmButtonColor: '#541011',
-      });
+      toast.error('Please enter both email and password');
       return;
     }
     if (!/\S+@\S+\.\S+/.test(email)) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Input Error',
-        text: 'Please enter a valid email address',
-        confirmButtonColor: '#541011',
-      });
+      toast.error('Please enter a valid email address');
       return;
     }
     const userData = { email, password };
-    console.log('Dispatching login with:', userData);
     dispatch(login(userData));
   };
 
@@ -70,7 +53,6 @@ const Login = () => {
       <Logo src={playmood} alt="Playmood Logo" onClick={() => navigate('/')} />
       <Form>
         <h2>Login</h2>
-        {isError && <ErrorMessage>{message}</ErrorMessage>}
         <Input
           type="text"
           placeholder="Enter email"
@@ -201,15 +183,6 @@ const CreateAccountButton = styled.button`
   padding: 10px;
   width: 100%;
   cursor: pointer;
-`;
-
-const ErrorMessage = styled.div`
-  color: #d32f2f;
-  background-color: #ffebee;
-  padding: 10px;
-  border-radius: 4px;
-  margin-bottom: 15px;
-  text-align: center;
 `;
 
 const PasswordContainer = styled.div`

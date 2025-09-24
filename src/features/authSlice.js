@@ -100,6 +100,7 @@ export const login = createAsyncThunk('auth/login', async (userData, thunkAPI) =
       status: error.response?.status,
     });
     const message =
+      error.response?.data?.error ||
       error.response?.data?.message ||
       (error.response?.status === 401 ? 'Incorrect login details' : 'Login failed');
     return thunkAPI.rejectWithValue(message);
