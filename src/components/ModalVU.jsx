@@ -15,10 +15,10 @@ const VideoModal = ({ onClose }) => {
     title: '',
     description: '',
     credit: '',
-    category: 'Top 10',
   });
 
-  const [files, setFiles] = useState([]);
+  const [videoFile, setVideoFile] = useState(null);
+  const [thumbnailFile, setThumbnailFile] = useState(null);
   const [previewStart, setPreviewStart] = useState(0);
   const [previewEnd, setPreviewEnd] = useState(10);
   const [videoDuration, setVideoDuration] = useState(null);
@@ -42,35 +42,42 @@ const VideoModal = ({ onClose }) => {
     };
   };
 
-  // Handle file selection and load video duration
-  const handleFileChange = (e) => {
-    const fileList = e.target.files;
-    const filesArray = Array.from(fileList);
-    console.log('Selected files:', filesArray);
-    setFiles(filesArray);
+  // Handle video file selection
+  const handleVideoChange = (e) => {
+    const file = e.target.files[0];
+    if (file && file.type.startsWith('video/')) {
+      setVideoFile(file);
+      const videoURL = URL.createObjectURL(file);
+      const video = document.createElement('video');
+      video.src = videoURL;
+      video.preload = 'metadata';
 
-    if (filesArray.length > 0) {
-      const videoFile = filesArray.find((file) => file.type.startsWith('video/'));
-      if (videoFile) {
-        const videoURL = URL.createObjectURL(videoFile);
-        const video = document.createElement('video');
-        video.src = videoURL;
-        video.preload = 'metadata';
+      video.onloadedmetadata = () => {
+        setVideoDuration(video.duration);
+        setPreviewStart(0);
+        setPreviewEnd(Math.min(10, video.duration));
+        URL.revokeObjectURL(videoURL);
+        video.remove();
+      };
 
-        video.onloadedmetadata = () => {
-          setVideoDuration(video.duration);
-          setPreviewStart(0);
-          setPreviewEnd(Math.min(10, video.duration));
-          URL.revokeObjectURL(videoURL);
-          video.remove();
-        };
+      video.onerror = () => {
+        setError('Unable to load video metadata.');
+        URL.revokeObjectURL(videoURL);
+        video.remove();
+      };
+    } else {
+      setVideoFile(null);
+      setVideoDuration(null);
+    }
+  };
 
-        video.onerror = () => {
-          setError('Unable to load video metadata.');
-          URL.revokeObjectURL(videoURL);
-          video.remove();
-        };
-      }
+  // Handle thumbnail file selection
+  const handleThumbnailChange = (e) => {
+    const file = e.target.files[0];
+    if (file && file.type.startsWith('image/')) {
+      setThumbnailFile(file);
+    } else {
+      setThumbnailFile(null);
     }
   };
 
@@ -123,8 +130,8 @@ const VideoModal = ({ onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!files.length) {
-      setError('Please select at least one file to upload.');
+    if (!videoFile) {
+      setError('Please select a video file to upload.');
       return;
     }
 
@@ -149,24 +156,28 @@ const VideoModal = ({ onClose }) => {
     setShowPopup(false); // Reset popup state
 
     const maxSize = 500 * 1024 * 1024; // 500MB
-    const oversizedFiles = files.filter((file) => file.size > maxSize);
-    if (oversizedFiles.length > 0) {
-      setError('One or more files exceed the maximum size (500MB).');
+    if (videoFile.size > maxSize) {
+      setError('The video file exceeds the maximum size (500MB).');
       setLoading(false);
       return;
+    }
+    if (thumbnailFile && thumbnailFile.size > maxSize) {
+        setError('The thumbnail file exceeds the maximum size (500MB).');
+        setLoading(false);
+        return;
     }
 
     const formData = new FormData();
     formData.append('title', videoData.title);
     formData.append('description', videoData.description);
     formData.append('credit', videoData.credit);
-    formData.append('category', videoData.category);
     formData.append('userId', userId);
     formData.append('previewStart', previewStart);
     formData.append('previewEnd', previewEnd);
-    files.forEach((file) => {
-      formData.append('files', file);
-    });
+    formData.append('files', videoFile);
+    if (thumbnailFile) {
+      formData.append('files', thumbnailFile);
+    }
 
     try {
       const response = await axios.post(
@@ -244,35 +255,21 @@ const VideoModal = ({ onClose }) => {
             onChange={handleInputChange}
           />
 
-          <Label>Category</Label>
-          <Select
-            name="category"
-            value={videoData.category}
-            onChange={handleInputChange}
-          >
-            {/* <option value="Top 10">Top 10</option> */}
-            <option value="Fashion Show">Fashion Show</option>
-            <option value="Teen">Teens</option>
-            <option value="Documentarie">Documentaries</option>
-            <option value="Interview">Interviews</option>
-            <option value="Social">Social</option>
-            <option value="Behind the camera">Behind the camera</option>
-            <option value="Soon in Playmood">Soon in Playmood</option>
-            <option value="Watchlist">Watchlist</option>
-            <option value="Daries">Recommended</option>
-            <option value="New on Playmood">New on Playmood</option>
-            <option value="Only in Playmood">Only in Playmood</option>
-          </Select>
-
-          <Label>Upload Video and Thumbnail</Label>
+          <Label>Upload Video</Label>
           <Input
             type="file"
-            accept="video/*,image/*"
-            multiple
-            onChange={handleFileChange}
+            accept="video/*"
+            onChange={handleVideoChange}
           />
 
-          {files.length > 0 && files.some((file) => file.type.startsWith('video/')) && (
+          <Label>Upload Thumbnail</Label>
+          <Input
+            type="file"
+            accept="image/*"
+            onChange={handleThumbnailChange}
+          />
+
+          {videoFile && (
             <>
               <Label>Preview Selection (10–15 seconds)</Label>
               {videoDuration ? (
@@ -281,9 +278,7 @@ const VideoModal = ({ onClose }) => {
                     <video
                       ref={videoRef}
                       controls
-                      src={URL.createObjectURL(
-                        files.find((file) => file.type.startsWith('video/'))
-                      )}
+                      src={URL.createObjectURL(videoFile)}
                       style={{ width: '100%', maxHeight: '200px' }}
                     />
                   </VideoContainer>
@@ -328,7 +323,7 @@ const VideoModal = ({ onClose }) => {
             </>
           )}
 
-          <UploadButton type="submit" disabled={loading || !files.length || !getAuthData().userId || !getAuthData().authToken}>
+          <UploadButton type="submit" disabled={loading || !videoFile || !getAuthData().userId || !getAuthData().authToken}>
             {loading ? 'Uploading...' : 'Upload'}
           </UploadButton>
 
@@ -464,13 +459,6 @@ const TextArea = styled.textarea`
   border-radius: 4px;
   font-size: 14px;
   resize: vertical;
-`;
-
-const Select = styled.select`
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 14px;
 `;
 
 const UploadButton = styled.button`
