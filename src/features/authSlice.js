@@ -64,20 +64,35 @@ export const registerUser = createAsyncThunk('auth/register', async (userData, t
 
 export const login = createAsyncThunk('auth/login', async (userData, thunkAPI) => {
   try {
-    const response = await authService.login(userData);
-    console.log('authSlice login response:', response);
-    const decoded = decodeToken(response.token);
-    if (!decoded) {
-      throw new Error('Received expired token');
+    if (userData.token) {
+      // This is a Google login, we already have the user and token
+      const decoded = decodeToken(userData.token);
+      if (!decoded) {
+        throw new Error('Received expired token');
+      }
+      const userWithToken = {
+        ...userData,
+        userId: decoded.id || userData._id,
+      };
+      localStorage.setItem('user', JSON.stringify(userWithToken));
+      return { user: userWithToken, token: userData.token };
+    } else {
+      // This is a regular email/password login
+      const response = await authService.login(userData);
+      console.log('authSlice login response:', response);
+      const decoded = decodeToken(response.token);
+      if (!decoded) {
+        throw new Error('Received expired token');
+      }
+      const userWithToken = {
+        ...response.user,
+        userId: decoded.id || response.user._id,
+        token: response.token,
+      };
+      localStorage.setItem('user', JSON.stringify(userWithToken));
+      console.log('authSlice stored in localStorage:', userWithToken);
+      return { user: userWithToken, token: response.token };
     }
-    const userWithToken = {
-      ...response.user,
-      userId: decoded.id || response.user._id,
-      token: response.token,
-    };
-    localStorage.setItem('user', JSON.stringify(userWithToken));
-    console.log('authSlice stored in localStorage:', userWithToken);
-    return { user: userWithToken, token: response.token };
   } catch (error) {
     console.error('authSlice login error:', {
       message: error.message,

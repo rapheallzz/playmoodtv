@@ -7,6 +7,7 @@ import playmood from '/PLAYMOOD_DEF.png';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import countryList from 'react-select-country-list';
+import { FaGoogle } from 'react-icons/fa';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -99,6 +100,10 @@ const Register = () => {
     }
   };
 
+  const handleGoogleSignup = () => {
+    window.location.href = 'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/auth/google';
+  };
+
   return (
     <RegisterContainer>
       <Logo src={playmood} alt="Playmood Logo" />
@@ -161,6 +166,10 @@ const Register = () => {
         <SignupButton type="submit" disabled={isLoading}>
           {isLoading ? 'Signing Up...' : 'Sign Up'}
         </SignupButton>
+        <GoogleButton onClick={handleGoogleSignup}>
+          <FaGoogle style={{ marginRight: '10px' }} />
+          Sign up with Google
+        </GoogleButton>
         <SignInText>
           Already have an account?{' '}
           <SignInLink onClick={() => navigate('/login')}>Sign In</SignInLink>
@@ -232,6 +241,24 @@ const SignupButton = styled.button`
   width: 100%;
   cursor: pointer;
   margin-top: 10px;
+`;
+
+const GoogleButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 10px;
+  background-color: #4285f4;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+
+  &:hover {
+    background-color: #357ae8;
+  }
 `;
 
 const SignInText = styled.p`

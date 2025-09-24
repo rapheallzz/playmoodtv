@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import playmood from '/PLAYMOOD_DEF.png';
 import { login, reset } from '../features/authSlice';
+import { FaGoogle } from 'react-icons/fa';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -60,6 +61,10 @@ const Login = () => {
     dispatch(login(userData));
   };
 
+  const handleGoogleLogin = () => {
+    window.location.href = 'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/auth/google';
+  };
+
   return (
     <LoginContainer>
       <Logo src={playmood} alt="Playmood Logo" onClick={() => navigate('/')} />
@@ -92,6 +97,10 @@ const Login = () => {
         <ForgotPasswordLink onClick={() => navigate('/forgot-password')}>
           Forgot password?
         </ForgotPasswordLink>
+        <GoogleButton onClick={handleGoogleLogin}>
+          <FaGoogle style={{ marginRight: '10px' }} />
+          Sign in with Google
+        </GoogleButton>
         <CreateAccountButton onClick={() => navigate('/register')}>
           Create an account
         </CreateAccountButton>
@@ -164,6 +173,24 @@ const ForgotPasswordLink = styled.span`
   text-align: center;
   margin-top: 10px;
   margin-bottom: 10px;
+`;
+
+const GoogleButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 10px;
+  background-color: #4285f4;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 10px;
+
+  &:hover {
+    background-color: #357ae8;
+  }
 `;
 
 const CreateAccountButton = styled.button`
