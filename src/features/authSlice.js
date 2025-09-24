@@ -101,7 +101,7 @@ export const login = createAsyncThunk('auth/login', async (userData, thunkAPI) =
     });
     const message =
       error.response?.data?.message ||
-      (error.response?.status === 401 ? 'Invalid email or password' : 'Login failed');
+      (error.response?.status === 401 ? 'Incorrect login details' : 'Login failed');
     return thunkAPI.rejectWithValue(message);
   }
 });
