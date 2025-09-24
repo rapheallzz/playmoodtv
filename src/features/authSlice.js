@@ -187,6 +187,27 @@ export const resendVerificationCode = createAsyncThunk(
   }
 );
 
+export const fetchUserProfile = createAsyncThunk('auth/fetchUserProfile', async (_, thunkAPI) => {
+  try {
+    const token = thunkAPI.getState().auth.userToken;
+    if (!token) {
+      throw new Error('No token found');
+    }
+    const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/profile/', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const userWithToken = { ...response.data, token };
+    localStorage.setItem('user', JSON.stringify(userWithToken));
+    return userWithToken;
+  } catch (error) {
+    if (error.message === 'Token expired' || error.response?.status === 401) {
+      localStorage.removeItem('user');
+      return thunkAPI.rejectWithValue('Token expired, please log in again');
+    }
+    return thunkAPI.rejectWithValue(error.response?.data?.message || 'Failed to fetch user profile');
+  }
+});
+
 export const updateAuthUser = createAsyncThunk('auth/updateAuthUser', async (userData, thunkAPI) => {
   try {
     const token = thunkAPI.getState().auth.userToken || userData.token;
@@ -237,16 +258,6 @@ export const authSlice = createSlice({
       state.user = null;
       state.userToken = null;
       localStorage.removeItem('user');
-    },
-    updateAuthUser: (state, action) => {
-      const payload = action.payload;
-      const decoded = payload.token ? decodeToken(payload.token) : {};
-      state.user = {
-        ...payload,
-        userId: payload.userId || decoded.id || payload._id,
-        _id: payload._id || decoded.id || payload.userId,
-      };
-      state.userToken = payload.token;
     },
   },
   extraReducers: (builder) => {
@@ -307,6 +318,24 @@ export const authSlice = createSlice({
         state.userToken = action.payload.token;
       })
       .addCase(updateAuthUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+        if (action.payload === 'Token expired, please log in again') {
+          state.user = null;
+          state.userToken = null;
+        }
+      })
+      .addCase(fetchUserProfile.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchUserProfile.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.user = action.payload;
+        state.userToken = action.payload.token;
+      })
+      .addCase(fetchUserProfile.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
@@ -405,5 +434,5 @@ export const authSlice = createSlice({
   },
 });
 
-export const { reset, updateAuthUser: updateAuthUserReducer} = authSlice.actions;
+export const { reset } = authSlice.actions;
 export default authSlice.reducer;

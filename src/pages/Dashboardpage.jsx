@@ -18,7 +18,7 @@ import MessageModal from '../components/MessageModal';
 import DonationModal from '../components/DonationModal';
 import Sliderfriends from '../components/Sliderfriends';
 import Footer from '../components/footer/Footer';
-import { updateAuthUserReducer, logout } from '../features/authSlice';
+import { fetchUserProfile, updateAuthUser, logout } from '../features/authSlice';
 import defaultImage from '../assets/default-image.jpg';
 import {jwtDecode} from 'jwt-decode'; // Ensure this import is present
 import EmailVerificationModal from '../components/modals/EmailVerificationModal';
@@ -68,24 +68,6 @@ function Dashboardpage() {
   const isCreator = authUser && authUser.role === 'creator';
   let userId = authUser && authUser.userId;
 
-  const handleUserUpdate = (fetchedUser) => {
-    if (!authUser) return;
-
-    const imageUrl = fetchedUser.profileImage
-      ? `${fetchedUser.profileImage}?t=${new Date().getTime()}`
-      : defaultProfileIcon;
-
-    const decoded = jwtDecode(authUser.token);
-    const updatedUser = {
-      ...authUser,
-      ...fetchedUser,
-      userId: fetchedUser._id || decoded.id,
-      profileImage: imageUrl,
-    };
-
-    dispatch(updateAuthUserReducer(updatedUser));
-    localStorage.setItem('user', JSON.stringify(updatedUser));
-  };
 
   // Derive userId from token if not in authUser
   if (!userId && userToken) {
@@ -145,7 +127,7 @@ function Dashboardpage() {
           ...cachedUser,
           userId: cachedUser.userId || decoded.id || cachedUser._id,
         };
-        dispatch(updateAuthUser(updatedUser));
+        dispatch(fetchUserProfile());
         localStorage.setItem('user', JSON.stringify(updatedUser));
         setPersonalData({
           name: cachedUser.name || '',
@@ -224,7 +206,7 @@ function Dashboardpage() {
           profileImage: imageUrl,
           token: cachedUser.token,
         };
-        dispatch(updateAuthUser(updatedUser));
+        dispatch(fetchUserProfile());
         localStorage.setItem('user', JSON.stringify(updatedUser));
         console.log('fetchUserData stored cached user in localStorage:', updatedUser);
         setPersonalData({
@@ -593,15 +575,9 @@ function Dashboardpage() {
         const fetchedUser = response.data;
         const condition = fetchedUser && fetchedUser.role === 'creator' && authUser.role !== 'creator';
 
-        setDebugInfo({
-          lastFetchedRole: fetchedUser ? fetchedUser.role : 'Error/Null',
-          lastPollTimestamp: new Date().toLocaleTimeString(),
-          conditionMet: condition ? 'Yes' : 'No',
-        });
-
         if (condition) {
           toast.success('Congratulations! You are now a creator.');
-          handleUserUpdate(fetchedUser);
+          dispatch(fetchUserProfile());
         }
       } catch (error) {
         console.error('Error checking user role:', error);
