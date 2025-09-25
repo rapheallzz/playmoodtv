@@ -270,11 +270,6 @@ const VideoModal = ({ onClose }) => {
             <option value="Interview">Interviews</option>
             <option value="Social">Social</option>
             <option value="Behind the camera">Behind the camera</option>
-            <option value="Soon in Playmood">Soon in Playmood</option>
-            <option value="Watchlist">Watchlist</option>
-            <option value="Daries">Recommended</option>
-            <option value="New on Playmood">New on Playmood</option>
-            <option value="Only in Playmood">Only in Playmood</option>
           </Select>
 
           <Label>Upload Video</Label>
