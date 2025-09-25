@@ -137,7 +137,7 @@ const uploadToCloudinary = async (file, signatureData, resourceType, onProgress)
   formData.append('file', file);
   formData.append('signature', signatureData.signature);
   formData.append('timestamp', signatureData.timestamp);
-  formData.append('api_key', signatureData.apiKey);
+  formData.append('api_key', signatureData.api_key);
 
   const response = await axios.post(uploadUrl, formData, {
     onUploadProgress: (progressEvent) => {
