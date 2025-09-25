@@ -34,7 +34,6 @@ export default function Slidertopsidebar() {
     slidesToScroll: 1,
     initialSlide: 0,
     autoplay: true,
-    speed: 2000,
     autoplaySpeed: 2000,
     cssEase: "linear",
     arrows: false,

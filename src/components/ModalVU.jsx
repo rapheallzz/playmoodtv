@@ -128,6 +128,29 @@ const VideoModal = ({ onClose }) => {
     }
   };
 
+const uploadToCloudinary = async (file, signatureData, resourceType, onProgress) => {
+  // TODO: This should be moved to a configuration file or environment variable
+  const cloudName = 'di97mcvbu';
+  const uploadUrl = `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`;
+
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('signature', signatureData.signature);
+  formData.append('timestamp', signatureData.timestamp);
+  formData.append('api_key', signatureData.apiKey);
+
+  const response = await axios.post(uploadUrl, formData, {
+    onUploadProgress: (progressEvent) => {
+      const progress = progressEvent.total
+        ? Math.round((progressEvent.loaded / progressEvent.total) * 100)
+        : 0;
+      onProgress(progress);
+    },
+  });
+
+  return response.data;
+};
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -154,7 +177,7 @@ const VideoModal = ({ onClose }) => {
     setLoading(true);
     setError('');
     setSuccess(false);
-    setShowPopup(false); // Reset popup state
+    setShowPopup(false);
 
     const maxSize = 500 * 1024 * 1024; // 500MB
     if (videoFile.size > maxSize) {
@@ -163,55 +186,93 @@ const VideoModal = ({ onClose }) => {
       return;
     }
     if (thumbnailFile && thumbnailFile.size > maxSize) {
-        setError('The thumbnail file exceeds the maximum size (500MB).');
-        setLoading(false);
-        return;
-    }
-
-    const formData = new FormData();
-    formData.append('title', videoData.title);
-    formData.append('description', videoData.description);
-    formData.append('credit', videoData.credit);
-    formData.append('category', videoData.category);
-    formData.append('userId', userId);
-    formData.append('previewStart', previewStart);
-    formData.append('previewEnd', previewEnd);
-    formData.append('files', videoFile);
-    if (thumbnailFile) {
-      formData.append('files', thumbnailFile);
+      setError('The thumbnail file exceeds the maximum size (500MB).');
+      setLoading(false);
+      return;
     }
 
     try {
-      const response = await axios.post(
-        'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content',
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-            'Content-Type': 'multipart/form-data',
-          },
-          timeout: 1200000, // 20 minutes
-          onUploadProgress: (progressEvent) => {
-            const progress = progressEvent.total
-              ? Math.round((progressEvent.loaded / progressEvent.total) * 100)
-              : 0;
-            console.log(`Upload Progress: ${progress}%`);
-            setUploadProgress(progress);
-          },
-        }
+      // Step 1: Get signature for video
+      const videoSignatureResponse = await axios.post(
+        'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/signature',
+        {},
+        { headers: { Authorization: `Bearer ${authToken}` } }
+      );
+      const videoSignatureData = videoSignatureResponse.data;
+
+      // Step 2: Upload video to Cloudinary
+      const videoUploadResponse = await uploadToCloudinary(
+        videoFile,
+        videoSignatureData,
+        'video',
+        setUploadProgress
       );
 
-      console.log('Video submitted successfully:', response.data);
+      let thumbnailUploadResponse = null;
+      if (thumbnailFile) {
+        setUploadProgress(0); // Reset progress for thumbnail
+        // Get a new signature for the thumbnail
+        const thumbSignatureResponse = await axios.post(
+          'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/signature',
+          {},
+          { headers: { Authorization: `Bearer ${authToken}` } }
+        );
+        const thumbSignatureData = thumbSignatureResponse.data;
+
+        thumbnailUploadResponse = await uploadToCloudinary(
+          thumbnailFile,
+          thumbSignatureData,
+          'image',
+          setUploadProgress
+        );
+      }
+
+      // Step 3: Send metadata to your backend
+      const finalPayload = {
+        title: videoData.title,
+        category: videoData.category,
+        description: videoData.description,
+        credit: videoData.credit,
+        userId,
+        previewStart,
+        previewEnd,
+        languageCode: 'en-US',
+        video: {
+          public_id: videoUploadResponse.public_id,
+          url: videoUploadResponse.secure_url,
+        },
+        thumbnail: thumbnailUploadResponse
+          ? {
+              public_id: thumbnailUploadResponse.public_id,
+              url: thumbnailUploadResponse.secure_url,
+            }
+          : undefined,
+      };
+
+      await axios.post('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content', finalPayload, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
       setSuccess(true);
-      setShowPopup(true); // Show popup on successful upload
+      setShowPopup(true);
     } catch (error) {
-      console.error('Error submitting video:', error, error.response);
-      if (error.code === 'ECONNABORTED') {
-        setError('Request timed out. Please check your network or try again later.');
-      } else if (error.response) {
-        setError(`Failed to upload video: ${error.response.data.message || error.response.statusText} (Status: ${error.response.status})`);
+      console.error('Error in the upload process:', error.response || error);
+      if (error.response) {
+        // Differentiate errors based on the step
+        if (error.config.url.includes('/api/content/signature')) {
+          setError('Failed to get an upload signature. Please try again.');
+        } else if (error.config.url.includes('cloudinary')) {
+          setError('Failed to upload to Cloudinary. Please check the file and try again.');
+        } else if (error.config.url.includes('/api/content')) {
+          setError('Failed to create the content record. Please try again.');
+        } else {
+          setError(`An error occurred: ${error.response.data.message || 'Please try again.'}`);
+        }
       } else {
-        setError('An error occurred while uploading. Please try again.');
+        setError('A network error occurred. Please check your connection and try again.');
       }
     } finally {
       setLoading(false);
