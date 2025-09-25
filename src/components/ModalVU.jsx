@@ -15,6 +15,7 @@ const VideoModal = ({ onClose }) => {
     title: '',
     description: '',
     credit: '',
+    category: 'Fashion Show',
   });
 
   const [videoFile, setVideoFile] = useState(null);
@@ -171,6 +172,7 @@ const VideoModal = ({ onClose }) => {
     formData.append('title', videoData.title);
     formData.append('description', videoData.description);
     formData.append('credit', videoData.credit);
+    formData.append('category', videoData.category);
     formData.append('userId', userId);
     formData.append('previewStart', previewStart);
     formData.append('previewEnd', previewEnd);
@@ -254,6 +256,26 @@ const VideoModal = ({ onClose }) => {
             value={videoData.credit}
             onChange={handleInputChange}
           />
+
+          <Label>Category</Label>
+          <Select
+            name="category"
+            value={videoData.category}
+            onChange={handleInputChange}
+          >
+            {/* <option value="Top 10">Top 10</option> */}
+            <option value="Fashion Show">Fashion Show</option>
+            <option value="Teen">Teens</option>
+            <option value="Documentarie">Documentaries</option>
+            <option value="Interview">Interviews</option>
+            <option value="Social">Social</option>
+            <option value="Behind the camera">Behind the camera</option>
+            <option value="Soon in Playmood">Soon in Playmood</option>
+            <option value="Watchlist">Watchlist</option>
+            <option value="Daries">Recommended</option>
+            <option value="New on Playmood">New on Playmood</option>
+            <option value="Only in Playmood">Only in Playmood</option>
+          </Select>
 
           <Label>Upload Video</Label>
           <Input
@@ -447,6 +469,13 @@ const Label = styled.label`
 `;
 
 const Input = styled.input`
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+`;
+
+const Select = styled.select`
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
