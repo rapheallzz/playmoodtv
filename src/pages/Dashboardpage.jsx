@@ -572,7 +572,9 @@ function Dashboardpage() {
 
   useEffect(() => {
     if (authUser && authUser.role !== 'creator' && userId) {
-      const socket = io('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com');
+      const socket = io('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com', {
+        transports: ['websocket'],
+      });
 
       socket.on('connect', () => {
         console.log('Connected to WebSocket server');
