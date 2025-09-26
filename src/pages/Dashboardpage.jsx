@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import MobileBurger from '../components/headers/MobileBurger';
 import DesktopHeader from '../components/headers/DesktopHeader';
 import styled from 'styled-components';
@@ -22,6 +22,7 @@ import { updateAuthUserReducer, logout } from '../features/authSlice';
 import defaultImage from '../assets/default-image.jpg';
 import {jwtDecode} from 'jwt-decode'; // Ensure this import is present
 import EmailVerificationModal from '../components/modals/EmailVerificationModal';
+import { io } from 'socket.io-client';
 
 const defaultProfileIcon = '/default-profile.png';
 
@@ -68,7 +69,7 @@ function Dashboardpage() {
   const isCreator = authUser && authUser.role === 'creator';
   let userId = authUser && authUser.userId;
 
-  const handleUserUpdate = (fetchedUser) => {
+  const handleUserUpdate = useCallback((fetchedUser) => {
     if (!authUser) return;
 
     const imageUrl = fetchedUser.profileImage
@@ -85,7 +86,7 @@ function Dashboardpage() {
 
     dispatch(updateAuthUserReducer(updatedUser));
     localStorage.setItem('user', JSON.stringify(updatedUser));
-  };
+  }, [authUser, dispatch]);
 
   // Derive userId from token if not in authUser
   if (!userId && userToken) {
@@ -583,36 +584,34 @@ function Dashboardpage() {
   }, []);
 
   useEffect(() => {
-    const checkUserRole = async () => {
-      try {
-        if (!authUser || !authUser.token) return;
+    if (authUser && authUser.role !== 'creator' && userId) {
+      const socket = io('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com');
 
-        const response = await axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/profile/?t=${new Date().getTime()}`, {
-          headers: { Authorization: `Bearer ${authUser.token}` },
-        });
-        const fetchedUser = response.data;
-        const condition = fetchedUser && fetchedUser.role === 'creator' && authUser.role !== 'creator';
-
-        setDebugInfo({
-          lastFetchedRole: fetchedUser ? fetchedUser.role : 'Error/Null',
-          lastPollTimestamp: new Date().toLocaleTimeString(),
-          conditionMet: condition ? 'Yes' : 'No',
-        });
-
-        if (condition) {
-          toast.success('Congratulations! You are now a creator.');
-          handleUserUpdate(fetchedUser);
+      socket.on('connect', () => {
+        console.log('Connected to WebSocket server');
+        if (userId) {
+          socket.emit('join', { userId });
         }
-      } catch (error) {
-        console.error('Error checking user role:', error);
-      }
-    };
+      });
 
-    if (authUser && authUser.role !== 'creator') {
-      const intervalId = setInterval(checkUserRole, 30000); // Poll every 30 seconds
-      return () => clearInterval(intervalId);
+      socket.on('role-approved', (data) => {
+        console.log('Role approved event received:', data);
+        if (data.user) {
+          toast.success('Congratulations! You are now a creator.');
+          handleUserUpdate(data.user);
+        }
+      });
+
+      socket.on('connect_error', (err) => {
+        console.error('WebSocket connection error:', err);
+      });
+
+      return () => {
+        console.log('Disconnecting from WebSocket server');
+        socket.disconnect();
+      };
     }
-  }, [authUser, dispatch]);
+  }, [authUser, userId, handleUserUpdate]);
 
   return (
     <Dashboard>
