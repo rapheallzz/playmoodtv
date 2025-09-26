@@ -179,14 +179,14 @@ const uploadToCloudinary = async (file, signatureData, resourceType, onProgress)
     setSuccess(false);
     setShowPopup(false);
 
-    const maxSize = 500 * 1024 * 1024; // 500MB
+    const maxSize = 3 * 1024 * 1024 * 1024; // 3GB
     if (videoFile.size > maxSize) {
-      setError('The video file exceeds the maximum size (500MB).');
+      setError('The video file exceeds the maximum size (3GB).');
       setLoading(false);
       return;
     }
     if (thumbnailFile && thumbnailFile.size > maxSize) {
-      setError('The thumbnail file exceeds the maximum size (500MB).');
+      setError('The thumbnail file exceeds the maximum size (3GB).');
       setLoading(false);
       return;
     }
