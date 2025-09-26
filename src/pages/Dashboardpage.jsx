@@ -34,7 +34,7 @@ function Dashboardpage() {
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [showMessageModal, setShowMessageModal] = useState(false);
   const [message, setMessage] = useState('');
-  const [hasPendingRequest, setHasPendingRequest] = useState(false);
+  const [creatorApplicationStatus, setCreatorApplicationStatus] = useState(null);
   const [profileImage, setProfileImage] = useState(null);
   const [profileImagePreview, setProfileImagePreview] = useState(null);
   const [activeAction, setActiveAction] = useState('LIKES');
@@ -257,24 +257,19 @@ function Dashboardpage() {
     }
   };
 
-  const fetchCreatorRequestStatus = async () => {
-    if (authUser && authUser.token && userId) {
+  const fetchCreatorApplicationStatus = useCallback(async () => {
+    if (authUser && authUser.token) {
       try {
-        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/rolechange/', {
+        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/creator-application-status', {
           headers: { Authorization: `Bearer ${authUser.token}` },
         });
-        const requests = response.data;
-        const pendingRequest = requests.find((request) => request.userId === userId && request.status === 'pending');
-        const hasPending = !!pendingRequest;
-        setHasPendingRequest(hasPending);
-        return hasPending;
+        setCreatorApplicationStatus(response.data.status || null);
       } catch (error) {
-        console.error('fetchCreatorRequestStatus error:', error);
-        return false;
+        console.error('Error fetching creator application status:', error);
+        setCreatorApplicationStatus(null);
       }
     }
-    return false;
-  };
+  }, [authUser]);
 
   useEffect(() => {
     console.log('Dashboard useEffect:', { authUser, userToken, userId });
@@ -312,8 +307,11 @@ function Dashboardpage() {
     }
     if (authUser && authUser.token) {
       fetchUserData();
+      if (authUser.role !== 'creator') {
+        fetchCreatorApplicationStatus();
+      }
     }
-  }, [authUser, userToken, dispatch, navigate]);
+  }, [authUser, userToken, dispatch, navigate, fetchCreatorApplicationStatus]);
 
   const updateProfileImage = async (userId, file, token) => {
     if (!userId) {
@@ -510,21 +508,11 @@ function Dashboardpage() {
     }
   };
 
-  const handleApplyAsCreator = async () => {
-    if (!userId) {
-      console.error('handleApplyAsCreator: userId is undefined');
-      toast.error('User ID is missing. Please try logging in again.');
-      dispatch(logout());
-      navigate('/login');
-      return;
-    }
-
-    const isPending = await fetchCreatorRequestStatus();
-    if (isPending) {
+  const handleApplyAsCreator = () => {
+    if (creatorApplicationStatus === 'pending') {
       toast.info('You already have a pending request to become a creator.');
       return;
     }
-
     setShowCreatorConfirmPopup(true);
   };
 
@@ -537,8 +525,7 @@ function Dashboardpage() {
       );
       if (response.status === 201) {
         setMessage('Your request to become a creator has been submitted.');
-        setHasPendingRequest(true);
-        await fetchCreatorRequestStatus();
+        await fetchCreatorApplicationStatus();
       } else {
         setMessage('There was an issue submitting your request. Please try again.');
       }
@@ -724,17 +711,24 @@ function Dashboardpage() {
                 Admin Page
               </button>
             )}
-            {!isCreator && (
-              <button
-                className={`bg-[#541011] text-[#f3f3f3] py-2 px-8 border-none rounded text-base font-normal transition-colors duration-300 ease-in-out m-2 ${
-                  hasPendingRequest ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white hover:text-[#541011]'
-                }`}
-                onClick={handleApplyAsCreator}
-                disabled={hasPendingRequest}
-              >
-                {hasPendingRequest ? 'Pending Request' : 'Become a Creator'}
-              </button>
-            )}
+            {!isCreator &&
+              (creatorApplicationStatus === 'approved' ? null : (
+                <button
+                  className={`bg-[#541011] text-[#f3f3f3] py-2 px-8 border-none rounded text-base font-normal transition-colors duration-300 ease-in-out m-2 ${
+                    creatorApplicationStatus === 'pending'
+                      ? 'opacity-50 cursor-not-allowed'
+                      : 'hover:bg-white hover:text-[#541011]'
+                  }`}
+                  onClick={handleApplyAsCreator}
+                  disabled={creatorApplicationStatus === 'pending'}
+                >
+                  {creatorApplicationStatus === 'pending'
+                    ? 'Pending Request'
+                    : creatorApplicationStatus === 'rejected'
+                    ? 'Re-apply as Creator'
+                    : 'Become a Creator'}
+                </button>
+              ))}
             {isCreator && (
               <>
                 <button
