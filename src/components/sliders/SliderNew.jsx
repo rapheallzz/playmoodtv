@@ -89,7 +89,7 @@ export default function SliderNew() {
   };
 
     const handleViewMore = () => {
-    navigate('//newplaymood');
+    navigate('/newplaymood');
   };
 
   const settings = {
