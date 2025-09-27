@@ -379,7 +379,7 @@ export default function MoviePage() {
                 onClick={handleCreatorClick}
                 disabled={!movieUser?._id} // Disable button if creator ID is not available
               >
-                <FaUser /> By: {movieUser ? movieUser.name : 'Anonymous'}
+                <FaUser /> By: {movieUser ? movieUser.name : 'Playmood'}
               </button>
               <button
                 onClick={handleLikeClick}
