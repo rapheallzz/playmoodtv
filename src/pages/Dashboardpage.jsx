@@ -260,10 +260,13 @@ function Dashboardpage() {
   const fetchCreatorApplicationStatus = useCallback(async () => {
     if (authUser && authUser.token) {
       try {
-        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/creator-application-status', {
-          headers: { Authorization: `Bearer ${authUser.token}` },
-        });
-        setCreatorApplicationStatus(response.data.status || null);
+        const response = await axios.get(
+          `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/creator-application-status?_=${new Date().getTime()}`,
+          {
+            headers: { Authorization: `Bearer ${authUser.token}` },
+          }
+        );
+        setCreatorApplicationStatus(response.data.creatorApplicationStatus || null);
       } catch (error) {
         console.error('Error fetching creator application status:', error);
         setCreatorApplicationStatus(null);
