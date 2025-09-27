@@ -266,13 +266,19 @@ function Dashboardpage() {
             headers: { Authorization: `Bearer ${authUser.token}` },
           }
         );
-        setCreatorApplicationStatus(response.data.creatorApplicationStatus || null);
+        const status = response.data.creatorApplicationStatus;
+        setCreatorApplicationStatus(status || null);
+        if (status === 'approved') {
+          const updatedUser = { ...authUser, role: 'creator' };
+          dispatch(updateAuthUserReducer(updatedUser));
+          localStorage.setItem('user', JSON.stringify(updatedUser));
+        }
       } catch (error) {
         console.error('Error fetching creator application status:', error);
         setCreatorApplicationStatus(null);
       }
     }
-  }, [authUser]);
+  }, [authUser, dispatch]);
 
   useEffect(() => {
     console.log('Dashboard useEffect:', { authUser, userToken, userId });
