@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Modal,
   ModalContent,
@@ -15,12 +15,19 @@ const CreateHighlightModal = ({
   onCreate,
   creatorId,
   availableVideos,
+  fetchAvailableVideos,
 }) => {
   const [contentId, setContentId] = useState('');
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      fetchAvailableVideos();
+    }
+  }, [isOpen, fetchAvailableVideos]);
 
   const selectedVideo = useMemo(() => {
     return availableVideos.find((video) => video._id === contentId);
