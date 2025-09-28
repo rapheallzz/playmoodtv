@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Homecontent } from '../styles/CreatorPageStyles';
@@ -74,6 +74,10 @@ export default function CreatorPage() {
     createHighlight,
     fetchHighlights,
   } = useHighlights(user);
+
+  const approvedVideos = useMemo(() => {
+    return data?.contents?.filter(content => content.status === 'approved' && content.videoUrl) || [];
+  }, [data?.contents]);
 
   // Close all modals
   const closeAllModals = () => {
@@ -288,7 +292,7 @@ export default function CreatorPage() {
           onClose={closeAllModals}
           onCreate={createHighlight}
           creatorId={user?._id}
-          availableVideos={data?.contents || []}
+          availableVideos={approvedVideos}
         />
       )}
       {selectedHighlight && (
