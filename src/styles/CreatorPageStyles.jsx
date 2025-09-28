@@ -92,7 +92,7 @@ export const SocialLink = styled.a`
   }
 `;
 
-export const StlyedUserHeader = styled.div`
+export const StyledUserHeader = styled.div`
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -187,14 +187,13 @@ export const ProfileInfo = styled.div`
 
 export const ButtonGroup = styled.div`
   display: flex;
-  gap: 8px;
-  width: 69%;
-  justify-content: center;
+  gap: 12px;
+  justify-content: flex-end;
   align-items: center;
 
   @media screen and (max-width: 768px) {
     width: 100%;
-    flex-direction: column;
+    justify-content: center;
     gap: 10px;
   }
 `;
@@ -202,43 +201,79 @@ export const ButtonGroup = styled.div`
 export const ActionButton = styled.button`
   background-color: #541011;
   color: #f3f3f3;
-  padding: 10px;
-  border: none;
-  border-radius: 5px;
+  padding: 10px 15px;
+  border: 1px solid #541011;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 13px;
-  font-weight: normal;
+  font-size: 14px;
+  font-weight: 500;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  width: 80%;
-  transition: background-color 0.3s, color 0.3s;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+
+  svg {
+    font-size: 16px;
+  }
 
   &:hover {
     background-color: white;
     color: #541011;
-  }
-
-  &:last-child {
-    width: 40%;
+    border-color: #541011;
   }
 
   @media screen and (max-width: 768px) {
-    width: 100%;
-    max-width: 200px;
-    font-size: 12px;
     padding: 8px;
 
-    &:last-child {
-      width: 100px;
-      max-width: 150px;
+    span {
+      display: none;
+    }
+
+    svg {
+      font-size: 20px;
     }
   }
 
   @media screen and (max-width: 480px) {
-    font-size: 11px;
     padding: 6px;
+
+    svg {
+      font-size: 18px;
+    }
+  }
+`;
+
+export const CreateDropdown = styled.div`
+  position: absolute;
+  top: 110%;
+  right: 0;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+  width: 200px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+`;
+
+export const DropdownItem = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 15px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+  transition: background-color 0.2s;
+
+  svg {
+    font-size: 16px;
+    color: #541011;
+  }
+
+  &:hover {
+    background-color: #f3f4f6;
   }
 `;
 
