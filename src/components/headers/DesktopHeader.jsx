@@ -35,6 +35,7 @@ import { logout, reset } from '.././../features/authSlice';
 import DonationModal from '../DonationModal';
 import { FaPlus } from 'react-icons/fa';
 import { VideoModal } from '../ModalVU';
+import CreatorApplicationModal from '../modals/CreatorApplicationModal';
 
 // sliders
 
@@ -60,6 +61,7 @@ export default function DesktopHeader({ }) {
   const [settings_hover, set_settings_hovered] = useState(true);
   const [showDonationModal, setShowDonationModal] = useState(false);
   const [showVideoModal, setShowVideoModal] = useState(false);
+  const [showCreatorApplicationModal, setShowCreatorApplicationModal] = useState(false);
 
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
@@ -273,7 +275,7 @@ export default function DesktopHeader({ }) {
                 if (user && user.role === 'creator') {
                   setShowVideoModal(true);
                 } else if (user) {
-                  navigate('/dashboard');
+                  setShowCreatorApplicationModal(true);
                 } else {
                   navigate('/login');
                 }
@@ -291,6 +293,7 @@ export default function DesktopHeader({ }) {
             onSubmit={handleSubscriptionSubmit}
           />
           {showVideoModal && <VideoModal onClose={() => setShowVideoModal(false)} />}
+          {showCreatorApplicationModal && <CreatorApplicationModal onClose={() => setShowCreatorApplicationModal(false)} />}
         </nav>
         <Side>
           {sidebar ? (
