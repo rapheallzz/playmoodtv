@@ -89,7 +89,7 @@ const UserHeader = ({
           <span>Edit Channel</span>
         </ActionButton>
       </ButtonGroup>
-    </StlyedUserHeader>
+    </StyledUserHeader>
   );
 };
 
