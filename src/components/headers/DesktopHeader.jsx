@@ -34,6 +34,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { logout, reset } from '.././../features/authSlice';
 import DonationModal from '../DonationModal';
 import { FaPlus } from 'react-icons/fa';
+import { VideoModal } from '../ModalVU';
 
 // sliders
 
@@ -58,6 +59,7 @@ export default function DesktopHeader({ }) {
   const [top, set_top] = useState(false);
   const [settings_hover, set_settings_hovered] = useState(true);
   const [showDonationModal, setShowDonationModal] = useState(false);
+  const [showVideoModal, setShowVideoModal] = useState(false);
 
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
@@ -268,7 +270,9 @@ export default function DesktopHeader({ }) {
             <div
               className="flex items-center justify-center gap-4 w-auto h-10 border border-white cursor-pointer px-6"
               onClick={() => {
-                if (user) {
+                if (user && user.role === 'creator') {
+                  setShowVideoModal(true);
+                } else if (user) {
                   navigate('/dashboard');
                 } else {
                   navigate('/login');
@@ -286,6 +290,7 @@ export default function DesktopHeader({ }) {
             onClose={handleDonationClose}
             onSubmit={handleSubscriptionSubmit}
           />
+          {showVideoModal && <VideoModal onClose={() => setShowVideoModal(false)} />}
         </nav>
         <Side>
           {sidebar ? (
