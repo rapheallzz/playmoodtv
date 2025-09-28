@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Modal,
   ModalContent,
@@ -21,6 +21,16 @@ const CreateHighlightModal = ({
   const [endTime, setEndTime] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  const selectedVideo = useMemo(() => {
+    return availableVideos.find((video) => video._id === contentId);
+  }, [contentId, availableVideos]);
+
+  const handleVideoChange = (e) => {
+    setContentId(e.target.value);
+    setStartTime('');
+    setEndTime('');
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -64,7 +74,7 @@ const CreateHighlightModal = ({
             <select
               id="video-select"
               value={contentId}
-              onChange={(e) => setContentId(e.target.value)}
+              onChange={handleVideoChange}
               style={{ width: '100%', padding: '8px' }}
             >
               <option value="" disabled>Choose a video</option>
@@ -75,27 +85,44 @@ const CreateHighlightModal = ({
               ))}
             </select>
           </div>
-          <div style={{ marginBottom: '16px' }}>
-            <label htmlFor="start-time" style={{ display: 'block', marginBottom: '8px' }}>Start Time (seconds)</label>
-            <input
-              id="start-time"
-              type="number"
-              value={startTime}
-              onChange={(e) => setStartTime(e.target.value)}
-              style={{ width: '100%', padding: '8px' }}
-              min="0"
-            />
-          </div>
-          <div style={{ marginBottom: '16px' }}>
-            <label htmlFor="end-time" style={{ display: 'block', marginBottom: '8px' }}>End Time (seconds)</label>
-            <input
-              id="end-time"
-              type="number"
-              value={endTime}
-              onChange={(e) => setEndTime(e.target.value)}
-              style={{ width: '100%', padding: '8px' }}
-              min="0"
-            />
+
+          {selectedVideo && (
+            <div style={{ marginBottom: '16px' }}>
+              <video
+                key={selectedVideo._id}
+                src={selectedVideo.videoUrl}
+                controls
+                width="100%"
+                style={{ borderRadius: '8px' }}
+              >
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          )}
+
+          <div style={{ display: 'flex', gap: '16px' }}>
+            <div style={{ marginBottom: '16px', flex: 1 }}>
+              <label htmlFor="start-time" style={{ display: 'block', marginBottom: '8px' }}>Start Time (s)</label>
+              <input
+                id="start-time"
+                type="number"
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+                style={{ width: '100%', padding: '8px' }}
+                min="0"
+              />
+            </div>
+            <div style={{ marginBottom: '16px', flex: 1 }}>
+              <label htmlFor="end-time" style={{ display: 'block', marginBottom: '8px' }}>End Time (s)</label>
+              <input
+                id="end-time"
+                type="number"
+                value={endTime}
+                onChange={(e) => setEndTime(e.target.value)}
+                style={{ width: '100%', padding: '8px' }}
+                min="0"
+              />
+            </div>
           </div>
           <ModalButtons>
             <ModalButtonCancel type="button" onClick={onClose}>Cancel</ModalButtonCancel>
@@ -108,5 +135,4 @@ const CreateHighlightModal = ({
     </Modal>
   );
 };
-
 export default CreateHighlightModal;
