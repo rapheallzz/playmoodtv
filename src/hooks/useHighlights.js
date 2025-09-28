@@ -11,7 +11,7 @@ const useHighlights = (user) => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await axios.get(`/api/highlights/creator/${user._id}`);
+      const response = await axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/highlights/creator/${user._id}`);
       setHighlights(response.data);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to fetch highlights.');
@@ -33,7 +33,7 @@ const useHighlights = (user) => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await axios.post('/api/highlights', {
+      const response = await axios.post('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/highlights', {
         ...highlightData,
         creatorId: user._id,
       });
