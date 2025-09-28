@@ -2,7 +2,18 @@ import React from 'react';
 import { StlyedUserHeader, ProfileSection, ProfileImageWrapper, ProfileImage, ProfilePlaceholder, ProfileInfo, ButtonGroup, ActionButton, } from '../../styles/CreatorPageStyles';
 import { FaTwitter, FaInstagram, FaLinkedin, FaTiktok, FaHeart, FaEdit, FaPaperPlane, FaComment, FaChevronLeft, FaChevronRight, FaPlus } from 'react-icons/fa';
 
-const UserHeader = ({ profileImage, creatorName, user, subscribers, navigate, handleOpenPlaylistModal, setShowCommunityModal, setShowVideoModal, setShowEditModal }) => (
+const UserHeader = ({
+  profileImage,
+  creatorName,
+  user,
+  subscribers,
+  navigate,
+  handleOpenPlaylistModal,
+  setShowCommunityModal,
+  setShowVideoModal,
+  setShowEditModal,
+  setShowCreateHighlightModal, // New prop
+}) => (
   <StlyedUserHeader>
     <ProfileSection>
       <ProfileImageWrapper>
@@ -22,6 +33,9 @@ const UserHeader = ({ profileImage, creatorName, user, subscribers, navigate, ha
       </ProfileInfo>
     </ProfileSection>
     <ButtonGroup>
+      <ActionButton onClick={() => setShowCreateHighlightModal(true)} aria-label="Create Highlight">
+        Create Highlight
+      </ActionButton>
       <ActionButton onClick={handleOpenPlaylistModal} aria-label="Create Playlist">
         Create Playlist
       </ActionButton>

@@ -1083,3 +1083,82 @@ export const StyledContentSection = styled.div`
     padding: 0 15px;
   }
 `;
+
+export const HighlightsSectionContainer = styled.div`
+  padding: 24px 60px;
+  width: 100%;
+`;
+
+export const HighlightsList = styled.div`
+  display: flex;
+  overflow-x: auto;
+  gap: 20px;
+  padding-bottom: 10px;
+`;
+
+export const HighlightItem = styled.div`
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+`;
+
+export const HighlightCircle = styled.div`
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #ccc;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  border: 2px solid #541011;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+`;
+
+export const HighlightTitle = styled.span`
+  color: white;
+  font-size: 0.8rem;
+`;
+
+export const HighlightViewerOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10002;
+`;
+
+export const HighlightViewerContent = styled.div`
+  position: relative;
+  width: 360px;
+  height: 640px;
+  background-color: black;
+
+  video {
+    width: 100%;
+    height: 100%;
+  }
+`;
+
+export const CloseButton = styled.button`
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+`;

@@ -15,9 +15,13 @@ import CommunityPostModal from '../components/modals/CommunityPostModal';
 import EditPostModal from '../components/modals/EditPostModal';
 import CreatePlaylistModal from '../components/modals/CreatePlaylistModal';
 import EditPlaylistModal from '../components/modals/EditPlaylistModal';
+import CreateHighlightModal from '../components/modals/CreateHighlightModal';
+import HighlightsSection from '../components/creator/HighlightsSection';
+import HighlightViewer from '../components/creator/HighlightViewer';
 import useChannelDetails from '../hooks/useChannelDetails';
 import usePlaylists from '../hooks/usePlaylists';
 import useCommunityPosts from '../hooks/useCommunityPosts';
+import useHighlights from '../hooks/useHighlights';
 
 export default function CreatorPage() {
   const navigate = useNavigate();
@@ -32,74 +36,44 @@ export default function CreatorPage() {
   const [showEditPostModal, setShowEditPostModal] = useState(false);
   const [showCreatePlaylistModal, setShowCreatePlaylistModal] = useState(false);
   const [showEditPlaylistModal, setShowEditPlaylistModal] = useState(false);
+  const [showCreateHighlightModal, setShowCreateHighlightModal] = useState(false);
+  const [selectedHighlight, setSelectedHighlight] = useState(null);
   const [modalContent, setModalContent] = useState(null);
 
   // Channel details hook
   const {
-    bannerImage,
-    setBannerImageFile,
-    profileImage,
-    creatorName,
-    setCreatorName,
-    about,
-    setAbout,
-    instagram,
-    setInstagram,
-    tiktok,
-    setTiktok,
-    linkedin,
-    setLinkedin,
-    twitter,
-    setTwitter,
-    data,
-    subscribers,
-    errorMessage: channelErrorMessage,
-    handleUpdateChannelInfo,
+    bannerImage, setBannerImageFile, profileImage, creatorName, setCreatorName,
+    about, setAbout, instagram, setInstagram, tiktok, setTiktok,
+    linkedin, setLinkedin, twitter, setTwitter, data, subscribers,
+    errorMessage: channelErrorMessage, handleUpdateChannelInfo,
   } = useChannelDetails(user);
 
   // Playlists hook
   const {
-    playlists,
-    isLoadingPlaylists,
-    newPlaylist,
-    setNewPlaylist,
-    editingPlaylist,
-    setEditingPlaylist,
-    selectedPlaylistId,
-    setSelectedPlaylistId,
-    availableVideos,
-    fetchAvailableVideos,
-    handleCreateOrUpdatePlaylist,
-    handleDeletePlaylist,
-    handleAddVideoToPlaylist,
-    handleRemoveVideoFromPlaylist,
-    errorMessage: playlistErrorMessage,
-    setErrorMessage: setPlaylistErrorMessage,
-    fetchPlaylistById,
-    selectedPlaylistVideos,
-    isLoadingPlaylistVideos,
+    playlists, isLoadingPlaylists, newPlaylist, setNewPlaylist,
+    editingPlaylist, setEditingPlaylist, selectedPlaylistId, setSelectedPlaylistId,
+    availableVideos, fetchAvailableVideos, handleCreateOrUpdatePlaylist,
+    handleDeletePlaylist, handleAddVideoToPlaylist, handleRemoveVideoFromPlaylist,
+    errorMessage: playlistErrorMessage, setErrorMessage: setPlaylistErrorMessage,
+    fetchPlaylistById, selectedPlaylistVideos, isLoadingPlaylistVideos,
   } = usePlaylists(user);
 
   // Community posts hook
   const {
-    communityPosts,
-    isLoadingPosts,
-    newPostContent,
-    setNewPostContent,
-    newComment,
-    setNewComment,
-    editingPostId,
-    setEditingPostId,
-    editPostContent,
-    setEditPostContent,
-    handleCreatePost,
-    handleUpdatePost,
-    handleDeletePost,
-    handleAddComment,
-    handleDeleteComment,
-    handleLikePost,
-    errorMessage: postErrorMessage,
+    communityPosts, isLoadingPosts, newPostContent, setNewPostContent, newComment,
+    setNewComment, editingPostId, setEditingPostId, editPostContent, setEditPostContent,
+    handleCreatePost, handleUpdatePost, handleDeletePost, handleAddComment,
+    handleDeleteComment, handleLikePost, errorMessage: postErrorMessage,
   } = useCommunityPosts(user, activeTab);
+
+  // Highlights hook
+  const {
+    highlights,
+    isLoading: isLoadingHighlights,
+    error: highlightsError,
+    createHighlight,
+    fetchHighlights,
+  } = useHighlights(user);
 
   // Close all modals
   const closeAllModals = () => {
@@ -111,6 +85,8 @@ export default function CreatorPage() {
     setShowDonationModal(false);
     setShowEditPostModal(false);
     setShowContentModal(false);
+    setShowCreateHighlightModal(false);
+    setSelectedHighlight(null);
     setModalContent(null);
     setEditingPlaylist(null);
     setSelectedPlaylistId(null);
@@ -126,10 +102,7 @@ export default function CreatorPage() {
 
   // Utility function for creating slug
   const createSlug = (title, id) => {
-    const slug = title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '');
+    const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
     return `${slug}-${id}`;
   };
 
@@ -140,9 +113,9 @@ export default function CreatorPage() {
 
   return (
     <Homecontent>
-      {(channelErrorMessage || playlistErrorMessage || postErrorMessage) && (
+      {(channelErrorMessage || playlistErrorMessage || postErrorMessage || highlightsError) && (
         <div style={{ color: 'red', marginBottom: '10px' }}>
-          {channelErrorMessage || playlistErrorMessage || postErrorMessage}
+          {channelErrorMessage || playlistErrorMessage || postErrorMessage || highlightsError}
         </div>
       )}
       <Banner
@@ -162,6 +135,7 @@ export default function CreatorPage() {
         setShowCommunityModal={setShowCommunityModal}
         setShowVideoModal={setShowVideoModal}
         setShowEditModal={setShowEditModal}
+        setShowCreateHighlightModal={setShowCreateHighlightModal}
       />
       <Navigation
         activeTab={activeTab}
@@ -169,6 +143,7 @@ export default function CreatorPage() {
         navigate={navigate}
         setShowDonationModal={setShowDonationModal}
       />
+      <HighlightsSection highlights={highlights} onSelectHighlight={setSelectedHighlight} />
       <ContentSection
         activeTab={activeTab}
         activeSubTab={activeSubTab}
@@ -222,12 +197,7 @@ export default function CreatorPage() {
           handleNavigateToMovie={handleNavigateToMovie}
         />
       )}
-      {showVideoModal && (
-        <VideoModal
-          content={modalContent}
-          onClose={closeAllModals}
-        />
-      )}
+      {showVideoModal && <VideoModal content={modalContent} onClose={closeAllModals} />}
       {showEditModal && (
         <EditChannelModal
           isOpen={showEditModal}
@@ -249,13 +219,7 @@ export default function CreatorPage() {
           handleUpdateChannelInfo={handleUpdateChannelInfo}
         />
       )}
-      {showDonationModal && (
-        <DonationModal
-          isOpen={showDonationModal}
-          onClose={closeAllModals}
-          onSubmit={closeAllModals}
-        />
-      )}
+      {showDonationModal && <DonationModal isOpen={showDonationModal} onClose={closeAllModals} onSubmit={closeAllModals} />}
       {showCommunityModal && (
         <CommunityPostModal
           newPostContent={newPostContent}
@@ -317,6 +281,18 @@ export default function CreatorPage() {
           errorMessage={playlistErrorMessage}
           setErrorMessage={setPlaylistErrorMessage}
         />
+      )}
+      {showCreateHighlightModal && (
+        <CreateHighlightModal
+          isOpen={showCreateHighlightModal}
+          onClose={closeAllModals}
+          onCreate={createHighlight}
+          creatorId={user?._id}
+          availableVideos={data?.contents || []}
+        />
+      )}
+      {selectedHighlight && (
+        <HighlightViewer highlight={selectedHighlight} onClose={() => setSelectedHighlight(null)} />
       )}
       <Footer />
     </Homecontent>
