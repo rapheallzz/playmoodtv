@@ -28,7 +28,6 @@ const defaultProfileIcon = '/default-profile.png';
 
 function Dashboardpage() {
   const [edit, show_edit] = useState(false);
-  const [billing, set_billing] = useState(false);
   const [channels, set_channels] = useState(false);
   const [showDonationModal, setShowDonationModal] = useState(false);
   const [showVideoModal, setShowVideoModal] = useState(false);
@@ -50,16 +49,6 @@ function Dashboardpage() {
     city: '',
     age: '',
     address: '',
-  });
-
-  const [billingData, setBillingData] = useState({
-    bankLocation: 'United States',
-    accountHolderName: '',
-    beneficiaryName: '',
-    bankName: '',
-    routingNumber: '',
-    abaRouting: '',
-    accountHolderNameSecondary: '',
   });
 
   const navigate = useNavigate();
@@ -99,7 +88,6 @@ function Dashboardpage() {
   }
 
   const handle_edit = () => show_edit(!edit);
-  const handle_billing_clicked = () => set_billing(!billing);
   const handleActionClick = (action) => setActiveAction(action);
   const handleDonationClick = () => setShowDonationModal(true);
   const handleDonationClose = () => setShowDonationModal(false);
@@ -120,11 +108,6 @@ function Dashboardpage() {
   const handlePersonalInputChange = (e) => {
     const { name, value } = e.target;
     setPersonalData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleBillingInputChange = (e) => {
-    const { name, value } = e.target;
-    setBillingData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleProfileImageChange = (e) => {
@@ -157,15 +140,6 @@ function Dashboardpage() {
           age: cachedUser.age || '',
           address: cachedUser.address || '',
         });
-        setBillingData({
-          bankLocation: cachedUser.billing?.bankLocation || 'United States',
-          accountHolderName: cachedUser.billing?.accountHolderName || '',
-          beneficiaryName: cachedUser.billing?.beneficiaryName || '',
-          bankName: cachedUser.billing?.bankName || '',
-          routingNumber: cachedUser.billing?.routingNumber || '',
-          abaRouting: cachedUser.billing?.abaRouting || '',
-          accountHolderNameSecondary: cachedUser.billing?.accountHolderNameSecondary || '',
-        });
         setProfileImagePreview(cachedUser.profileImage || defaultProfileIcon);
         if (!cachedUser.isEmailVerified) {
           setShowEmailVerificationModal(true);
@@ -194,15 +168,6 @@ function Dashboardpage() {
           city: fetchedUser.city || '',
           age: fetchedUser.age || '',
           address: fetchedUser.address || '',
-        });
-        setBillingData({
-          bankLocation: fetchedUser.billing?.bankLocation || 'United States',
-          accountHolderName: fetchedUser.billing?.accountHolderName || '',
-          beneficiaryName: fetchedUser.billing?.beneficiaryName || '',
-          bankName: fetchedUser.billing?.bankName || '',
-          routingNumber: fetchedUser.billing?.routingNumber || '',
-          abaRouting: fetchedUser.billing?.abaRouting || '',
-          accountHolderNameSecondary: fetchedUser.billing?.accountHolderNameSecondary || '',
         });
         setProfileImagePreview(fetchedUser.profileImage ? `${fetchedUser.profileImage}?t=${new Date().getTime()}` : defaultProfileIcon);
         if (!fetchedUser.isEmailVerified) {
@@ -236,15 +201,6 @@ function Dashboardpage() {
           city: cachedUser.city || '',
           age: cachedUser.age || '',
           address: cachedUser.address || '',
-        });
-        setBillingData({
-          bankLocation: cachedUser.billing?.bankLocation || 'United States',
-          accountHolderName: cachedUser.billing?.accountHolderName || '',
-          beneficiaryName: cachedUser.billing?.beneficiaryName || '',
-          bankName: cachedUser.billing?.bankName || '',
-          routingNumber: cachedUser.billing?.routingNumber || '',
-          abaRouting: cachedUser.billing?.abaRouting || '',
-          accountHolderNameSecondary: cachedUser.billing?.accountHolderNameSecondary || '',
         });
         setProfileImagePreview(imageUrl);
         if (!cachedUser.isEmailVerified) {
@@ -398,19 +354,6 @@ function Dashboardpage() {
     return true;
   };
 
-  const validateBillingData = () => {
-    const routingRegex = /^\d{9}$/;
-    if (billingData.routingNumber && !routingRegex.test(billingData.routingNumber)) {
-      toast.error('Routing number must be 9 digits.');
-      return false;
-    }
-    if (billingData.accountHolderName !== billingData.accountHolderNameSecondary) {
-      toast.error('Account holder names must match.');
-      return false;
-    }
-    return true;
-  };
-
   const updateProfile = async () => {
     if (!validatePersonalData()) return;
     if (!userId) {
@@ -467,52 +410,6 @@ function Dashboardpage() {
         navigate('/login');
       } else {
         toast.error('Failed to update profile.');
-      }
-    }
-  };
-
-  const updateBillingInfo = async () => {
-    if (!validateBillingData()) return;
-    if (!userId) {
-      console.error('updateBillingInfo: userId is undefined');
-      toast.error('User ID is missing. Please try logging in again.');
-      dispatch(logout());
-      navigate('/login');
-      return;
-    }
-    try {
-      const response = await axios.put(
-        `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/${userId}`,
-        {
-          billing: {
-            bankLocation: billingData.bankLocation,
-            accountHolderName: billingData.accountHolderName,
-            beneficiaryName: billingData.beneficiaryName || '',
-            bankName: billingData.bankName,
-            routingNumber: billingData.routingNumber,
-            abaRouting: billingData.abaRouting,
-            accountHolderNameSecondary: billingData.accountHolderNameSecondary,
-          },
-        },
-        {
-          headers: { Authorization: `Bearer ${authUser.token}` },
-        }
-      );
-      const updatedUser = response.data.user;
-      const userWithToken = { ...updatedUser, userId: updatedUser._id || userId, token: authUser.token };
-      dispatch(updateAuthUser(userWithToken));
-      localStorage.setItem('user', JSON.stringify(userWithToken));
-      console.log('updateBillingInfo stored in localStorage:', userWithToken);
-      toast.success('Billing information updated successfully!');
-      set_billing(false);
-    } catch (error) {
-      console.error('updateBillingInfo error:', error.response?.data || error.message);
-      if (error.response?.status === 401) {
-        toast.error('Session expired. Please log in again.');
-        dispatch(logout());
-        navigate('/login');
-      } else {
-        toast.error('Failed to update billing information.');
       }
     }
   };
@@ -989,108 +886,10 @@ function Dashboardpage() {
                 Save Profile
               </button>
 
-              <button
-                type="button"
-                className="w-52 mt-2 py-3 bg-transparent text-white border border-white rounded-md hover:text-[#541011] transition-colors"
-                onClick={handle_billing_clicked}
-              >
-                {billing ? 'Hide Billing Info' : 'Show Billing Info'}
-              </button>
-
-              {billing && (
-                <div className="mt-6">
-                  <h3 className="text-white text-xl font-medium mb-4">Billing Information</h3>
-                  <p className="text-xs text-white mb-2">Why do we ask for your bank information?</p>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="flex flex-col">
-                      <label className="text-white text-sm mb-1">Bank Location</label>
-                      <select
-                        name="bankLocation"
-                        value={billingData.bankLocation}
-                        onChange={handleBillingInputChange}
-                        className="w-full py-3 px-4 bg-transparent text-white border border-white rounded-md focus:outline-none focus:border-[#541011]"
-                      >
-                        <option value="United States">United States</option>
-                        <option value="United Kingdom">United Kingdom</option>
-                        <option value="Others">Others</option>
-                      </select>
-                    </div>
-                    <div className="flex flex-col">
-                      <label className="text-white text-sm mb-1">Account Holder's Name</label>
-                      <input
-                        type="text"
-                        name="accountHolderName"
-                        value={billingData.accountHolderName}
-                        onChange={handleBillingInputChange}
-                        placeholder="Name as on bank documents"
-                        className="w-full py-3 px-4 bg-transparent text-white border border-white rounded-md placeholder-white focus:outline-none focus:border-[#541011]"
-                      />
-                    </div>
-                    <div className="flex flex-col">
-                      <label className="text-white text-sm mb-1">Beneficiary Name</label>
-                      <input
-                        type="text"
-                        name="beneficiaryName"
-                        value={billingData.beneficiaryName}
-                        onChange={handleBillingInputChange}
-                        placeholder="Beneficiary Name"
-                        className="w-full py-3 px-4 bg-transparent text-white border border-white rounded-md placeholder-white focus:outline-none focus:border-[#541011]"
-                      />
-                    </div>
-                    <div className="flex flex-col">
-                      <label className="text-white text-sm mb-1">Bank Name</label>
-                      <input
-                        type="text"
-                        name="bankName"
-                        value={billingData.bankName}
-                        onChange={handleBillingInputChange}
-                        placeholder="Bank Name"
-                        className="w-full py-3 px-4 bg-transparent text-white border border-white rounded-md placeholder-white focus:outline-none focus:border-[#541011]"
-                      />
-                    </div>
-                    <div className="flex flex-col">
-                      <label className="text-white text-sm mb-1">9-Digit Routing Number</label>
-                      <input
-                        type="text"
-                        name="routingNumber"
-                        value={billingData.routingNumber}
-                        onChange={handleBillingInputChange}
-                        placeholder="9 digits"
-                        className="w-full py-3 px-4 bg-transparent text-white border border-white rounded-md placeholder-white focus:outline-none focus:border-[#541011]"
-                      />
-                    </div>
-                    <div className="flex flex-col">
-                      <label className="text-white text-sm mb-1">Routing (ABA)</label>
-                      <input
-                        type="text"
-                        name="abaRouting"
-                        value={billingData.abaRouting}
-                        onChange={handleBillingInputChange}
-                        placeholder="Routing (ABA)"
-                        className="w-full py-3 px-4 bg-transparent text-white border border-white rounded-md placeholder-white focus:outline-none focus:border-[#541011]"
-                      />
-                    </div>
-                    <div className="flex flex-col">
-                      <label className="text-white text-sm mb-1">Confirm Account Holder's Name</label>
-                      <input
-                        type="text"
-                        name="accountHolderNameSecondary"
-                        value={billingData.accountHolderNameSecondary}
-                        onChange={handleBillingInputChange}
-                        placeholder="Name as on bank documents"
-                        className="w-full py-3 px-4 bg-transparent text-white border border-white rounded-md placeholder-white focus:outline-none focus:border-[#541011]"
-                      />
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    className="w-52 mt-6 py-3 bg-transparent text-white border border-white rounded-md hover:bg-[#541011] hover:text-white transition-colors"
-                    onClick={updateBillingInfo}
-                  >
-                    Save Billing
-                  </button>
-                </div>
-              )}
+              <div className="mt-6">
+                <h3 className="text-white text-xl font-medium mb-4">Billing Information</h3>
+                <p className="text-white">Coming Soon</p>
+              </div>
             </form>
           </div>
         )}
