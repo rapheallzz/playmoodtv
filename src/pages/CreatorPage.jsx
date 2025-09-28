@@ -52,6 +52,7 @@ export default function CreatorPage() {
     twitter,
     setTwitter,
     data,
+    subscribers,
     errorMessage: channelErrorMessage,
     handleUpdateChannelInfo,
   } = useChannelDetails(user);
@@ -155,6 +156,7 @@ export default function CreatorPage() {
         profileImage={profileImage}
         creatorName={creatorName}
         user={user}
+        subscribers={subscribers}
         navigate={navigate}
         handleOpenPlaylistModal={handleOpenCreatePlaylistModal}
         setShowCommunityModal={setShowCommunityModal}

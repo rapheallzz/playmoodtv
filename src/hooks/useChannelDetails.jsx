@@ -12,6 +12,7 @@ const useChannelDetails = (user) => {
   const [linkedin, setLinkedin] = useState('');
   const [twitter, setTwitter] = useState('');
   const [data, setData] = useState([]);
+  const [subscribers, setSubscribers] = useState(0);
   const [errorMessage, setErrorMessage] = useState('');
   const isFetchingRef = useRef(false);
 
@@ -34,6 +35,7 @@ const useChannelDetails = (user) => {
         setTiktok(response.data.tiktok || '');
         setLinkedin(response.data.linkedin || '');
         setTwitter(response.data.twitter || '');
+        setSubscribers(response.data.subscribers || 0);
         setData(uniqueContent);
         setErrorMessage('');
       } catch (error) {
@@ -110,6 +112,7 @@ const useChannelDetails = (user) => {
     twitter,
     setTwitter,
     data,
+    subscribers,
     errorMessage,
     handleUpdateChannelInfo,
   };

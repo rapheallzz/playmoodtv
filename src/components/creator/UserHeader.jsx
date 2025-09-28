@@ -2,7 +2,7 @@ import React from 'react';
 import { StlyedUserHeader, ProfileSection, ProfileImageWrapper, ProfileImage, ProfilePlaceholder, ProfileInfo, ButtonGroup, ActionButton, } from '../../styles/CreatorPageStyles';
 import { FaTwitter, FaInstagram, FaLinkedin, FaTiktok, FaHeart, FaEdit, FaPaperPlane, FaComment, FaChevronLeft, FaChevronRight, FaPlus } from 'react-icons/fa';
 
-const UserHeader = ({ profileImage, creatorName, user, navigate, handleOpenPlaylistModal, setShowCommunityModal, setShowVideoModal, setShowEditModal }) => (
+const UserHeader = ({ profileImage, creatorName, user, subscribers, navigate, handleOpenPlaylistModal, setShowCommunityModal, setShowVideoModal, setShowEditModal }) => (
   <StlyedUserHeader>
     <ProfileSection>
       <ProfileImageWrapper>
@@ -18,7 +18,7 @@ const UserHeader = ({ profileImage, creatorName, user, navigate, handleOpenPlayl
       </ProfileImageWrapper>
       <ProfileInfo>
         <h2>{creatorName || user?.name}</h2>
-        <h6>{user?.subscribers || 0} subscribers</h6>
+        <h6>{subscribers} subscribers</h6>
       </ProfileInfo>
     </ProfileSection>
     <ButtonGroup>
