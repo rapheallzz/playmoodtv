@@ -76,8 +76,8 @@ export default function CreatorPage() {
   } = useHighlights(user);
 
   const approvedVideos = useMemo(() => {
-    return availableVideos.filter(content => content.status === 'approved' && content.videoUrl) || [];
-  }, [availableVideos]);
+    return data.filter(content => content.isApproved && content.video) || [];
+  }, [data]);
 
   // Close all modals
   const closeAllModals = () => {
@@ -291,9 +291,7 @@ export default function CreatorPage() {
           isOpen={showCreateHighlightModal}
           onClose={closeAllModals}
           onCreate={createHighlight}
-          creatorId={user?._id}
           availableVideos={approvedVideos}
-          fetchAvailableVideos={fetchAvailableVideos}
         />
       )}
       {selectedHighlight && (

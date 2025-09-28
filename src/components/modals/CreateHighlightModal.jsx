@@ -13,21 +13,13 @@ const CreateHighlightModal = ({
   isOpen,
   onClose,
   onCreate,
-  creatorId,
   availableVideos,
-  fetchAvailableVideos,
 }) => {
   const [contentId, setContentId] = useState('');
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    if (isOpen) {
-      fetchAvailableVideos();
-    }
-  }, [isOpen, fetchAvailableVideos]);
 
   const selectedVideo = useMemo(() => {
     return availableVideos.find((video) => video._id === contentId);
@@ -97,7 +89,7 @@ const CreateHighlightModal = ({
             <div style={{ marginBottom: '16px' }}>
               <video
                 key={selectedVideo._id}
-                src={selectedVideo.videoUrl}
+                src={selectedVideo.video}
                 controls
                 width="100%"
                 style={{ borderRadius: '8px' }}
