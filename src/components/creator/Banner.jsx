@@ -1,6 +1,7 @@
 import React from 'react';
 import { BannerSection, BannerImageWrapper, BannerImage, SocialIcons, SocialLink, } from '../../styles/CreatorPageStyles';
 import { FaTwitter, FaInstagram, FaLinkedin, FaTiktok, FaHeart, FaEdit, FaPaperPlane, FaComment, FaChevronLeft, FaChevronRight, FaPlus } from 'react-icons/fa';
+import { FaXTwitter } from "react-icons/fa6";
 
 const Banner = ({ bannerImage, twitter, instagram, linkedin, tiktok }) => (
   <BannerSection>
@@ -9,10 +10,10 @@ const Banner = ({ bannerImage, twitter, instagram, linkedin, tiktok }) => (
       <SocialIcons>
         {twitter ? (
           <SocialLink href={twitter} target="_blank" rel="noopener noreferrer" aria-label="Twitter">
-            <FaTwitter />
+            <FaXTwitter />
           </SocialLink>
         ) : (
-          <FaTwitter className="disabled" aria-label="Twitter (disabled)" />
+          <FaXTwitter className="disabled" aria-label="Twitter (disabled)" />
         )}
         {instagram ? (
           <SocialLink href={instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram">

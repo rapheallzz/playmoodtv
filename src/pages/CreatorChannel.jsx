@@ -7,7 +7,8 @@ import MobileBurger from '../components/headers/MobileBurger';
 import DesktopHeader from '../components/headers/DesktopHeader';
 import instagram from '/instagram.png';
 import logo from '/PLAYMOOD_DEF.png';
-import { FaBell, FaHeart, FaComment, FaTwitter, FaInstagram, FaLinkedin, FaTiktok, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { FaBell, FaHeart, FaComment, FaTwitter,FaInstagram, FaLinkedin, FaTiktok, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { FaXTwitter } from "react-icons/fa6";
 import { useSelector } from 'react-redux';
 import Slidercontent from '../components/Slidercont';
 import Footer from '../components/footer/Footer';
@@ -576,10 +577,10 @@ const fetchPlaylists = async () => {
           <div className="flex w-full sm:w-[200px] absolute right-5 top-[80%] transform -translate-y-[50%] justify-around items-center flex-row gap-[10px] px-2">
             {creatorData?.twitter ? (
               <a href={creatorData.twitter} target="_blank" rel="noopener noreferrer">
-                <FaTwitter className="text-[24px] text-white cursor-pointer hover:text-[#541011]" />
+                <FaXTwitter className="text-[24px] text-white cursor-pointer hover:text-[#541011]" />
               </a>
             ) : (
-              <FaTwitter className="text-[24px] text-gray-400 cursor-not-allowed" />
+              <FaXTwitter className="text-[24px] text-gray-400 cursor-not-allowed" />
             )}
             {creatorData?.instagram ? (
               <a href={creatorData.instagram} target="_blank" rel="noopener noreferrer">
