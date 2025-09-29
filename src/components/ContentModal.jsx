@@ -54,66 +54,6 @@ const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
     return null;
   };
 
-  // Function to save video progress
-  const saveProgress = async (currentTime) => {
-    if (!userToken || !content?._id) {
-      console.warn('Cannot save progress: Missing userToken or content._id', {
-        userToken,
-        contentId: content?._id,
-        currentTime,
-      });
-      return;
-    }
-    try {
-      console.log('Saving progress for contentId:', content._id, 'time:', currentTime);
-      const response = await axios.post(
-        'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/progress/',
-        {
-          contentId: content._id,
-          progress: currentTime,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${userToken}`,
-          },
-        }
-      );
-      console.log('Progress saved successfully:', response.data);
-    } catch (error) {
-      console.error('Error saving video progress:', error.response?.data || error.message);
-    }
-  };
-
-  // Handle video time updates
-  const handleTimeUpdate = () => {
-    if (videoRef.current) {
-      const currentTime = videoRef.current.currentTime;
-      if (Math.floor(currentTime) % 5 === 0 && currentTime > 0) {
-        saveProgress(currentTime);
-      }
-    }
-  };
-
-  // Save progress when modal closes or video pauses
-  useEffect(() => {
-    const video = videoRef.current;
-    if (video) {
-      video.addEventListener('timeupdate', handleTimeUpdate);
-      video.addEventListener('pause', () => {
-        if (video.currentTime > 0) {
-          saveProgress(video.currentTime);
-        }
-      });
-    }
-
-    return () => {
-      if (video && video.currentTime > 0) {
-        video.removeEventListener('timeupdate', handleTimeUpdate);
-        video.removeEventListener('pause', () => saveProgress(video.currentTime));
-        saveProgress(video.currentTime);
-      }
-    };
-  }, [content, userToken]);
 
   // Handle comment submission
   const handleAddComment = async (e) => {
@@ -256,7 +196,7 @@ const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
         <VideoContainer>
           <video
             ref={videoRef}
-            src={`${content.video}#t=0,15`}
+            src={`${content.video}#t=0,20`}
             autoPlay
             controls
             preload="metadata"
