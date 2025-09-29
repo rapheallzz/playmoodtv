@@ -729,9 +729,7 @@ function Dashboardpage() {
             </UserSlider>
 
             <UseractionsInteraction>
-              <button onClick={handleDonationClick} className="text-white text-sm font-medium">
-                DONATIONS
-              </button>
+
               <button onClick={handleDonationClick} className="text-white text-sm font-medium">
                 SUBSCRIPTION
               </button>
@@ -743,6 +741,9 @@ function Dashboardpage() {
               </button>
               <button onClick={handleDonationClick} className="text-white text-sm font-medium">
                 BLOCK USERS
+              </button>
+                            <button onClick={handleDonationClick} className="text-white text-sm font-medium">
+                DONATIONS
               </button>
             </UseractionsInteraction>
 
