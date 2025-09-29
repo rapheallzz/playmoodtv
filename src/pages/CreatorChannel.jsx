@@ -207,17 +207,10 @@ export default function CreatorChannel() {
         setCreatorData(channelResponse.data);
         setData(channelResponse.data.content || []);
 
-        if (currentUserId && token) {
-          const subscriptionResponse = await axios.get(
-            `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/subscribe/subscribers`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-          const isSubscribed = subscriptionResponse.data.some(
-            (sub) => sub.creatorId === state.creatorId
+        // Check if the current user is in the subscriber list
+        if (currentUserId) {
+          const isSubscribed = channelResponse.data.subscriberDetails.some(
+            (subscriber) => subscriber._id === currentUserId
           );
           setSubscribed(isSubscribed);
         }
@@ -575,33 +568,25 @@ const fetchPlaylists = async () => {
             alt="banner"
           />
           <div className="flex w-full sm:w-[200px] absolute right-5 top-[80%] transform -translate-y-[50%] justify-around items-center flex-row gap-[10px] px-2">
-            {creatorData?.twitter ? (
+            {subscribed && creatorData?.twitter && (
               <a href={creatorData.twitter} target="_blank" rel="noopener noreferrer">
                 <FaXTwitter className="text-[24px] text-white cursor-pointer hover:text-[#541011]" />
               </a>
-            ) : (
-              <FaXTwitter className="text-[24px] text-gray-400 cursor-not-allowed" />
             )}
-            {creatorData?.instagram ? (
+            {subscribed && creatorData?.instagram && (
               <a href={creatorData.instagram} target="_blank" rel="noopener noreferrer">
                 <FaInstagram className="text-[24px] text-white cursor-pointer hover:text-[#541011]" />
               </a>
-            ) : (
-              <FaInstagram className="text-[24px] text-gray-400 cursor-not-allowed" />
             )}
-            {creatorData?.linkedin ? (
+            {subscribed && creatorData?.linkedin && (
               <a href={creatorData.linkedin} target="_blank" rel="noopener noreferrer">
                 <FaLinkedin className="text-[24px] text-white cursor-pointer hover:text-[#541011]" />
-thing              </a>
-            ) : (
-              <FaLinkedin className="text-[24px] text-gray-400 cursor-not-allowed" />
+              </a>
             )}
-            {creatorData?.tiktok ? (
+            {subscribed && creatorData?.tiktok && (
               <a href={creatorData.tiktok} target="_blank" rel="noopener noreferrer">
                 <FaTiktok className="text-[24px] text-white cursor-pointer hover:text-[#541011]" />
               </a>
-            ) : (
-              <FaTiktok className="text-[24px] text-gray-400 cursor-not-allowed" />
             )}
           </div>
         </div>
@@ -843,39 +828,33 @@ thing              </a>
               <Subscribers>
                 Subscribers: {creatorData?.subscribers || 0}
               </Subscribers>
-              <SocialMedia>
-                <h3>Connect with Me</h3>
-                <SocialIcons>
-                  {creatorData?.twitter ? (
-                    <a href={creatorData.twitter} target="_blank" rel="noopener noreferrer">
-                      <FaTwitter size={24} className="hover:text-[#541011]" />
-                    </a>
-                  ) : (
-                    <FaTwitter size={24} className="text-gray-400 cursor-not-allowed" />
-                  )}
-                  {creatorData?.instagram ? (
-                    <a href={creatorData.instagram} target="_blank" rel="noopener noreferrer">
-                      <FaInstagram size={24} className="hover:text-[#541011]" />
-                    </a>
-                  ) : (
-                    <FaInstagram size={24} className="text-gray-400 cursor-not-allowed" />
-                  )}
-                  {creatorData?.linkedin ? (
-                    <a href={creatorData.linkedin} target="_blank" rel="noopener noreferrer">
-                      <FaLinkedin size={24} className="hover:text-[#541011]" />
-                    </a>
-                  ) : (
-                    <FaLinkedin size={24} className="text-gray-400 cursor-not-allowed" />
-                  )}
-                  {creatorData?.tiktok ? (
-                    <a href={creatorData.tiktok} target="_blank" rel="noopener noreferrer">
-                      <FaTiktok size={24} className="hover:text-[#541011]" />
-                    </a>
-                  ) : (
-                    <FaTiktok size={24} className="text-gray-400 cursor-not-allowed" />
-                  )}
-                </SocialIcons>
-              </SocialMedia>
+              {subscribed && (
+                <SocialMedia>
+                  <h3>Connect with Me</h3>
+                  <SocialIcons>
+                    {creatorData?.twitter && (
+                      <a href={creatorData.twitter} target="_blank" rel="noopener noreferrer">
+                        <FaTwitter size={24} className="hover:text-[#541011]" />
+                      </a>
+                    )}
+                    {creatorData?.instagram && (
+                      <a href={creatorData.instagram} target="_blank" rel="noopener noreferrer">
+                        <FaInstagram size={24} className="hover:text-[#541011]" />
+                      </a>
+                    )}
+                    {creatorData?.linkedin && (
+                      <a href={creatorData.linkedin} target="_blank" rel="noopener noreferrer">
+                        <FaLinkedin size={24} className="hover:text-[#541011]" />
+                      </a>
+                    )}
+                    {creatorData?.tiktok && (
+                      <a href={creatorData.tiktok} target="_blank" rel="noopener noreferrer">
+                        <FaTiktok size={24} className="hover:text-[#541011]" />
+                      </a>
+                    )}
+                  </SocialIcons>
+                </SocialMedia>
+              )}
             </ModalBody>
             <ModalFooter>
               <SubscribeButton
