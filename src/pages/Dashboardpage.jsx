@@ -911,7 +911,7 @@ function Dashboardpage() {
             </form>
           </div>
         )}
-        {showChangePassword && <ChangePassword onClose={() => setShowChangePassword(false)} />}
+        {showChangePassword && <ChangePassword userId={userId} onClose={() => setShowChangePassword(false)} />}
         <Footer />
       </Mainsection>
     </Dashboard>
