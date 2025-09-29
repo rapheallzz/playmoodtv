@@ -24,6 +24,7 @@ import defaultImage from '../assets/default-image.jpg';
 import {jwtDecode} from 'jwt-decode'; // Ensure this import is present
 import EmailVerificationModal from '../components/modals/EmailVerificationModal';
 import { io } from 'socket.io-client';
+import ChangePassword from '../components/ChangePassword';
 
 const defaultProfileIcon = '/default-profile.png';
 
@@ -43,6 +44,7 @@ function Dashboardpage() {
   const [showCreatorConfirmPopup, setShowCreatorConfirmPopup] = useState(false);
   const [showEmailVerificationModal, setShowEmailVerificationModal] = useState(false);
   const [userProfile, setUserProfile] = useState(null);
+  const [showChangePassword, setShowChangePassword] = useState(false);
 
   const [personalData, setPersonalData] = useState({
     name: '',
@@ -885,13 +887,22 @@ function Dashboardpage() {
                 </div>
               </div>
 
-              <button
-                type="button"
-                className="w-52 mt-4 py-3 bg-transparent text-white border border-white rounded-md hover:bg-[#541011] hover:text-white transition-colors"
-                onClick={updateProfile}
-              >
-                Save Profile
-              </button>
+              <div className="flex gap-4">
+                <button
+                  type="button"
+                  className="w-52 mt-4 py-3 bg-transparent text-white border border-white rounded-md hover:bg-[#541011] hover:text-white transition-colors"
+                  onClick={updateProfile}
+                >
+                  Save Profile
+                </button>
+                <button
+                  type="button"
+                  className="w-52 mt-4 py-3 bg-transparent text-white border border-white rounded-md hover:bg-[#541011] hover:text-white transition-colors"
+                  onClick={() => setShowChangePassword(true)}
+                >
+                  Change Password
+                </button>
+              </div>
 
               <div className="mt-6">
                 <h3 className="text-white text-xl font-medium mb-4">Billing Information</h3>
@@ -900,6 +911,7 @@ function Dashboardpage() {
             </form>
           </div>
         )}
+        {showChangePassword && <ChangePassword onClose={() => setShowChangePassword(false)} />}
         <Footer />
       </Mainsection>
     </Dashboard>
