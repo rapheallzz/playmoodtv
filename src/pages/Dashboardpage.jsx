@@ -17,6 +17,7 @@ import { VideoModal } from '../components/ModalVU'; // Ensure this import is cor
 import MessageModal from '../components/MessageModal';
 import DonationModal from '../components/DonationModal';
 import Sliderfriends from '../components/Sliderfriends';
+import SliderSubscriptions from '../components/sliders/SliderSubscriptions';
 import Footer from '../components/footer/Footer';
 import { updateAuthUserReducer, logout } from '../features/authSlice';
 import defaultImage from '../assets/default-image.jpg';
@@ -37,6 +38,7 @@ function Dashboardpage() {
   const [profileImage, setProfileImage] = useState(null);
   const [profileImagePreview, setProfileImagePreview] = useState(null);
   const [activeAction, setActiveAction] = useState('LIKES');
+  const [activeInteractionTab, setActiveInteractionTab] = useState('SUBSCRIPTION');
   const [isLoadingUser, setIsLoadingUser] = useState(true);
   const [showCreatorConfirmPopup, setShowCreatorConfirmPopup] = useState(false);
   const [showEmailVerificationModal, setShowEmailVerificationModal] = useState(false);
@@ -729,11 +731,10 @@ function Dashboardpage() {
             </UserSlider>
 
             <UseractionsInteraction>
-
-              <button onClick={handleDonationClick} className="text-white text-sm font-medium">
+              <button onClick={() => setActiveInteractionTab('SUBSCRIPTION')} className="text-white text-sm font-medium">
                 SUBSCRIPTION
               </button>
-              <button onClick={handleDonationClick} className="text-white text-sm font-medium">
+              <button onClick={() => setActiveInteractionTab('FRIENDS')} className="text-white text-sm font-medium">
                 FRIENDS
               </button>
               <button onClick={handleDonationClick} className="text-white text-sm font-medium">
@@ -742,7 +743,7 @@ function Dashboardpage() {
               <button onClick={handleDonationClick} className="text-white text-sm font-medium">
                 BLOCK USERS
               </button>
-                            <button onClick={handleDonationClick} className="text-white text-sm font-medium">
+              <button onClick={handleDonationClick} className="text-white text-sm font-medium">
                 DONATIONS
               </button>
             </UseractionsInteraction>
@@ -750,7 +751,8 @@ function Dashboardpage() {
             <DonationModal isOpen={showDonationModal} onClose={handleDonationClose} onSubmit={handleSubscriptionSubmit} />
 
             <Friendsslider>
-              <Sliderfriends />
+              {activeInteractionTab === 'SUBSCRIPTION' && <SliderSubscriptions subscriptions={authUser?.subscriptions} />}
+              {activeInteractionTab === 'FRIENDS' && <Sliderfriends />}
             </Friendsslider>
 
             <div className="w-4/5 mx-auto my-12 h-72 flex justify-between sm:w-9/10 sm:flex-col sm:ml-32 sm:items-center">
