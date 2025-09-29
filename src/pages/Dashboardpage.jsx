@@ -42,6 +42,7 @@ function Dashboardpage() {
   const [isLoadingUser, setIsLoadingUser] = useState(true);
   const [showCreatorConfirmPopup, setShowCreatorConfirmPopup] = useState(false);
   const [showEmailVerificationModal, setShowEmailVerificationModal] = useState(false);
+  const [userProfile, setUserProfile] = useState(null);
 
   const [personalData, setPersonalData] = useState({
     name: '',
@@ -132,6 +133,7 @@ function Dashboardpage() {
           userId: cachedUser.userId || decoded.id || cachedUser._id,
         };
         dispatch(updateAuthUser(updatedUser));
+        setUserProfile(cachedUser);
         localStorage.setItem('user', JSON.stringify(updatedUser));
         setPersonalData({
           name: cachedUser.name || '',
@@ -160,6 +162,7 @@ function Dashboardpage() {
       });
       const fetchedUser = response.data;
       if (fetchedUser) {
+        setUserProfile(fetchedUser);
         // Do not call handleUserUpdate here to prevent infinite loop
         console.log('fetchUserData populating forms with:', fetchedUser);
         setPersonalData({
@@ -193,6 +196,7 @@ function Dashboardpage() {
           token: cachedUser.token,
         };
         dispatch(updateAuthUser(updatedUser));
+        setUserProfile(cachedUser);
         localStorage.setItem('user', JSON.stringify(updatedUser));
         console.log('fetchUserData stored cached user in localStorage:', updatedUser);
         setPersonalData({
@@ -751,7 +755,7 @@ function Dashboardpage() {
             <DonationModal isOpen={showDonationModal} onClose={handleDonationClose} onSubmit={handleSubscriptionSubmit} />
 
             <Friendsslider>
-              {activeInteractionTab === 'SUBSCRIPTION' && <SliderSubscriptions subscriptions={authUser?.subscriptions} />}
+              {activeInteractionTab === 'SUBSCRIPTION' && <SliderSubscriptions subscriptions={userProfile?.subscriptions} />}
               {activeInteractionTab === 'FRIENDS' && <Sliderfriends />}
             </Friendsslider>
 
