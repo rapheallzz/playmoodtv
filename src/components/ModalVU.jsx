@@ -195,7 +195,7 @@ const uploadToCloudinary = async (file, signatureData, resourceType, onProgress)
       // Step 1: Get signature for video
       const videoSignatureResponse = await axios.post(
         'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/signature',
-        {},
+        { type: 'videos' },
         { headers: { Authorization: `Bearer ${authToken}` } }
       );
       const videoSignatureData = videoSignatureResponse.data;
@@ -214,7 +214,7 @@ const uploadToCloudinary = async (file, signatureData, resourceType, onProgress)
         // Get a new signature for the thumbnail
         const thumbSignatureResponse = await axios.post(
           'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/signature',
-          {},
+          { type: 'images' },
           { headers: { Authorization: `Bearer ${authToken}` } }
         );
         const thumbSignatureData = thumbSignatureResponse.data;
