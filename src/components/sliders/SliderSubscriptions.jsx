@@ -169,11 +169,14 @@ export default function SliderSubscriptions({ subscriptions }) {
     setModalCreator(null);
   };
 
+  const numSubscriptions = subscriptions ? subscriptions.length : 0;
+  const slidesToShow = Math.max(1, Math.min(numSubscriptions, 4));
+
   const settings = {
     dots: false,
-    infinite: true,
+    infinite: numSubscriptions > slidesToShow,
     speed: 300,
-    slidesToShow: 4,
+    slidesToShow: slidesToShow,
     slidesToScroll: 1,
     initialSlide: 0,
     autoplaySpeed: 3000,
@@ -187,9 +190,9 @@ export default function SliderSubscriptions({ subscriptions }) {
       {
         breakpoint: 1024,
         settings: {
-          slidesToShow: 3,
+          slidesToShow: Math.max(1, Math.min(numSubscriptions, 3)),
           slidesToScroll: 1,
-          infinite: true,
+          infinite: numSubscriptions > Math.max(1, Math.min(numSubscriptions, 3)),
           dots: true,
           arrows: true,
         },
@@ -197,31 +200,34 @@ export default function SliderSubscriptions({ subscriptions }) {
       {
         breakpoint: 600,
         settings: {
-          slidesToShow: 2,
+          slidesToShow: Math.max(1, Math.min(numSubscriptions, 2)),
           slidesToScroll: 1,
           arrows: true,
           centerMode: true,
           centerPadding: '15px',
+          infinite: numSubscriptions > Math.max(1, Math.min(numSubscriptions, 2)),
         },
       },
       {
         breakpoint: 480,
         settings: {
-          slidesToShow: 2,
+          slidesToShow: Math.max(1, Math.min(numSubscriptions, 2)),
           slidesToScroll: 1,
           arrows: false,
           centerMode: true,
           centerPadding: '5px',
+          infinite: numSubscriptions > Math.max(1, Math.min(numSubscriptions, 2)),
         },
       },
       {
         breakpoint: 360,
         settings: {
-          slidesToShow: 2,
+          slidesToShow: Math.max(1, Math.min(numSubscriptions, 2)),
           slidesToScroll: 1,
           arrows: false,
           centerMode: true,
           centerPadding: '20px',
+          infinite: numSubscriptions > Math.max(1, Math.min(numSubscriptions, 2)),
         },
       },
     ],
