@@ -122,12 +122,9 @@ const logout = () => {
 
 // Share video
 
-const changePassword = async ({ currentPassword, newPassword, userId, token }) => {
+const changePassword = async ({ currentPassword, newPassword, token }) => {
   if (!token) {
     throw new Error('No token provided');
-  }
-  if (!userId) {
-    throw new Error('No userId provided');
   }
   const config = {
     headers: {
@@ -137,7 +134,7 @@ const changePassword = async ({ currentPassword, newPassword, userId, token }) =
   try {
     const response = await axios.put(
       `${API_URL}change-password`,
-      { currentPassword, newPassword, userId },
+      { currentPassword, newPassword },
       config
     );
     return response.data;

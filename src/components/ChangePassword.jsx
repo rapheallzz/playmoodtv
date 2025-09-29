@@ -12,7 +12,7 @@ const ChangePassword = ({ onClose }) => {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
-  const { user, userToken } = useSelector((state) => state.auth);
+  const { userToken } = useSelector((state) => state.auth);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -25,7 +25,6 @@ const ChangePassword = ({ onClose }) => {
       await authService.changePassword({
         currentPassword,
         newPassword,
-        userId: user.userId,
         token: userToken,
       });
       toast.success('Password changed successfully!');
