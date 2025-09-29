@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 
-const ChangePassword = ({ onClose, userId }) => {
+const ChangePassword = ({ onClose }) => {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
@@ -23,7 +23,7 @@ const ChangePassword = ({ onClose, userId }) => {
 
     try {
       await axios.put(
-        `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/change-password/${userId}`,
+        'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/change-password',
         { currentPassword, newPassword },
         {
           headers: { Authorization: `Bearer ${userToken}` },
