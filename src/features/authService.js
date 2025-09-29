@@ -122,7 +122,31 @@ const logout = () => {
 
 // Share video
 
-
+const changePassword = async ({ currentPassword, newPassword, userId, token }) => {
+  if (!token) {
+    throw new Error('No token provided');
+  }
+  if (!userId) {
+    throw new Error('No userId provided');
+  }
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  try {
+    const response = await axios.put(
+      `${API_URL}change-password`,
+      { currentPassword, newPassword, userId },
+      config
+    );
+    return response.data;
+  } catch (error) {
+    console.error('authService.changePassword error:', error.response?.data || error.message);
+    const message = error.response?.data?.details || error.response?.data?.message || 'Password change failed';
+    throw new Error(message);
+  }
+};
 
 
 
@@ -133,6 +157,7 @@ const authService = {
   verifyEmail,
   resendVerificationCode,
   updateUser,
+  changePassword,
   // likeVideo,
 };
 

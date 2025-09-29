@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
+import authService from '../features/authService';
 
 const ChangePassword = ({ onClose }) => {
   const [currentPassword, setCurrentPassword] = useState('');
@@ -12,7 +12,7 @@ const ChangePassword = ({ onClose }) => {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
-  const { userToken } = useSelector((state) => state.auth);
+  const { user, userToken } = useSelector((state) => state.auth);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,17 +22,16 @@ const ChangePassword = ({ onClose }) => {
     }
 
     try {
-      await axios.put(
-        'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/change-password',
-        { currentPassword, newPassword },
-        {
-          headers: { Authorization: `Bearer ${userToken}` },
-        }
-      );
+      await authService.changePassword({
+        currentPassword,
+        newPassword,
+        userId: user.userId,
+        token: userToken,
+      });
       toast.success('Password changed successfully!');
       onClose();
     } catch (error) {
-      toast.error(error.response?.data?.message || 'An error occurred.');
+      toast.error(error.message || 'An error occurred.');
     }
   };
 
