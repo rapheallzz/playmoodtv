@@ -132,7 +132,7 @@ const changePassword = async ({ currentPassword, newPassword, token }) => {
     },
   };
   try {
-    const response = await axios.put(
+    const response = await axios.post(
       `${API_URL}change-password`,
       { currentPassword, newPassword },
       config
