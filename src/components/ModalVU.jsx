@@ -129,26 +129,68 @@ const VideoModal = ({ onClose }) => {
   };
 
 const uploadToCloudinary = async (file, signatureData, resourceType, onProgress) => {
-  // TODO: This should be moved to a configuration file or environment variable
   const cloudName = 'di97mcvbu';
   const uploadUrl = `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`;
+  const chunkSize = 20 * 1024 * 1024; // 20MB
 
-  const formData = new FormData();
-  formData.append('file', file);
-  formData.append('signature', signatureData.signature);
-  formData.append('timestamp', signatureData.timestamp);
-  formData.append('api_key', signatureData.api_key);
+  // For images or small videos, use the simple upload.
+  if (resourceType === 'image' || file.size < chunkSize) {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('signature', signatureData.signature);
+    formData.append('timestamp', signatureData.timestamp);
+    formData.append('api_key', signatureData.api_key);
 
-  const response = await axios.post(uploadUrl, formData, {
-    onUploadProgress: (progressEvent) => {
-      const progress = progressEvent.total
-        ? Math.round((progressEvent.loaded / progressEvent.total) * 100)
-        : 0;
-      onProgress(progress);
-    },
-  });
+    const response = await axios.post(uploadUrl, formData, {
+      onUploadProgress: (progressEvent) => {
+        const progress = progressEvent.total
+          ? Math.round((progressEvent.loaded / progressEvent.total) * 100)
+          : 0;
+        onProgress(progress);
+      },
+    });
+    return response.data;
+  }
 
-  return response.data;
+  // For large videos, use chunked upload.
+  const uniqueUploadId = `uqid-${Date.now()}`;
+  let start = 0;
+  let finalResponse;
+
+  const uploadParams = {
+    api_key: signatureData.api_key,
+    timestamp: signatureData.timestamp,
+    signature: signatureData.signature,
+  };
+
+  while (start < file.size) {
+    const end = Math.min(start + chunkSize, file.size);
+    const chunk = file.slice(start, end);
+
+    const response = await axios.post(
+      uploadUrl,
+      chunk,
+      {
+        headers: {
+          'Content-Type': 'application/octet-stream',
+          'X-Unique-Upload-Id': uniqueUploadId,
+          'Content-Range': `bytes ${start}-${end - 1}/${file.size}`,
+        },
+        params: uploadParams,
+        onUploadProgress: (progressEvent) => {
+          const chunkLoaded = progressEvent.loaded;
+          const totalLoaded = start + chunkLoaded;
+          const progress = Math.round((totalLoaded / file.size) * 100);
+          onProgress(progress);
+        },
+      }
+    );
+
+    finalResponse = response.data;
+    start = end;
+  }
+
+  return finalResponse;
 };
 
   const handleSubmit = async (e) => {
@@ -179,14 +221,16 @@ const uploadToCloudinary = async (file, signatureData, resourceType, onProgress)
     setSuccess(false);
     setShowPopup(false);
 
-    const maxSize = 100 * 1024 * 1024; // 100MB
+    const maxSize = 2 * 1024 * 1024 * 1024; // 2GB
     if (videoFile.size > maxSize) {
-      setError('The video file exceeds the maximum size (100MB).');
+      setError('The video file exceeds the maximum size (2GB).');
       setLoading(false);
       return;
     }
-    if (thumbnailFile && thumbnailFile.size > maxSize) {
-      setError('The thumbnail file exceeds the maximum size (100MB).');
+    // Keep a smaller limit for thumbnails
+    const maxThumbnailSize = 10 * 1024 * 1024; // 10MB
+    if (thumbnailFile && thumbnailFile.size > maxThumbnailSize) {
+      setError('The thumbnail file exceeds the maximum size (10MB).');
       setLoading(false);
       return;
     }
