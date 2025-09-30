@@ -36,9 +36,11 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import AuthCallback from './pages/AuthCallback';
 import UploadProgressIndicator from './components/misc/UploadProgressIndicator';
+import Onboarding from './pages/Onboarding';
 
 const router = createBrowserRouter([
   { path: '/', element: <Home /> },
+  { path: '/onboarding', element: <Onboarding /> },
   {
     element: <PrivateRoute requiredRole="admin" />,
     children: [{ path: '/admin', element: <AdminDashboard /> }],
