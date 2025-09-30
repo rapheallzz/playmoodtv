@@ -1148,12 +1148,19 @@ export const HighlightCircle = styled.div`
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  border: 2px solid ${(props) => (props.viewed ? '#9ca3af' : '#541011')};
+  border: 3px solid transparent;
+  background-image: ${(props) =>
+    props.viewed
+      ? 'none'
+      : 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)'};
+  background-clip: padding-box, border-box;
+  background-origin: padding-box, border-box;
 
   img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    border-radius: 50%;
   }
 `;
 
@@ -1247,4 +1254,16 @@ export const HighlightNavButton = styled.button`
     `
     right: 10px;
   `}
+`;
+
+export const HighlightTitleInViewer = styled.h3`
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  color: white;
+  font-size: 1rem;
+  font-weight: bold;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+  margin: 0;
+  z-index: 10;
 `;

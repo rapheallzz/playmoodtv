@@ -6,6 +6,7 @@ import {
   ProgressBarContainer,
   ProgressBar,
   HighlightNavButton,
+  HighlightTitleInViewer,
 } from '../../styles/CreatorPageStyles';
 import { FaTimes, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
@@ -52,6 +53,7 @@ const HighlightViewer = ({ highlight, onClose, onNext, onPrevious, isFirst, isLa
   return (
     <HighlightViewerOverlay onClick={onClose}>
       <HighlightViewerContent onClick={(e) => e.stopPropagation()}>
+        <HighlightTitleInViewer>{highlight.content.title}</HighlightTitleInViewer>
         {!isFirst && (
           <HighlightNavButton side="left" onClick={onPrevious}>
             <FaChevronLeft />

@@ -118,7 +118,7 @@ export default function CreatorPage() {
 
   const handleSelectHighlight = (highlight) => {
     const content = data.find((c) => c._id === highlight.content._id);
-    if (content) {
+    if (content && content.video) {
       setSelectedHighlight({
         ...highlight,
         content: {
@@ -127,6 +127,9 @@ export default function CreatorPage() {
         },
       });
       setViewedHighlights((prev) => new Set(prev).add(highlight._id));
+    } else {
+      console.error('Video content for this highlight is not available.');
+      // Optionally, show a toast message to the user.
     }
   };
 
