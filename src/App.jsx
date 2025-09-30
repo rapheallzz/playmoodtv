@@ -35,6 +35,7 @@ import PrivateRoute from './features/PrivateRoute';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import AuthCallback from './pages/AuthCallback';
+import UploadProgressIndicator from './components/misc/UploadProgressIndicator';
 
 const router = createBrowserRouter([
   { path: '/', element: <Home /> },
@@ -85,6 +86,7 @@ function App() {
     <>
       <RouterProvider router={router} />
       <ToastContainer />
+      <UploadProgressIndicator />
     </>
   );
 }

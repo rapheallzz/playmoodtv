@@ -1,15 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
-import { useSelector } from 'react-redux';
-import axios from 'axios';
+import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { uploadFile } from '../features/uploadSlice';
 
 const VideoModal = ({ onClose }) => {
   const navigate = useNavigate();
-  const { token, user } = useSelector((state) => {
-    console.log('Redux auth state:', state.auth);
-    return state.auth || {};
-  });
+  const dispatch = useDispatch();
+  const { user, userToken } = useSelector((state) => state.auth);
+  const { isUploading } = useSelector((state) => state.upload);
 
   const [videoData, setVideoData] = useState({
     title: '',
@@ -23,30 +22,20 @@ const VideoModal = ({ onClose }) => {
   const [previewStart, setPreviewStart] = useState(0);
   const [previewEnd, setPreviewEnd] = useState(10);
   const [videoDuration, setVideoDuration] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [showPopup, setShowPopup] = useState(false); // New state for popup
   const videoRef = useRef(null);
-
-  // Fallback to local storage if Redux state is not available
-  const getAuthData = () => {
-    const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
-    const storedToken = storedUser?.token || '';
-    const storedUserId = storedUser?._id || '';
-    console.log('Stored auth data:', { storedUserId, storedToken });
-
-    return {
-      userId: user?._id || storedUserId,
-      authToken: token || storedToken,
-    };
-  };
 
   // Handle video file selection
   const handleVideoChange = (e) => {
     const file = e.target.files[0];
     if (file && file.type.startsWith('video/')) {
+      const maxSize = 2 * 1024 * 1024 * 1024; // 2GB
+      if (file.size > maxSize) {
+        setError('The video file exceeds the maximum size (2GB).');
+        setVideoFile(null);
+        return;
+      }
+      setError('');
       setVideoFile(file);
       const videoURL = URL.createObjectURL(file);
       const video = document.createElement('video');
@@ -76,6 +65,13 @@ const VideoModal = ({ onClose }) => {
   const handleThumbnailChange = (e) => {
     const file = e.target.files[0];
     if (file && file.type.startsWith('image/')) {
+      const maxThumbnailSize = 10 * 1024 * 1024; // 10MB
+      if (file.size > maxThumbnailSize) {
+        setError('The thumbnail file exceeds the maximum size (10MB).');
+        setThumbnailFile(null);
+        return;
+      }
+      setError('');
       setThumbnailFile(file);
     } else {
       setThumbnailFile(null);
@@ -128,71 +124,7 @@ const VideoModal = ({ onClose }) => {
     }
   };
 
-const uploadToCloudinary = async (file, signatureData, resourceType, onProgress) => {
-  const cloudName = 'di97mcvbu';
-  const uploadUrl = `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`;
-  const chunkSize = 20 * 1024 * 1024; // 20MB
-
-  // For images or small videos, use the simple upload.
-  if (resourceType === 'image' || file.size < chunkSize) {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('signature', signatureData.signature);
-    formData.append('timestamp', signatureData.timestamp);
-    formData.append('api_key', signatureData.api_key);
-
-    const response = await axios.post(uploadUrl, formData, {
-      onUploadProgress: (progressEvent) => {
-        const progress = progressEvent.total
-          ? Math.round((progressEvent.loaded / progressEvent.total) * 100)
-          : 0;
-        onProgress(progress);
-      },
-    });
-    return response.data;
-  }
-
-  // For large videos, use chunked upload.
-  const uniqueUploadId = `uqid-${Date.now()}`;
-  let start = 0;
-  let finalResponse;
-
-  while (start < file.size) {
-    const end = Math.min(start + chunkSize, file.size);
-    const chunk = file.slice(start, end);
-
-    // Use FormData for each chunk, which is more reliable for signed uploads.
-    const formData = new FormData();
-    formData.append('file', chunk);
-    formData.append('api_key', signatureData.api_key);
-    formData.append('timestamp', signatureData.timestamp);
-    formData.append('signature', signatureData.signature);
-
-    const response = await axios.post(
-      uploadUrl,
-      formData,
-      {
-        headers: {
-          'X-Unique-Upload-Id': uniqueUploadId,
-          'Content-Range': `bytes ${start}-${end - 1}/${file.size}`,
-        },
-        onUploadProgress: (progressEvent) => {
-          const chunkLoaded = progressEvent.loaded;
-          const totalLoaded = start + chunkLoaded;
-          const progress = Math.round((totalLoaded / file.size) * 100);
-          onProgress(progress);
-        },
-      }
-    );
-
-    finalResponse = response.data;
-    start = end;
-  }
-
-  return finalResponse;
-};
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
     if (!videoFile) {
@@ -206,8 +138,7 @@ const uploadToCloudinary = async (file, signatureData, resourceType, onProgress)
       return;
     }
 
-    const { userId, authToken } = getAuthData();
-    if (!userId || !authToken) {
+    if (!user || !userToken) {
       setError('You must be logged in to upload videos. Redirecting to login...');
       setTimeout(() => {
         navigate('/login');
@@ -215,117 +146,17 @@ const uploadToCloudinary = async (file, signatureData, resourceType, onProgress)
       return;
     }
 
-    setLoading(true);
-    setError('');
-    setSuccess(false);
-    setShowPopup(false);
-
-    const maxSize = 2 * 1024 * 1024 * 1024; // 2GB
-    if (videoFile.size > maxSize) {
-      setError('The video file exceeds the maximum size (2GB).');
-      setLoading(false);
-      return;
-    }
-    // Keep a smaller limit for thumbnails
-    const maxThumbnailSize = 10 * 1024 * 1024; // 10MB
-    if (thumbnailFile && thumbnailFile.size > maxThumbnailSize) {
-      setError('The thumbnail file exceeds the maximum size (10MB).');
-      setLoading(false);
-      return;
-    }
-
-    try {
-      // Step 1: Get signature for video
-      const videoSignatureResponse = await axios.post(
-        'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/signature',
-        { type: 'videos' },
-        { headers: { Authorization: `Bearer ${authToken}` } }
-      );
-      const videoSignatureData = videoSignatureResponse.data;
-
-      // Step 2: Upload video to Cloudinary
-      const videoUploadResponse = await uploadToCloudinary(
+    dispatch(
+      uploadFile({
         videoFile,
-        videoSignatureData,
-        'video',
-        setUploadProgress
-      );
-
-      let thumbnailUploadResponse = null;
-      if (thumbnailFile) {
-        setUploadProgress(0); // Reset progress for thumbnail
-        // Get a new signature for the thumbnail
-        const thumbSignatureResponse = await axios.post(
-          'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/signature',
-          { type: 'images' },
-          { headers: { Authorization: `Bearer ${authToken}` } }
-        );
-        const thumbSignatureData = thumbSignatureResponse.data;
-
-        thumbnailUploadResponse = await uploadToCloudinary(
-          thumbnailFile,
-          thumbSignatureData,
-          'image',
-          setUploadProgress
-        );
-      }
-
-      // Step 3: Send metadata to your backend
-      const finalPayload = {
-        title: videoData.title,
-        category: videoData.category,
-        description: videoData.description,
-        credit: videoData.credit,
-        userId,
+        thumbnailFile,
+        videoMetadata: videoData,
         previewStart,
         previewEnd,
-        languageCode: 'en-US',
-        video: {
-          public_id: videoUploadResponse.public_id,
-          url: videoUploadResponse.secure_url,
-        },
-        thumbnail: thumbnailUploadResponse
-          ? {
-              public_id: thumbnailUploadResponse.public_id,
-              url: thumbnailUploadResponse.secure_url,
-            }
-          : undefined,
-      };
+      })
+    );
 
-      await axios.post('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content', finalPayload, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      setSuccess(true);
-      setShowPopup(true);
-    } catch (error) {
-      console.error('Error in the upload process:', error.response || error);
-      if (error.response) {
-        // Differentiate errors based on the step
-        if (error.config.url.includes('/api/content/signature')) {
-          setError('Failed to get an upload signature. Please try again.');
-        } else if (error.config.url.includes('cloudinary')) {
-          setError('Failed to upload to Cloudinary. Please check the file and try again.');
-        } else if (error.config.url.includes('/api/content')) {
-          setError('Failed to create the content record. Please try again.');
-        } else {
-          setError(`An error occurred: ${error.response.data.message || 'Please try again.'}`);
-        }
-      } else {
-        setError('A network error occurred. Please check your connection and try again.');
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Handle popup close and modal close
-  const handlePopupClose = () => {
-    setShowPopup(false);
-    onClose(); // Close the modal after popup is closed
+    onClose(); // Close the modal immediately
   };
 
   return (
@@ -367,7 +198,6 @@ const uploadToCloudinary = async (file, signatureData, resourceType, onProgress)
             value={videoData.category}
             onChange={handleInputChange}
           >
-            {/* <option value="Top 10">Top 10</option> */}
             <option value="Fashion Show">Fashion Show</option>
             <option value="Teen">Teens</option>
             <option value="Documentarie">Documentaries</option>
@@ -381,6 +211,7 @@ const uploadToCloudinary = async (file, signatureData, resourceType, onProgress)
             type="file"
             accept="video/*"
             onChange={handleVideoChange}
+            required
           />
 
           <Label>Upload Thumbnail</Label>
@@ -444,76 +275,15 @@ const uploadToCloudinary = async (file, signatureData, resourceType, onProgress)
             </>
           )}
 
-          <UploadButton type="submit" disabled={loading || !videoFile || !getAuthData().userId || !getAuthData().authToken}>
-            {loading ? 'Uploading...' : 'Upload'}
+          <UploadButton type="submit" disabled={isUploading || !videoFile || !user}>
+            {isUploading ? 'Uploading...' : 'Start Upload'}
           </UploadButton>
-
-          {success && !showPopup && (
-            <SuccessNotification>
-              <p>Video uploaded successfully!</p>
-            </SuccessNotification>
-          )}
         </Form>
-
-        {loading && (
-          <ProgressBar>
-            <Filler style={{ width: `${uploadProgress}%` }} />
-          </ProgressBar>
-        )}
-
-        {showPopup && (
-          <PopupContainer>
-            <PopupContent>
-              <h3>Upload Successful!</h3>
-              <p>Your video has been successfully uploaded. It will take up to 24 hours for approval. You will receive a notification via email once it is approved.</p>
-              <PopupButton onClick={handlePopupClose}>OK</PopupButton>
-            </PopupContent>
-          </PopupContainer>
-        )}
       </ModalContainer>
     </>
   );
 };
 
-// Styled components for the popup
-const PopupContainer = styled.div`
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: rgba(0, 0, 0, 0.5);
-  width: 100%;
-  height: 100%;
-  z-index: 1001;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
-const PopupContent = styled.div`
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  max-width: 400px;
-  width: 90%;
-  text-align: center;
-`;
-
-const PopupButton = styled.button`
-  padding: 10px;
-  background-color: #541011;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  margin-top: 15px;
-
-  &:hover {
-    background-color: #3d0c0d;
-  }
-`;
 
 const ModalContainer = styled.div`
   position: fixed;
@@ -605,15 +375,6 @@ const UploadButton = styled.button`
   }
 `;
 
-const SuccessNotification = styled.div`
-  background-color: #28a745;
-  color: white;
-  padding: 10px;
-  margin-top: 10px;
-  border-radius: 4px;
-  text-align: center;
-`;
-
 const ErrorMessage = styled.div`
   background-color: #f8d7da;
   color: #721c24;
@@ -621,20 +382,6 @@ const ErrorMessage = styled.div`
   margin-bottom: 15px;
   border-radius: 4px;
   text-align: center;
-`;
-
-const ProgressBar = styled.div`
-  width: 100%;
-  background-color: #f3f3f3;
-  border-radius: 4px;
-  margin-top: 10px;
-`;
-
-const Filler = styled.div`
-  background-color: #541011;
-  height: 10px;
-  border-radius: 4px;
-  transition: width 0.2s ease-in-out;
 `;
 
 const VideoContainer = styled.div`
