@@ -115,6 +115,19 @@ export default function CreatorPage() {
     navigate(`/movie/${createSlug(content.title, content._id)}`);
   };
 
+  const handleSelectHighlight = (highlight) => {
+    const content = data.find((c) => c._id === highlight.content._id);
+    if (content) {
+      setSelectedHighlight({
+        ...highlight,
+        content: {
+          ...highlight.content,
+          videoUrl: content.video, // Use the video URL from the full content
+        },
+      });
+    }
+  };
+
   return (
     <Homecontent>
       {(channelErrorMessage || playlistErrorMessage || postErrorMessage || highlightsError) && (
@@ -147,7 +160,7 @@ export default function CreatorPage() {
         navigate={navigate}
         setShowDonationModal={setShowDonationModal}
       />
-      <HighlightsSection highlights={highlights} onSelectHighlight={setSelectedHighlight} />
+      <HighlightsSection highlights={highlights} onSelectHighlight={handleSelectHighlight} />
       <ContentSection
         activeTab={activeTab}
         activeSubTab={activeSubTab}
