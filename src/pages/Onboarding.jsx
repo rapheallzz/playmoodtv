@@ -6,7 +6,7 @@ const Onboarding = () => {
   return (
     <div className="onboarding-container">
       <div className="onboarding-content">
-        <h1 className="onboarding-title">Welcome to Our App!</h1>
+        <h1 className="onboarding-title">Welcome to Playmood!</h1>
         <p className="onboarding-description">
           We're excited to have you on board. Here are a few features to get you started:
         </p>
