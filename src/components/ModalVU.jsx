@@ -157,26 +157,25 @@ const uploadToCloudinary = async (file, signatureData, resourceType, onProgress)
   let start = 0;
   let finalResponse;
 
-  const uploadParams = {
-    api_key: signatureData.api_key,
-    timestamp: signatureData.timestamp,
-    signature: signatureData.signature,
-  };
-
   while (start < file.size) {
     const end = Math.min(start + chunkSize, file.size);
     const chunk = file.slice(start, end);
 
+    // Use FormData for each chunk, which is more reliable for signed uploads.
+    const formData = new FormData();
+    formData.append('file', chunk);
+    formData.append('api_key', signatureData.api_key);
+    formData.append('timestamp', signatureData.timestamp);
+    formData.append('signature', signatureData.signature);
+
     const response = await axios.post(
       uploadUrl,
-      chunk,
+      formData,
       {
         headers: {
-          'Content-Type': 'application/octet-stream',
           'X-Unique-Upload-Id': uniqueUploadId,
           'Content-Range': `bytes ${start}-${end - 1}/${file.size}`,
         },
-        params: uploadParams,
         onUploadProgress: (progressEvent) => {
           const chunkLoaded = progressEvent.loaded;
           const totalLoaded = start + chunkLoaded;
