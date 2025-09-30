@@ -26,7 +26,7 @@ const UploadProgressIndicator = () => {
           <FileName>{upload.title || upload.fileName}</FileName>
           <Status status={upload.status}>
             {upload.status === 'uploading' && `Uploading: ${upload.progress}%`}
-            {upload.status === 'completed' && 'Completed'}
+            {upload.status === 'completed' && 'Upload successful'}
             {upload.status === 'failed' && `Failed: ${upload.error}`}
             {upload.status === 'pending' && 'Waiting...'}
           </Status>
@@ -34,6 +34,11 @@ const UploadProgressIndicator = () => {
             <ProgressBar>
               <Filler style={{ width: `${upload.progress}%` }} />
             </ProgressBar>
+          )}
+          {upload.status === 'completed' && (
+            <SuccessMessage>
+              Your video will be reviewed for approval within 24 hours.
+            </SuccessMessage>
           )}
         </UploadItem>
       ))}
@@ -124,6 +129,12 @@ const Filler = styled.div`
   height: 100%;
   border-radius: 4px;
   transition: width 0.2s ease-in-out;
+`;
+
+const SuccessMessage = styled.p`
+  font-size: 12px;
+  color: #6c757d;
+  margin-top: 4px;
 `;
 
 export default UploadProgressIndicator;
