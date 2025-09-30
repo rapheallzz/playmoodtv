@@ -1214,3 +1214,37 @@ export const ProgressBar = styled.div`
   border-radius: 2px;
   transition: width 0.1s linear;
 `;
+
+export const HighlightNavButton = styled.button`
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.3);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.6);
+  }
+
+  ${(props) =>
+    props.side === 'left' &&
+    `
+    left: 10px;
+  `}
+
+  ${(props) =>
+    props.side === 'right' &&
+    `
+    right: 10px;
+  `}
+`;

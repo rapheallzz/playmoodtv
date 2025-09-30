@@ -5,14 +5,16 @@ import {
   CloseButton,
   ProgressBarContainer,
   ProgressBar,
+  HighlightNavButton,
 } from '../../styles/CreatorPageStyles';
-import { FaTimes } from 'react-icons/fa';
+import { FaTimes, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
-const HighlightViewer = ({ highlight, onClose }) => {
+const HighlightViewer = ({ highlight, onClose, onNext, onPrevious, isFirst, isLast }) => {
   const videoRef = useRef(null);
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
+    setProgress(0); // Reset progress when highlight changes
     if (highlight && videoRef.current) {
       const video = videoRef.current;
       const { startTime, endTime } = highlight;
@@ -20,7 +22,11 @@ const HighlightViewer = ({ highlight, onClose }) => {
       const handleTimeUpdate = () => {
         if (video.currentTime >= endTime) {
           video.pause();
-          onClose();
+          if (!isLast) {
+            onNext();
+          } else {
+            onClose();
+          }
         } else {
           const currentProgress = ((video.currentTime - startTime) / (endTime - startTime)) * 100;
           setProgress(currentProgress);
@@ -35,18 +41,22 @@ const HighlightViewer = ({ highlight, onClose }) => {
         video.removeEventListener('timeupdate', handleTimeUpdate);
       };
     }
-  }, [highlight, onClose]);
+  }, [highlight, onClose, onNext, isLast]);
 
   if (!highlight) {
     return null;
   }
 
-  // Ensure content and videoUrl are available
   const videoUrl = highlight.content?.videoUrl;
 
   return (
     <HighlightViewerOverlay onClick={onClose}>
       <HighlightViewerContent onClick={(e) => e.stopPropagation()}>
+        {!isFirst && (
+          <HighlightNavButton side="left" onClick={onPrevious}>
+            <FaChevronLeft />
+          </HighlightNavButton>
+        )}
         {videoUrl ? (
           <>
             <video ref={videoRef} src={videoUrl} autoPlay />
@@ -56,6 +66,11 @@ const HighlightViewer = ({ highlight, onClose }) => {
           </>
         ) : (
           <p>Video not available.</p>
+        )}
+        {!isLast && (
+          <HighlightNavButton side="right" onClick={onNext}>
+            <FaChevronRight />
+          </HighlightNavButton>
         )}
         <CloseButton onClick={onClose}>
           <FaTimes />

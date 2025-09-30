@@ -130,6 +130,20 @@ export default function CreatorPage() {
     }
   };
 
+  const handleNextHighlight = () => {
+    const currentIndex = highlights.findIndex((h) => h._id === selectedHighlight._id);
+    if (currentIndex < highlights.length - 1) {
+      handleSelectHighlight(highlights[currentIndex + 1]);
+    }
+  };
+
+  const handlePreviousHighlight = () => {
+    const currentIndex = highlights.findIndex((h) => h._id === selectedHighlight._id);
+    if (currentIndex > 0) {
+      handleSelectHighlight(highlights[currentIndex - 1]);
+    }
+  };
+
   return (
     <Homecontent>
       {(channelErrorMessage || playlistErrorMessage || postErrorMessage || highlightsError) && (
@@ -314,7 +328,16 @@ export default function CreatorPage() {
         />
       )}
       {selectedHighlight && (
-        <HighlightViewer highlight={selectedHighlight} onClose={() => setSelectedHighlight(null)} />
+        <HighlightViewer
+          highlight={selectedHighlight}
+          onClose={() => setSelectedHighlight(null)}
+          onNext={handleNextHighlight}
+          onPrevious={handlePreviousHighlight}
+          isFirst={highlights.findIndex((h) => h._id === selectedHighlight._id) === 0}
+          isLast={
+            highlights.findIndex((h) => h._id === selectedHighlight._id) === highlights.length - 1
+          }
+        />
       )}
       <Footer />
     </Homecontent>
