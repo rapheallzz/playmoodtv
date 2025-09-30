@@ -1,13 +1,16 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   HighlightViewerOverlay,
   HighlightViewerContent,
   CloseButton,
+  ProgressBarContainer,
+  ProgressBar,
 } from '../../styles/CreatorPageStyles';
 import { FaTimes } from 'react-icons/fa';
 
 const HighlightViewer = ({ highlight, onClose }) => {
   const videoRef = useRef(null);
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     if (highlight && videoRef.current) {
@@ -18,6 +21,9 @@ const HighlightViewer = ({ highlight, onClose }) => {
         if (video.currentTime >= endTime) {
           video.pause();
           onClose();
+        } else {
+          const currentProgress = ((video.currentTime - startTime) / (endTime - startTime)) * 100;
+          setProgress(currentProgress);
         }
       };
 
@@ -42,7 +48,12 @@ const HighlightViewer = ({ highlight, onClose }) => {
     <HighlightViewerOverlay onClick={onClose}>
       <HighlightViewerContent onClick={(e) => e.stopPropagation()}>
         {videoUrl ? (
-          <video ref={videoRef} src={videoUrl} controls autoPlay />
+          <>
+            <video ref={videoRef} src={videoUrl} autoPlay />
+            <ProgressBarContainer>
+              <ProgressBar style={{ width: `${progress}%` }} />
+            </ProgressBarContainer>
+          </>
         ) : (
           <p>Video not available.</p>
         )}

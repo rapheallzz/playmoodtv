@@ -8,7 +8,7 @@ import {
   SectionTitle,
 } from '../../styles/CreatorPageStyles';
 
-const HighlightsSection = ({ highlights, onSelectHighlight }) => {
+const HighlightsSection = ({ highlights, onSelectHighlight, viewedHighlights }) => {
   if (!highlights || highlights.length === 0) {
     return null;
   }
@@ -19,7 +19,7 @@ const HighlightsSection = ({ highlights, onSelectHighlight }) => {
       <HighlightsList>
         {highlights.map((highlight) => (
           <HighlightItem key={highlight._id} onClick={() => onSelectHighlight(highlight)}>
-            <HighlightCircle>
+            <HighlightCircle viewed={viewedHighlights.has(highlight._id)}>
               {highlight.content.thumbnail && <img src={highlight.content.thumbnail} alt="Highlight thumbnail" />}
             </HighlightCircle>
             <HighlightTitle>{highlight.content.title}</HighlightTitle>

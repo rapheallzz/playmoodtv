@@ -1148,7 +1148,7 @@ export const HighlightCircle = styled.div`
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  border: 2px solid #541011;
+  border: 2px solid ${(props) => (props.viewed ? '#9ca3af' : '#541011')};
 
   img {
     width: 100%;
@@ -1196,4 +1196,21 @@ export const CloseButton = styled.button`
   color: white;
   font-size: 1.5rem;
   cursor: pointer;
+`;
+
+export const ProgressBarContainer = styled.div`
+  position: absolute;
+  bottom: 20px;
+  left: 5%;
+  width: 90%;
+  height: 4px;
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+`;
+
+export const ProgressBar = styled.div`
+  height: 100%;
+  background-color: #541011;
+  border-radius: 2px;
+  transition: width 0.1s linear;
 `;

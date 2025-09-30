@@ -39,6 +39,7 @@ export default function CreatorPage() {
   const [showCreateHighlightModal, setShowCreateHighlightModal] = useState(false);
   const [selectedHighlight, setSelectedHighlight] = useState(null);
   const [modalContent, setModalContent] = useState(null);
+  const [viewedHighlights, setViewedHighlights] = useState(new Set());
 
   // Channel details hook
   const {
@@ -125,6 +126,7 @@ export default function CreatorPage() {
           videoUrl: content.video, // Use the video URL from the full content
         },
       });
+      setViewedHighlights((prev) => new Set(prev).add(highlight._id));
     }
   };
 
@@ -160,7 +162,11 @@ export default function CreatorPage() {
         navigate={navigate}
         setShowDonationModal={setShowDonationModal}
       />
-      <HighlightsSection highlights={highlights} onSelectHighlight={handleSelectHighlight} />
+      <HighlightsSection
+        highlights={highlights}
+        onSelectHighlight={handleSelectHighlight}
+        viewedHighlights={viewedHighlights}
+      />
       <ContentSection
         activeTab={activeTab}
         activeSubTab={activeSubTab}
