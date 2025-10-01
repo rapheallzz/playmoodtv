@@ -14,11 +14,13 @@ const useChannelDetails = (user) => {
   const [data, setData] = useState([]);
   const [subscribers, setSubscribers] = useState(0);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
   const isFetchingRef = useRef(false);
 
   useEffect(() => {
     const fetchChannelDetails = async () => {
       if (isFetchingRef.current || !user?._id) return;
+      setIsLoading(true);
       isFetchingRef.current = true;
       try {
         const response = await axios.get(
@@ -43,6 +45,7 @@ const useChannelDetails = (user) => {
         setErrorMessage('Failed to load channel details. Please try again later.');
       } finally {
         isFetchingRef.current = false;
+        setIsLoading(false);
       }
     };
 
@@ -115,6 +118,7 @@ const useChannelDetails = (user) => {
     subscribers,
     errorMessage,
     handleUpdateChannelInfo,
+    isLoading,
   };
 };
 

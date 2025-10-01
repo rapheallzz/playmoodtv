@@ -48,7 +48,7 @@ const HighlightViewer = ({ highlight, onClose, onNext, onPrevious, isFirst, isLa
     return null;
   }
 
-  const videoUrl = highlight.content?.videoUrl;
+  const videoUrl = highlight.content?.video;
 
   return (
     <HighlightViewerOverlay onClick={onClose}>

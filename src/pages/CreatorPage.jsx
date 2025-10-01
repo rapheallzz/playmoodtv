@@ -18,6 +18,7 @@ import EditPlaylistModal from '../components/modals/EditPlaylistModal';
 import CreateHighlightModal from '../components/modals/CreateHighlightModal';
 import HighlightsSection from '../components/creator/HighlightsSection';
 import HighlightViewer from '../components/creator/HighlightViewer';
+import CreatorPageSkeleton from '../components/skeletons/CreatorPageSkeleton';
 import useChannelDetails from '../hooks/useChannelDetails';
 import usePlaylists from '../hooks/usePlaylists';
 import useCommunityPosts from '../hooks/useCommunityPosts';
@@ -47,6 +48,7 @@ export default function CreatorPage() {
     about, setAbout, instagram, setInstagram, tiktok, setTiktok,
     linkedin, setLinkedin, twitter, setTwitter, data, subscribers,
     errorMessage: channelErrorMessage, handleUpdateChannelInfo,
+    isLoading: isLoadingChannel,
   } = useChannelDetails(user);
 
   // Playlists hook
@@ -123,7 +125,7 @@ export default function CreatorPage() {
         ...highlight,
         content: {
           ...highlight.content,
-          videoUrl: content.video, // Use the video URL from the full content
+          video: content.video, // Use the video URL from the full content
         },
       });
       setViewedHighlights((prev) => new Set(prev).add(highlight._id));
@@ -146,6 +148,12 @@ export default function CreatorPage() {
       handleSelectHighlight(highlights[currentIndex - 1]);
     }
   };
+
+  const isLoading = isLoadingChannel || isLoadingHighlights;
+
+  if (isLoading) {
+    return <CreatorPageSkeleton />;
+  }
 
   return (
     <Homecontent>
