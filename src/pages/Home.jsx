@@ -36,6 +36,7 @@ import axios from 'axios';
 import { likeContent, unlikeContent, addToWatchlist, removeFromWatchlist } from '../features/authSlice';
 import Footer from '../components/footer/Footer';
 import SliderTopTen from '../components/sliders/SliderTopTen';
+import HighlightsHome from '../components/HighlightsHome';
 
 // CookiesPopupContainer styled component
 const CookiesPopupContainer = styled.div`
@@ -520,6 +521,14 @@ function HomeContent({
   likedContent,
   setLikedContent,
   sliderContainerRef,
+  highlights,
+  setHighlights,
+  isLoadingHighlights,
+  setIsLoadingHighlights,
+  selectedHighlight,
+  setSelectedHighlight,
+  viewedHighlights,
+  setViewedHighlights,
 }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -823,6 +832,10 @@ function HomeContent({
             <Videocategorytitle>Top 10</Videocategorytitle>
             <SliderTopTen />
           </VideoCategory>
+          <VideoCategoryCircle>
+            <Videocategorytitle>Highlights</Videocategorytitle>
+            <HighlightsHome />
+          </VideoCategoryCircle>
           <VideoCategory >
             <Videocategorytitle>New on Playmood</Videocategorytitle>
             <SliderNew />
@@ -907,6 +920,10 @@ export default function Home() {
   const [likedContent, setLikedContent] = useState([]);
   const sliderContainerRef = useRef(null);
   const user = useSelector((state) => state.auth.user);
+  const [highlights, setHighlights] = useState([]);
+  const [isLoadingHighlights, setIsLoadingHighlights] = useState(true);
+  const [selectedHighlight, setSelectedHighlight] = useState(null);
+  const [viewedHighlights, setViewedHighlights] = useState(new Set());
 
   return (
     <HomeContent
@@ -931,6 +948,14 @@ export default function Home() {
       likedContent={likedContent}
       setLikedContent={setLikedContent}
       sliderContainerRef={sliderContainerRef}
+      highlights={highlights}
+      setHighlights={setHighlights}
+      isLoadingHighlights={isLoadingHighlights}
+      setIsLoadingHighlights={setIsLoadingHighlights}
+      selectedHighlight={selectedHighlight}
+      setSelectedHighlight={setSelectedHighlight}
+      viewedHighlights={viewedHighlights}
+      setViewedHighlights={setViewedHighlights}
     />
   );
 }

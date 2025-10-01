@@ -193,7 +193,7 @@ export default function CreatorChannel() {
   const [viewedHighlights, setViewedHighlights] = useState(new Set());
 
   const handleSelectHighlight = (highlight) => {
-    const content = data.find((c) => c._id === highlight.content._id);
+    const content = creatorData.content.find((c) => c._id === highlight.content._id);
     if (content && content.video) {
       setSelectedHighlight({
         ...highlight,
