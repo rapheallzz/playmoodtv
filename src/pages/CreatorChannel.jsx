@@ -21,7 +21,6 @@ import useHighlights from '../hooks/useHighlights';
 import CreatorChannelSkeleton from '../components/skeletons/CreatorChannelSkeleton';
 import HighlightsSection from '../components/creator/HighlightsSection';
 import HighlightViewer from '../components/creator/HighlightViewer';
-import axios from 'axios';
 
 // Pulse animation for right arrow
 const pulse = keyframes`
