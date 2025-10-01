@@ -29,7 +29,6 @@ const HighlightsHome = () => {
       }
     };
 
-    fetchAllContent();
     fetchHighlights();
   }, []);
 
