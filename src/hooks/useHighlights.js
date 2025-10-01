@@ -1,17 +1,19 @@
 import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 
-const useHighlights = (user) => {
+const useHighlights = (user, creatorId) => {
   const [highlights, setHighlights] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const fetchHighlights = useCallback(async () => {
-    if (!user?._id) return;
+    const idToFetch = creatorId || user?._id;
+    if (!idToFetch) return;
+
     setIsLoading(true);
     setError(null);
     try {
-      const response = await axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/highlights/creator/${user._id}`);
+      const response = await axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/highlights/creator/${idToFetch}`);
       setHighlights(response.data);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to fetch highlights.');
@@ -19,7 +21,7 @@ const useHighlights = (user) => {
     } finally {
       setIsLoading(false);
     }
-  }, [user?._id]);
+  }, [user?._id, creatorId]);
 
   useEffect(() => {
     fetchHighlights();

@@ -17,6 +17,9 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import ContentModal from '../components/ContentModal';
 import ErrorPopup from '../components/ErrorPopup';
+import useHighlights from '../hooks/useHighlights';
+import HighlightsSection from '../components/creator/HighlightsSection';
+import HighlightViewer from '../components/creator/HighlightViewer';
 
 // Pulse animation for right arrow
 const pulse = keyframes`
@@ -181,6 +184,40 @@ export default function CreatorChannel() {
   const [playlists, setPlaylists] = useState([]);
   const [isLoadingPlaylists, setIsLoadingPlaylists] = useState(false);
   const [activeTab, setActiveTab] = useState('VIDEOS'); // TABS: VIDEOS, PLAYLISTS, COMMUNITY
+  const {
+    highlights,
+    isLoading: isLoadingHighlights,
+  } = useHighlights(user, state?.creatorId);
+  const [selectedHighlight, setSelectedHighlight] = useState(null);
+  const [viewedHighlights, setViewedHighlights] = useState(new Set());
+
+  const handleSelectHighlight = (highlight) => {
+    const content = data.find((c) => c._id === highlight.content._id);
+    if (content && content.video) {
+      setSelectedHighlight({
+        ...highlight,
+        content: {
+          ...highlight.content,
+          video: content.video,
+        },
+      });
+      setViewedHighlights((prev) => new Set(prev).add(highlight._id));
+    }
+  };
+
+  const handleNextHighlight = () => {
+    const currentIndex = highlights.findIndex((h) => h._id === selectedHighlight._id);
+    if (currentIndex < highlights.length - 1) {
+      handleSelectHighlight(highlights[currentIndex + 1]);
+    }
+  };
+
+  const handlePreviousHighlight = () => {
+    const currentIndex = highlights.findIndex((h) => h._id === selectedHighlight._id);
+    if (currentIndex > 0) {
+      handleSelectHighlight(highlights[currentIndex - 1]);
+    }
+  };
 
   // Fetch creator data, subscriber count, and subscription status
   useEffect(() => {
@@ -493,18 +530,13 @@ const fetchPlaylists = async () => {
     setError('');
   };
 
-  if (isLoading) {
-    return (
-      <LoadingOverlay>
-        <LoadingSpinner />
-        <Loading>
-          <img src={logo} alt="Loading logo" className="w-32 mb-5 animate-bounce" />
-        </Loading>
-      </LoadingOverlay>
-    );
+  const finalIsLoading = isLoading || isLoadingHighlights;
+
+  if (finalIsLoading) {
+    return <CreatorChannelSkeleton />;
   }
 
-  if (!creatorData && !isLoading) {
+  if (!creatorData && !finalIsLoading) {
     return null; // ErrorPopup will handle the error display
   }
 
@@ -654,6 +686,12 @@ const fetchPlaylists = async () => {
           </button>
         </div>
       </div>
+
+      <HighlightsSection
+        highlights={highlights}
+        onSelectHighlight={handleSelectHighlight}
+        viewedHighlights={viewedHighlights}
+      />
 
       {/* Content Section */}
       <div className="w-full min-h-[300px] md:min-h-[500px] bg-[#1a1a1a] px-4 md:px-10 py-8">
@@ -867,6 +905,19 @@ const fetchPlaylists = async () => {
             </ModalFooter>
           </ModalContent>
         </ModalOverlay>
+      )}
+
+      {selectedHighlight && (
+        <HighlightViewer
+          highlight={selectedHighlight}
+          onClose={() => setSelectedHighlight(null)}
+          onNext={handleNextHighlight}
+          onPrevious={handlePreviousHighlight}
+          isFirst={highlights.findIndex((h) => h._id === selectedHighlight._id) === 0}
+          isLast={
+            highlights.findIndex((h) => h._id === selectedHighlight._id) === highlights.length - 1
+          }
+        />
       )}
     </div>
   );
