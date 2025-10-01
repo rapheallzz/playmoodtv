@@ -1264,3 +1264,19 @@ export const HighlightTitleInViewer = styled.h3`
   margin: 0;
   z-index: 10;
 `;
+
+export const LargeHighlightCircle = styled(HighlightCircle)`
+  width: 160px;
+  height: 160px;
+  padding: 4px;
+
+  img {
+    width: 152px;
+    height: 152px;
+    border-width: 4px;
+  }
+`;
+
+export const LargeHighlightTitle = styled(HighlightTitle)`
+  font-size: 1.1rem;
+`;

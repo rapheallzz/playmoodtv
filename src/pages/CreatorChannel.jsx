@@ -21,6 +21,7 @@ import useHighlights from '../hooks/useHighlights';
 import CreatorChannelSkeleton from '../components/skeletons/CreatorChannelSkeleton';
 import HighlightsSection from '../components/creator/HighlightsSection';
 import HighlightViewer from '../components/creator/HighlightViewer';
+import axios from 'axios';
 
 // Pulse animation for right arrow
 const pulse = keyframes`
@@ -192,17 +193,25 @@ export default function CreatorChannel() {
   const [selectedHighlight, setSelectedHighlight] = useState(null);
   const [viewedHighlights, setViewedHighlights] = useState(new Set());
 
-  const handleSelectHighlight = (highlight) => {
-    const content = creatorData.content.find((c) => c._id === highlight.content._id);
-    if (content && content.video) {
-      setSelectedHighlight({
-        ...highlight,
-        content: {
-          ...highlight.content,
-          video: content.video,
-        },
-      });
-      setViewedHighlights((prev) => new Set(prev).add(highlight._id));
+  const handleSelectHighlight = async (highlight) => {
+    try {
+      const response = await axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${highlight.content._id}`);
+      const content = response.data;
+
+      if (content && content.video) {
+        setSelectedHighlight({
+          ...highlight,
+          content: {
+            ...highlight.content,
+            video: content.video,
+          },
+        });
+        setViewedHighlights((prev) => new Set(prev).add(highlight._id));
+      } else {
+        console.error('Video content for this highlight is not available.');
+      }
+    } catch (error) {
+      console.error('Error fetching content details for highlight:', error);
     }
   };
 

@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import HighlightsSection from './creator/HighlightsSection';
+import {
+  HighlightsSectionContainer,
+  HighlightsList,
+  HighlightItem,
+  LargeHighlightCircle,
+  LargeHighlightTitle,
+} from '../styles/CreatorPageStyles';
 import HighlightViewer from './creator/HighlightViewer';
 import { SkeletonHighlightsWrapper, SkeletonHighlightItem, SkeletonHighlightCircle, SkeletonText } from '../styles/SkeletonStyles';
 
@@ -9,18 +15,8 @@ const HighlightsHome = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedHighlight, setSelectedHighlight] = useState(null);
   const [viewedHighlights, setViewedHighlights] = useState(new Set());
-  const [allContent, setAllContent] = useState([]);
 
   useEffect(() => {
-    const fetchAllContent = async () => {
-      try {
-        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
-        setAllContent(response.data);
-      } catch (error) {
-        console.error('Error fetching all content:', error);
-      }
-    };
-
     const fetchHighlights = async () => {
       setIsLoading(true);
       try {
@@ -37,19 +33,25 @@ const HighlightsHome = () => {
     fetchHighlights();
   }, []);
 
-  const handleSelectHighlight = (highlight) => {
-    const content = allContent.find((c) => c._id === highlight.content._id);
-    if (content && content.video) {
-      setSelectedHighlight({
-        ...highlight,
-        content: {
-          ...highlight.content,
-          video: content.video,
-        },
-      });
-      setViewedHighlights((prev) => new Set(prev).add(highlight._id));
-    } else {
-      console.error('Video content for this highlight is not available.');
+  const handleSelectHighlight = async (highlight) => {
+    try {
+      const response = await axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${highlight.content._id}`);
+      const content = response.data;
+
+      if (content && content.video) {
+        setSelectedHighlight({
+          ...highlight,
+          content: {
+            ...highlight.content,
+            video: content.video,
+          },
+        });
+        setViewedHighlights((prev) => new Set(prev).add(highlight._id));
+      } else {
+        console.error('Video content for this highlight is not available.');
+      }
+    } catch (error) {
+      console.error('Error fetching content details for highlight:', error);
     }
   };
 
@@ -82,11 +84,18 @@ const HighlightsHome = () => {
 
   return (
     <>
-      <HighlightsSection
-        highlights={highlights}
-        onSelectHighlight={handleSelectHighlight}
-        viewedHighlights={viewedHighlights}
-      />
+      <HighlightsSectionContainer>
+        <HighlightsList>
+          {highlights.map((highlight) => (
+            <HighlightItem key={highlight._id} onClick={() => handleSelectHighlight(highlight)}>
+              <LargeHighlightCircle viewed={viewedHighlights.has(highlight._id)}>
+                {highlight.content.thumbnail && <img src={highlight.content.thumbnail} alt="Highlight thumbnail" />}
+              </LargeHighlightCircle>
+              <LargeHighlightTitle>{highlight.content.title}</LargeHighlightTitle>
+            </HighlightItem>
+          ))}
+        </HighlightsList>
+      </HighlightsSectionContainer>
       {selectedHighlight && (
         <HighlightViewer
           highlight={selectedHighlight}

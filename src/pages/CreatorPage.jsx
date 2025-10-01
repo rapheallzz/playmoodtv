@@ -23,6 +23,7 @@ import useChannelDetails from '../hooks/useChannelDetails';
 import usePlaylists from '../hooks/usePlaylists';
 import useCommunityPosts from '../hooks/useCommunityPosts';
 import useHighlights from '../hooks/useHighlights';
+import axios from 'axios';
 
 export default function CreatorPage() {
   const navigate = useNavigate();
@@ -118,20 +119,25 @@ export default function CreatorPage() {
     navigate(`/movie/${createSlug(content.title, content._id)}`);
   };
 
-  const handleSelectHighlight = (highlight) => {
-    const content = data.find((c) => c._id === highlight.content._id);
-    if (content && content.video) {
-      setSelectedHighlight({
-        ...highlight,
-        content: {
-          ...highlight.content,
-          video: content.video, // Use the video URL from the full content
-        },
-      });
-      setViewedHighlights((prev) => new Set(prev).add(highlight._id));
-    } else {
-      console.error('Video content for this highlight is not available.');
-      // Optionally, show a toast message to the user.
+  const handleSelectHighlight = async (highlight) => {
+    try {
+      const response = await axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${highlight.content._id}`);
+      const content = response.data;
+
+      if (content && content.video) {
+        setSelectedHighlight({
+          ...highlight,
+          content: {
+            ...highlight.content,
+            video: content.video,
+          },
+        });
+        setViewedHighlights((prev) => new Set(prev).add(highlight._id));
+      } else {
+        console.error('Video content for this highlight is not available.');
+      }
+    } catch (error) {
+      console.error('Error fetching content details for highlight:', error);
     }
   };
 
