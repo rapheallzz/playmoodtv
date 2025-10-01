@@ -18,6 +18,7 @@ import 'slick-carousel/slick/slick-theme.css';
 import ContentModal from '../components/ContentModal';
 import ErrorPopup from '../components/ErrorPopup';
 import useHighlights from '../hooks/useHighlights';
+import CreatorChannelSkeleton from '../components/skeletons/CreatorChannelSkeleton';
 import HighlightsSection from '../components/creator/HighlightsSection';
 import HighlightViewer from '../components/creator/HighlightViewer';
 
