@@ -1140,27 +1140,24 @@ export const HighlightItem = styled.div`
 `;
 
 export const HighlightCircle = styled.div`
-  width: 60px;
-  height: 60px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
-  background-color: #ccc;
+  padding: 2px;
+  background: ${(props) =>
+    props.viewed
+      ? 'transparent'
+      : 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)'};
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
-  border: 3px solid transparent;
-  background-image: ${(props) =>
-    props.viewed
-      ? 'none'
-      : 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)'};
-  background-clip: padding-box, border-box;
-  background-origin: padding-box, border-box;
 
   img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    width: 56px;
+    height: 56px;
     border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #1a1a1a;
   }
 `;
 
