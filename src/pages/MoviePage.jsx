@@ -106,7 +106,7 @@ export default function MoviePage() {
 
         if (user && user.token) {
           axios.get(
-            `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/progress/${contentId}`,
+            `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/progress/${contentId}`,
             { headers: { Authorization: `Bearer ${user.token}` } }
           ).then(progressResponse => {
             if (progressResponse.data && progressResponse.data.progress && videoRef.current) {
