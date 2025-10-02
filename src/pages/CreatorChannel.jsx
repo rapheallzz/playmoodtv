@@ -185,10 +185,11 @@ export default function CreatorChannel() {
   const [playlists, setPlaylists] = useState([]);
   const [isLoadingPlaylists, setIsLoadingPlaylists] = useState(false);
   const [activeTab, setActiveTab] = useState('VIDEOS'); // TABS: VIDEOS, PLAYLISTS, COMMUNITY
+  const creatorId = state?.creatorId;
   const {
     highlights,
     isLoading: isLoadingHighlights,
-  } = useHighlights(user, state?.creatorId);
+  } = useHighlights(user, creatorId);
   const [selectedHighlight, setSelectedHighlight] = useState(null);
   const [viewedHighlights, setViewedHighlights] = useState(new Set());
 
@@ -231,7 +232,7 @@ export default function CreatorChannel() {
   // Fetch creator data, subscriber count, and subscription status
   useEffect(() => {
     const fetchCreatorData = async () => {
-      if (!state || !state.creatorId) {
+      if (!creatorId) {
         setError('Creator ID is missing.');
         setShowErrorPopup(true);
         setIsLoading(false);
@@ -240,10 +241,11 @@ export default function CreatorChannel() {
 
       setIsLoading(true);
       setError('');
+      setData([]); // Reset data state to prevent duplicates from previous creator
       try {
         const token = user?.token || localStorage.getItem('token');
         const channelResponse = await axios.get(
-          `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/channel/${state.creatorId}`,
+          `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/channel/${creatorId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -251,7 +253,9 @@ export default function CreatorChannel() {
           }
         );
         setCreatorData(channelResponse.data);
-        setData(channelResponse.data.content || []);
+        const content = channelResponse.data.content || [];
+        const uniqueContent = Array.from(new Map(content.map(item => [`${item.title}-${item.thumbnail}`, item])).values());
+        setData(uniqueContent);
 
         // Check if the current user is in the subscriber list
         if (currentUserId) {
@@ -270,7 +274,7 @@ export default function CreatorChannel() {
     };
 
     fetchCreatorData();
-  }, [state, user, currentUserId]);
+  }, [creatorId, user, currentUserId]);
 
   const handleSubscribeClick = async () => {
     if (!currentUserId) {
@@ -551,7 +555,7 @@ const fetchPlaylists = async () => {
 
   const sliderSettings = {
     dots: false,
-    infinite: true,
+    infinite: data.length > 5,
     speed: 300,
     slidesToShow: 5,
     slidesToScroll: 1,
@@ -566,7 +570,7 @@ const fetchPlaylists = async () => {
         settings: {
           slidesToShow: 3,
           slidesToScroll: 1,
-          infinite: true,
+          infinite: data.length > 3,
           dots: true,
           arrows: true,
         },
@@ -578,6 +582,7 @@ const fetchPlaylists = async () => {
           slidesToScroll: 1,
           initialSlide: 2,
           arrows: true,
+          infinite: data.length > 2,
         },
       },
       {
@@ -586,6 +591,7 @@ const fetchPlaylists = async () => {
           slidesToShow: 2,
           slidesToScroll: 1,
           arrows: false,
+          infinite: data.length > 2,
         },
       },
     ],
