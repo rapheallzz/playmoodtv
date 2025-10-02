@@ -336,6 +336,8 @@ export const StyledSliderContainer = styled.div`
   width: 100%;
   padding: 0 20px;
   margin: 0 auto;
+  display: flex;
+  justify-content: flex-start;
 
   .slick-slider {
     position: relative;
@@ -820,7 +822,7 @@ export const LoadingMessage = styled.div`
 
 export const NoPostsMessage = styled.div`
   color: #ccc;
-  text-align: center;
+  text-align: left;
   font-size: 1rem;
   padding: 20px;
 
