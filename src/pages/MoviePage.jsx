@@ -46,8 +46,8 @@ export default function MoviePage() {
     try {
       console.log('Saving progress for contentId:', contentId, 'time:', currentTime);
       const response = await axios.post(
-        'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/progress/',
-        { contentId, progress: currentTime },
+        `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/progress/${contentId}`,
+        { progress: currentTime },
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
       console.log('Progress saved successfully:', response.data);
@@ -103,6 +103,33 @@ export default function MoviePage() {
         setMovie(response.data);
         setComments(response.data.comments || []);
         setHasMore(response.data.comments?.length === COMMENTS_PER_PAGE);
+
+        if (user && user.token) {
+          axios.get(
+            `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/progress/${contentId}`,
+            { headers: { Authorization: `Bearer ${user.token}` } }
+          ).then(progressResponse => {
+            if (progressResponse.data && progressResponse.data.progress && videoRef.current) {
+              const video = videoRef.current;
+              const setTime = () => {
+                if(video.readyState >= 2) { // HAVE_CURRENT_DATA
+                  video.currentTime = progressResponse.data.progress;
+                }
+              };
+              if (video.readyState >= 2) {
+                setTime();
+              } else {
+                video.addEventListener('loadeddata', setTime, { once: true });
+              }
+            }
+          }).catch(error => {
+            if (error.response && error.response.status === 404) {
+              console.log('No progress found for this content.');
+            } else {
+              console.error('Error fetching video progress:', error);
+            }
+          });
+        }
       } catch (error) {
         console.error('Error fetching movie:', error.response?.data || error.message);
         setError('Failed to load movie data.');
