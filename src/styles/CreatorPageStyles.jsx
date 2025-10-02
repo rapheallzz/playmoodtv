@@ -341,6 +341,7 @@ export const StyledSliderContainer = styled.div`
 
   .slick-slider {
     position: relative;
+    width: 100%;
   }
 
   .slick-prev,
@@ -1281,4 +1282,12 @@ export const LargeHighlightCircle = styled(HighlightCircle)`
 
 export const LargeHighlightTitle = styled(HighlightTitle)`
   font-size: 1.1rem;
+`;
+
+export const VideoGrid = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: flex-start;
+  width: 100%;
 `;

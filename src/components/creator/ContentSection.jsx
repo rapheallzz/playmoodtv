@@ -2,7 +2,7 @@ import React from 'react';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import { StyledContentSection, SectionTitle, SubTabNav, SubTabButton, StyledSliderContainer, NoPostsMessage, CustomPrevArrow, CustomNextArrow } from '../../styles/CreatorPageStyles';
+import { StyledContentSection, SectionTitle, SubTabNav, SubTabButton, StyledSliderContainer, NoPostsMessage, CustomPrevArrow, CustomNextArrow, VideoGrid } from '../../styles/CreatorPageStyles';
 import PlaylistSection from './PlaylistSection';
 import CommunitySection from './CommunitySection';
 import Slidercontent from '../Slidercont';
@@ -111,7 +111,7 @@ const ContentSection = ({
             {activeSubTab === 'Approved' ? (
               approvedVideos.length === 0 ? (
                 <NoPostsMessage>No approved videos yet.</NoPostsMessage>
-              ) : (
+              ) : approvedVideos.length > 5 ? (
                 <Slider {...getSliderSettings(approvedVideos.length)}>
                   {approvedVideos.map((content) => (
                     <div key={content._id} className="slides">
@@ -125,17 +125,37 @@ const ContentSection = ({
                         customStyle={{}}
                         onVideoClick={() => {
                           console.log('Uploads (Approved) slider clicked:', content);
-                          handleOpenContentModal(content); // Changed to ContentModal
+                          handleOpenContentModal(content);
                         }}
                       />
                     </div>
                   ))}
                 </Slider>
+              ) : (
+                <VideoGrid>
+                  {approvedVideos.map((content) => (
+                    <div key={content._id} className="slides">
+                      <Slidercontent
+                        img={content.thumbnail}
+                        title={content.title}
+                        movie={content}
+                        views={content.views}
+                        desc={content.description}
+                        shortPreview={content.shortPreview}
+                        customStyle={{}}
+                        onVideoClick={() => {
+                          console.log('Uploads (Approved) slider clicked:', content);
+                          handleOpenContentModal(content);
+                        }}
+                      />
+                    </div>
+                  ))}
+                </VideoGrid>
               )
             ) : (
               pendingVideos.length === 0 ? (
                 <NoPostsMessage>No pending videos yet.</NoPostsMessage>
-              ) : (
+              ) : pendingVideos.length > 5 ? (
                 <Slider {...getSliderSettings(pendingVideos.length)}>
                   {pendingVideos.map((content) => (
                     <div key={content._id} className="slides">
@@ -149,12 +169,32 @@ const ContentSection = ({
                         customStyle={{}}
                         onVideoClick={() => {
                           console.log('Uploads (Pending) slider clicked:', content);
-                          handleOpenContentModal(content); // Changed to ContentModal
+                          handleOpenContentModal(content);
                         }}
                       />
                     </div>
                   ))}
                 </Slider>
+              ) : (
+                <VideoGrid>
+                  {pendingVideos.map((content) => (
+                    <div key={content._id} className="slides">
+                      <Slidercontent
+                        img={content.thumbnail}
+                        title={content.title}
+                        movie={content}
+                        views={content.views}
+                        desc={content.description}
+                        shortPreview={content.shortPreview}
+                        customStyle={{}}
+                        onVideoClick={() => {
+                          console.log('Uploads (Pending) slider clicked:', content);
+                          handleOpenContentModal(content);
+                        }}
+                      />
+                    </div>
+                  ))}
+                </VideoGrid>
               )
             )}
           </StyledSliderContainer>
@@ -178,25 +218,47 @@ const ContentSection = ({
               {isLoadingPlaylistVideos ? (
                 <NoPostsMessage>Loading videos...</NoPostsMessage>
               ) : Array.isArray(selectedPlaylistVideos) && selectedPlaylistVideos.length > 0 ? (
-                <Slider {...getSliderSettings(selectedPlaylistVideos.length)}>
-                  {selectedPlaylistVideos.map((video) => (
-                    <div key={video._id} className="slides">
-                      <Slidercontent
-                        img={video.thumbnail}
-                        title={video.title}
-                        movie={video}
-                        views={video.views || 0}
-                        desc={video.description || ''}
-                        shortPreview={video.shortPreview || video.video}
-                        customStyle={{}}
-                        onVideoClick={() => {
-                          console.log('Playlist slider clicked:', video);
-                          handleOpenContentModal(video);
-                        }}
-                      />
-                    </div>
-                  ))}
-                </Slider>
+                selectedPlaylistVideos.length > 5 ? (
+                  <Slider {...getSliderSettings(selectedPlaylistVideos.length)}>
+                    {selectedPlaylistVideos.map((video) => (
+                      <div key={video._id} className="slides">
+                        <Slidercontent
+                          img={video.thumbnail}
+                          title={video.title}
+                          movie={video}
+                          views={video.views || 0}
+                          desc={video.description || ''}
+                          shortPreview={video.shortPreview || video.video}
+                          customStyle={{}}
+                          onVideoClick={() => {
+                            console.log('Playlist slider clicked:', video);
+                            handleOpenContentModal(video);
+                          }}
+                        />
+                      </div>
+                    ))}
+                  </Slider>
+                ) : (
+                  <VideoGrid>
+                    {selectedPlaylistVideos.map((video) => (
+                      <div key={video._id} className="slides">
+                        <Slidercontent
+                          img={video.thumbnail}
+                          title={video.title}
+                          movie={video}
+                          views={video.views || 0}
+                          desc={video.description || ''}
+                          shortPreview={video.shortPreview || video.video}
+                          customStyle={{}}
+                          onVideoClick={() => {
+                            console.log('Playlist slider clicked:', video);
+                            handleOpenContentModal(video);
+                          }}
+                        />
+                      </div>
+                    ))}
+                  </VideoGrid>
+                )
               ) : (
                 <NoPostsMessage>No videos in this playlist.</NoPostsMessage>
               )}
