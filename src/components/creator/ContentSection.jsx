@@ -8,9 +8,9 @@ import CommunitySection from './CommunitySection';
 import Slidercontent from '../Slidercont';
 import ContentModal from '../ContentModal';
 
-const sliderSettings = {
+const getSliderSettings = (itemCount) => ({
   dots: false,
-  infinite: true,
+  infinite: itemCount > 5, // Only enable infinite scroll if there are more items than slides to show
   speed: 300,
   slidesToShow: 5,
   slidesToScroll: 1,
@@ -25,7 +25,7 @@ const sliderSettings = {
       settings: {
         slidesToShow: 3,
         slidesToScroll: 1,
-        infinite: true,
+        infinite: itemCount > 3,
         dots: true,
         arrows: true,
       },
@@ -35,7 +35,8 @@ const sliderSettings = {
       settings: {
         slidesToShow: 2,
         slidesToScroll: 1,
-        initialSlide: 2,
+        initialSlide: 0,
+        infinite: itemCount > 2,
         arrows: true,
       },
     },
@@ -44,11 +45,12 @@ const sliderSettings = {
       settings: {
         slidesToShow: 2,
         slidesToScroll: 1,
+        infinite: itemCount > 2,
         arrows: false,
       },
     },
   ],
-};
+});
 
 const ContentSection = ({
   activeTab,
@@ -110,7 +112,7 @@ const ContentSection = ({
               approvedVideos.length === 0 ? (
                 <NoPostsMessage>No approved videos yet.</NoPostsMessage>
               ) : (
-                <Slider {...sliderSettings}>
+                <Slider {...getSliderSettings(approvedVideos.length)}>
                   {approvedVideos.map((content) => (
                     <div key={content._id} className="slides">
                       <Slidercontent
@@ -134,7 +136,7 @@ const ContentSection = ({
               pendingVideos.length === 0 ? (
                 <NoPostsMessage>No pending videos yet.</NoPostsMessage>
               ) : (
-                <Slider {...sliderSettings}>
+                <Slider {...getSliderSettings(pendingVideos.length)}>
                   {pendingVideos.map((content) => (
                     <div key={content._id} className="slides">
                       <Slidercontent
@@ -176,7 +178,7 @@ const ContentSection = ({
               {isLoadingPlaylistVideos ? (
                 <NoPostsMessage>Loading videos...</NoPostsMessage>
               ) : Array.isArray(selectedPlaylistVideos) && selectedPlaylistVideos.length > 0 ? (
-                <Slider {...sliderSettings}>
+                <Slider {...getSliderSettings(selectedPlaylistVideos.length)}>
                   {selectedPlaylistVideos.map((video) => (
                     <div key={video._id} className="slides">
                       <Slidercontent
