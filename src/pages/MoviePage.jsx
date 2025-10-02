@@ -36,6 +36,7 @@ export default function MoviePage() {
   const { slug } = useParams();
   const contentId = slug && /^[0-9a-fA-F]{24}$/.test(slug.split('-').pop()) ? slug.split('-').pop() : null;
   const videoRef = useRef(null);
+  const lastSavedSecond = useRef(0);
 
   // Save video progress (only for signed-in users)
   const saveProgress = async (currentTime) => {
@@ -60,8 +61,12 @@ export default function MoviePage() {
   const handleTimeUpdate = () => {
     if (videoRef.current && user) {
       const currentTime = videoRef.current.currentTime;
-      if (Math.floor(currentTime) % 5 === 0 && currentTime > 0) {
+      const currentSecond = Math.floor(currentTime);
+
+      // Save progress every 5 seconds, but only once per second block
+      if (currentSecond > 0 && currentSecond % 5 === 0 && currentSecond !== lastSavedSecond.current) {
         saveProgress(currentTime);
+        lastSavedSecond.current = currentSecond;
       }
     }
   };
@@ -106,7 +111,7 @@ export default function MoviePage() {
 
         if (user && user.token) {
           axios.get(
-            `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/progress/${contentId}`,
+            `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/progress/${contentId}`,
             { headers: { Authorization: `Bearer ${user.token}` } }
           ).then(progressResponse => {
             if (progressResponse.data && progressResponse.data.progress && videoRef.current) {
@@ -179,9 +184,9 @@ export default function MoviePage() {
 
     try {
       const commentUrl = `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${contentId}/comment`;
-      const payload = { 
-        contentId: contentId, 
-        text: commentText 
+      const payload = {
+        contentId: contentId,
+        text: commentText
       };
       console.log('Submitting comment:', {
         url: commentUrl,
@@ -540,7 +545,7 @@ export default function MoviePage() {
           />
         </div>
         {/* Footer */}
-          
+
           <div>
             <Footer/>
           </div>
@@ -633,7 +638,7 @@ const CommentList = styled.div`
   padding-right: 0.25rem;
 
    @media screen and (max-width: 768px) {
-   
+
   }
 `;
 
