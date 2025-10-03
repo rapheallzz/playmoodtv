@@ -28,17 +28,27 @@ const useHighlights = (user, creatorId) => {
   }, [fetchHighlights]);
 
   const createHighlight = async (highlightData) => {
-    if (!user?._id) {
+    if (!user?._id || !user.token) {
       setError('User not authenticated.');
       return { success: false };
     }
     setIsLoading(true);
     setError(null);
     try {
-      const response = await axios.post('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/highlights', {
-        ...highlightData,
-        creatorId: user._id,
-      });
+      const config = {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+      const response = await axios.post(
+        'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/highlights',
+        {
+          ...highlightData,
+          creatorId: user._id,
+        },
+        config
+      );
       setHighlights((prev) => [...prev, response.data]);
       setIsLoading(false);
       return { success: true, data: response.data };
