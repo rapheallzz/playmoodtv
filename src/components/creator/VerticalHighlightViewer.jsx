@@ -12,8 +12,15 @@ import {
   ActionsContainer,
   ViewerActionButton,
   NavigationArrow,
+  VideoControlsContainer,
+  PlayerControl,
+  VolumeContainer,
+  VolumeSlider,
 } from '../../styles/CreatorPageStyles';
-import { FaTimes, FaHeart, FaComment, FaPaperPlane, FaChevronUp, FaChevronDown } from 'react-icons/fa';
+import {
+  FaTimes, FaHeart, FaComment, FaPaperPlane, FaChevronUp, FaChevronDown,
+  FaPlay, FaPause, FaVolumeUp, FaVolumeMute, FaExpand
+} from 'react-icons/fa';
 
 const VerticalHighlightViewer = ({
   highlights,
@@ -23,10 +30,25 @@ const VerticalHighlightViewer = ({
   profileImage,
 }) => {
   const storyRefs = useRef([]);
+  const videoRefs = useRef([]);
   const viewerRef = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(startIndex);
+  const [playerStates, setPlayerStates] = useState({});
 
-  // Effect to handle scrolling when currentIndex changes
+  // Initialize player states
+  useEffect(() => {
+    const initialStates = {};
+    highlights.forEach((_, index) => {
+      initialStates[index] = {
+        isPlaying: false,
+        volume: 1,
+        isMuted: true,
+      };
+    });
+    setPlayerStates(initialStates);
+  }, [highlights]);
+
+  // Effect to scroll to the current video and manage its play state
   useEffect(() => {
     if (storyRefs.current[currentIndex]) {
       storyRefs.current[currentIndex].scrollIntoView({
@@ -34,24 +56,40 @@ const VerticalHighlightViewer = ({
         block: 'center',
       });
     }
+    setPlayerStates(prev => {
+      const newStates = { ...prev };
+      Object.keys(newStates).forEach(key => {
+        newStates[parseInt(key)].isPlaying = parseInt(key) === currentIndex;
+      });
+      return newStates;
+    });
   }, [currentIndex]);
 
-  // Effect to manage IntersectionObserver for video playback and syncing index
+  // Effect to sync player state with video DOM elements
+  useEffect(() => {
+    videoRefs.current.forEach((video, index) => {
+      if (video && playerStates[index]) {
+        video.volume = playerStates[index].volume;
+        video.muted = playerStates[index].isMuted;
+        if (playerStates[index].isPlaying) {
+          video.play().catch(e => console.error("Video play failed:", e));
+        } else {
+          video.pause();
+        }
+      }
+    });
+  }, [playerStates]);
+
+  // Effect to manage IntersectionObserver for updating currentIndex
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          const video = entry.target.querySelector('video');
           if (entry.isIntersecting) {
-            video?.play().catch(e => console.log("Autoplay was prevented"));
             const intersectingIndex = storyRefs.current.findIndex(ref => ref === entry.target);
-            if (intersectingIndex !== -1) {
-              setCurrentIndex(prevIndex =>
-                intersectingIndex === prevIndex ? prevIndex : intersectingIndex
-              );
+            if (intersectingIndex !== -1 && intersectingIndex !== currentIndex) {
+              setCurrentIndex(intersectingIndex);
             }
-          } else {
-            video?.pause();
           }
         });
       },
@@ -68,7 +106,14 @@ const VerticalHighlightViewer = ({
         if (ref) observer.unobserve(ref);
       });
     };
-  }, [highlights]);
+  }, [highlights, currentIndex]);
+
+  const updatePlayerState = (index, newState) => {
+    setPlayerStates(prev => ({
+      ...prev,
+      [index]: { ...(prev[index] || {}), ...newState },
+    }));
+  };
 
   const handleScroll = (direction) => {
     setCurrentIndex(prevIndex => {
@@ -80,9 +125,43 @@ const VerticalHighlightViewer = ({
     });
   };
 
+  const togglePlay = () => {
+    if (playerStates[currentIndex]) {
+      updatePlayerState(currentIndex, { isPlaying: !playerStates[currentIndex].isPlaying });
+    }
+  };
+
+  const toggleMute = () => {
+    if (playerStates[currentIndex]) {
+      updatePlayerState(currentIndex, { isMuted: !playerStates[currentIndex].isMuted });
+    }
+  };
+
+  const handleVolumeChange = (e) => {
+    const newVolume = parseFloat(e.target.value);
+    if (playerStates[currentIndex]) {
+      updatePlayerState(currentIndex, { volume: newVolume, isMuted: newVolume === 0 });
+    }
+  };
+
+  const toggleFullScreen = () => {
+    const video = videoRefs.current[currentIndex];
+    if (video) {
+      if (!document.fullscreenElement) {
+        video.requestFullscreen().catch(err => {
+          console.error(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+        });
+      } else {
+        document.exitFullscreen();
+      }
+    }
+  };
+
+  const currentVideoState = playerStates[currentIndex] || { isPlaying: false, volume: 1, isMuted: true };
+
   return (
     <VerticalScrollViewer ref={viewerRef}>
-      <CloseButton onClick={onClose} style={{ position: 'fixed', top: '20px', right: '20px', zIndex: 1001 }}>
+      <CloseButton onClick={onClose} style={{ position: 'fixed', top: '20px', right: '20px', zIndex: 10004 }}>
         <FaTimes />
       </CloseButton>
       <NavigationArrow className="up-arrow" onClick={() => handleScroll(-1)} disabled={currentIndex === 0}>
@@ -96,13 +175,36 @@ const VerticalHighlightViewer = ({
           key={highlight._id}
           ref={(el) => (storyRefs.current[index] = el)}
         >
-          <VideoContainer>
+          <VideoContainer data-testid={`video-container-${index}`}>
+            <VideoControlsContainer>
+              <PlayerControl onClick={togglePlay}>
+                {currentVideoState.isPlaying ? <FaPause /> : <FaPlay />}
+              </PlayerControl>
+              <VolumeContainer>
+                <PlayerControl onClick={toggleMute}>
+                  {currentVideoState.isMuted || currentVideoState.volume === 0 ? <FaVolumeMute /> : <FaVolumeUp />}
+                </PlayerControl>
+                <VolumeSlider
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.1"
+                  value={currentVideoState.isMuted ? 0 : currentVideoState.volume}
+                  onChange={handleVolumeChange}
+                />
+              </VolumeContainer>
+              <PlayerControl onClick={toggleFullScreen}>
+                <FaExpand />
+              </PlayerControl>
+            </VideoControlsContainer>
+
             {highlight.content?.video ? (
               <Video
+                ref={el => videoRefs.current[index] = el}
                 src={highlight.content.video}
                 loop
                 playsInline
-                muted
+                onClick={togglePlay}
               />
             ) : (
               <p>Video not available.</p>

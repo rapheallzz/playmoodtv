@@ -109,7 +109,7 @@ const Register = () => {
       <Logo src={playmood} alt="Playmood Logo" />
       <Form onSubmit={handleSignup}>
         <h2>Sign Up</h2>
-        {errorMessage && <ErrorMessage data-testid="error-message">{errorMessage}</ErrorMessage>}
+        {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
         <Input
           type="text"
           name="name"

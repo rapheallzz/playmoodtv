@@ -45,94 +45,6 @@ export const BannerImage = styled.img`
   object-fit: cover;
 `;
 
-export const HighlightOverlay = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 20px;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, transparent 30%);
-`;
-
-export const CreatorInfo = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-`;
-
-export const CreatorAvatar = styled.img`
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-`;
-
-export const CreatorName = styled.span`
-  color: white;
-  font-weight: 600;
-  font-size: 1rem;
-`;
-
-export const ActionsContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-`;
-
-export const ViewerActionButton = styled.button`
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
-  font-size: 0.8rem;
-
-  svg {
-    font-size: 2rem;
-  }
-`;
-
-export const NavigationArrow = styled.button`
-  position: fixed; /* Changed to fixed to prevent scrolling */
-  right: 40px;
-  background: rgba(255, 255, 255, 0.2);
-  border: none;
-  color: white;
-  cursor: pointer;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 10003; /* Ensure it's above the scroll viewer */
-
-  &.up-arrow {
-    top: 50%;
-    transform: translateY(-70px);
-  }
-
-  &.down-arrow {
-    top: 50%;
-    transform: translateY(30px);
-  }
-
-  svg {
-    font-size: 1.5rem;
-  }
-`;
-
 export const SocialIcons = styled.div`
   display: flex;
   position: absolute;
@@ -1426,8 +1338,133 @@ export const VideoContainer = styled.div`
   box-shadow: 0 12px 24px rgba(0,0,0,0.5);
 `;
 
+export const VideoControlsContainer = styled.div`
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 11;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+
+  ${VideoContainer}:hover & {
+    opacity: 1;
+  }
+`;
+
+export const PlayerControl = styled.button`
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 1.5rem;
+  padding: 5px;
+`;
+
+export const VolumeContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+export const VolumeSlider = styled.input`
+  width: 80px;
+  cursor: pointer;
+`;
+
 export const Video = styled.video`
   width: 100%;
   height: 100%;
   object-fit: cover;
+`;
+
+export const HighlightOverlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, transparent 30%);
+`;
+
+export const CreatorInfo = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`;
+
+export const CreatorAvatar = styled.img`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+`;
+
+export const CreatorName = styled.span`
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+`;
+
+export const ActionsContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+`;
+
+export const ViewerActionButton = styled.button`
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.8rem;
+
+  svg {
+    font-size: 2rem;
+  }
+`;
+
+export const NavigationArrow = styled.button`
+  position: fixed; /* Changed to fixed to prevent scrolling */
+  right: 40px;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  cursor: pointer;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10003; /* Ensure it's above the scroll viewer */
+
+  &.up-arrow {
+    top: 50%;
+    transform: translateY(-70px);
+  }
+
+  &.down-arrow {
+    top: 50%;
+    transform: translateY(30px);
+  }
+
+  svg {
+    font-size: 1.5rem;
+  }
 `;
