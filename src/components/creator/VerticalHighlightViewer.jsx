@@ -23,18 +23,22 @@ const VerticalHighlightViewer = ({
   profileImage,
 }) => {
   const storyRefs = useRef([]);
-  const observer = useRef(null);
   const viewerRef = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(startIndex);
 
+  // Effect to handle scrolling when currentIndex changes
   useEffect(() => {
-    // Scroll to the initial highlight
-    if (storyRefs.current[startIndex]) {
-      storyRefs.current[startIndex].scrollIntoView();
+    if (storyRefs.current[currentIndex]) {
+      storyRefs.current[currentIndex].scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
     }
+  }, [currentIndex]);
 
-    // Set up the Intersection Observer
-    observer.current = new IntersectionObserver(
+  // Effect to manage IntersectionObserver for video playback and syncing index
+  useEffect(() => {
+    const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           const video = entry.target.querySelector('video');
@@ -42,36 +46,34 @@ const VerticalHighlightViewer = ({
             video?.play().catch(e => console.log("Autoplay was prevented"));
             const intersectingIndex = storyRefs.current.findIndex(ref => ref === entry.target);
             if (intersectingIndex !== -1) {
-              setCurrentIndex(intersectingIndex);
+              setCurrentIndex(prevIndex =>
+                intersectingIndex === prevIndex ? prevIndex : intersectingIndex
+              );
             }
           } else {
             video?.pause();
           }
         });
       },
-      {
-        threshold: 0.5, // 50% of the item must be visible
-      }
+      { threshold: 0.5 }
     );
 
-    // Observe all the stories
-    storyRefs.current.forEach((ref) => {
-      if (ref) observer.current.observe(ref);
+    const currentRefs = storyRefs.current;
+    currentRefs.forEach((ref) => {
+      if (ref) observer.observe(ref);
     });
 
-    // Cleanup
     return () => {
-      storyRefs.current.forEach((ref) => {
-        if (ref) observer.current.unobserve(ref);
+      currentRefs.forEach((ref) => {
+        if (ref) observer.unobserve(ref);
       });
     };
-  }, [highlights, startIndex]);
+  }, [highlights]);
 
   const handleScroll = (direction) => {
     setCurrentIndex(prevIndex => {
       const newIndex = prevIndex + direction;
       if (newIndex >= 0 && newIndex < highlights.length) {
-        storyRefs.current[newIndex].scrollIntoView({ behavior: 'smooth', block: 'start' });
         return newIndex;
       }
       return prevIndex;
