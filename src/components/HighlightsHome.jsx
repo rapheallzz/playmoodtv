@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import axios from 'axios';
 import {
   HighlightsSectionContainer,
@@ -24,13 +25,13 @@ const HighlightsHome = () => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        // Fetch all highlights
-        const highlightsResponse = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/highlights/all');
+        const [highlightsResponse, creatorsResponse] = await Promise.all([
+          axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/highlights/all'),
+          axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/creators')
+        ]);
+
         setHighlights(highlightsResponse.data);
 
-        // Fetch all creators
-        const creatorsResponse = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/creators');
-        // Create a map for easy lookup
         const creatorsMap = creatorsResponse.data.reduce((acc, creator) => {
           acc[creator._id] = creator;
           return acc;
@@ -48,14 +49,10 @@ const HighlightsHome = () => {
   }, []);
 
   const handleSelectHighlight = async (highlight, index) => {
-    console.log("Selected Highlight:", highlight);
-    console.log("Creators Map:", creators);
-
     setShowVerticalHighlightViewer(true);
     setHighlightStartIndex(index);
     setViewedHighlights((prev) => new Set(prev).add(highlight._id));
 
-    // Find creator info from the fetched creators map
     const creator = creators[highlight.creatorId];
     if (creator) {
       setSelectedCreatorInfo({
@@ -64,7 +61,6 @@ const HighlightsHome = () => {
       });
     }
 
-    // Fetch all videos in background
     Promise.all(
       highlights.map(async (h) => {
         if (h.content.video) return h;
@@ -107,7 +103,7 @@ const HighlightsHome = () => {
           ))}
         </HighlightsList>
       </HighlightsSectionContainer>
-      {showVerticalHighlightViewer && (
+      {showVerticalHighlightViewer && ReactDOM.createPortal(
         <VerticalHighlightViewer
           highlights={enrichedHighlights.length ? enrichedHighlights : highlights}
           startIndex={highlightStartIndex}
@@ -117,7 +113,8 @@ const HighlightsHome = () => {
           }}
           creatorName={selectedCreatorInfo.name}
           profileImage={selectedCreatorInfo.profileImage}
-        />
+        />,
+        document.body
       )}
     </>
   );
