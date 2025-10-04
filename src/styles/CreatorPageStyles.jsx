@@ -1356,7 +1356,7 @@ export const VerticalScrollViewer = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: black;
+  background-color: rgba(0, 0, 0, 0.85);
   overflow-y: scroll;
   scroll-snap-type: y mandatory;
   z-index: 10002;
@@ -1374,11 +1374,17 @@ export const HighlightStory = styled.div`
 
 export const VideoContainer = styled.div`
   position: relative;
-  width: 100%;
-  height: 100%;
+  width: 360px;
+  height: 640px;
+  max-width: 90vw;
+  max-height: 90vh;
+  background-color: black;
+  border-radius: 16px;
+  overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
+  box-shadow: 0 12px 24px rgba(0,0,0,0.5);
 `;
 
 export const Video = styled.video`
