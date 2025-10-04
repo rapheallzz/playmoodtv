@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import {
   VerticalScrollViewer,
   HighlightStory,
@@ -11,8 +11,9 @@ import {
   CreatorName,
   ActionsContainer,
   ViewerActionButton,
+  NavigationArrow,
 } from '../../styles/CreatorPageStyles';
-import { FaTimes, FaHeart, FaComment, FaPaperPlane } from 'react-icons/fa';
+import { FaTimes, FaHeart, FaComment, FaPaperPlane, FaChevronUp, FaChevronDown } from 'react-icons/fa';
 
 const VerticalHighlightViewer = ({
   highlights,
@@ -23,6 +24,8 @@ const VerticalHighlightViewer = ({
 }) => {
   const storyRefs = useRef([]);
   const observer = useRef(null);
+  const viewerRef = useRef(null);
+  const [currentIndex, setCurrentIndex] = useState(startIndex);
 
   useEffect(() => {
     // Scroll to the initial highlight
@@ -37,6 +40,10 @@ const VerticalHighlightViewer = ({
           const video = entry.target.querySelector('video');
           if (entry.isIntersecting) {
             video?.play().catch(e => console.log("Autoplay was prevented"));
+            const intersectingIndex = storyRefs.current.findIndex(ref => ref === entry.target);
+            if (intersectingIndex !== -1) {
+              setCurrentIndex(intersectingIndex);
+            }
           } else {
             video?.pause();
           }
@@ -60,11 +67,28 @@ const VerticalHighlightViewer = ({
     };
   }, [highlights, startIndex]);
 
+  const handleScroll = (direction) => {
+    setCurrentIndex(prevIndex => {
+      const newIndex = prevIndex + direction;
+      if (newIndex >= 0 && newIndex < highlights.length) {
+        storyRefs.current[newIndex].scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return newIndex;
+      }
+      return prevIndex;
+    });
+  };
+
   return (
-    <VerticalScrollViewer>
+    <VerticalScrollViewer ref={viewerRef}>
       <CloseButton onClick={onClose} style={{ position: 'fixed', top: '20px', right: '20px', zIndex: 1001 }}>
         <FaTimes />
       </CloseButton>
+      <NavigationArrow className="up-arrow" onClick={() => handleScroll(-1)} disabled={currentIndex === 0}>
+        <FaChevronUp />
+      </NavigationArrow>
+      <NavigationArrow className="down-arrow" onClick={() => handleScroll(1)} disabled={currentIndex === highlights.length - 1}>
+        <FaChevronDown />
+      </NavigationArrow>
       {highlights.map((highlight, index) => (
         <HighlightStory
           key={highlight._id}

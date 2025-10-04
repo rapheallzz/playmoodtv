@@ -103,6 +103,40 @@ export const ViewerActionButton = styled.button`
   }
 `;
 
+export const NavigationArrow = styled.button`
+  position: absolute;
+  right: calc(50% - 220px); /* Positioned relative to the centered video container */
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  cursor: pointer;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+
+  &.up-arrow {
+    top: 50%;
+    transform: translateY(-70px);
+  }
+
+  &.down-arrow {
+    top: 50%;
+    transform: translateY(30px);
+  }
+
+  svg {
+    font-size: 1.5rem;
+  }
+
+  @media (max-width: 768px) {
+    right: 20px; /* Fallback for smaller screens */
+  }
+`;
+
 export const SocialIcons = styled.div`
   display: flex;
   position: absolute;
@@ -1360,6 +1394,15 @@ export const VerticalScrollViewer = styled.div`
   overflow-y: scroll;
   scroll-snap-type: y mandatory;
   z-index: 10002;
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 `;
 
 export const HighlightStory = styled.div`
