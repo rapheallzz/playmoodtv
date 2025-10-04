@@ -1440,7 +1440,7 @@ export const ViewerActionButton = styled.button`
 `;
 
 export const NavigationArrow = styled.button`
-  position: fixed; /* Changed to fixed to prevent scrolling */
+  position: fixed;
   right: 40px;
   background: rgba(255, 255, 255, 0.2);
   border: none;
@@ -1452,7 +1452,7 @@ export const NavigationArrow = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 10003; /* Ensure it's above the scroll viewer */
+  z-index: 10003;
 
   &.up-arrow {
     top: 50%;

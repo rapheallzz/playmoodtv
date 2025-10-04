@@ -7,14 +7,17 @@ import {
   LargeHighlightCircle,
   LargeHighlightTitle,
 } from '../styles/CreatorPageStyles';
-import HighlightViewer from './creator/HighlightViewer';
+import VerticalHighlightViewer from './creator/VerticalHighlightViewer';
 import { SkeletonHighlightsWrapper, SkeletonHighlightItem, SkeletonHighlightCircle, SkeletonText } from '../styles/SkeletonStyles';
 
 const HighlightsHome = () => {
   const [highlights, setHighlights] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedHighlight, setSelectedHighlight] = useState(null);
   const [viewedHighlights, setViewedHighlights] = useState(new Set());
+  const [showVerticalHighlightViewer, setShowVerticalHighlightViewer] = useState(false);
+  const [highlightStartIndex, setHighlightStartIndex] = useState(0);
+  const [enrichedHighlights, setEnrichedHighlights] = useState([]);
+  const [selectedCreatorInfo, setSelectedCreatorInfo] = useState({ name: '', profileImage: '' });
 
   useEffect(() => {
     const fetchHighlights = async () => {
@@ -32,40 +35,32 @@ const HighlightsHome = () => {
     fetchHighlights();
   }, []);
 
-  const handleSelectHighlight = async (highlight) => {
-    try {
-      const response = await axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${highlight.content._id}`);
-      const content = response.data;
+  const handleSelectHighlight = async (highlight, index) => {
+    setShowVerticalHighlightViewer(true);
+    setHighlightStartIndex(index);
+    setViewedHighlights((prev) => new Set(prev).add(highlight._id));
 
-      if (content && content.video) {
-        setSelectedHighlight({
-          ...highlight,
-          content: {
-            ...highlight.content,
-            video: content.video,
-          },
-        });
-        setViewedHighlights((prev) => new Set(prev).add(highlight._id));
-      } else {
-        console.error('Video content for this highlight is not available.');
-      }
-    } catch (error) {
-      console.error('Error fetching content details for highlight:', error);
+    if (highlight.creator) {
+      setSelectedCreatorInfo({
+        name: highlight.creator.name,
+        profileImage: highlight.creator.profileImage,
+      });
     }
-  };
 
-  const handleNextHighlight = () => {
-    const currentIndex = highlights.findIndex((h) => h._id === selectedHighlight._id);
-    if (currentIndex < highlights.length - 1) {
-      handleSelectHighlight(highlights[currentIndex + 1]);
-    }
-  };
-
-  const handlePreviousHighlight = () => {
-    const currentIndex = highlights.findIndex((h) => h._id === selectedHighlight._id);
-    if (currentIndex > 0) {
-      handleSelectHighlight(highlights[currentIndex - 1]);
-    }
+    // Fetch all videos in background
+    Promise.all(
+      highlights.map(async (h) => {
+        if (h.content.video) return h;
+        try {
+          const res = await axios.get(
+            `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${h.content._id}`
+          );
+          return { ...h, content: { ...h.content, video: res.data.video } };
+        } catch (e) {
+          return h;
+        }
+      })
+    ).then(setEnrichedHighlights);
   };
 
   if (isLoading) {
@@ -85,8 +80,8 @@ const HighlightsHome = () => {
     <>
       <HighlightsSectionContainer>
         <HighlightsList>
-          {highlights.map((highlight) => (
-            <HighlightItem key={highlight._id} onClick={() => handleSelectHighlight(highlight)}>
+          {highlights.map((highlight, index) => (
+            <HighlightItem data-testid={`highlight-item-home-${index}`} key={highlight._id} onClick={() => handleSelectHighlight(highlight, index)}>
               <LargeHighlightCircle viewed={viewedHighlights.has(highlight._id)}>
                 {highlight.content.thumbnail && <img src={highlight.content.thumbnail} alt="Highlight thumbnail" />}
               </LargeHighlightCircle>
@@ -95,14 +90,16 @@ const HighlightsHome = () => {
           ))}
         </HighlightsList>
       </HighlightsSectionContainer>
-      {selectedHighlight && (
-        <HighlightViewer
-          highlight={selectedHighlight}
-          onClose={() => setSelectedHighlight(null)}
-          onNext={handleNextHighlight}
-          onPrevious={handlePreviousHighlight}
-          isFirst={highlights.findIndex((h) => h._id === selectedHighlight._id) === 0}
-          isLast={highlights.findIndex((h) => h._id === selectedHighlight._id) === highlights.length - 1}
+      {showVerticalHighlightViewer && (
+        <VerticalHighlightViewer
+          highlights={enrichedHighlights.length ? enrichedHighlights : highlights}
+          startIndex={highlightStartIndex}
+          onClose={() => {
+            setShowVerticalHighlightViewer(false);
+            setEnrichedHighlights([]);
+          }}
+          creatorName={selectedCreatorInfo.name}
+          profileImage={selectedCreatorInfo.profileImage}
         />
       )}
     </>

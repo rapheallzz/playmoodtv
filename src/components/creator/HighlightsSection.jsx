@@ -17,8 +17,8 @@ const HighlightsSection = ({ highlights, onSelectHighlight, viewedHighlights }) 
     <HighlightsSectionContainer>
       <SectionTitle>Highlights</SectionTitle>
       <HighlightsList>
-        {highlights.map((highlight) => (
-          <HighlightItem key={highlight._id} onClick={() => onSelectHighlight(highlight)}>
+        {highlights.map((highlight, index) => (
+          <HighlightItem data-testid={`highlight-item-${index}`} key={highlight._id} onClick={() => onSelectHighlight(highlight, index)}>
             <HighlightCircle viewed={viewedHighlights.has(highlight._id)}>
               {highlight.content.thumbnail && <img src={highlight.content.thumbnail} alt="Highlight thumbnail" />}
             </HighlightCircle>
