@@ -12,6 +12,7 @@ import { SkeletonHighlightsWrapper, SkeletonHighlightItem, SkeletonHighlightCirc
 
 const HighlightsHome = () => {
   const [highlights, setHighlights] = useState([]);
+  const [creators, setCreators] = useState({}); // To store creator details by ID
   const [isLoading, setIsLoading] = useState(true);
   const [viewedHighlights, setViewedHighlights] = useState(new Set());
   const [showVerticalHighlightViewer, setShowVerticalHighlightViewer] = useState(false);
@@ -20,30 +21,46 @@ const HighlightsHome = () => {
   const [selectedCreatorInfo, setSelectedCreatorInfo] = useState({ name: '', profileImage: '' });
 
   useEffect(() => {
-    const fetchHighlights = async () => {
+    const fetchData = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/highlights/all');
-        setHighlights(response.data);
+        // Fetch all highlights
+        const highlightsResponse = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/highlights/all');
+        setHighlights(highlightsResponse.data);
+
+        // Fetch all creators
+        const creatorsResponse = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/creators');
+        // Create a map for easy lookup
+        const creatorsMap = creatorsResponse.data.reduce((acc, creator) => {
+          acc[creator._id] = creator;
+          return acc;
+        }, {});
+        setCreators(creatorsMap);
+
       } catch (error) {
-        console.error('Error fetching highlights:', error);
+        console.error('Error fetching data:', error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchHighlights();
+    fetchData();
   }, []);
 
   const handleSelectHighlight = async (highlight, index) => {
+    console.log("Selected Highlight:", highlight);
+    console.log("Creators Map:", creators);
+
     setShowVerticalHighlightViewer(true);
     setHighlightStartIndex(index);
     setViewedHighlights((prev) => new Set(prev).add(highlight._id));
 
-    if (highlight.creator) {
+    // Find creator info from the fetched creators map
+    const creator = creators[highlight.creatorId];
+    if (creator) {
       setSelectedCreatorInfo({
-        name: highlight.creator.name,
-        profileImage: highlight.creator.profileImage,
+        name: creator.name,
+        profileImage: creator.profileImage,
       });
     }
 

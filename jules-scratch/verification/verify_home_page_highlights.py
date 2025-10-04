@@ -7,7 +7,12 @@ def run(playwright):
 
     try:
         # Navigate to the home page
-        page.goto("http://localhost:5176/")
+        page.goto("http://localhost:5173/")
+
+        # Accept cookies if the popup appears
+        cookies_accept_button = page.locator("button.accept-btn")
+        if cookies_accept_button.is_visible():
+            cookies_accept_button.click()
 
         # Wait for the first highlight item to be visible using the data-testid
         first_highlight = page.get_by_test_id("highlight-item-home-0")
