@@ -45,6 +45,64 @@ export const BannerImage = styled.img`
   object-fit: cover;
 `;
 
+export const HighlightOverlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, transparent 30%);
+`;
+
+export const CreatorInfo = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`;
+
+export const CreatorAvatar = styled.img`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+`;
+
+export const CreatorName = styled.span`
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+`;
+
+export const ActionsContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+`;
+
+export const ViewerActionButton = styled.button`
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.8rem;
+
+  svg {
+    font-size: 2rem;
+  }
+`;
+
 export const SocialIcons = styled.div`
   display: flex;
   position: absolute;
@@ -1290,4 +1348,41 @@ export const VideoGrid = styled.div`
   gap: 16px;
   justify-content: flex-start;
   width: 100%;
+`;
+
+export const VerticalScrollViewer = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  z-index: 10002;
+`;
+
+export const HighlightStory = styled.div`
+  width: 100%;
+  height: 100%;
+  scroll-snap-align: start;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+export const VideoContainer = styled.div`
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+export const Video = styled.video`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 `;
