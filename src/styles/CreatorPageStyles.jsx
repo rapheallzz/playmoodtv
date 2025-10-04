@@ -104,8 +104,8 @@ export const ViewerActionButton = styled.button`
 `;
 
 export const NavigationArrow = styled.button`
-  position: absolute;
-  right: 40px; /* Positioned on the far right of the viewport */
+  position: fixed; /* Changed to fixed to prevent scrolling */
+  right: 40px;
   background: rgba(255, 255, 255, 0.2);
   border: none;
   color: white;
@@ -116,7 +116,7 @@ export const NavigationArrow = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 10;
+  z-index: 10003; /* Ensure it's above the scroll viewer */
 
   &.up-arrow {
     top: 50%;
