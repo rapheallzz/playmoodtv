@@ -105,7 +105,7 @@ export const ViewerActionButton = styled.button`
 
 export const NavigationArrow = styled.button`
   position: absolute;
-  right: calc(50% - 220px); /* Positioned relative to the centered video container */
+  right: 40px; /* Positioned on the far right of the viewport */
   background: rgba(255, 255, 255, 0.2);
   border: none;
   color: white;
@@ -130,10 +130,6 @@ export const NavigationArrow = styled.button`
 
   svg {
     font-size: 1.5rem;
-  }
-
-  @media (max-width: 768px) {
-    right: 20px; /* Fallback for smaller screens */
   }
 `;
 
