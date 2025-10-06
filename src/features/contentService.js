@@ -94,6 +94,25 @@ const commentOnContent = async ({ contentId, comment, token }) => {
   }
 };
 
+// Get comments for content
+const getComments = async ({ contentId, token }) => {
+  try {
+    const response = await axios.get(
+      `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${contentId}/comments`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    const message =
+      error.response?.data?.message || 'Failed to fetch comments. Please try again.';
+    throw new Error(message);
+  }
+};
+
 // Add to watchlist
 const addToWatchlist = async ({ userId, contentId, token }) => {
   try {
@@ -142,6 +161,7 @@ const contentService = {
   likeContent,
   unlikeContent,
   commentOnContent,
+  getComments,
   addToWatchlist,
   removeFromWatchlist,
 };

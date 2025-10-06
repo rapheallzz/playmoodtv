@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import contentService from '../../features/contentService';
-import CommentModal from '../modals/CommentModal';
+import CommentSection from './CommentSection';
 import {
   VerticalScrollViewer,
   HighlightStory,
@@ -39,8 +39,14 @@ const VerticalHighlightViewer = ({
   const [currentIndex, setCurrentIndex] = useState(startIndex);
   const [playerStates, setPlayerStates] = useState({});
   const [likedHighlights, setLikedHighlights] = useState(new Set(user?.like || []));
-  const [isCommentModalOpen, setCommentModalOpen] = useState(false);
+  const [isCommentSectionOpen, setCommentSectionOpen] = useState(false);
+  const [comments, setComments] = useState([]);
   const [selectedHighlight, setSelectedHighlight] = useState(null);
+
+  // Effect to sync liked highlights with user state
+  useEffect(() => {
+    setLikedHighlights(new Set(user?.like || []));
+  }, [user?.like]);
 
   // Initialize player states
   useEffect(() => {
@@ -193,14 +199,28 @@ const VerticalHighlightViewer = ({
     }
   };
 
-  const handleOpenCommentModal = (highlight) => {
-    setSelectedHighlight(highlight);
-    setCommentModalOpen(true);
-  };
-
-  const handleCloseCommentModal = () => {
-    setCommentModalOpen(false);
-    setSelectedHighlight(null);
+  const handleCommentIconClick = async (highlight) => {
+    if (isCommentSectionOpen && selectedHighlight?.content._id === highlight.content._id) {
+      setCommentSectionOpen(false);
+      setSelectedHighlight(null);
+      setComments([]);
+    } else {
+      setCommentSectionOpen(true);
+      setSelectedHighlight(highlight);
+      if (user && user.token) {
+        try {
+          setComments([]); // Clear old comments while fetching new ones
+          const fetchedComments = await contentService.getComments({
+            contentId: highlight.content._id,
+            token: user.token,
+          });
+          setComments(fetchedComments);
+        } catch (error) {
+          console.error('Failed to fetch comments:', error);
+          setComments([]);
+        }
+      }
+    }
   };
 
   const handleCommentSubmit = async (comment) => {
@@ -214,9 +234,14 @@ const VerticalHighlightViewer = ({
         comment,
         token: user.token,
       });
-      // Optionally, you can add a success message or update the UI
+      // Refresh comments after posting
+      const fetchedComments = await contentService.getComments({
+        contentId: selectedHighlight.content._id,
+        token: user.token,
+      });
+      setComments(fetchedComments);
     } catch (error) {
-      console.error('Failed to submit comment:', error);
+      console.error('Failed to submit or refresh comments:', error);
     }
   };
 
@@ -224,7 +249,10 @@ const VerticalHighlightViewer = ({
 
   return (
     <VerticalScrollViewer ref={viewerRef} data-testid="vertical-highlight-viewer">
-      <CloseButton onClick={onClose} style={{ position: 'fixed', top: '20px', right: '20px', zIndex: 10004 }}>
+      <CloseButton
+        onClick={isCommentSectionOpen ? () => setCommentSectionOpen(false) : onClose}
+        style={{ position: 'fixed', top: '20px', right: '20px', zIndex: 10004 }}
+      >
         <FaTimes />
       </CloseButton>
       <NavigationArrow className="up-arrow" onClick={() => handleScroll(-1)} disabled={currentIndex === 0}>
@@ -238,7 +266,10 @@ const VerticalHighlightViewer = ({
           key={highlight._id}
           ref={(el) => (storyRefs.current[index] = el)}
         >
-          <VideoContainer data-testid={`video-container-${index}`}>
+          <VideoContainer
+            data-testid={`video-container-${index}`}
+            className={isCommentSectionOpen && selectedHighlight?.content._id === highlight.content._id ? 'shifted' : ''}
+          >
             <VideoControlsContainer>
               <PlayerControl onClick={togglePlay}>
                 {currentVideoState.isPlaying ? <FaPause /> : <FaPlay />}
@@ -288,7 +319,7 @@ const VerticalHighlightViewer = ({
                 <FaHeart />
                 <span>Like</span>
               </ViewerActionButton>
-              <ViewerActionButton onClick={() => handleOpenCommentModal(highlight)}>
+              <ViewerActionButton onClick={() => handleCommentIconClick(highlight)}>
                 <FaComment />
                 <span>Comment</span>
               </ViewerActionButton>
@@ -298,14 +329,15 @@ const VerticalHighlightViewer = ({
               </ViewerActionButton>
             </ActionsContainer>
           </VideoContainer>
+          {isCommentSectionOpen && selectedHighlight?.content._id === highlight.content._id && (
+            <CommentSection
+              comments={comments}
+              user={user}
+              onSubmit={handleCommentSubmit}
+            />
+          )}
         </HighlightStory>
       ))}
-      <CommentModal
-        isOpen={isCommentModalOpen}
-        onClose={handleCloseCommentModal}
-        onSubmit={handleCommentSubmit}
-        contentTitle={selectedHighlight?.content.title}
-      />
     </VerticalScrollViewer>
   );
 };
