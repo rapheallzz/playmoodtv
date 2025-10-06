@@ -42,6 +42,8 @@ const VerticalHighlightViewer = ({
   const [isCommentSectionOpen, setCommentSectionOpen] = useState(false);
   const [comments, setComments] = useState([]);
   const [selectedHighlight, setSelectedHighlight] = useState(null);
+  const [isLoadingComments, setIsLoadingComments] = useState(false);
+  const [totalComments, setTotalComments] = useState(0);
 
   // Effect to sync liked highlights with user state
   useEffect(() => {
@@ -204,20 +206,26 @@ const VerticalHighlightViewer = ({
       setCommentSectionOpen(false);
       setSelectedHighlight(null);
       setComments([]);
+      setTotalComments(0);
     } else {
       setCommentSectionOpen(true);
       setSelectedHighlight(highlight);
       if (user && user.token) {
+        setIsLoadingComments(true);
         try {
           setComments([]); // Clear old comments while fetching new ones
-          const fetchedComments = await contentService.getComments({
+          const response = await contentService.getComments({
             contentId: highlight.content._id,
             token: user.token,
           });
-          setComments(fetchedComments);
+          setComments(response.comments || []);
+          setTotalComments(response.totalComments || 0);
         } catch (error) {
           console.error('Failed to fetch comments:', error);
           setComments([]);
+          setTotalComments(0);
+        } finally {
+          setIsLoadingComments(false);
         }
       }
     }
@@ -235,11 +243,12 @@ const VerticalHighlightViewer = ({
         token: user.token,
       });
       // Refresh comments after posting
-      const fetchedComments = await contentService.getComments({
+      const response = await contentService.getComments({
         contentId: selectedHighlight.content._id,
         token: user.token,
       });
-      setComments(fetchedComments);
+      setComments(response.comments || []);
+      setTotalComments(response.totalComments || 0);
     } catch (error) {
       console.error('Failed to submit or refresh comments:', error);
     }
@@ -268,7 +277,6 @@ const VerticalHighlightViewer = ({
         >
           <VideoContainer
             data-testid={`video-container-${index}`}
-            className={isCommentSectionOpen && selectedHighlight?.content._id === highlight.content._id ? 'shifted' : ''}
           >
             <VideoControlsContainer>
               <PlayerControl onClick={togglePlay}>
@@ -334,6 +342,9 @@ const VerticalHighlightViewer = ({
               comments={comments}
               user={user}
               onSubmit={handleCommentSubmit}
+              onClose={() => setCommentSectionOpen(false)}
+              isLoading={isLoadingComments}
+              totalComments={totalComments}
             />
           )}
         </HighlightStory>

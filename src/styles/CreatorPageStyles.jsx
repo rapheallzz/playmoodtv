@@ -1336,11 +1336,6 @@ export const VideoContainer = styled.div`
   justify-content: center;
   align-items: center;
   box-shadow: 0 12px 24px rgba(0,0,0,0.5);
-  transition: transform 0.4s ease-in-out;
-
-  &.shifted {
-    transform: translateX(-175px);
-  }
 `;
 
 export const VideoControlsContainer = styled.div`
