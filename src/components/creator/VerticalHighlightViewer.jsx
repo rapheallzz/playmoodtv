@@ -277,6 +277,7 @@ const VerticalHighlightViewer = ({
         >
           <VideoContainer
             data-testid={`video-container-${index}`}
+            className={isCommentSectionOpen && selectedHighlight?.content._id === highlight.content._id ? 'shifted' : ''}
           >
             <VideoControlsContainer>
               <PlayerControl onClick={togglePlay}>
