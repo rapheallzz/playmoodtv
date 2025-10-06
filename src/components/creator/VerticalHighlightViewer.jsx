@@ -1,4 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import contentService from '../../features/contentService';
+import CommentSection from './CommentSection';
 import {
   VerticalScrollViewer,
   HighlightStory,
@@ -29,11 +32,23 @@ const VerticalHighlightViewer = ({
   creatorName,
   profileImage,
 }) => {
+  const { user } = useSelector((state) => state.auth);
   const storyRefs = useRef([]);
   const videoRefs = useRef([]);
   const viewerRef = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(startIndex);
   const [playerStates, setPlayerStates] = useState({});
+  const [likedHighlights, setLikedHighlights] = useState(new Set(user?.like || []));
+  const [isCommentSectionOpen, setCommentSectionOpen] = useState(false);
+  const [comments, setComments] = useState([]);
+  const [selectedHighlight, setSelectedHighlight] = useState(null);
+  const [isLoadingComments, setIsLoadingComments] = useState(false);
+  const [totalComments, setTotalComments] = useState(0);
+
+  // Effect to sync liked highlights with user state
+  useEffect(() => {
+    setLikedHighlights(new Set(user?.like || []));
+  }, [user?.like]);
 
   // Initialize player states
   useEffect(() => {
@@ -157,11 +172,96 @@ const VerticalHighlightViewer = ({
     }
   };
 
+  const handleLikeClick = async (highlightId) => {
+    if (!user || !user.token) {
+      console.error('User not authenticated');
+      return;
+    }
+
+    const isLiked = likedHighlights.has(highlightId);
+    const action = isLiked ? 'unlike' : 'like';
+
+    try {
+      if (isLiked) {
+        await contentService.unlikeContent({ contentId: highlightId, token: user.token });
+      } else {
+        await contentService.likeContent({ contentId: highlightId, token: user.token });
+      }
+      setLikedHighlights(prev => {
+        const newLiked = new Set(prev);
+        if (isLiked) {
+          newLiked.delete(highlightId);
+        } else {
+          newLiked.add(highlightId);
+        }
+        return newLiked;
+      });
+    } catch (error) {
+      console.error(`Failed to ${action} highlight:`, error);
+    }
+  };
+
+  const handleCommentIconClick = async (highlight) => {
+    if (isCommentSectionOpen && selectedHighlight?.content._id === highlight.content._id) {
+      setCommentSectionOpen(false);
+      setSelectedHighlight(null);
+      setComments([]);
+      setTotalComments(0);
+    } else {
+      setCommentSectionOpen(true);
+      setSelectedHighlight(highlight);
+      if (user && user.token) {
+        setIsLoadingComments(true);
+        try {
+          setComments([]); // Clear old comments while fetching new ones
+          const response = await contentService.getComments({
+            contentId: highlight.content._id,
+            token: user.token,
+          });
+          setComments(response.comments || []);
+          setTotalComments(response.totalComments || 0);
+        } catch (error) {
+          console.error('Failed to fetch comments:', error);
+          setComments([]);
+          setTotalComments(0);
+        } finally {
+          setIsLoadingComments(false);
+        }
+      }
+    }
+  };
+
+  const handleCommentSubmit = async (comment) => {
+    if (!user || !user.token || !selectedHighlight) {
+      console.error('Cannot submit comment, user or highlight data is missing');
+      return;
+    }
+    try {
+      await contentService.commentOnContent({
+        contentId: selectedHighlight.content._id,
+        comment,
+        token: user.token,
+      });
+      // Refresh comments after posting
+      const response = await contentService.getComments({
+        contentId: selectedHighlight.content._id,
+        token: user.token,
+      });
+      setComments(response.comments || []);
+      setTotalComments(response.totalComments || 0);
+    } catch (error) {
+      console.error('Failed to submit or refresh comments:', error);
+    }
+  };
+
   const currentVideoState = playerStates[currentIndex] || { isPlaying: false, volume: 1, isMuted: true };
 
   return (
-    <VerticalScrollViewer ref={viewerRef}>
-      <CloseButton onClick={onClose} style={{ position: 'fixed', top: '20px', right: '20px', zIndex: 10004 }}>
+    <VerticalScrollViewer ref={viewerRef} data-testid="vertical-highlight-viewer">
+      <CloseButton
+        onClick={isCommentSectionOpen ? () => setCommentSectionOpen(false) : onClose}
+        style={{ position: 'fixed', top: '20px', right: '20px', zIndex: 10004 }}
+      >
         <FaTimes />
       </CloseButton>
       <NavigationArrow className="up-arrow" onClick={() => handleScroll(-1)} disabled={currentIndex === 0}>
@@ -175,7 +275,10 @@ const VerticalHighlightViewer = ({
           key={highlight._id}
           ref={(el) => (storyRefs.current[index] = el)}
         >
-          <VideoContainer data-testid={`video-container-${index}`}>
+          <VideoContainer
+            data-testid={`video-container-${index}`}
+            className={isCommentSectionOpen && selectedHighlight?.content._id === highlight.content._id ? 'shifted' : ''}
+          >
             <VideoControlsContainer>
               <PlayerControl onClick={togglePlay}>
                 {currentVideoState.isPlaying ? <FaPause /> : <FaPlay />}
@@ -218,11 +321,14 @@ const VerticalHighlightViewer = ({
                 <h4 style={{ margin: '10px 0 0 0', fontWeight: 'normal' }}>{highlight.content.title}</h4>
             </div>
             <ActionsContainer>
-              <ViewerActionButton onClick={() => console.log('Like clicked for highlight ' + highlight._id)}>
+              <ViewerActionButton
+                onClick={() => handleLikeClick(highlight.content._id)}
+                className={likedHighlights.has(highlight.content._id) ? 'liked' : ''}
+              >
                 <FaHeart />
                 <span>Like</span>
               </ViewerActionButton>
-              <ViewerActionButton onClick={() => console.log('Comment clicked for highlight ' + highlight._id)}>
+              <ViewerActionButton onClick={() => handleCommentIconClick(highlight)}>
                 <FaComment />
                 <span>Comment</span>
               </ViewerActionButton>
@@ -232,6 +338,16 @@ const VerticalHighlightViewer = ({
               </ViewerActionButton>
             </ActionsContainer>
           </VideoContainer>
+          {isCommentSectionOpen && selectedHighlight?.content._id === highlight.content._id && (
+            <CommentSection
+              comments={comments}
+              user={user}
+              onSubmit={handleCommentSubmit}
+              onClose={() => setCommentSectionOpen(false)}
+              isLoading={isLoadingComments}
+              totalComments={totalComments}
+            />
+          )}
         </HighlightStory>
       ))}
     </VerticalScrollViewer>
