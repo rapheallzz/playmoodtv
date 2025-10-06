@@ -1,4 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import contentService from '../../features/contentService';
+import CommentModal from '../modals/CommentModal';
 import {
   VerticalScrollViewer,
   HighlightStory,
@@ -29,11 +32,15 @@ const VerticalHighlightViewer = ({
   creatorName,
   profileImage,
 }) => {
+  const { user } = useSelector((state) => state.auth);
   const storyRefs = useRef([]);
   const videoRefs = useRef([]);
   const viewerRef = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(startIndex);
   const [playerStates, setPlayerStates] = useState({});
+  const [likedHighlights, setLikedHighlights] = useState(new Set(user?.like || []));
+  const [isCommentModalOpen, setCommentModalOpen] = useState(false);
+  const [selectedHighlight, setSelectedHighlight] = useState(null);
 
   // Initialize player states
   useEffect(() => {
@@ -157,10 +164,66 @@ const VerticalHighlightViewer = ({
     }
   };
 
+  const handleLikeClick = async (highlightId) => {
+    if (!user || !user.token) {
+      console.error('User not authenticated');
+      return;
+    }
+
+    const isLiked = likedHighlights.has(highlightId);
+    const action = isLiked ? 'unlike' : 'like';
+
+    try {
+      if (isLiked) {
+        await contentService.unlikeContent({ contentId: highlightId, token: user.token });
+      } else {
+        await contentService.likeContent({ contentId: highlightId, token: user.token });
+      }
+      setLikedHighlights(prev => {
+        const newLiked = new Set(prev);
+        if (isLiked) {
+          newLiked.delete(highlightId);
+        } else {
+          newLiked.add(highlightId);
+        }
+        return newLiked;
+      });
+    } catch (error) {
+      console.error(`Failed to ${action} highlight:`, error);
+    }
+  };
+
+  const handleOpenCommentModal = (highlight) => {
+    setSelectedHighlight(highlight);
+    setCommentModalOpen(true);
+  };
+
+  const handleCloseCommentModal = () => {
+    setCommentModalOpen(false);
+    setSelectedHighlight(null);
+  };
+
+  const handleCommentSubmit = async (comment) => {
+    if (!user || !user.token || !selectedHighlight) {
+      console.error('Cannot submit comment, user or highlight data is missing');
+      return;
+    }
+    try {
+      await contentService.commentOnContent({
+        contentId: selectedHighlight.content._id,
+        comment,
+        token: user.token,
+      });
+      // Optionally, you can add a success message or update the UI
+    } catch (error) {
+      console.error('Failed to submit comment:', error);
+    }
+  };
+
   const currentVideoState = playerStates[currentIndex] || { isPlaying: false, volume: 1, isMuted: true };
 
   return (
-    <VerticalScrollViewer ref={viewerRef}>
+    <VerticalScrollViewer ref={viewerRef} data-testid="vertical-highlight-viewer">
       <CloseButton onClick={onClose} style={{ position: 'fixed', top: '20px', right: '20px', zIndex: 10004 }}>
         <FaTimes />
       </CloseButton>
@@ -218,11 +281,14 @@ const VerticalHighlightViewer = ({
                 <h4 style={{ margin: '10px 0 0 0', fontWeight: 'normal' }}>{highlight.content.title}</h4>
             </div>
             <ActionsContainer>
-              <ViewerActionButton onClick={() => console.log('Like clicked for highlight ' + highlight._id)}>
+              <ViewerActionButton
+                onClick={() => handleLikeClick(highlight.content._id)}
+                className={likedHighlights.has(highlight.content._id) ? 'liked' : ''}
+              >
                 <FaHeart />
                 <span>Like</span>
               </ViewerActionButton>
-              <ViewerActionButton onClick={() => console.log('Comment clicked for highlight ' + highlight._id)}>
+              <ViewerActionButton onClick={() => handleOpenCommentModal(highlight)}>
                 <FaComment />
                 <span>Comment</span>
               </ViewerActionButton>
@@ -234,6 +300,12 @@ const VerticalHighlightViewer = ({
           </VideoContainer>
         </HighlightStory>
       ))}
+      <CommentModal
+        isOpen={isCommentModalOpen}
+        onClose={handleCloseCommentModal}
+        onSubmit={handleCommentSubmit}
+        contentTitle={selectedHighlight?.content.title}
+      />
     </VerticalScrollViewer>
   );
 };

@@ -73,6 +73,27 @@ const unlikeContent = async ({ contentId, token }) => {
   }
 };
 
+// Comment on content
+const commentOnContent = async ({ contentId, comment, token }) => {
+  try {
+    const response = await axios.post(
+      `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${contentId}/comment`,
+      { comment },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    const message =
+      error.response?.data?.message || 'Failed to add comment. Please try again.';
+    throw new Error(message);
+  }
+};
+
 // Add to watchlist
 const addToWatchlist = async ({ userId, contentId, token }) => {
   try {
@@ -120,6 +141,7 @@ const removeFromWatchlist = async ({ userId, contentId, token }) => {
 const contentService = {
   likeContent,
   unlikeContent,
+  commentOnContent,
   addToWatchlist,
   removeFromWatchlist,
 };

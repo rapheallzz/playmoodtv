@@ -1436,6 +1436,13 @@ export const ViewerActionButton = styled.button`
 
   svg {
     font-size: 2rem;
+    transition: color 0.3s ease;
+  }
+
+  &.liked {
+    svg {
+      color: #e53e3e; /* A red color for liked state */
+    }
   }
 `;
 
