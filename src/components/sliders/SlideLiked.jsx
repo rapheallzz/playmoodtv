@@ -135,7 +135,7 @@ export default function SliderLiked() {
 
   const settings = {
     dots: false,
-    infinite: true,
+    infinite: data.length > 4,
     speed: 300,
     slidesToShow: 4,
     slidesToScroll: 1,
@@ -150,7 +150,7 @@ export default function SliderLiked() {
         settings: {
           slidesToShow: 3,
           slidesToScroll: 1,
-          infinite: true,
+          infinite: data.length > 3,
           dots: true,
           arrows: true,
         },
@@ -162,6 +162,7 @@ export default function SliderLiked() {
           slidesToScroll: 1,
           initialSlide: 2,
           arrows: true,
+          infinite: data.length > 2,
         },
       },
       {
@@ -172,6 +173,7 @@ export default function SliderLiked() {
           arrows: false,
           centerMode: true,
           centerPadding: '20px',
+          infinite: data.length > 2,
         },
       },
     ],
