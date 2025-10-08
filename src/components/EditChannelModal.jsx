@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
 import instagramIcon from '/instagram.png';
 import tiktokIcon from '/plus.png';
 import linkedinIcon from '/plus.png';
@@ -173,7 +174,13 @@ const EditChannelModal = ({
             Cancel
           </button>
           <button
-            onClick={handleUpdateChannelInfo}
+            onClick={async () => {
+              const result = await handleUpdateChannelInfo();
+              if (result && result.success) {
+                toast.success('Channel information updated successfully!');
+                onClose();
+              }
+            }}
             className="bg-[#541011] text-white p-2 rounded-md hover:bg-red-800 transition-colors"
             disabled={fileError || !creatorName.trim()}
           >

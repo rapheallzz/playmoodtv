@@ -104,12 +104,14 @@ const useChannelDetails = (user) => {
       setTwitter(response.data.twitter || '');
       setBannerImageFile(null);
       setErrorMessage('');
+      return { success: true };
     } catch (error) {
       console.error('Error updating channel info:', error);
       setErrorMessage(
         error.response?.data?.message ||
         'Failed to update channel. Please check your inputs or try again later.'
       );
+      return { success: false };
     }
   };
 
