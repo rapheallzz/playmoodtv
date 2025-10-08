@@ -45,12 +45,12 @@ const VerticalHighlightViewer = ({
   const [isLoadingComments, setIsLoadingComments] = useState(false);
   const [totalComments, setTotalComments] = useState(0);
   const isProgrammaticScroll = useRef(false);
-  const scrollTimeout = useRef(null);
+  const scrollEndTimeout = useRef(null);
 
   // Cleanup timeout on component unmount
   useEffect(() => {
     return () => {
-      clearTimeout(scrollTimeout.current);
+      clearTimeout(scrollEndTimeout.current);
     };
   }, []);
 
@@ -141,28 +141,26 @@ const VerticalHighlightViewer = ({
     }));
   };
 
+  const handleScrollEnd = () => {
+    isProgrammaticScroll.current = false;
+  };
+
+  const onScroll = () => {
+    clearTimeout(scrollEndTimeout.current);
+    scrollEndTimeout.current = setTimeout(handleScrollEnd, 150); // Debounce scroll end
+  };
+
   const handleScroll = (direction) => {
     const newIndex = currentIndex + direction;
     if (newIndex >= 0 && newIndex < highlights.length) {
-      // Immediately scroll to the new highlight
       if (storyRefs.current[newIndex]) {
+        isProgrammaticScroll.current = true;
         storyRefs.current[newIndex].scrollIntoView({
           behavior: 'smooth',
           block: 'center',
         });
+        setCurrentIndex(newIndex);
       }
-
-      // Set a flag to prevent the IntersectionObserver from firing
-      isProgrammaticScroll.current = true;
-
-      // Update the state to the new index
-      setCurrentIndex(newIndex);
-
-      // Reset the flag after a short delay to re-enable the observer
-      clearTimeout(scrollTimeout.current);
-      scrollTimeout.current = setTimeout(() => {
-        isProgrammaticScroll.current = false;
-      }, 1200); // Increased delay to ensure scroll completes
     }
   };
 
@@ -283,7 +281,7 @@ const VerticalHighlightViewer = ({
   const currentVideoState = playerStates[currentIndex] || { isPlaying: false, volume: 1, isMuted: true };
 
   return (
-    <VerticalScrollViewer ref={viewerRef} data-testid="vertical-highlight-viewer">
+    <VerticalScrollViewer ref={viewerRef} data-testid="vertical-highlight-viewer" onScroll={onScroll}>
       <CloseButton
         onClick={isCommentSectionOpen ? () => setCommentSectionOpen(false) : onClose}
         style={{ position: 'fixed', top: '20px', right: '20px', zIndex: 10004 }}
