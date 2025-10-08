@@ -65,10 +65,10 @@ const useChannelDetails = (user) => {
     // 2. Upload the file directly to Cloudinary
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('api_key', sigData.apiKey);
+    formData.append('api_key', sigData.api_key);
     formData.append('timestamp', sigData.timestamp);
     formData.append('signature', sigData.signature);
-    formData.append('folder', 'channel-banners'); // Optional: organize uploads
+    formData.append('folder', sigData.folder);
 
     const cloudinaryUrl = `https://api.cloudinary.com/v1_1/di97mcvbu/image/upload`;
     const { data: cloudinaryData } = await axios.post(cloudinaryUrl, formData);
