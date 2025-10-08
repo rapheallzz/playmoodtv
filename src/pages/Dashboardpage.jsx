@@ -134,7 +134,7 @@ function Dashboardpage() {
           ...cachedUser,
           userId: cachedUser.userId || decoded.id || cachedUser._id,
         };
-        dispatch(updateAuthUser(updatedUser));
+        dispatch(updateAuthUserReducer(updatedUser));
         setUserProfile(cachedUser);
         localStorage.setItem('user', JSON.stringify(updatedUser));
         setPersonalData({
@@ -197,7 +197,7 @@ function Dashboardpage() {
           profileImage: imageUrl,
           token: cachedUser.token,
         };
-        dispatch(updateAuthUser(updatedUser));
+        dispatch(updateAuthUserReducer(updatedUser));
         setUserProfile(cachedUser);
         localStorage.setItem('user', JSON.stringify(updatedUser));
         console.log('fetchUserData stored cached user in localStorage:', updatedUser);
@@ -264,7 +264,7 @@ function Dashboardpage() {
             ...cachedUser,
             userId: cachedUser.userId || decoded.id || cachedUser._id,
           };
-          dispatch(updateAuthUser(updatedUser));
+          dispatch(updateAuthUserReducer(updatedUser));
           localStorage.setItem('user', JSON.stringify(updatedUser));
         } catch (error) {
           console.error('useEffect: Error decoding token:', error);
@@ -319,7 +319,7 @@ function Dashboardpage() {
         ? `${updatedUser.profileImage}?t=${new Date().getTime()}`
         : defaultProfileIcon;
       const userWithToken = { ...updatedUser, userId: updatedUser._id || userId, token };
-      dispatch(updateAuthUser(userWithToken));
+      dispatch(updateAuthUserReducer(userWithToken));
       localStorage.setItem('user', JSON.stringify(userWithToken));
       console.log('updateProfileImage stored in localStorage:', userWithToken);
       setProfileImagePreview(imageUrl);
@@ -404,7 +404,7 @@ function Dashboardpage() {
         ? `${updatedUser.profileImage}?t=${new Date().getTime()}`
         : defaultProfileIcon;
       const userWithToken = { ...updatedUser, userId: updatedUser._id || userId, token: authUser.token };
-      dispatch(updateAuthUser(userWithToken));
+      dispatch(updateAuthUserReducer(userWithToken));
       localStorage.setItem('user', JSON.stringify(userWithToken));
       console.log('updateProfile stored in localStorage:', userWithToken);
       setProfileImagePreview(imageUrl);
