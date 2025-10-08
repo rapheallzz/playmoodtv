@@ -45,12 +45,12 @@ const VerticalHighlightViewer = ({
   const [isLoadingComments, setIsLoadingComments] = useState(false);
   const [totalComments, setTotalComments] = useState(0);
   const isProgrammaticScroll = useRef(false);
-  const scrollEndTimeout = useRef(null);
+  const scrollTimeout = useRef(null);
 
   // Cleanup timeout on component unmount
   useEffect(() => {
     return () => {
-      clearTimeout(scrollEndTimeout.current);
+      clearTimeout(scrollTimeout.current);
     };
   }, []);
 
@@ -64,53 +64,54 @@ const VerticalHighlightViewer = ({
     const initialStates = {};
     highlights.forEach((_, index) => {
       initialStates[index] = {
-        isPlaying: false,
+        isPlaying: index === startIndex, // Autoplay the first video
         volume: 1,
         isMuted: true,
       };
     });
     setPlayerStates(initialStates);
-  }, [highlights]);
+  }, [highlights, startIndex]);
 
-
-  // Effect to manage video playback
+  // Effect to manage video playback and scrolling
   useEffect(() => {
+    // Scroll to the current highlight
+    if (storyRefs.current[currentIndex]) {
+      storyRefs.current[currentIndex].scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+    }
+
+    // Manage video playback
     videoRefs.current.forEach((video, index) => {
-      if (!video) return;
-      const state = playerStates[index];
-      if (!state) return;
-
-      video.volume = state.volume;
-      video.muted = state.isMuted;
-
-      if (index === currentIndex) {
-        if (state.isPlaying) {
-          video.play().catch(e => console.error("Video play failed:", e));
+      if (video) {
+        if (index === currentIndex) {
+          // Mute the video to allow autoplay, then play
+          video.muted = true;
+          const playPromise = video.play();
+          if (playPromise !== undefined) {
+            playPromise.catch(e => {
+              if (e.name !== 'AbortError') {
+                console.error("Video play failed:", e);
+              }
+            });
+          }
         } else {
           video.pause();
         }
-      } else {
-        video.pause();
       }
     });
-  }, [currentIndex, playerStates]);
-
-  const currentIndexRef = useRef(currentIndex);
-  useEffect(() => {
-    currentIndexRef.current = currentIndex;
   }, [currentIndex]);
 
   // Effect to manage IntersectionObserver for updating currentIndex
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        if (isProgrammaticScroll.current) {
-          return;
-        }
+        if (isProgrammaticScroll.current) return;
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             const intersectingIndex = storyRefs.current.findIndex(ref => ref === entry.target);
-            if (intersectingIndex !== -1 && intersectingIndex !== currentIndexRef.current) {
+            if (intersectingIndex !== -1 && intersectingIndex !== currentIndex) {
               setCurrentIndex(intersectingIndex);
             }
           }
@@ -141,7 +142,13 @@ const VerticalHighlightViewer = ({
   const handleScroll = (direction) => {
     const newIndex = currentIndex + direction;
     if (newIndex >= 0 && newIndex < highlights.length) {
+      isProgrammaticScroll.current = true;
       setCurrentIndex(newIndex);
+      // Reset the flag after the scroll animation is likely to have finished.
+      clearTimeout(scrollTimeout.current);
+      scrollTimeout.current = setTimeout(() => {
+        isProgrammaticScroll.current = false;
+      }, 1000); // 1 second delay
     }
   };
 
