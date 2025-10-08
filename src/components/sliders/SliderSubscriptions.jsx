@@ -236,7 +236,7 @@ export default function SliderSubscriptions({ subscriptions }) {
   return (
     <SliderContainer>
       {!subscriptions || subscriptions.length === 0 ? (
-        <div className="error-message">No subscriptions found.</div>
+        <div className="error-message text-white">No subscriptions found.</div>
       ) : (
         <>
           <Slider {...settings}>
