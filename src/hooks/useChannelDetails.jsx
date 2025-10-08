@@ -70,7 +70,7 @@ const useChannelDetails = (user) => {
     formData.append('signature', sigData.signature);
     formData.append('folder', 'channel-banners'); // Optional: organize uploads
 
-    const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${sigData.cloudName}/image/upload`;
+    const cloudinaryUrl = `https://api.cloudinary.com/v1_1/di97mcvbu/image/upload`;
     const { data: cloudinaryData } = await axios.post(cloudinaryUrl, formData);
 
     return cloudinaryData.secure_url;
@@ -79,11 +79,23 @@ const useChannelDetails = (user) => {
   const handleUpdateChannelInfo = async () => {
     setErrorMessage('');
     try {
-      let bannerUrl = null;
+      // Step 1: Handle banner image upload and update if a new file is present.
       if (bannerImageFile) {
-        bannerUrl = await uploadBannerAndGetUrl(bannerImageFile, user.token);
+        const bannerUrl = await uploadBannerAndGetUrl(bannerImageFile, user.token);
+        await axios.post(
+          `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/channel/${user._id}/banner`,
+          { bannerImage: bannerUrl },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${user.token}`,
+            },
+          }
+        );
+        setBannerImage(bannerUrl);
       }
 
+      // Step 2: Update the rest of the channel information (text fields).
       const payload = {
         name: creatorName,
         about,
@@ -92,10 +104,6 @@ const useChannelDetails = (user) => {
         linkedin,
         twitter,
       };
-
-      if (bannerUrl) {
-        payload.bannerImage = bannerUrl;
-      }
 
       const response = await axios.put(
         `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/channel/${user._id}`,
@@ -108,7 +116,8 @@ const useChannelDetails = (user) => {
         }
       );
 
-      setBannerImage(response.data.bannerImage || '');
+      // Update state with the response from the general info update
+      setBannerImage(response.data.bannerImage || bannerImage);
       setProfileImage(response.data.profileImage || '');
       setCreatorName(response.data.name || '');
       setAbout(response.data.about || '');
