@@ -15,7 +15,6 @@ const HighlightsHome = () => {
   const [highlights, setHighlights] = useState([]);
   const [creators, setCreators] = useState({}); // To store creator details by ID
   const [isLoading, setIsLoading] = useState(true);
-  const [viewedHighlights, setViewedHighlights] = useState(new Set());
   const [showVerticalHighlightViewer, setShowVerticalHighlightViewer] = useState(false);
   const [highlightStartIndex, setHighlightStartIndex] = useState(0);
   const [enrichedHighlights, setEnrichedHighlights] = useState([]);
@@ -26,7 +25,7 @@ const HighlightsHome = () => {
       setIsLoading(true);
       try {
         const [highlightsResponse, creatorsResponse] = await Promise.all([
-          axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/highlights/all'),
+          axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/highlights/recent'),
           axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/creators')
         ]);
 
@@ -50,7 +49,6 @@ const HighlightsHome = () => {
 
   const handleSelectHighlight = async (highlight, index) => {
     setHighlightStartIndex(index);
-    setViewedHighlights((prev) => new Set(prev).add(highlight._id));
 
     const creator = creators[highlight.creatorId];
     if (creator) {
@@ -97,7 +95,7 @@ const HighlightsHome = () => {
         <HighlightsList>
           {highlights.map((highlight, index) => (
             <HighlightItem data-testid={`highlight-item-home-${index}`} key={highlight._id} onClick={() => handleSelectHighlight(highlight, index)}>
-              <LargeHighlightCircle viewed={viewedHighlights.has(highlight._id)}>
+              <LargeHighlightCircle>
                 {highlight.content.thumbnail && <img src={highlight.content.thumbnail} alt="Highlight thumbnail" />}
               </LargeHighlightCircle>
               <LargeHighlightTitle>{highlight.content.title}</LargeHighlightTitle>
