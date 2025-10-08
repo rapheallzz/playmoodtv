@@ -95,6 +95,11 @@ const VerticalHighlightViewer = ({
     });
   }, [currentIndex, playerStates]);
 
+  const currentIndexRef = useRef(currentIndex);
+  useEffect(() => {
+    currentIndexRef.current = currentIndex;
+  }, [currentIndex]);
+
   // Effect to manage IntersectionObserver for updating currentIndex
   useEffect(() => {
     const observer = new IntersectionObserver(

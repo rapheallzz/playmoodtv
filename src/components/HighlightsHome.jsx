@@ -50,7 +50,7 @@ const HighlightsHome = () => {
   const handleSelectHighlight = async (highlight, index) => {
     setHighlightStartIndex(index);
 
-    const creator = creators[highlight.creatorId];
+    const creator = creators[highlight.user];
     if (creator) {
       setSelectedCreatorInfo({
         name: creator.name,
