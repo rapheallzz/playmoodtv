@@ -57,26 +57,41 @@ const useChannelDetails = (user) => {
   const handleUpdateChannelInfo = async () => {
     setErrorMessage('');
     try {
-      const formData = new FormData();
-      formData.append('name', creatorName);
-      formData.append('about', about);
-      formData.append('instagram', instagram);
-      formData.append('tiktok', tiktok);
-      formData.append('linkedin', linkedin);
-      formData.append('twitter', twitter);
+      let payload;
+      let headers;
+
       if (bannerImageFile) {
-        formData.append('bannerImage', bannerImageFile);
+        payload = new FormData();
+        payload.append('name', creatorName);
+        payload.append('about', about);
+        payload.append('instagram', instagram);
+        payload.append('tiktok', tiktok);
+        payload.append('linkedin', linkedin);
+        payload.append('twitter', twitter);
+        payload.append('bannerImage', bannerImageFile);
+        headers = {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${user.token}`,
+        };
+      } else {
+        payload = {
+          name: creatorName,
+          about,
+          instagram,
+          tiktok,
+          linkedin,
+          twitter,
+        };
+        headers = {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${user.token}`,
+        };
       }
 
       const response = await axios.put(
         `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/channel/${user._id}`,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${user.token}`,
-          },
-        }
+        payload,
+        { headers }
       );
 
       setBannerImage(response.data.bannerImage || '');
