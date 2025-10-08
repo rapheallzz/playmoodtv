@@ -56,16 +56,18 @@ const useChannelDetails = (user) => {
 
   const uploadBannerAndGetUrl = async (file, token) => {
     // 1. Get signature from the backend
-    const { data: sigData } = await axios.post(
+    const { data } = await axios.post(
       `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/signature`,
       {},
       { headers: { Authorization: `Bearer ${token}` } }
     );
 
-    // 2. Upload the file directly to Cloudinary
+    const sigData = typeof data === 'string' ? JSON.parse(data) : data;
+
+    // 2. Upload the file directly to Cloudinary with all required fields
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('api_key', sigData.api_key);
+    formData.append('api_key', sigData.api_key); // Correctly append api_key
     formData.append('timestamp', sigData.timestamp);
     formData.append('signature', sigData.signature);
     formData.append('folder', sigData.folder);
