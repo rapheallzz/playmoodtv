@@ -19,7 +19,7 @@ import DonationModal from '../components/DonationModal';
 import Sliderfriends from '../components/Sliderfriends';
 import SliderSubscriptions from '../components/sliders/SliderSubscriptions';
 import Footer from '../components/footer/Footer';
-import { updateAuthUserReducer, logout } from '../features/authSlice';
+import { updateAuthUser, updateAuthUserReducer, logout } from '../features/authSlice';
 import defaultImage from '../assets/default-image.jpg';
 import {jwtDecode} from 'jwt-decode'; // Ensure this import is present
 import EmailVerificationModal from '../components/modals/EmailVerificationModal';
