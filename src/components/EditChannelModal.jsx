@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import instagramIcon from '/instagram.png';
-import tiktokIcon from '/plus.png';
-import linkedinIcon from '/plus.png';
-import twitterIcon from '/twitter.png';
+import { FaInstagram, FaTiktok, FaLinkedin } from 'react-icons/fa';
+import { FaXTwitter } from 'react-icons/fa6';
 
 const EditChannelModal = ({
   isOpen,
@@ -124,7 +122,7 @@ const EditChannelModal = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Instagram */}
             <div className="flex items-center space-x-3">
-              <img src={instagramIcon} alt="Instagram" className="w-6 h-6"/>
+              <FaInstagram className="w-6 h-6 text-pink-500" />
               <input
                 type="text"
                 value={instagram}
@@ -135,7 +133,7 @@ const EditChannelModal = ({
             </div>
             {/* TikTok */}
             <div className="flex items-center space-x-3">
-              <img src={tiktokIcon} alt="TikTok" className="w-6 h-6"/>
+              <FaTiktok className="w-6 h-6" />
               <input
                 type="text"
                 value={tiktok}
@@ -146,7 +144,7 @@ const EditChannelModal = ({
             </div>
             {/* LinkedIn */}
             <div className="flex items-center space-x-3">
-              <img src={linkedinIcon} alt="LinkedIn" className="w-6 h-6"/>
+              <FaLinkedin className="w-6 h-6 text-blue-500" />
               <input
                 type="text"
                 value={linkedin}
@@ -157,7 +155,7 @@ const EditChannelModal = ({
             </div>
             {/* Twitter */}
             <div className="flex items-center space-x-3">
-              <img src={twitterIcon} alt="Twitter" className="w-6 h-6"/>
+              <FaXTwitter className="w-6 h-6" />
               <input
                 type="text"
                 value={twitter}
