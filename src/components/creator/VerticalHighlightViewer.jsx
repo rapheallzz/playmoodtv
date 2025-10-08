@@ -72,36 +72,28 @@ const VerticalHighlightViewer = ({
     setPlayerStates(initialStates);
   }, [highlights]);
 
-  // Effect to manage the play state of the current video
-  useEffect(() => {
-    setPlayerStates(prev => {
-      const newStates = { ...prev };
-      Object.keys(newStates).forEach(key => {
-        newStates[parseInt(key)].isPlaying = parseInt(key) === currentIndex;
-      });
-      return newStates;
-    });
-  }, [currentIndex]);
 
-  // Effect to sync player state with video DOM elements
+  // Effect to manage video playback
   useEffect(() => {
     videoRefs.current.forEach((video, index) => {
-      if (video && playerStates[index]) {
-        video.volume = playerStates[index].volume;
-        video.muted = playerStates[index].isMuted;
-        if (playerStates[index].isPlaying) {
+      if (!video) return;
+      const state = playerStates[index];
+      if (!state) return;
+
+      video.volume = state.volume;
+      video.muted = state.isMuted;
+
+      if (index === currentIndex) {
+        if (state.isPlaying) {
           video.play().catch(e => console.error("Video play failed:", e));
         } else {
           video.pause();
         }
+      } else {
+        video.pause();
       }
     });
-  }, [playerStates]);
-
-  const currentIndexRef = useRef(currentIndex);
-  useEffect(() => {
-    currentIndexRef.current = currentIndex;
-  }, [currentIndex]);
+  }, [currentIndex, playerStates]);
 
   // Effect to manage IntersectionObserver for updating currentIndex
   useEffect(() => {
@@ -141,13 +133,16 @@ const VerticalHighlightViewer = ({
     }));
   };
 
-  const handleScrollEnd = () => {
-    isProgrammaticScroll.current = false;
+  const handleScroll = (direction) => {
+    const newIndex = currentIndex + direction;
+    if (newIndex >= 0 && newIndex < highlights.length) {
+      setCurrentIndex(newIndex);
+    }
   };
 
   const onScroll = () => {
-    clearTimeout(scrollEndTimeout.current);
-    scrollEndTimeout.current = setTimeout(handleScrollEnd, 150); // Debounce scroll end
+    // This function can be used for scroll-based logic in the future,
+    // but for now, the IntersectionObserver handles manual scroll detection.
   };
 
 
@@ -275,6 +270,12 @@ const VerticalHighlightViewer = ({
       >
         <FaTimes />
       </CloseButton>
+      <NavigationArrow className="up-arrow" onClick={() => handleScroll(-1)} disabled={currentIndex === 0}>
+        <FaChevronUp />
+      </NavigationArrow>
+      <NavigationArrow className="down-arrow" onClick={() => handleScroll(1)} disabled={currentIndex === highlights.length - 1}>
+        <FaChevronDown />
+      </NavigationArrow>
       {highlights.map((highlight, index) => (
         <HighlightStory
           key={highlight._id}
