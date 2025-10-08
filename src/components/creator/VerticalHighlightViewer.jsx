@@ -150,19 +150,6 @@ const VerticalHighlightViewer = ({
     scrollEndTimeout.current = setTimeout(handleScrollEnd, 150); // Debounce scroll end
   };
 
-  const handleScroll = (direction) => {
-    const newIndex = currentIndex + direction;
-    if (newIndex >= 0 && newIndex < highlights.length) {
-      if (storyRefs.current[newIndex]) {
-        isProgrammaticScroll.current = true;
-        storyRefs.current[newIndex].scrollIntoView({
-          behavior: 'smooth',
-          block: 'center',
-        });
-        setCurrentIndex(newIndex);
-      }
-    }
-  };
 
   const togglePlay = () => {
     if (playerStates[currentIndex]) {
@@ -288,12 +275,6 @@ const VerticalHighlightViewer = ({
       >
         <FaTimes />
       </CloseButton>
-      <NavigationArrow className="up-arrow" onClick={() => handleScroll(-1)} disabled={currentIndex === 0}>
-        <FaChevronUp />
-      </NavigationArrow>
-      <NavigationArrow className="down-arrow" onClick={() => handleScroll(1)} disabled={currentIndex === highlights.length - 1}>
-        <FaChevronDown />
-      </NavigationArrow>
       {highlights.map((highlight, index) => (
         <HighlightStory
           key={highlight._id}
