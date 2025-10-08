@@ -49,7 +49,6 @@ const HighlightsHome = () => {
   }, []);
 
   const handleSelectHighlight = async (highlight, index) => {
-    setShowVerticalHighlightViewer(true);
     setHighlightStartIndex(index);
     setViewedHighlights((prev) => new Set(prev).add(highlight._id));
 
@@ -61,7 +60,7 @@ const HighlightsHome = () => {
       });
     }
 
-    Promise.all(
+    const enrichedData = await Promise.all(
       highlights.map(async (h) => {
         if (h.content.video) return h;
         try {
@@ -70,10 +69,13 @@ const HighlightsHome = () => {
           );
           return { ...h, content: { ...h.content, video: res.data.video } };
         } catch (e) {
+          console.error(`Failed to fetch content for ${h.content._id}:`, e);
           return h;
         }
       })
-    ).then(setEnrichedHighlights);
+    );
+    setEnrichedHighlights(enrichedData);
+    setShowVerticalHighlightViewer(true);
   };
 
   if (isLoading) {
@@ -103,9 +105,9 @@ const HighlightsHome = () => {
           ))}
         </HighlightsList>
       </HighlightsSectionContainer>
-      {showVerticalHighlightViewer && ReactDOM.createPortal(
+      {showVerticalHighlightViewer && enrichedHighlights.length > 0 && ReactDOM.createPortal(
         <VerticalHighlightViewer
-          highlights={enrichedHighlights.length ? enrichedHighlights : highlights}
+          highlights={enrichedHighlights}
           startIndex={highlightStartIndex}
           onClose={() => {
             setShowVerticalHighlightViewer(false);

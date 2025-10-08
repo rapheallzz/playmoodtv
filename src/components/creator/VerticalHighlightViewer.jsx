@@ -44,6 +44,15 @@ const VerticalHighlightViewer = ({
   const [selectedHighlight, setSelectedHighlight] = useState(null);
   const [isLoadingComments, setIsLoadingComments] = useState(false);
   const [totalComments, setTotalComments] = useState(0);
+  const isProgrammaticScroll = useRef(false);
+  const scrollTimeout = useRef(null);
+
+  // Cleanup timeout on component unmount
+  useEffect(() => {
+    return () => {
+      clearTimeout(scrollTimeout.current);
+    };
+  }, []);
 
   // Effect to sync liked highlights with user state
   useEffect(() => {
@@ -63,14 +72,8 @@ const VerticalHighlightViewer = ({
     setPlayerStates(initialStates);
   }, [highlights]);
 
-  // Effect to scroll to the current video and manage its play state
+  // Effect to manage the play state of the current video
   useEffect(() => {
-    if (storyRefs.current[currentIndex]) {
-      storyRefs.current[currentIndex].scrollIntoView({
-        behavior: 'smooth',
-        block: 'center',
-      });
-    }
     setPlayerStates(prev => {
       const newStates = { ...prev };
       Object.keys(newStates).forEach(key => {
@@ -95,14 +98,22 @@ const VerticalHighlightViewer = ({
     });
   }, [playerStates]);
 
+  const currentIndexRef = useRef(currentIndex);
+  useEffect(() => {
+    currentIndexRef.current = currentIndex;
+  }, [currentIndex]);
+
   // Effect to manage IntersectionObserver for updating currentIndex
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
+        if (isProgrammaticScroll.current) {
+          return;
+        }
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             const intersectingIndex = storyRefs.current.findIndex(ref => ref === entry.target);
-            if (intersectingIndex !== -1 && intersectingIndex !== currentIndex) {
+            if (intersectingIndex !== -1 && intersectingIndex !== currentIndexRef.current) {
               setCurrentIndex(intersectingIndex);
             }
           }
@@ -121,7 +132,7 @@ const VerticalHighlightViewer = ({
         if (ref) observer.unobserve(ref);
       });
     };
-  }, [highlights, currentIndex]);
+  }, [highlights]);
 
   const updatePlayerState = (index, newState) => {
     setPlayerStates(prev => ({
@@ -131,13 +142,28 @@ const VerticalHighlightViewer = ({
   };
 
   const handleScroll = (direction) => {
-    setCurrentIndex(prevIndex => {
-      const newIndex = prevIndex + direction;
-      if (newIndex >= 0 && newIndex < highlights.length) {
-        return newIndex;
+    const newIndex = currentIndex + direction;
+    if (newIndex >= 0 && newIndex < highlights.length) {
+      // Immediately scroll to the new highlight
+      if (storyRefs.current[newIndex]) {
+        storyRefs.current[newIndex].scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+        });
       }
-      return prevIndex;
-    });
+
+      // Set a flag to prevent the IntersectionObserver from firing
+      isProgrammaticScroll.current = true;
+
+      // Update the state to the new index
+      setCurrentIndex(newIndex);
+
+      // Reset the flag after a short delay to re-enable the observer
+      clearTimeout(scrollTimeout.current);
+      scrollTimeout.current = setTimeout(() => {
+        isProgrammaticScroll.current = false;
+      }, 1200); // Increased delay to ensure scroll completes
+    }
   };
 
   const togglePlay = () => {

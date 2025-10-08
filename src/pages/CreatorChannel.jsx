@@ -196,12 +196,11 @@ export default function CreatorChannel() {
   const [enrichedHighlights, setEnrichedHighlights] = useState([]);
 
   const handleSelectHighlight = async (highlight, index) => {
-    setShowVerticalHighlightViewer(true);
     setHighlightStartIndex(index);
     setViewedHighlights((prev) => new Set(prev).add(highlight._id));
 
-    // Fetch all videos in background
-    Promise.all(
+    // Fetch all videos and wait for completion
+    const enrichedData = await Promise.all(
       highlights.map(async (h) => {
         if (h.content.video) return h;
         try {
@@ -210,10 +209,14 @@ export default function CreatorChannel() {
           );
           return { ...h, content: { ...h.content, video: res.data.video } };
         } catch (e) {
-          return h;
+          console.error(`Failed to fetch content for ${h.content._id}:`, e);
+          return h; // Return original on error
         }
       })
-    ).then(setEnrichedHighlights);
+    );
+
+    setEnrichedHighlights(enrichedData);
+    setShowVerticalHighlightViewer(true); // Data is ready, now we can show the viewer
   };
 
   // Fetch creator data, subscriber count, and subscription status
@@ -909,9 +912,9 @@ const fetchPlaylists = async () => {
         </ModalOverlay>
       )}
 
-      {showVerticalHighlightViewer && (
+      {showVerticalHighlightViewer && enrichedHighlights.length > 0 && (
         <VerticalHighlightViewer
-          highlights={enrichedHighlights.length ? enrichedHighlights : highlights}
+          highlights={enrichedHighlights}
           startIndex={highlightStartIndex}
           onClose={() => {
             setShowVerticalHighlightViewer(false);
