@@ -54,47 +54,72 @@ const useChannelDetails = (user) => {
     }
   }, [user]);
 
+  const uploadBannerAndGetUrl = async (file, token) => {
+    // 1. Get signature from the backend
+    const { data } = await axios.post(
+      `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/signature`,
+      {},
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    const sigData = typeof data === 'string' ? JSON.parse(data) : data;
+
+    // 2. Upload the file directly to Cloudinary with all required fields
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('api_key', sigData.api_key); // Correctly append api_key
+    formData.append('timestamp', sigData.timestamp);
+    formData.append('signature', sigData.signature);
+    formData.append('folder', sigData.folder);
+
+    const cloudinaryUrl = `https://api.cloudinary.com/v1_1/di97mcvbu/image/upload`;
+    const { data: cloudinaryData } = await axios.post(cloudinaryUrl, formData);
+
+    return cloudinaryData.secure_url;
+  };
+
   const handleUpdateChannelInfo = async () => {
     setErrorMessage('');
     try {
-      let payload;
-      let headers;
-
+      // Step 1: Handle banner image upload and update if a new file is present.
       if (bannerImageFile) {
-        payload = new FormData();
-        payload.append('name', creatorName);
-        payload.append('about', about);
-        payload.append('instagram', instagram);
-        payload.append('tiktok', tiktok);
-        payload.append('linkedin', linkedin);
-        payload.append('twitter', twitter);
-        payload.append('bannerImage', bannerImageFile);
-        headers = {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${user.token}`,
-        };
-      } else {
-        payload = {
-          name: creatorName,
-          about,
-          instagram,
-          tiktok,
-          linkedin,
-          twitter,
-        };
-        headers = {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${user.token}`,
-        };
+        const bannerUrl = await uploadBannerAndGetUrl(bannerImageFile, user.token);
+        await axios.post(
+          `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/channel/${user._id}/banner`,
+          { bannerImage: bannerUrl },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${user.token}`,
+            },
+          }
+        );
+        setBannerImage(bannerUrl);
       }
+
+      // Step 2: Update the rest of the channel information (text fields).
+      const payload = {
+        name: creatorName,
+        about,
+        instagram,
+        tiktok,
+        linkedin,
+        twitter,
+      };
 
       const response = await axios.put(
         `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/channel/${user._id}`,
         payload,
-        { headers }
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
       );
 
-      setBannerImage(response.data.bannerImage || '');
+      // Update state with the response from the general info update
+      setBannerImage(response.data.bannerImage || bannerImage);
       setProfileImage(response.data.profileImage || '');
       setCreatorName(response.data.name || '');
       setAbout(response.data.about || '');
