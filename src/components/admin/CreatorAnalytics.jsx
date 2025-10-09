@@ -59,13 +59,23 @@ const CreatorAnalytics = () => {
     fetchAllAnalytics();
   }, [selectedCreator, user.token]);
 
-  const renderPerformanceChart = (videos, title) => (
-    <div>
-      <h4 className="text-lg font-semibold mb-2">{title}</h4>
-      {videos.map(video => (
-        <div key={video._id} className="mb-4">
-            <p>{video.title}</p>
-            <ResponsiveContainer width="100%" height={60}>
+  const renderPerformanceChart = (videos, title) => {
+    if (!videos || videos.length === 0) {
+      return (
+        <div>
+          <h4 className="text-lg font-semibold mb-2">{title}</h4>
+          <p>No data available.</p>
+        </div>
+      );
+    }
+
+    return (
+      <div>
+        <h4 className="text-lg font-semibold mb-2">{title}</h4>
+        {videos.map(video => (
+          <div key={video._id} className="mb-4">
+              <p>{video.title}</p>
+              <ResponsiveContainer width="100%" height={60}>
                 <BarChart data={[video]} layout="vertical" barSize={20}>
                     <XAxis type="number" hide />
                     <YAxis type="category" dataKey="title" hide/>
@@ -84,7 +94,8 @@ const CreatorAnalytics = () => {
         </div>
       ))}
     </div>
-  );
+    );
+  };
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
