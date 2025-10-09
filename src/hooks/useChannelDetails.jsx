@@ -78,12 +78,13 @@ const useChannelDetails = (user) => {
     return cloudinaryData.secure_url;
   };
 
-  const handleUpdateChannelInfo = async () => {
+  const handleUpdateChannelInfo = async (file = null) => {
     setErrorMessage('');
     try {
+      const fileToUpload = file || bannerImageFile;
       // Step 1: Handle banner image upload and update if a new file is present.
-      if (bannerImageFile) {
-        const bannerUrl = await uploadBannerAndGetUrl(bannerImageFile, user.token);
+      if (fileToUpload) {
+        const bannerUrl = await uploadBannerAndGetUrl(fileToUpload, user.token);
         await axios.post(
           `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/channel/${user._id}/banner`,
           { bannerImage: bannerUrl },
