@@ -25,7 +25,13 @@ const Login = () => {
     if (isSuccess && user && user.role) {
       toast.success('Login successful!');
       localStorage.setItem('user', JSON.stringify({ ...user, token: user.token }));
-      setTimeout(() => navigate('/dashboard'), 1000);
+      setTimeout(() => {
+        if (user.role === 'admin') {
+          navigate('/admin');
+        } else {
+          navigate('/dashboard');
+        }
+      }, 1000);
       dispatch(reset());
     }
   }, [user, isError, isSuccess, message, navigate, dispatch]);
