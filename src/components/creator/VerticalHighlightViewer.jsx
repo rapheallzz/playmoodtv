@@ -29,8 +29,6 @@ const VerticalHighlightViewer = ({
   highlights,
   startIndex,
   onClose,
-  creatorName,
-  profileImage,
 }) => {
   const { user } = useSelector((state) => state.auth);
   const storyRefs = useRef([]);
@@ -332,11 +330,13 @@ const VerticalHighlightViewer = ({
             )}
             <HighlightOverlay />
             <div style={{ position: 'absolute', bottom: '20px', left: '20px', color: 'white', zIndex: 10 }}>
+              {highlight.creator && (
                 <CreatorInfo>
-                  <CreatorAvatar src={profileImage} alt={creatorName} />
-                  <CreatorName>@{creatorName}</CreatorName>
+                  <CreatorAvatar src={highlight.creator.profileImage} alt={highlight.creator.name} />
+                  <CreatorName>@{highlight.creator.name}</CreatorName>
                 </CreatorInfo>
-                <h4 style={{ margin: '10px 0 0 0', fontWeight: 'normal' }}>{highlight.content.title}</h4>
+              )}
+              <h4 style={{ margin: '10px 0 0 0', fontWeight: 'normal' }}>{highlight.content.title}</h4>
             </div>
             <ActionsContainer>
               <ViewerActionButton

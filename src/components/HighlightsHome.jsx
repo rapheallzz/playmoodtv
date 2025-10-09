@@ -20,7 +20,6 @@ const HighlightsHome = () => {
   const [showVerticalHighlightViewer, setShowVerticalHighlightViewer] = useState(false);
   const [highlightStartIndex, setHighlightStartIndex] = useState(0);
   const [enrichedHighlights, setEnrichedHighlights] = useState([]);
-  const [selectedCreatorInfo, setSelectedCreatorInfo] = useState({ name: '', profileImage: '' });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -63,28 +62,40 @@ const HighlightsHome = () => {
       setViewedHighlights((prev) => new Set(prev).add(highlight._id));
     }
 
-    const creator = creators[highlight.user];
-    if (creator) {
-      setSelectedCreatorInfo({
-        name: creator.name,
-        profileImage: creator.profileImage,
-      });
-    }
-
     const enrichedData = await Promise.all(
       highlights.map(async (h) => {
-        if (h.content.video) return h;
         try {
+          // Fetch full content details to get the creator's information
           const res = await axios.get(
             `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${h.content._id}`
           );
-          return { ...h, content: { ...h.content, video: res.data.video } };
+          const contentDetails = res.data;
+
+          // The user object from content might not have profileImage, so we look it up in the creators map
+          const creatorFromMap = creators[contentDetails.user._id];
+
+          const creatorInfo = {
+            name: contentDetails.user.name,
+            profileImage: creatorFromMap ? creatorFromMap.profileImage : '', // Use image from map if available
+          };
+
+          // Return the highlight enriched with full content and creator details
+          return {
+            ...h,
+            content: contentDetails, // Use the full content details
+            creator: creatorInfo
+          };
         } catch (e) {
-          console.error(`Failed to fetch content for ${h.content._id}:`, e);
-          return h;
+          console.error(`Failed to fetch content or enrich highlight ${h._id}:`, e);
+          // Return a default structure on error to avoid crashing the viewer
+          return {
+            ...h,
+            creator: { name: 'Error loading data', profileImage: '' }
+          };
         }
       })
     );
+
     setEnrichedHighlights(enrichedData);
     setShowVerticalHighlightViewer(true);
   };
@@ -124,8 +135,6 @@ const HighlightsHome = () => {
             setShowVerticalHighlightViewer(false);
             setEnrichedHighlights([]);
           }}
-          creatorName={selectedCreatorInfo.name}
-          profileImage={selectedCreatorInfo.profileImage}
         />,
         document.body
       )}
