@@ -1,43 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { FaInstagram, FaTiktok, FaLinkedin } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
-import ReactCrop, { centerCrop, makeAspectCrop } from 'react-image-crop';
-import 'react-image-crop/dist/ReactCrop.css';
-
-// Helper function to generate a blob from a canvas
-const getCroppedImg = (image, crop) => {
-  const canvas = document.createElement('canvas');
-  const scaleX = image.naturalWidth / image.width;
-  const scaleY = image.naturalHeight / image.height;
-  canvas.width = crop.width;
-  canvas.height = crop.height;
-  const ctx = canvas.getContext('2d');
-
-  ctx.drawImage(
-    image,
-    crop.x * scaleX,
-    crop.y * scaleY,
-    crop.width * scaleX,
-    crop.height * scaleY,
-    0,
-    0,
-    crop.width,
-    crop.height
-  );
-
-  return new Promise((resolve, reject) => {
-    canvas.toBlob(blob => {
-      if (!blob) {
-        reject(new Error('Canvas is empty'));
-        return;
-      }
-      blob.name = 'newFile.jpeg';
-      resolve(blob);
-    }, 'image/jpeg');
-  });
-};
-
 
 const EditChannelModal = ({
   isOpen,
@@ -58,76 +22,42 @@ const EditChannelModal = ({
   setBannerImageFile,
   handleUpdateChannelInfo,
 }) => {
+  const [bannerImageFile, setLocalBannerImageFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [fileError, setFileError] = useState('');
-  const [crop, setCrop] = useState();
-  const [completedCrop, setCompletedCrop] = useState(null);
-  const imgRef = useRef(null);
+
+  useEffect(() => {
+    if (bannerImageFile) {
+      const url = URL.createObjectURL(bannerImageFile);
+      setPreviewUrl(url);
+      setBannerImageFile(bannerImageFile);
+      return () => URL.revokeObjectURL(url);
+    } else {
+      setPreviewUrl(null);
+      setBannerImageFile(null);
+    }
+  }, [bannerImageFile, setBannerImageFile]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-      const maxSize = 5 * 1024 * 1024; // 5MB
+      const maxSize = 5 * 1024 * 1024;
       if (!validTypes.includes(file.type)) {
         setFileError('Please upload a JPEG or PNG image.');
-        setPreviewUrl(null);
+        setLocalBannerImageFile(null);
         return;
       }
       if (file.size > maxSize) {
         setFileError('File size must be less than 5MB.');
-        setPreviewUrl(null);
+        setLocalBannerImageFile(null);
         return;
       }
       setFileError('');
-      setPreviewUrl(URL.createObjectURL(file));
+      setLocalBannerImageFile(file);
     } else {
       setFileError('');
-      setPreviewUrl(null);
-    }
-  };
-
-  const handleImageLoad = (e) => {
-    imgRef.current = e.currentTarget;
-    const { width, height } = e.currentTarget;
-    const newCrop = centerCrop(
-      makeAspectCrop(
-        {
-          unit: '%',
-          width: 90,
-        },
-        16 / 9, // Aspect ratio
-        width,
-        height
-      ),
-      width,
-      height
-    );
-    setCrop(newCrop);
-    setCompletedCrop(newCrop); // Set initial completed crop
-  };
-
-  const handleSaveChanges = async () => {
-    if (completedCrop && imgRef.current) {
-      try {
-        const croppedImageBlob = await getCroppedImg(imgRef.current, completedCrop);
-        setBannerImageFile(croppedImageBlob); // Pass the cropped blob to the parent
-        const result = await handleUpdateChannelInfo(croppedImageBlob); // Pass it directly
-        if (result && result.success) {
-          toast.success('Channel information updated successfully!');
-          onClose();
-        }
-      } catch (e) {
-        console.error('Error cropping image:', e);
-        toast.error('Could not crop the image.');
-      }
-    } else {
-      // If no new image/crop, just update the other info
-      const result = await handleUpdateChannelInfo();
-      if (result && result.success) {
-        toast.success('Channel information updated successfully!');
-        onClose();
-      }
+      setLocalBannerImageFile(null);
     }
   };
 
@@ -165,7 +95,7 @@ const EditChannelModal = ({
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Banner Image</label>
-              {!previewUrl && bannerImage && (
+              {bannerImage && !previewUrl &&(
                 <div className="mt-2 mb-2">
                   <img src={bannerImage} alt="Current Banner" className="w-full h-32 object-cover rounded-md" />
                 </div>
@@ -177,14 +107,9 @@ const EditChannelModal = ({
                 className="mt-1 p-2 border rounded-md w-full text-sm"
               />
               {previewUrl && (
-                <ReactCrop
-                  crop={crop}
-                  onChange={c => setCrop(c)}
-                  onComplete={c => setCompletedCrop(c)}
-                  aspect={16 / 9}
-                >
-                  <img ref={imgRef} src={previewUrl} onLoad={handleImageLoad} alt="Banner Preview" style={{ maxHeight: '400px' }} />
-                </ReactCrop>
+                <div className="mt-2 mb-2">
+                  <img src={previewUrl} alt="Banner Preview" className="w-full h-32 object-cover rounded-md" />
+                </div>
               )}
               {fileError && <p className="text-red-500 text-xs mt-1">{fileError}</p>}
             </div>
@@ -247,7 +172,13 @@ const EditChannelModal = ({
             Cancel
           </button>
           <button
-            onClick={handleSaveChanges}
+            onClick={async () => {
+              const result = await handleUpdateChannelInfo();
+              if (result && result.success) {
+                toast.success('Channel information updated successfully!');
+                onClose();
+              }
+            }}
             className="bg-[#541011] text-white p-2 rounded-md hover:bg-red-800 transition-colors"
             disabled={fileError || !creatorName.trim()}
           >
