@@ -11,6 +11,7 @@ const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#AF19FF'];
 const CreatorAnalytics = () => {
   const { user } = useSelector((state) => state.auth);
   const [creators, setCreators] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [selectedCreator, setSelectedCreator] = useState('');
   const [dashboardData, setDashboardData] = useState(null);
   const [performanceData, setPerformanceData] = useState(null);
@@ -97,6 +98,10 @@ const CreatorAnalytics = () => {
     );
   };
 
+  const filteredCreators = creators.filter(creator =>
+    creator.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
       {selectedVideoId && (
@@ -104,13 +109,20 @@ const CreatorAnalytics = () => {
       )}
       <h2 className="text-2xl font-bold mb-4">Creator Analytics</h2>
       <div className="mb-4">
+        <input
+          type="text"
+          placeholder="Search creators..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="p-2 border border-gray-300 rounded-md w-full md:w-1/3 mb-2"
+        />
         <select
           value={selectedCreator}
           onChange={(e) => setSelectedCreator(e.target.value)}
           className="p-2 border border-gray-300 rounded-md w-full md:w-1/3"
         >
           <option value="">Select a Creator</option>
-          {creators.map((c) => (
+          {filteredCreators.map((c) => (
             <option key={c._id} value={c._id}>
               {c.name}
             </option>

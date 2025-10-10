@@ -11,6 +11,7 @@ const VideoManagement = () => {
   const [contents, setContents] = useState([]);
   const [unapprovedContents, setUnapprovedContents] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [searchTerm, setSearchTerm] = useState('');
   const [showUpdateContentModal, setShowUpdateContentModal] = useState(false);
   const [selectedContentId, setSelectedContentId] = useState(null);
   const [showVideoModal, setShowVideoModal] = useState(false);
@@ -109,10 +110,21 @@ const VideoManagement = () => {
     setShowUpdateContentModal(true);
   };
 
+  const filteredContents = contents.filter(content =>
+    content.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
       <h2 className="text-2xl font-bold mb-4">Video Management</h2>
       <div className="flex items-center gap-4 mb-4">
+        <input
+          type="text"
+          placeholder="Search by title..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="p-2 border border-gray-300 rounded-md"
+        />
         <select
           className="p-2 border border-gray-300 rounded-md"
           value={selectedCategory}
@@ -136,7 +148,7 @@ const VideoManagement = () => {
           <div className="max-h-[500px] overflow-y-auto">
             {loading ? <p>Loading...</p> : (
             <ul>
-              {contents.map((content) => (
+              {filteredContents.map((content) => (
                 <li key={content._id} className="bg-gray-50 p-3 rounded-md mb-2 flex justify-between items-center">
                   <div>
                     <p className="font-semibold">{content.title}</p>
