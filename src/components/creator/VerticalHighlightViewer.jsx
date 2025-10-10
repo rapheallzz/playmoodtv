@@ -72,6 +72,9 @@ const VerticalHighlightViewer = ({
 
   // Effect to manage video playback and scrolling
   useEffect(() => {
+    // Set a flag to prevent the IntersectionObserver from firing during programmatic scroll
+    isProgrammaticScroll.current = true;
+
     // Scroll to the current highlight
     if (storyRefs.current[currentIndex]) {
       storyRefs.current[currentIndex].scrollIntoView({
@@ -79,6 +82,12 @@ const VerticalHighlightViewer = ({
         block: 'center',
       });
     }
+
+    // Reset the flag after the scroll animation is likely to have finished.
+    clearTimeout(scrollTimeout.current);
+    scrollTimeout.current = setTimeout(() => {
+      isProgrammaticScroll.current = false;
+    }, 1000); // 1-second delay
 
     // Manage video playback
     videoRefs.current.forEach((video, index) => {
