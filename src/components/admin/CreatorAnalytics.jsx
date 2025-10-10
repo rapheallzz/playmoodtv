@@ -124,9 +124,9 @@ const CreatorAnalytics = () => {
         <div className="space-y-6">
           {dashboardData && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-gray-50 p-4 rounded-lg text-center"><p className="text-gray-500">Total Views</p><p className="text-2xl font-bold">{dashboardData.totalViews}</p></div>
-                <div className="bg-gray-50 p-4 rounded-lg text-center"><p className="text-gray-500">Total Likes</p><p className="text-2xl font-bold">{dashboardData.totalLikes}</p></div>
-                <div className="bg-gray-50 p-4 rounded-lg text-center"><p className="text-gray-500">Subscribers</p><p className="text-2xl font-bold">{dashboardData.subscribers}</p></div>
+                <div className="bg-gray-50 p-4 rounded-lg text-center"><p className="text-gray-500">Total Views</p><p className="text-2xl font-bold">{dashboardData.performance.totalViews}</p></div>
+                <div className="bg-gray-50 p-4 rounded-lg text-center"><p className="text-gray-500">Total Likes</p><p className="text-2xl font-bold">{dashboardData.performance.totalLikes}</p></div>
+                <div className="bg-gray-50 p-4 rounded-lg text-center"><p className="text-gray-500">Subscribers</p><p className="text-2xl font-bold">{dashboardData.audience.totalSubscribers}</p></div>
             </div>
           )}
 
@@ -137,7 +137,7 @@ const CreatorAnalytics = () => {
             </div>
           )}
 
-          {engagementData && (
+          {engagementData && engagementData.performanceByCategory && (
             <div>
               <h3 className="text-xl font-bold mb-4">Engagement Trends</h3>
                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -145,17 +145,13 @@ const CreatorAnalytics = () => {
                         <h4 className="text-lg font-semibold mb-2">Best Performing Content Type</h4>
                          <ResponsiveContainer width="100%" height={300}>
                             <PieChart>
-                                <Pie data={engagementData.contentTypePerformance} dataKey="views" nameKey="type" cx="50%" cy="50%" outerRadius={100} fill="#8884d8" label>
-                                     {engagementData.contentTypePerformance.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
+                                <Pie data={engagementData.performanceByCategory} dataKey="totalViews" nameKey="_id" cx="50%" cy="50%" outerRadius={100} fill="#8884d8" label>
+                                     {engagementData.performanceByCategory.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
                                 </Pie>
                                 <Tooltip />
                                 <Legend />
                             </PieChart>
                         </ResponsiveContainer>
-                    </div>
-                    <div>
-                        <h4 className="text-lg font-semibold mb-2">Best Time to Post</h4>
-                        <p className="text-lg">{engagementData.bestTimeToPost}</p>
                     </div>
                </div>
             </div>
