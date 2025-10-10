@@ -64,7 +64,7 @@ const VerticalHighlightViewer = ({
       initialStates[index] = {
         isPlaying: index === startIndex, // Autoplay the first video
         volume: 1,
-        isMuted: true,
+        isMuted: false,
       };
     });
     setPlayerStates(initialStates);
@@ -83,23 +83,35 @@ const VerticalHighlightViewer = ({
     // Manage video playback
     videoRefs.current.forEach((video, index) => {
       if (video) {
+        const playerState = playerStates[index];
         if (index === currentIndex) {
-          // Mute the video to allow autoplay, then play
-          video.muted = true;
-          const playPromise = video.play();
-          if (playPromise !== undefined) {
-            playPromise.catch(e => {
-              if (e.name !== 'AbortError') {
-                console.error("Video play failed:", e);
+          if (playerState) {
+            video.muted = playerState.isMuted;
+            video.volume = playerState.volume;
+
+            if (playerState.isPlaying) {
+              const playPromise = video.play();
+              if (playPromise !== undefined) {
+                playPromise.catch((e) => {
+                  if (e.name === 'NotAllowedError') {
+                    // Autoplay with sound was prevented. Mute and try again.
+                    console.warn('Autoplay with sound was blocked. Muting video.');
+                    updatePlayerState(index, { isMuted: true });
+                  } else if (e.name !== 'AbortError') {
+                    console.error('Video play failed:', e);
+                  }
+                });
               }
-            });
+            } else {
+              video.pause();
+            }
           }
         } else {
           video.pause();
         }
       }
     });
-  }, [currentIndex]);
+  }, [currentIndex, playerStates]);
 
   // Effect to manage IntersectionObserver for updating currentIndex
   useEffect(() => {
