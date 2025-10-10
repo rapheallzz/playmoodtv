@@ -435,9 +435,9 @@ const VideoCategory = styled.div`
 
   @media screen and (max-width: 495px) {
     min-height: 180px;
-    height:250px;
+    height: auto;
     margin: 10px 10px 30px 10px;
-    padding-bottom: 0px;
+    padding-bottom: 20px;
     z-index: 210;
   }
 `;
@@ -460,10 +460,10 @@ const VideoCategoryCircle = styled.div`
   }
 
   @media screen and (max-width: 495px) {
-    min-height: 180px;
-    height:200px;
+    min-height: 220px;
+    height: auto;
     margin: 10px 10px 30px 10px;
-    padding-bottom: 0px;
+    padding-bottom: 20px;
     z-index: 210;
   }
 `;
