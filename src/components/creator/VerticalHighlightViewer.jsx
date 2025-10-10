@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import contentService from '../../features/contentService';
 import CommentSection from './CommentSection';
 import {
@@ -30,6 +31,7 @@ const VerticalHighlightViewer = ({
   startIndex,
   onClose,
 }) => {
+  const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
   const storyRefs = useRef([]);
   const videoRefs = useRef([]);
@@ -102,7 +104,7 @@ const VerticalHighlightViewer = ({
               const playPromise = video.play();
               if (playPromise !== undefined) {
                 playPromise.catch((e) => {
-                  if (e.name === 'NotAllowedError') {
+                  if (e.name === 'NotAllowedError' && !playerState.isMuted) {
                     // Autoplay with sound was prevented. Mute and try again.
                     console.warn('Autoplay with sound was blocked. Muting video.');
                     updatePlayerState(index, { isMuted: true });
@@ -291,6 +293,11 @@ const VerticalHighlightViewer = ({
     }
   };
 
+  const handleNavigateToCreator = (creatorId) => {
+    onClose();
+    navigate('/creator', { state: { creatorId } });
+  };
+
   const currentVideoState = playerStates[currentIndex] || { isPlaying: false, volume: 1, isMuted: true };
 
   return (
@@ -352,7 +359,7 @@ const VerticalHighlightViewer = ({
             <HighlightOverlay />
             <div style={{ position: 'absolute', bottom: '20px', left: '20px', color: 'white', zIndex: 10 }}>
               {highlight.creator && (
-                <CreatorInfo>
+                <CreatorInfo onClick={() => handleNavigateToCreator(highlight.content.user._id)}>
                   <CreatorAvatar src={highlight.creator.profileImage} alt={highlight.creator.name} />
                   <CreatorName>@{highlight.creator.name}</CreatorName>
                 </CreatorInfo>
