@@ -132,8 +132,8 @@ const CreatorAnalytics = () => {
 
           {performanceData && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {renderPerformanceChart(performanceData.topVideos, 'Top 5 Performing Videos')}
-              {renderPerformanceChart(performanceData.bottomVideos, 'Bottom 5 Performing Videos')}
+              {renderPerformanceChart(performanceData.top5, 'Top 5 Performing Videos')}
+              {renderPerformanceChart(performanceData.bottom5, 'Bottom 5 Performing Videos')}
             </div>
           )}
 
