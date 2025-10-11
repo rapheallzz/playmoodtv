@@ -372,11 +372,11 @@ const VerticalHighlightViewer = ({
                 className={likedHighlights.has(highlight.content._id) ? 'liked' : ''}
               >
                 <FaHeart />
-                <span>Like</span>
+                <span>{highlight.content.likesCount || 0}</span>
               </ViewerActionButton>
               <ViewerActionButton onClick={() => handleCommentIconClick(highlight)}>
                 <FaComment />
-                <span>Comment</span>
+                <span>{highlight.content.commentsCount || 0}</span>
               </ViewerActionButton>
               <ViewerActionButton onClick={() => console.log('Share clicked for highlight ' + highlight._id)}>
                 <FaPaperPlane />
