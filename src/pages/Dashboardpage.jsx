@@ -288,7 +288,7 @@ function Dashboardpage() {
       }
       setHasFetched(true);
     }
-  }, [authUser, userToken, dispatch, navigate, fetchCreatorApplication-Status, hasFetched]);
+  }, [authUser, userToken, dispatch, navigate, fetchCreatorApplicationStatus, hasFetched]);
 
   const updateProfileImage = async (userId, file, token) => {
     if (!userId) {
