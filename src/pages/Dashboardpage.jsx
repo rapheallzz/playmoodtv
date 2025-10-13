@@ -45,6 +45,7 @@ function Dashboardpage() {
   const [showEmailVerificationModal, setShowEmailVerificationModal] = useState(false);
   const [userProfile, setUserProfile] = useState(null);
   const [showChangePassword, setShowChangePassword] = useState(false);
+  const [hasFetched, setHasFetched] = useState(false);
 
   const [personalData, setPersonalData] = useState({
     name: '',
@@ -245,6 +246,8 @@ function Dashboardpage() {
   }, [authUser, dispatch]);
 
   useEffect(() => {
+    if (hasFetched) return;
+
     console.log('Dashboard useEffect:', { authUser, userToken, userId });
     if (!authUser || !userToken) {
       const cachedUser = JSON.parse(localStorage.getItem('user'));
@@ -283,8 +286,9 @@ function Dashboardpage() {
       if (authUser.role !== 'creator') {
         fetchCreatorApplicationStatus();
       }
+      setHasFetched(true);
     }
-  }, [authUser, userToken, dispatch, navigate, fetchCreatorApplicationStatus]);
+  }, [authUser, userToken, dispatch, navigate, fetchCreatorApplication-Status, hasFetched]);
 
   const updateProfileImage = async (userId, file, token) => {
     if (!userId) {

@@ -17,12 +17,16 @@ const PlatformAnalytics = () => {
   const { user } = useSelector((state) => state.auth);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [hasFetched, setHasFetched] = useState(false);
 
   useEffect(() => {
+    if (hasFetched || !user?.token) return;
+
     const fetchAnalytics = async () => {
       try {
         const data = await getPlatformAnalytics(user.token);
         setStats(data);
+        setHasFetched(true);
       } catch (error) {
         toast.error('Failed to fetch platform analytics.');
       } finally {
@@ -31,7 +35,7 @@ const PlatformAnalytics = () => {
     };
 
     fetchAnalytics();
-  }, [user.token]);
+  }, [user?.token, hasFetched]);
 
   if (loading) {
     return (
