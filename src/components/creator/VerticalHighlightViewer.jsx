@@ -17,7 +17,8 @@ import {
   ViewerActionButton,
   NavigationArrow,
   VideoControlsContainer,
-  PlayerControl
+  PlayerControl,
+  CenterPlayPauseButton
 } from '../../styles/CreatorPageStyles';
 import {
   FaTimes, FaHeart, FaComment, FaPaperPlane, FaChevronUp, FaChevronDown,
@@ -42,6 +43,7 @@ const VerticalHighlightViewer = ({
   const [selectedHighlight, setSelectedHighlight] = useState(null);
   const [isLoadingComments, setIsLoadingComments] = useState(false);
   const [totalComments, setTotalComments] = useState(0);
+  const [showCenterPlayPause, setShowCenterPlayPause] = useState(false);
   const isProgrammaticScroll = useRef(false);
   const scrollTimeout = useRef(null);
 
@@ -180,6 +182,10 @@ const VerticalHighlightViewer = ({
   const togglePlay = () => {
     if (playerStates[currentIndex]) {
       updatePlayerState(currentIndex, { isPlaying: !playerStates[currentIndex].isPlaying });
+      setShowCenterPlayPause(true);
+      setTimeout(() => {
+        setShowCenterPlayPause(false);
+      }, 1000);
     }
   };
 
@@ -321,6 +327,12 @@ const VerticalHighlightViewer = ({
                 <FaExpand />
               </PlayerControl>
             </VideoControlsContainer>
+
+            {showCenterPlayPause && (
+              <CenterPlayPauseButton>
+                {currentVideoState.isPlaying ? <FaPause /> : <FaPlay />}
+              </CenterPlayPauseButton>
+            )}
 
             {highlight.content?.video ? (
               <Video

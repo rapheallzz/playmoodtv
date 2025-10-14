@@ -1352,12 +1352,8 @@ export const VideoControlsContainer = styled.div`
   justify-content: space-between;
   align-items: center;
   z-index: 11;
-  opacity: 0;
+  opacity: 1;
   transition: opacity 0.3s ease;
-
-  ${VideoContainer}:hover & {
-    opacity: 1;
-  }
 `;
 
 export const PlayerControl = styled.button`
@@ -1367,6 +1363,30 @@ export const PlayerControl = styled.button`
   cursor: pointer;
   font-size: 1.5rem;
   padding: 5px;
+`;
+
+export const CenterPlayPauseButton = styled.button`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.5);
+  border: none;
+  color: white;
+  cursor: pointer;
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 12;
+  opacity: ${props => (props.show ? 1 : 0)};
+  transition: opacity 0.3s ease-in-out;
+
+  svg {
+    font-size: 3rem;
+  }
 `;
 
 
