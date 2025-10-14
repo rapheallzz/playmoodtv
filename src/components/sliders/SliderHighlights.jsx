@@ -177,6 +177,7 @@ const SliderContainer = styled.div`
     position: relative;
     display: flex;
     align-items: center;
+    padding: 0 10px;
   }
 
   @media (max-width: 480px) {
