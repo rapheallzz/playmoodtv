@@ -15,7 +15,13 @@ def run(playwright):
     page.wait_for_load_state("networkidle")
 
     page.wait_for_selector('[data-testid="highlight-item-home-0"]', timeout=20000)
-    page.screenshot(path="jules-scratch/verification/verification.png")
+
+    # Scroll down to the "New on Playmood" section
+    page.evaluate("window.scrollBy(0, 500)")
+
+    time.sleep(1)
+
+    page.screenshot(path="jules-scratch/verification/verification_spacing.png")
     browser.close()
 
 with sync_playwright() as playwright:

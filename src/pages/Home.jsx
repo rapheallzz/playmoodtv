@@ -447,11 +447,38 @@ const VideoCategoryHighlights = styled.div`
   margin: 20px;
   display: flex;
   flex-direction: column;
-  height: 380px;
+  height: auto; /* Allow height to be flexible */
   min-height: 220px;
   box-sizing: border-box;
   z-index: 210;
   padding-top: 30px;
+
+  @media screen and (max-width: 768px) {
+    min-height: 180px;
+    margin: 10px;
+    padding-bottom: 10px; /* Reduce bottom padding */
+  }
+
+  @media screen and (max-width: 495px) {
+    min-height: 150px;
+    padding-bottom: 5px; /* Further reduce padding */
+  }
+`;
+
+const VideoCategoryResponsive = styled(VideoCategory)`
+  @media screen and (max-width: 768px) {
+    height: auto;
+    min-height: 180px;
+    margin: 10px;
+    padding-bottom: 20px;
+  }
+
+  @media screen and (max-width: 495px) {
+    height: auto;
+    min-height: 150px;
+    margin: 10px;
+    padding-bottom: 15px;
+  }
 `;
 
 const VideoCategoryCircle = styled.div`
@@ -848,10 +875,10 @@ function HomeContent({
             <Videocategorytitle>Highlights</Videocategorytitle>
             <HighlightsHome />
           </VideoCategoryHighlights>
-          <VideoCategory >
+          <VideoCategoryResponsive>
             <Videocategorytitle>New on Playmood</Videocategorytitle>
             <SliderNew />
-          </VideoCategory>
+          </VideoCategoryResponsive>
           <VideoCategoryCircle >
             <Videocategorytitle>Channels</Videocategorytitle>
             <SliderChannel />
