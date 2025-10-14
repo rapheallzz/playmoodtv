@@ -425,7 +425,6 @@ const VideoCategory = styled.div`
   min-height: 220px;
   box-sizing: border-box;
   z-index: 210;
-  padding-top: 20px;
 
   @media screen and (max-width: 768px) {
     min-height: 180px;
@@ -441,6 +440,18 @@ const VideoCategory = styled.div`
     padding-bottom: 20px;
     z-index: 210;
   }
+`;
+
+const VideoCategoryHighlights = styled.div`
+  width: 92%;
+  margin: 20px;
+  display: flex;
+  flex-direction: column;
+  height: 380px;
+  min-height: 220px;
+  box-sizing: border-box;
+  z-index: 210;
+  padding-top: 30px;
 `;
 
 const VideoCategoryCircle = styled.div`
@@ -833,10 +844,10 @@ function HomeContent({
             <Videocategorytitle>Top 10</Videocategorytitle>
             <SliderTopTen />
           </VideoCategory>
-          <VideoCategory>
+          <VideoCategoryHighlights>
             <Videocategorytitle>Highlights</Videocategorytitle>
             <HighlightsHome />
-          </VideoCategory>
+          </VideoCategoryHighlights>
           <VideoCategory >
             <Videocategorytitle>New on Playmood</Videocategorytitle>
             <SliderNew />
