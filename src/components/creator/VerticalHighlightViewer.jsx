@@ -308,12 +308,6 @@ const VerticalHighlightViewer = ({
       >
         <FaTimes />
       </CloseButton>
-      <NavigationArrow className="up-arrow" onClick={() => handleScroll(-1)} disabled={currentIndex === 0}>
-        <FaChevronUp />
-      </NavigationArrow>
-      <NavigationArrow className="down-arrow" onClick={() => handleScroll(1)} disabled={currentIndex === highlights.length - 1}>
-        <FaChevronDown />
-      </NavigationArrow>
       {highlights.map((highlight, index) => (
         <HighlightStory
           key={highlight._id}
@@ -323,6 +317,16 @@ const VerticalHighlightViewer = ({
             data-testid={`video-container-${index}`}
             className={isCommentSectionOpen && selectedHighlight?.content._id === highlight.content._id ? 'shifted' : ''}
           >
+            {index === currentIndex && (
+              <>
+                <NavigationArrow className="up-arrow" onClick={() => handleScroll(-1)} disabled={currentIndex === 0}>
+                  <FaChevronUp />
+                </NavigationArrow>
+                <NavigationArrow className="down-arrow" onClick={() => handleScroll(1)} disabled={currentIndex === highlights.length - 1}>
+                  <FaChevronDown />
+                </NavigationArrow>
+              </>
+            )}
             <VideoControlsContainer>
               <PlayerControl onClick={togglePlay}>
                 {currentVideoState.isPlaying ? <FaPause /> : <FaPlay />}

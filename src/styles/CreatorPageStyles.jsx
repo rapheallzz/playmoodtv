@@ -1440,7 +1440,7 @@ export const ViewerActionButton = styled.button`
   font-size: 0.8rem;
 
   svg {
-    font-size: 2rem;
+    font-size: 1.5rem;
     transition: color 0.3s ease;
   }
 
@@ -1452,8 +1452,8 @@ export const ViewerActionButton = styled.button`
 `;
 
 export const NavigationArrow = styled.button`
-  position: fixed;
-  right: 40px;
+  position: absolute;
+  right: 20px;
   background: rgba(255, 255, 255, 0.2);
   border: none;
   color: white;
@@ -1464,16 +1464,16 @@ export const NavigationArrow = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 10003;
+  z-index: 10;
 
   &.up-arrow {
-    top: 50%;
-    transform: translateY(-70px);
+    bottom: 240px;
+    right: 20px;
   }
 
   &.down-arrow {
-    top: 50%;
-    transform: translateY(30px);
+    bottom: 180px;
+    right: 20px;
   }
 
   svg {
