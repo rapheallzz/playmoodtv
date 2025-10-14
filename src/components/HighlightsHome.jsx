@@ -3,13 +3,10 @@ import ReactDOM from 'react-dom';
 import axios from 'axios';
 import {
   HighlightsSectionContainer,
-  HighlightsList,
-  HighlightItem,
-  LargeHighlightCircle,
-  LargeHighlightTitle,
 } from '../styles/CreatorPageStyles';
 import VerticalHighlightViewer from './creator/VerticalHighlightViewer';
 import { SkeletonHighlightsWrapper, SkeletonHighlightItem, SkeletonHighlightCircle, SkeletonText } from '../styles/SkeletonStyles';
+import SliderHighlights from './sliders/SliderHighlights';
 
 const HighlightsHome = () => {
   const [highlights, setHighlights] = useState([]);
@@ -116,16 +113,12 @@ const HighlightsHome = () => {
   return (
     <>
       <HighlightsSectionContainer>
-        <HighlightsList>
-          {highlights.map((highlight, index) => (
-            <HighlightItem data-testid={`highlight-item-home-${index}`} key={highlight._id} onClick={() => handleSelectHighlight(highlight, index)}>
-              <LargeHighlightCircle viewed={!recentHighlights.has(highlight._id) && viewedHighlights.has(highlight._id)}>
-                {highlight.content.thumbnail && <img src={highlight.content.thumbnail} alt="Highlight thumbnail" />}
-              </LargeHighlightCircle>
-              <LargeHighlightTitle>{highlight.content.title}</LargeHighlightTitle>
-            </HighlightItem>
-          ))}
-        </HighlightsList>
+        <SliderHighlights
+          highlights={highlights}
+          handleSelectHighlight={handleSelectHighlight}
+          recentHighlights={recentHighlights}
+          viewedHighlights={viewedHighlights}
+        />
       </HighlightsSectionContainer>
       {showVerticalHighlightViewer && enrichedHighlights.length > 0 && ReactDOM.createPortal(
         <VerticalHighlightViewer
