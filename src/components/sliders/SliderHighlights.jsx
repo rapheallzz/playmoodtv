@@ -47,7 +47,7 @@ export default function SliderHighlights({ highlights, handleSelectHighlight, re
 
   const settings = {
     dots: false,
-    infinite: true,
+    infinite: highlights.length > 8,
     speed: 300,
     slidesToShow: 8,
     slidesToScroll: 1,
@@ -62,9 +62,7 @@ export default function SliderHighlights({ highlights, handleSelectHighlight, re
         settings: {
           slidesToShow: 5,
           slidesToScroll: 1,
-          infinite: true,
-          dots: true,
-          arrows: true,
+          infinite: highlights.length > 5,
         },
       },
       {
@@ -73,8 +71,7 @@ export default function SliderHighlights({ highlights, handleSelectHighlight, re
           slidesToShow: 4,
           slidesToScroll: 1,
           initialSlide: 2,
-          infinite: true,
-          arrows: true,
+          infinite: highlights.length > 4,
         },
       },
       {
@@ -82,7 +79,7 @@ export default function SliderHighlights({ highlights, handleSelectHighlight, re
         settings: {
           slidesToShow: 3,
           slidesToScroll: 1,
-          infinite: true,
+          infinite: highlights.length > 3,
           arrows: false,
           centerMode: true,
           centerPadding: '0px',
@@ -95,20 +92,21 @@ export default function SliderHighlights({ highlights, handleSelectHighlight, re
     <SliderContainer>
       <Slider {...settings} ref={sliderRef}>
         {highlights.map((highlight, index) => (
-          <HighlightItem
-            data-testid={`highlight-item-home-${index}`}
-            key={highlight._id}
-            onClick={() => handleSelectHighlight(highlight, index)}
-          >
-            <LargeHighlightCircle
-              viewed={!recentHighlights.has(highlight._id) && viewedHighlights.has(highlight._id)}
+          <div key={highlight._id} className="slides">
+            <HighlightItem
+              data-testid={`highlight-item-home-${index}`}
+              onClick={() => handleSelectHighlight(highlight, index)}
             >
-              {highlight.content.thumbnail && (
-                <img src={highlight.content.thumbnail} alt="Highlight thumbnail" />
-              )}
-            </LargeHighlightCircle>
-            <LargeHighlightTitle>{highlight.content.title}</LargeHighlightTitle>
-          </HighlightItem>
+              <LargeHighlightCircle
+                viewed={!recentHighlights.has(highlight._id) && viewedHighlights.has(highlight._id)}
+              >
+                {highlight.content.thumbnail && (
+                  <img src={highlight.content.thumbnail} alt="Highlight thumbnail" />
+                )}
+              </LargeHighlightCircle>
+              <LargeHighlightTitle>{highlight.content.title}</LargeHighlightTitle>
+            </HighlightItem>
+          </div>
         ))}
       </Slider>
     </SliderContainer>
@@ -173,6 +171,12 @@ const SliderContainer = styled.div`
 
   .slick-slide {
     padding: 0 5px;
+  }
+
+  .slides {
+    position: relative;
+    display: flex;
+    align-items: center;
   }
 
   @media (max-width: 480px) {
