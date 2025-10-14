@@ -5,9 +5,7 @@ import 'slick-carousel/slick/slick-theme.css';
 import styled, { keyframes } from 'styled-components';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import {
-  HighlightItem,
   LargeHighlightCircle,
-  LargeHighlightTitle,
 } from '../../styles/CreatorPageStyles';
 
 // Pulse animation for right arrow
@@ -93,9 +91,10 @@ export default function SliderHighlights({ highlights, handleSelectHighlight, re
       <Slider {...settings} ref={sliderRef}>
         {highlights.map((highlight, index) => (
           <div key={highlight._id} className="slides">
-            <HighlightItem
+            <div
               data-testid={`highlight-item-home-${index}`}
               onClick={() => handleSelectHighlight(highlight, index)}
+              style={{ cursor: 'pointer' }}
             >
               <LargeHighlightCircle
                 viewed={!recentHighlights.has(highlight._id) && viewedHighlights.has(highlight._id)}
@@ -104,8 +103,7 @@ export default function SliderHighlights({ highlights, handleSelectHighlight, re
                   <img src={highlight.content.thumbnail} alt="Highlight thumbnail" />
                 )}
               </LargeHighlightCircle>
-              <LargeHighlightTitle>{highlight.content.title}</LargeHighlightTitle>
-            </HighlightItem>
+            </div>
           </div>
         ))}
       </Slider>
@@ -117,11 +115,12 @@ export default function SliderHighlights({ highlights, handleSelectHighlight, re
 const SliderContainer = styled.div`
   position: relative;
   width: 100%;
-  padding: 0 20px;
+  padding: 20px 0;
   margin: 0 auto;
 
   .slick-slider {
     position: relative;
+    overflow: visible;
   }
 
   // Hide default slick arrows
