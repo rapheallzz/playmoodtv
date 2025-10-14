@@ -1278,6 +1278,42 @@ export const LargeHighlightCircle = styled(HighlightCircle)`
     height: 152px;
     border-width: 4px;
   }
+
+  @media (max-width: 1024px) {
+    width: 120px;
+    height: 120px;
+    padding: 3px;
+
+    img {
+      width: 114px;
+      height: 114px;
+      border-width: 3px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    width: 90px;
+    height: 90px;
+    padding: 2px;
+
+    img {
+      width: 86px;
+      height: 86px;
+      border-width: 2px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    width: 80px;
+    height: 80px;
+    padding: 2px;
+
+    img {
+      width: 76px;
+      height: 76px;
+      border-width: 2px;
+    }
+  }
 `;
 
 export const LargeHighlightTitle = styled(HighlightTitle)`
