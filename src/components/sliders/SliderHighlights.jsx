@@ -170,14 +170,13 @@ const SliderContainer = styled.div`
   }
 
   .slick-slide {
-    padding: 0 5px;
+    padding: 0 15px;
   }
 
   .slides {
     position: relative;
     display: flex;
     align-items: center;
-    padding: 0 10px;
   }
 
   @media (max-width: 480px) {

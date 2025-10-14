@@ -832,10 +832,10 @@ function HomeContent({
             <Videocategorytitle>Top 10</Videocategorytitle>
             <SliderTopTen />
           </VideoCategory>
-          <VideoCategoryCircle>
+          <VideoCategory>
             <Videocategorytitle>Highlights</Videocategorytitle>
             <HighlightsHome />
-          </VideoCategoryCircle>
+          </VideoCategory>
           <VideoCategory >
             <Videocategorytitle>New on Playmood</Videocategorytitle>
             <SliderNew />
