@@ -17,13 +17,11 @@ import {
   ViewerActionButton,
   NavigationArrow,
   VideoControlsContainer,
-  PlayerControl,
-  VolumeContainer,
-  VolumeSlider,
+  PlayerControl
 } from '../../styles/CreatorPageStyles';
 import {
   FaTimes, FaHeart, FaComment, FaPaperPlane, FaChevronUp, FaChevronDown,
-  FaPlay, FaPause, FaVolumeUp, FaVolumeMute, FaExpand
+  FaPlay, FaPause, FaExpand
 } from 'react-icons/fa';
 
 const VerticalHighlightViewer = ({
@@ -185,18 +183,6 @@ const VerticalHighlightViewer = ({
     }
   };
 
-  const toggleMute = () => {
-    if (playerStates[currentIndex]) {
-      updatePlayerState(currentIndex, { isMuted: !playerStates[currentIndex].isMuted });
-    }
-  };
-
-  const handleVolumeChange = (e) => {
-    const newVolume = parseFloat(e.target.value);
-    if (playerStates[currentIndex]) {
-      updatePlayerState(currentIndex, { volume: newVolume, isMuted: newVolume === 0 });
-    }
-  };
 
   const toggleFullScreen = () => {
     const video = videoRefs.current[currentIndex];
@@ -331,19 +317,6 @@ const VerticalHighlightViewer = ({
               <PlayerControl onClick={togglePlay}>
                 {currentVideoState.isPlaying ? <FaPause /> : <FaPlay />}
               </PlayerControl>
-              <VolumeContainer>
-                <PlayerControl onClick={toggleMute}>
-                  {currentVideoState.isMuted || currentVideoState.volume === 0 ? <FaVolumeMute /> : <FaVolumeUp />}
-                </PlayerControl>
-                <VolumeSlider
-                  type="range"
-                  min="0"
-                  max="1"
-                  step="0.1"
-                  value={currentVideoState.isMuted ? 0 : currentVideoState.volume}
-                  onChange={handleVolumeChange}
-                />
-              </VolumeContainer>
               <PlayerControl onClick={toggleFullScreen}>
                 <FaExpand />
               </PlayerControl>

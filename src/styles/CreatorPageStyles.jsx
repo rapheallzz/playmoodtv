@@ -1369,16 +1369,6 @@ export const PlayerControl = styled.button`
   padding: 5px;
 `;
 
-export const VolumeContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-`;
-
-export const VolumeSlider = styled.input`
-  width: 80px;
-  cursor: pointer;
-`;
 
 export const Video = styled.video`
   width: 100%;
