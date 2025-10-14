@@ -169,7 +169,7 @@ const SliderContainer = styled.div`
   }
 
   .slick-slide {
-    padding: 0 15px;
+    padding: 0 10px;
   }
 
   .slides {
