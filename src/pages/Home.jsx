@@ -425,6 +425,7 @@ const VideoCategory = styled.div`
   min-height: 220px;
   box-sizing: border-box;
   z-index: 210;
+  padding-top: 20px;
 
   @media screen and (max-width: 768px) {
     min-height: 180px;
