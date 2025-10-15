@@ -1167,10 +1167,34 @@ export const HighlightCircle = styled.div`
 export const HighlightTitle = styled.span`
   color: white;
   font-size: 0.8rem;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  cursor: pointer;
+
+  &.expanded {
+    white-space: normal;
+    overflow: visible;
+  }
+`;
+
+export const MoreButton = styled.button`
+  background: none;
+  border: none;
+  color: #a0aec0;
+  cursor: pointer;
+  font-size: 0.7rem;
+  margin-top: 4px;
+
+  &:hover {
+    text-decoration: underline;
+  }
 `;
 
 export const HighlightCard = styled.div`
-  width: 90px;
+  width: 120px;
   height: 160px;
   border-radius: 8px;
   padding: 2px;
