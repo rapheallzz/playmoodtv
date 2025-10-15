@@ -379,9 +379,8 @@ const VerticalHighlightViewer = ({
                 <span>{highlight.content.commentsCount || 0}</span>
               </ViewerActionButton>
               <ViewerActionButton onClick={() => {
-                const creatorName = highlight.creator.name.replace(/\s+/g, '-');
                 const encodedHighlightId = btoa(highlight._id);
-                const url = `${window.location.origin}/highlight/@${creatorName}/${encodedHighlightId}`;
+                const url = `${window.location.origin}/highlight/${encodedHighlightId}`;
                 setShareUrl(url);
                 setIsShareModalOpen(true);
               }}>
