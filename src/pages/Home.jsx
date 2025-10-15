@@ -454,6 +454,13 @@ const VideoCategoryHighlights = styled.div`
   padding-top: 30px;
 `;
 
+const VideoCategoryResponsive = styled(VideoCategory)`
+  @media screen and (max-width: 495px) {
+    height: auto;
+    padding-bottom: 20px;
+  }
+`;
+
 const VideoCategoryCircle = styled.div`
   width: 92%;
   margin: 20px;
@@ -844,14 +851,14 @@ function HomeContent({
             <Videocategorytitle>Top 10</Videocategorytitle>
             <SliderTopTen />
           </VideoCategory>
-          <VideoCategoryHighlights>
+          <VideoCategoryResponsive>
             <Videocategorytitle>Highlights</Videocategorytitle>
             <HighlightsHome />
-          </VideoCategoryHighlights>
-          <VideoCategory >
+          </VideoCategoryResponsive>
+          <VideoCategoryResponsive>
             <Videocategorytitle>New on Playmood</Videocategorytitle>
             <SliderNew />
-          </VideoCategory>
+          </VideoCategoryResponsive>
           <VideoCategoryCircle >
             <Videocategorytitle>Channels</Videocategorytitle>
             <SliderChannel />
