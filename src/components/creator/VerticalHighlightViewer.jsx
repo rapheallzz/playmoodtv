@@ -24,6 +24,7 @@ import {
   FaTimes, FaHeart, FaComment, FaPaperPlane, FaChevronUp, FaChevronDown,
   FaPlay, FaPause, FaExpand
 } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 
 const VerticalHighlightViewer = ({
   highlights,
@@ -374,7 +375,11 @@ const VerticalHighlightViewer = ({
                 <FaComment />
                 <span>{highlight.content.commentsCount || 0}</span>
               </ViewerActionButton>
-              <ViewerActionButton onClick={() => console.log('Share clicked for highlight ' + highlight._id)}>
+              <ViewerActionButton onClick={() => {
+                const shareUrl = `${window.location.origin}/highlight/${highlight._id}`;
+                navigator.clipboard.writeText(shareUrl);
+                toast.success('Link copied to clipboard!');
+              }}>
                 <FaPaperPlane />
                 <span>Share</span>
               </ViewerActionButton>

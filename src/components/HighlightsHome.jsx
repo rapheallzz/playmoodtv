@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import {
   HighlightsSectionContainer,
@@ -17,6 +18,16 @@ const HighlightsHome = () => {
   const [showVerticalHighlightViewer, setShowVerticalHighlightViewer] = useState(false);
   const [highlightStartIndex, setHighlightStartIndex] = useState(0);
   const [enrichedHighlights, setEnrichedHighlights] = useState([]);
+  const { highlightId } = useParams();
+
+  useEffect(() => {
+    if (highlightId && highlights.length > 0) {
+      const startIndex = highlights.findIndex(h => h._id === highlightId);
+      if (startIndex !== -1) {
+        handleSelectHighlight(highlights[startIndex], startIndex);
+      }
+    }
+  }, [highlightId, highlights]);
 
   useEffect(() => {
     const fetchData = async () => {
