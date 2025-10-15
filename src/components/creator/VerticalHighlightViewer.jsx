@@ -379,8 +379,8 @@ const VerticalHighlightViewer = ({
                 <span>{highlight.content.commentsCount || 0}</span>
               </ViewerActionButton>
               <ViewerActionButton onClick={() => {
-                const encodedHighlightId = btoa(highlight._id);
-                const url = `${window.location.origin}/highlight/${encodedHighlightId}`;
+                const encodedContentId = btoa(highlight.content._id);
+                const url = `${window.location.origin}/highlight/${encodedContentId}`;
                 setShareUrl(url);
                 setIsShareModalOpen(true);
               }}>

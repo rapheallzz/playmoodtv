@@ -41,7 +41,7 @@ import HighlightPage from './pages/HighlightPage';
 
 const router = createBrowserRouter([
   { path: '/', element: <Home /> },
-  { path: '/highlight/:encodedHighlightId', element: <HighlightPage /> },
+  { path: '/highlight/:encodedContentId', element: <HighlightPage /> },
   { path: '/onboarding', element: <Onboarding /> },
   {
     element: <PrivateRoute requiredRole="admin" />,

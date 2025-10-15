@@ -41,22 +41,32 @@ const Loading = styled.div`
 
 
 const HighlightPage = () => {
-  const { encodedHighlightId } = useParams();
+  const { encodedContentId } = useParams();
   const navigate = useNavigate();
   const [highlight, setHighlight] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (encodedHighlightId) {
+    if (encodedContentId) {
       const fetchHighlight = async () => {
         try {
-          const highlightId = atob(encodedHighlightId);
-          const response = await axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/highlights/${highlightId}`);
+          const contentId = atob(encodedContentId);
+          const response = await axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${contentId}`);
 
           if (response.data) {
-            const enrichedHighlight = await enrichHighlight(response.data);
-            setHighlight(enrichedHighlight);
+            // The response from the content endpoint is the content object itself, which we can use to structure the highlight
+            const contentDetails = response.data;
+            const creatorInfo = {
+              name: contentDetails.user.name,
+              profileImage: contentDetails.user.profileImage || '',
+            };
+            const highlightData = {
+              _id: contentDetails._id, // Use content ID as the key
+              content: contentDetails,
+              creator: creatorInfo,
+            };
+            setHighlight(highlightData);
           }
         } catch (e) {
           console.error("Failed to decode or fetch highlight:", e);
@@ -67,30 +77,7 @@ const HighlightPage = () => {
       };
       fetchHighlight();
     }
-  }, [encodedHighlightId]);
-
-  const enrichHighlight = async (h) => {
-    try {
-      const res = await axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${h.content._id}`);
-      const contentDetails = res.data;
-      // The creator's information is already in contentDetails.user
-      const creatorInfo = {
-        name: contentDetails.user.name,
-        profileImage: contentDetails.user.profileImage || '',
-      };
-      return {
-        ...h,
-        content: contentDetails,
-        creator: creatorInfo
-      };
-    } catch (e) {
-      console.error(`Failed to enrich highlight ${h._id}:`, e);
-      return {
-        ...h,
-        creator: { name: 'Error loading data', profileImage: '' }
-      };
-    }
-  };
+  }, [encodedContentId]);
 
   if (loading) {
     return (
