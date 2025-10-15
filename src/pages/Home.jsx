@@ -1042,5 +1042,6 @@ export default function Home() {
       viewedHighlights={viewedHighlights}
       setViewedHighlights={setViewedHighlights}
     />
+    </>
   );
 }
