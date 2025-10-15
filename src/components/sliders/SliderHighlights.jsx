@@ -178,16 +178,30 @@ const SliderContainer = styled.div`
     align-items: center;
   }
 
-  @media (max-width: 480px) {
-    padding: 0 20px;
-    margin: 0 auto;
+  @media (max-width: 600px) {
+    padding: 0 10px;
+  }
 
+  @media (max-width: 480px) {
+    padding: 0 10px;
     .custom-arrow {
       display: none !important;
     }
+  }
 
-    .slick-slide {
-      padding: 0 5px;
+  .slick-slide {
+    padding: 0 12px;
+    min-height: 160px;
+    @media (min-width: 768px) {
+      min-height: 200px;
+    }
+    @media (max-width: 480px) {
+      min-height: 40vw;
+      max-height: 140px;
+    }
+    @media (max-width: 360px) {
+      min-height: 35vw;
+      max-height: 120px;
     }
   }
 `;
