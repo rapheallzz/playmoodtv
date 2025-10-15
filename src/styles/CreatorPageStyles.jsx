@@ -1512,14 +1512,38 @@ export const CreatorName = styled.span`
   font-size: 1rem;
 `;
 
+export const BottomInfoContainer = styled.div`
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 20px;
+  z-index: 10;
+`;
+
+export const TextInfoContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: white;
+  max-width: 75%; /* Prevents title from overlapping actions */
+
+  h4 {
+    margin: 0;
+    font-weight: normal;
+    white-space: pre-wrap; /* Allows text to wrap */
+    word-break: break-word; /* Breaks long words */
+  }
+`;
+
 export const ActionsContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 20px;
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
 `;
 
 export const ViewerActionButton = styled.button`
