@@ -179,8 +179,7 @@ const SliderContainer = styled.div`
   }
 
   @media (max-width: 480px) {
-    padding: 0 10px;
-    width: 100%; /* Reduce width for mobile */
+    padding: 0 20px;
     margin: 0 auto;
 
     .custom-arrow {
@@ -188,7 +187,7 @@ const SliderContainer = styled.div`
     }
 
     .slick-slide {
-      padding: 0 2px; /* Reduce padding between slides */
+      padding: 0 5px;
     }
   }
 `;
