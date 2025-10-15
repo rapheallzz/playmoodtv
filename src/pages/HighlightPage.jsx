@@ -52,15 +52,19 @@ const HighlightPage = () => {
       const fetchHighlight = async () => {
         try {
           const contentId = atob(encodedContentId);
-          const response = await axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${contentId}`);
+          const contentResponse = await axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${contentId}`);
 
-          if (response.data) {
-            // The response from the content endpoint is the content object itself, which we can use to structure the highlight
-            const contentDetails = response.data;
+          if (contentResponse.data) {
+            const contentDetails = contentResponse.data;
+            const creatorId = contentDetails.user._id;
+
+            const creatorResponse = await axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/channel/${creatorId}`);
+
             const creatorInfo = {
-              name: contentDetails.user.name,
-              profileImage: contentDetails.user.profileImage || '',
+              name: creatorResponse.data.name,
+              profileImage: creatorResponse.data.profileImage || '',
             };
+
             const highlightData = {
               _id: contentDetails._id, // Use content ID as the key
               content: contentDetails,
