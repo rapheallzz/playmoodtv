@@ -1046,12 +1046,12 @@ export default function Home() {
 }
 
 export {
-  Homecontent,
+  HomeContent,
   Content,
   Banner,
   VideoCategory,
   Videocategorytitle,
   LikedContentCardWrapper,
   SliderContainer,
-  FooterContainer
+  FooterContainer,
 };
