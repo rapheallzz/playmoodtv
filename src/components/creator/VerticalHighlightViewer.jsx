@@ -349,9 +349,20 @@ const VerticalHighlightViewer = ({
               <Video
                 ref={el => videoRefs.current[index] = el}
                 src={highlight.content.video}
-                loop
                 playsInline
                 onClick={togglePlay}
+                onLoadedMetadata={() => {
+                  const video = videoRefs.current[index];
+                  if (video && highlight.startTime) {
+                    video.currentTime = highlight.startTime;
+                  }
+                }}
+                onTimeUpdate={() => {
+                  const video = videoRefs.current[index];
+                  if (video && highlight.endTime && video.currentTime >= highlight.endTime) {
+                    video.currentTime = highlight.startTime || 0;
+                  }
+                }}
               />
             ) : (
               <p>Video not available.</p>
