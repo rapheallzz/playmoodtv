@@ -971,31 +971,52 @@ export default function Home() {
 
   useEffect(() => {
     if (encodedContentId) {
-      const fetchHighlight = async () => {
+      const fetchAndShowHighlight = async () => {
         try {
           const contentId = atob(encodedContentId);
-          const response = await axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${contentId}`);
-          if (response.data) {
-            const contentDetails = response.data;
-            const creatorId = contentDetails.user._id;
-            const creatorResponse = await axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/channel/${creatorId}`);
-            const creatorInfo = {
-              name: creatorResponse.data.name,
-              profileImage: creatorResponse.data.profileImage || '',
-            };
-            const highlightData = {
-              _id: contentDetails._id,
-              content: contentDetails,
-              creator: creatorInfo,
-            };
-            setHighlights([highlightData]);
+
+          const [allHighlightsResponse, recentHighlightsResponse] = await Promise.all([
+            axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/highlights/all'),
+            axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/highlights/recent')
+          ]);
+
+          const allHighlights = allHighlightsResponse.data;
+          const recentHighlights = new Set(recentHighlightsResponse.data.map(h => h._id));
+
+          const combinedHighlights = [...allHighlights, ...recentHighlightsResponse.data.filter(h => !allHighlights.find(ah => ah._id === h._id))];
+
+          const startIndex = combinedHighlights.findIndex(h => h.content._id === contentId);
+
+          if (startIndex !== -1) {
+            const creatorIds = [...new Set(combinedHighlights.map(h => h.content.user._id))];
+            const creatorPromises = creatorIds.map(id => axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/channel/${id}`));
+            const creatorResponses = await Promise.all(creatorPromises);
+
+            const creatorsMap = creatorResponses.reduce((acc, res) => {
+              acc[res.data._id] = res.data;
+              return acc;
+            }, {});
+
+            const enrichedHighlights = combinedHighlights.map(h => {
+              const creator = creatorsMap[h.content.user._id];
+              return {
+                ...h,
+                creator: {
+                  name: creator.name,
+                  profileImage: creator.profileImage || '',
+                }
+              };
+            });
+
+            setHighlights(enrichedHighlights);
+            setHighlightStartIndex(startIndex);
             setShowVerticalHighlightViewer(true);
           }
         } catch (error) {
-          console.error('Error fetching highlight:', error);
+          console.error('Error fetching highlights:', error);
         }
       };
-      fetchHighlight();
+      fetchAndShowHighlight();
     }
   }, [encodedContentId]);
 
