@@ -974,21 +974,13 @@ export default function Home() {
       const fetchAndShowHighlight = async () => {
         try {
           const contentId = atob(encodedContentId);
-
-          const [allHighlightsResponse, recentHighlightsResponse] = await Promise.all([
-            axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/highlights/all'),
-            axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/highlights/recent')
-          ]);
-
+          const allHighlightsResponse = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/highlights/all');
           const allHighlights = allHighlightsResponse.data;
-          const recentHighlights = new Set(recentHighlightsResponse.data.map(h => h._id));
 
-          const combinedHighlights = [...allHighlights, ...recentHighlightsResponse.data.filter(h => !allHighlights.find(ah => ah._id === h._id))];
-
-          const startIndex = combinedHighlights.findIndex(h => h.content._id === contentId);
+          const startIndex = allHighlights.findIndex(h => h.content._id === contentId);
 
           if (startIndex !== -1) {
-            const creatorIds = [...new Set(combinedHighlights.map(h => h.content.user._id))];
+            const creatorIds = [...new Set(allHighlights.map(h => h.content.user._id))];
             const creatorPromises = creatorIds.map(id => axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/channel/${id}`));
             const creatorResponses = await Promise.all(creatorPromises);
 
@@ -997,7 +989,7 @@ export default function Home() {
               return acc;
             }, {});
 
-            const enrichedHighlights = combinedHighlights.map(h => {
+            const enrichedHighlights = allHighlights.map(h => {
               const creator = creatorsMap[h.content.user._id];
               return {
                 ...h,
@@ -1034,7 +1026,7 @@ export default function Home() {
       )}
       <HomeContent
         channels={channels}
-      set_channels={set_channels}
+        set_channels={set_channels}
       isMobile={isMobile}
       setIsMobile={setIsMobile}
       showCookiesPopup={showCookiesPopup}
@@ -1066,3 +1058,14 @@ export default function Home() {
     </>
   );
 }
+
+export {
+  Homecontent,
+  Content,
+  Banner,
+  VideoCategory,
+  Videocategorytitle,
+  LikedContentCardWrapper,
+  SliderContainer,
+  FooterContainer,
+};
