@@ -24,9 +24,10 @@ import WelcomePopup from '../components/Welcomepop';
 import instagram from '/instagram.png';
 import channelsimg from '../assets/channels.png';
 import logo from '/PLAYMOOD_DEF.png';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import playbutton from '/play-button2.png';
 import plusbutton from '/addbutton.png';
+import VerticalHighlightViewer from '../components/creator/VerticalHighlightViewer';
 import whiteheart from '/whiteheart.png';
 import redheart from '/redheart.png';
 import sendmessage from '/sendmessage.png';
@@ -947,6 +948,8 @@ function HomeContent({
 }
 
 export default function Home() {
+  const { encodedContentId } = useParams();
+  const navigate = useNavigate();
   const [channels, set_channels] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [showCookiesPopup, setShowCookiesPopup] = useState(false);
@@ -963,11 +966,67 @@ export default function Home() {
   const [isLoadingHighlights, setIsLoadingHighlights] = useState(true);
   const [selectedHighlight, setSelectedHighlight] = useState(null);
   const [viewedHighlights, setViewedHighlights] = useState(new Set());
+  const [showVerticalHighlightViewer, setShowVerticalHighlightViewer] = useState(false);
+  const [highlightStartIndex, setHighlightStartIndex] = useState(0);
+
+  useEffect(() => {
+    if (encodedContentId) {
+      const fetchAndShowHighlight = async () => {
+        try {
+          const contentId = atob(encodedContentId);
+          const allHighlightsResponse = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/highlights/all');
+          const allHighlights = allHighlightsResponse.data;
+
+          const startIndex = allHighlights.findIndex(h => h.content._id === contentId);
+
+          if (startIndex !== -1) {
+            const creatorIds = [...new Set(allHighlights.map(h => h.content.user._id))];
+            const creatorPromises = creatorIds.map(id => axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/channel/${id}`));
+            const creatorResponses = await Promise.all(creatorPromises);
+
+            const creatorsMap = creatorResponses.reduce((acc, res) => {
+              acc[res.data._id] = res.data;
+              return acc;
+            }, {});
+
+            const enrichedHighlights = allHighlights.map(h => {
+              const creator = creatorsMap[h.content.user._id];
+              return {
+                ...h,
+                creator: {
+                  name: creator.name,
+                  profileImage: creator.profileImage || '',
+                }
+              };
+            });
+
+            setHighlights(enrichedHighlights);
+            setHighlightStartIndex(startIndex);
+            setShowVerticalHighlightViewer(true);
+          }
+        } catch (error) {
+          console.error('Error fetching highlights:', error);
+        }
+      };
+      fetchAndShowHighlight();
+    }
+  }, [encodedContentId]);
 
   return (
-    <HomeContent
-      channels={channels}
-      set_channels={set_channels}
+    <>
+      {showVerticalHighlightViewer && (
+        <VerticalHighlightViewer
+          highlights={highlights}
+          startIndex={highlightStartIndex}
+          onClose={() => {
+            setShowVerticalHighlightViewer(false);
+            navigate('/');
+          }}
+        />
+      )}
+      <HomeContent
+        channels={channels}
+        set_channels={set_channels}
       isMobile={isMobile}
       setIsMobile={setIsMobile}
       showCookiesPopup={showCookiesPopup}
@@ -996,6 +1055,7 @@ export default function Home() {
       viewedHighlights={viewedHighlights}
       setViewedHighlights={setViewedHighlights}
     />
+    </>
   );
 }
 

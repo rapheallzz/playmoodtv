@@ -37,11 +37,10 @@ import ResetPasswordPage from './pages/ResetPasswordPage';
 import AuthCallback from './pages/AuthCallback';
 import UploadProgressIndicator from './components/misc/UploadProgressIndicator';
 import Onboarding from './pages/Onboarding';
-import HighlightPage from './pages/HighlightPage';
 
 const router = createBrowserRouter([
   { path: '/', element: <Home /> },
-  { path: '/highlight/:encodedContentId', element: <HighlightPage /> },
+  { path: '/highlight/:encodedContentId', element: <Home /> },
   { path: '/onboarding', element: <Onboarding /> },
   {
     element: <PrivateRoute requiredRole="admin" />,
