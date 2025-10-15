@@ -88,7 +88,7 @@ const CreatorContentModal = ({ isOpen, creator, onClose }) => {
   const handleNavigateToCreator = () => {
     onClose();
     const creatorSlug = `${creator.name.replace(/\s+/g, '-')}-${creator._id}`;
-    navigate(`/@${creatorSlug}`);
+    navigate(`/creator/${creatorSlug}`);
   };
 
   const handleNavigateToMovie = () => {

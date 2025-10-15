@@ -290,7 +290,7 @@ const VerticalHighlightViewer = ({
     if (creator) {
       const creatorSlug = `${creator.name.replace(/\s+/g, '-')}-${creatorId}`;
       onClose();
-      navigate(`/@${creatorSlug}`);
+      navigate(`/creator/${creatorSlug}`);
     } else {
       console.error("Could not find creator details for ID:", creatorId);
     }
