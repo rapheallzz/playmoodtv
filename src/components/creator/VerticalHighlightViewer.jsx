@@ -25,6 +25,7 @@ import {
   FaPlay, FaPause, FaExpand
 } from 'react-icons/fa';
 import { toast } from 'react-toastify';
+import HighlightShareModal from '../modals/HighlightShareModal';
 
 const VerticalHighlightViewer = ({
   highlights,
@@ -45,6 +46,8 @@ const VerticalHighlightViewer = ({
   const [isLoadingComments, setIsLoadingComments] = useState(false);
   const [totalComments, setTotalComments] = useState(0);
   const [showCenterPlayPause, setShowCenterPlayPause] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [shareUrl, setShareUrl] = useState('');
   const isProgrammaticScroll = useRef(false);
   const scrollTimeout = useRef(null);
 
@@ -376,15 +379,23 @@ const VerticalHighlightViewer = ({
                 <span>{highlight.content.commentsCount || 0}</span>
               </ViewerActionButton>
               <ViewerActionButton onClick={() => {
-                const shareUrl = `${window.location.origin}/highlight/${highlight._id}`;
-                navigator.clipboard.writeText(shareUrl);
-                toast.success('Link copied to clipboard!');
+                const creatorName = highlight.creator.name.replace(/\s+/g, '-');
+                const encodedHighlightId = btoa(highlight._id);
+                const url = `${window.location.origin}/highlight/@${creatorName}/${encodedHighlightId}`;
+                setShareUrl(url);
+                setIsShareModalOpen(true);
               }}>
                 <FaPaperPlane />
                 <span>Share</span>
               </ViewerActionButton>
             </ActionsContainer>
           </VideoContainer>
+          {isShareModalOpen && (
+            <HighlightShareModal
+              shareUrl={shareUrl}
+              onClose={() => setIsShareModalOpen(false)}
+            />
+          )}
           {isCommentSectionOpen && selectedHighlight?.content._id === highlight.content._id && (
             <CommentSection
               comments={comments}

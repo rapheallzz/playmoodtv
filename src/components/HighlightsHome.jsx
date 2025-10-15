@@ -18,16 +18,21 @@ const HighlightsHome = () => {
   const [showVerticalHighlightViewer, setShowVerticalHighlightViewer] = useState(false);
   const [highlightStartIndex, setHighlightStartIndex] = useState(0);
   const [enrichedHighlights, setEnrichedHighlights] = useState([]);
-  const { highlightId } = useParams();
+  const { creatorName, encodedHighlightId } = useParams();
 
   useEffect(() => {
-    if (highlightId && highlights.length > 0) {
-      const startIndex = highlights.findIndex(h => h._id === highlightId);
-      if (startIndex !== -1) {
-        handleSelectHighlight(highlights[startIndex], startIndex);
+    if (encodedHighlightId && highlights.length > 0) {
+      try {
+        const highlightId = atob(encodedHighlightId);
+        const startIndex = highlights.findIndex(h => h._id === highlightId);
+        if (startIndex !== -1) {
+          handleSelectHighlight(highlights[startIndex], startIndex);
+        }
+      } catch (e) {
+        console.error("Failed to decode highlightId from slug:", encodedHighlightId, e);
       }
     }
-  }, [highlightId, highlights]);
+  }, [encodedHighlightId, highlights]);
 
   useEffect(() => {
     const fetchData = async () => {

@@ -40,7 +40,7 @@ import Onboarding from './pages/Onboarding';
 
 const router = createBrowserRouter([
   { path: '/', element: <Home /> },
-  { path: '/highlight/:highlightId', element: <Home /> },
+  { path: '/highlight/@:creatorName/:encodedHighlightId', element: <Home /> },
   { path: '/onboarding', element: <Onboarding /> },
   {
     element: <PrivateRoute requiredRole="admin" />,
