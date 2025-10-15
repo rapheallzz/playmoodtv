@@ -73,15 +73,10 @@ const HighlightPage = () => {
     try {
       const res = await axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${h.content._id}`);
       const contentDetails = res.data;
-      const creatorRes = await axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/creators`);
-      const creatorsMap = creatorRes.data.reduce((acc, creator) => {
-          acc[creator._id] = creator;
-          return acc;
-      }, {});
-      const creatorFromMap = creatorsMap[contentDetails.user._id];
+      // The creator's information is already in contentDetails.user
       const creatorInfo = {
         name: contentDetails.user.name,
-        profileImage: creatorFromMap ? creatorFromMap.profileImage : '',
+        profileImage: contentDetails.user.profileImage || '',
       };
       return {
         ...h,
