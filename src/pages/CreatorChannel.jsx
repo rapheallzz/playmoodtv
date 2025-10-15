@@ -187,7 +187,15 @@ export default function CreatorChannel() {
   const [isLoadingPlaylists, setIsLoadingPlaylists] = useState(false);
   const [activeTab, setActiveTab] = useState('VIDEOS'); // TABS: VIDEOS, PLAYLISTS, COMMUNITY
 
-  const creatorId = creatorSlug ? creatorSlug.split('-').pop() : state?.creatorId;
+  const creatorId = creatorSlug ? (() => {
+    try {
+      const encodedId = creatorSlug.split('-').pop();
+      return atob(encodedId);
+    } catch (e) {
+      console.error("Failed to decode creatorId from slug:", creatorSlug, e);
+      return null;
+    }
+  })() : state?.creatorId;
 
   const {
     highlights,

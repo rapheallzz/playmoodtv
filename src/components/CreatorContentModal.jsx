@@ -87,7 +87,8 @@ const CreatorContentModal = ({ isOpen, creator, onClose }) => {
 
   const handleNavigateToCreator = () => {
     onClose();
-    const creatorSlug = `${creator.name.replace(/\s+/g, '-')}-${creator._id}`;
+    const encodedId = btoa(creator._id);
+    const creatorSlug = `${creator.name.replace(/\s+/g, '-')}-${encodedId}`;
     navigate(`/creator/${creatorSlug}`);
   };
 

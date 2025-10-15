@@ -327,7 +327,8 @@ export default function MoviePage() {
 
      const handleCreatorClick = () => {
     if (movieUser?._id) {
-      const creatorSlug = `${movieUser.name.replace(/\s+/g, '-')}-${movieUser._id}`;
+      const encodedId = btoa(movieUser._id);
+      const creatorSlug = `${movieUser.name.replace(/\s+/g, '-')}-${encodedId}`;
       navigate(`/creator/${creatorSlug}`);
     } else {
       console.warn('Creator ID not available for navigation.');

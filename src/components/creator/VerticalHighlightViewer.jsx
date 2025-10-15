@@ -288,7 +288,8 @@ const VerticalHighlightViewer = ({
   const handleNavigateToCreator = (creatorId) => {
     const creator = highlights.find(h => h.content.user._id === creatorId)?.creator;
     if (creator) {
-      const creatorSlug = `${creator.name.replace(/\s+/g, '-')}-${creatorId}`;
+      const encodedId = btoa(creatorId);
+      const creatorSlug = `${creator.name.replace(/\s+/g, '-')}-${encodedId}`;
       onClose();
       navigate(`/creator/${creatorSlug}`);
     } else {
