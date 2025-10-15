@@ -24,9 +24,10 @@ import WelcomePopup from '../components/Welcomepop';
 import instagram from '/instagram.png';
 import channelsimg from '../assets/channels.png';
 import logo from '/PLAYMOOD_DEF.png';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import playbutton from '/play-button2.png';
 import plusbutton from '/addbutton.png';
+import VerticalHighlightViewer from '../components/creator/VerticalHighlightViewer';
 import whiteheart from '/whiteheart.png';
 import redheart from '/redheart.png';
 import sendmessage from '/sendmessage.png';
@@ -947,6 +948,8 @@ function HomeContent({
 }
 
 export default function Home() {
+  const { encodedContentId } = useParams();
+  const navigate = useNavigate();
   const [channels, set_channels] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [showCookiesPopup, setShowCookiesPopup] = useState(false);
@@ -963,10 +966,53 @@ export default function Home() {
   const [isLoadingHighlights, setIsLoadingHighlights] = useState(true);
   const [selectedHighlight, setSelectedHighlight] = useState(null);
   const [viewedHighlights, setViewedHighlights] = useState(new Set());
+  const [showVerticalHighlightViewer, setShowVerticalHighlightViewer] = useState(false);
+  const [highlightStartIndex, setHighlightStartIndex] = useState(0);
+
+  useEffect(() => {
+    if (encodedContentId) {
+      const fetchHighlight = async () => {
+        try {
+          const contentId = atob(encodedContentId);
+          const response = await axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${contentId}`);
+          if (response.data) {
+            const contentDetails = response.data;
+            const creatorId = contentDetails.user._id;
+            const creatorResponse = await axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/channel/${creatorId}`);
+            const creatorInfo = {
+              name: creatorResponse.data.name,
+              profileImage: creatorResponse.data.profileImage || '',
+            };
+            const highlightData = {
+              _id: contentDetails._id,
+              content: contentDetails,
+              creator: creatorInfo,
+            };
+            setHighlights([highlightData]);
+            setShowVerticalHighlightViewer(true);
+          }
+        } catch (error) {
+          console.error('Error fetching highlight:', error);
+        }
+      };
+      fetchHighlight();
+    }
+  }, [encodedContentId]);
 
   return (
-    <HomeContent
-      channels={channels}
+    <>
+      {showVerticalHighlightViewer && (
+        <VerticalHighlightViewer
+          highlights={highlights}
+          startIndex={highlightStartIndex}
+          onClose={() => {
+            setShowVerticalHighlightViewer(false);
+            navigate('/');
+          }}
+        />
+      )}
+      <HomeContent
+        channels={channels}
       set_channels={set_channels}
       isMobile={isMobile}
       setIsMobile={setIsMobile}
