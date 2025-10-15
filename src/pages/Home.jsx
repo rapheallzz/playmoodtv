@@ -1053,5 +1053,5 @@ export {
   Videocategorytitle,
   LikedContentCardWrapper,
   SliderContainer,
-  FooterContainer,
+  FooterContainer
 };
