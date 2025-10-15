@@ -1169,6 +1169,30 @@ export const HighlightTitle = styled.span`
   font-size: 0.8rem;
 `;
 
+export const HighlightCard = styled.div`
+  width: 90px;
+  height: 160px;
+  border-radius: 8px;
+  padding: 2px;
+  background: ${(props) =>
+    props.viewed
+      ? 'transparent'
+      : 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)'};
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+`;
+
+export const HighlightImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 2px solid #1a1a1a;
+`;
+
 export const HighlightViewerOverlay = styled.div`
   position: fixed;
   top: 0;

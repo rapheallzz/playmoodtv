@@ -3,7 +3,8 @@ import {
   HighlightsSectionContainer,
   HighlightsList,
   HighlightItem,
-  HighlightCircle,
+  HighlightCard,
+  HighlightImage,
   HighlightTitle,
   SectionTitle,
 } from '../../styles/CreatorPageStyles';
@@ -19,9 +20,11 @@ const HighlightsSection = ({ highlights, onSelectHighlight, viewedHighlights }) 
       <HighlightsList>
         {highlights.map((highlight, index) => (
           <HighlightItem data-testid={`highlight-item-${index}`} key={highlight._id} onClick={() => onSelectHighlight(highlight, index)}>
-            <HighlightCircle viewed={true}>
-              {highlight.content.thumbnail && <img src={highlight.content.thumbnail} alt="Highlight thumbnail" />}
-            </HighlightCircle>
+            <HighlightCard viewed={viewedHighlights.has(highlight._id)}>
+              {highlight.content.thumbnail && (
+                <HighlightImage src={highlight.content.thumbnail} alt="Highlight thumbnail" />
+              )}
+            </HighlightCard>
             <HighlightTitle>{highlight.content.title}</HighlightTitle>
           </HighlightItem>
         ))}
