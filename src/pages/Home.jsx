@@ -1044,14 +1044,3 @@ export default function Home() {
     />
   );
 }
-
-export {
-  HomeContent,
-  Content,
-  Banner,
-  VideoCategory,
-  Videocategorytitle,
-  LikedContentCardWrapper,
-  SliderContainer,
-  FooterContainer,
-};
