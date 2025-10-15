@@ -327,7 +327,8 @@ export default function MoviePage() {
 
      const handleCreatorClick = () => {
     if (movieUser?._id) {
-      navigate('/creator', { state: { creatorId: movieUser._id } });
+      const creatorSlug = `${movieUser.name.replace(/\s+/g, '-')}-${movieUser._id}`;
+      navigate(`/@${creatorSlug}`);
     } else {
       console.warn('Creator ID not available for navigation.');
       // Optionally, show a message to the user

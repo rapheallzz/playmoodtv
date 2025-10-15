@@ -286,8 +286,14 @@ const VerticalHighlightViewer = ({
   };
 
   const handleNavigateToCreator = (creatorId) => {
-    onClose();
-    navigate('/creator', { state: { creatorId } });
+    const creator = highlights.find(h => h.content.user._id === creatorId)?.creator;
+    if (creator) {
+      const creatorSlug = `${creator.name.replace(/\s+/g, '-')}-${creatorId}`;
+      onClose();
+      navigate(`/@${creatorSlug}`);
+    } else {
+      console.error("Could not find creator details for ID:", creatorId);
+    }
   };
 
   const currentVideoState = playerStates[currentIndex] || { isPlaying: false, volume: 1, isMuted: true };

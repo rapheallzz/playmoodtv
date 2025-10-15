@@ -53,7 +53,7 @@ const router = createBrowserRouter([
     element: <PrivateRoute requiredRole="creator" />,
     children: [{ path: '/creatorpage', element: <CreatorPage /> }],
   },
-  { path: '/creator', element: <CreatorChannel /> },
+  { path: '/@:creatorSlug', element: <CreatorChannel /> },
   { path: '/schedule', element: <Schedule /> },
   { path: '/movie/:slug', element: <MoviePage /> },
   { path: '/channels', element: <Channels /> },

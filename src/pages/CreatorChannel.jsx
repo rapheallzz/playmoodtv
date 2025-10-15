@@ -1,7 +1,7 @@
 // CreatorChannel.js
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation, useParams } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
 import MobileBurger from '../components/headers/MobileBurger';
 import DesktopHeader from '../components/headers/DesktopHeader';
@@ -168,6 +168,7 @@ const PlaylistTitle = styled.h3`
 export default function CreatorChannel() {
   const { state } = useLocation();
   const navigate = useNavigate();
+  const { creatorSlug } = useParams();
   const user = useSelector((state) => state.auth.user);
   const currentUserId = user?._id || null;
   const [subscribed, setSubscribed] = useState(false);
@@ -185,7 +186,9 @@ export default function CreatorChannel() {
   const [playlists, setPlaylists] = useState([]);
   const [isLoadingPlaylists, setIsLoadingPlaylists] = useState(false);
   const [activeTab, setActiveTab] = useState('VIDEOS'); // TABS: VIDEOS, PLAYLISTS, COMMUNITY
-  const creatorId = state?.creatorId;
+
+  const creatorId = creatorSlug ? creatorSlug.split('-').pop() : state?.creatorId;
+
   const {
     highlights,
     isLoading: isLoadingHighlights,
@@ -288,7 +291,7 @@ export default function CreatorChannel() {
       if (subscribed) {
         await axios.put(
           `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/subscribe`,
-          { creatorId: state.creatorId },
+          { creatorId: creatorId },
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -303,7 +306,7 @@ export default function CreatorChannel() {
       } else {
         await axios.post(
           `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/subscribe`,
-          { creatorId: state.creatorId },
+          { creatorId: creatorId },
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -329,7 +332,7 @@ export default function CreatorChannel() {
   
 
 const fetchCommunityPosts = async () => {
-  if (!state || !state.creatorId) {
+  if (!creatorId) {
     setError('Creator ID is missing.');
     setShowErrorPopup(true);
     setIsLoadingPosts(false);
@@ -355,7 +358,7 @@ const fetchCommunityPosts = async () => {
     }
 
     const response = await axios.get(
-      `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/community/${state.creatorId}`,
+      `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/community/${creatorId}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -387,7 +390,7 @@ const fetchCommunityPosts = async () => {
 };
 
 const fetchPlaylists = async () => {
-  if (!state || !state.creatorId) {
+  if (!creatorId) {
     setError('Creator ID is missing.');
     setShowErrorPopup(true);
     return;
@@ -398,7 +401,7 @@ const fetchPlaylists = async () => {
   try {
     // No token is needed for public playlists, but if your API requires it, add it back.
     const response = await axios.get(
-      `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/playlists/user/${state.creatorId}/public`
+      `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/playlists/user/${creatorId}/public`
     );
     setPlaylists(response.data.playlists || []);
   } catch (err) {
