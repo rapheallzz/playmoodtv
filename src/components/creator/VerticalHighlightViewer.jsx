@@ -13,6 +13,8 @@ import {
   CreatorInfo,
   CreatorAvatar,
   CreatorName,
+  BottomInfoContainer,
+  TextInfoContainer,
   ActionsContainer,
   ViewerActionButton,
   NavigationArrow,
@@ -349,6 +351,7 @@ const VerticalHighlightViewer = ({
               <Video
                 ref={el => videoRefs.current[index] = el}
                 src={highlight.content.video}
+                loop
                 playsInline
                 onClick={togglePlay}
                 onLoadedMetadata={() => {
@@ -368,37 +371,39 @@ const VerticalHighlightViewer = ({
               <p>Video not available.</p>
             )}
             <HighlightOverlay />
-            <div style={{ position: 'absolute', bottom: '20px', left: '20px', color: 'white', zIndex: 10 }}>
-              {highlight.creator && (
-                <CreatorInfo onClick={() => handleNavigateToCreator(highlight.content.user._id)}>
-                  <CreatorAvatar src={highlight.creator.profileImage} alt={highlight.creator.name} />
-                  <CreatorName>@{highlight.creator.name}</CreatorName>
-                </CreatorInfo>
-              )}
-              <h4 style={{ margin: '10px 0 0 0', fontWeight: 'normal' }}>{highlight.content.title}</h4>
-            </div>
-            <ActionsContainer>
-              <ViewerActionButton
-                onClick={() => handleLikeClick(highlight.content._id)}
-                className={likedHighlights.has(highlight.content._id) ? 'liked' : ''}
-              >
-                <FaHeart />
-                <span>{highlight.content.likesCount || 0}</span>
-              </ViewerActionButton>
-              <ViewerActionButton onClick={() => handleCommentIconClick(highlight)}>
-                <FaComment />
-                <span>{highlight.content.commentsCount || 0}</span>
-              </ViewerActionButton>
-              <ViewerActionButton onClick={() => {
-                const encodedContentId = btoa(highlight.content._id);
-                const url = `${window.location.origin}/highlight/${encodedContentId}`;
-                setShareUrl(url);
-                setIsShareModalOpen(true);
-              }}>
-                <FaPaperPlane />
-                <span>Share</span>
-              </ViewerActionButton>
-            </ActionsContainer>
+            <BottomInfoContainer>
+              <TextInfoContainer>
+                {highlight.creator && (
+                  <CreatorInfo onClick={() => handleNavigateToCreator(highlight.content.user._id)}>
+                    <CreatorAvatar src={highlight.creator.profileImage} alt={highlight.creator.name} />
+                    <CreatorName>@{highlight.creator.name}</CreatorName>
+                  </CreatorInfo>
+                )}
+                <h4>{highlight.content.title}</h4>
+              </TextInfoContainer>
+              <ActionsContainer>
+                <ViewerActionButton
+                  onClick={() => handleLikeClick(highlight.content._id)}
+                  className={likedHighlights.has(highlight.content._id) ? 'liked' : ''}
+                >
+                  <FaHeart />
+                  <span>{highlight.content.likesCount || 0}</span>
+                </ViewerActionButton>
+                <ViewerActionButton onClick={() => handleCommentIconClick(highlight)}>
+                  <FaComment />
+                  <span>{highlight.content.commentsCount || 0}</span>
+                </ViewerActionButton>
+                <ViewerActionButton onClick={() => {
+                  const encodedContentId = btoa(highlight.content._id);
+                  const url = `${window.location.origin}/highlight/${encodedContentId}`;
+                  setShareUrl(url);
+                  setIsShareModalOpen(true);
+                }}>
+                  <FaPaperPlane />
+                  <span>Share</span>
+                </ViewerActionButton>
+              </ActionsContainer>
+            </BottomInfoContainer>
           </VideoContainer>
           {isShareModalOpen && (
             <HighlightShareModal
