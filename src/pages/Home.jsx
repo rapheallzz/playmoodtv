@@ -24,7 +24,7 @@ import WelcomePopup from '../components/Welcomepop';
 import instagram from '/instagram.png';
 import channelsimg from '../assets/channels.png';
 import logo from '/PLAYMOOD_DEF.png';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import playbutton from '/play-button2.png';
 import plusbutton from '/addbutton.png';
 import whiteheart from '/whiteheart.png';
@@ -37,6 +37,7 @@ import { likeContent, unlikeContent, addToWatchlist, removeFromWatchlist } from 
 import Footer from '../components/footer/Footer';
 import SliderTopTen from '../components/sliders/SliderTopTen';
 import HighlightsHome from '../components/HighlightsHome';
+import { Helmet } from 'react-helmet-async';
 
 // CookiesPopupContainer styled component
 const CookiesPopupContainer = styled.div`
@@ -943,10 +944,38 @@ export default function Home() {
   const [isLoadingHighlights, setIsLoadingHighlights] = useState(true);
   const [selectedHighlight, setSelectedHighlight] = useState(null);
   const [viewedHighlights, setViewedHighlights] = useState(new Set());
+  const { encodedContentId } = useParams();
+  const [highlightData, setHighlightData] = useState(null);
+
+  useEffect(() => {
+    if (encodedContentId) {
+      const contentId = atob(encodedContentId);
+      axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${contentId}`)
+        .then(response => {
+          setHighlightData(response.data);
+        })
+        .catch(error => {
+          console.error('Error fetching highlight data:', error);
+        });
+    }
+  }, [encodedContentId]);
 
   return (
-    <HomeContent
-      channels={channels}
+    <>
+      {highlightData && (
+        <Helmet>
+          <title>{highlightData.title}</title>
+          <meta name="description" content={highlightData.description} />
+          <meta property="og:title" content={highlightData.title} />
+          <meta property="og:description" content={highlightData.description} />
+          <meta property="og:image" content={highlightData.thumbnail} />
+          <meta property="og:url" content={window.location.href} />
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:image" content={highlightData.thumbnail} />
+        </Helmet>
+      )}
+      <HomeContent
+        channels={channels}
       set_channels={set_channels}
       isMobile={isMobile}
       setIsMobile={setIsMobile}
@@ -976,16 +1005,6 @@ export default function Home() {
       viewedHighlights={viewedHighlights}
       setViewedHighlights={setViewedHighlights}
     />
+    </>
   );
 }
-
-export {
-  Homecontent,
-  Content,
-  Banner,
-  VideoCategory,
-  Videocategorytitle,
-  LikedContentCardWrapper,
-  SliderContainer,
-  FooterContainer,
-};
