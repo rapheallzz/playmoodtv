@@ -455,14 +455,16 @@ export default function MoviePage() {
               >
                 <FaDonate /> Donate
               </button>
-              <button
-                onClick={subscribed ? handleUnsubscribeClick : handleSubscribeClick}
-                className={`bg-[#541011] md:w-[40%] gap-2 text-[#f3f3f3] p-[10px] border-none rounded-[5px] cursor-pointer text-[10px] font-normal transition-colors duration-300 ease-in-out hover:bg-white hover:text-[#541011] flex items-center justify-center m-[1px] ${
-                  subscribed ? 'btn-danger' : 'btn-success'
-                }`}
-              >
-                <FaBell /> {subscribed ? 'Unsubscribe' : 'Subscribe'}
-              </button>
+              {movieUser && (
+                <button
+                  onClick={subscribed ? handleUnsubscribeClick : handleSubscribeClick}
+                  className={`bg-[#541011] md:w-[40%] gap-2 text-[#f3f3f3] p-[10px] border-none rounded-[5px] cursor-pointer text-[10px] font-normal transition-colors duration-300 ease-in-out hover:bg-white hover:text-[#541011] flex items-center justify-center m-[1px] ${
+                    subscribed ? 'btn-danger' : 'btn-success'
+                  }`}
+                >
+                  <FaBell /> {subscribed ? 'Unsubscribe' : 'Subscribe'}
+                </button>
+              )}
             </div>
           </div>
           {/* Right Section */}
