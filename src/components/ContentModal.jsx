@@ -10,6 +10,7 @@ import styled from 'styled-components';
 const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
   const [commentText, setCommentText] = useState('');
+  const [comments, setComments] = useState([]);
   const [commentError, setCommentError] = useState('');
   const [actionError, setActionError] = useState('');
   const dispatch = useDispatch();
@@ -39,6 +40,27 @@ const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isOpen, onClose]);
+
+  // Fetch comments when modal opens
+  useEffect(() => {
+    const fetchComments = async () => {
+      if (isOpen && content?._id) {
+        try {
+          const response = await axios.get(
+            `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${content._id}/comments`,
+            {
+              headers: { Authorization: `Bearer ${userToken}` },
+            }
+          );
+          setComments(response.data.comments || []);
+        } catch (error) {
+          console.error('Failed to fetch comments:', error);
+          setCommentError('Failed to load comments.');
+        }
+      }
+    };
+    fetchComments();
+  }, [isOpen, content?._id, userToken]);
 
   // Derive userId from user or token
   const getUserId = () => {
@@ -95,12 +117,16 @@ const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
         }
       );
       console.log('Comment response:', response.data);
-      content.comments = [
-        ...(content.comments || []),
-        response.data.comment,
-      ];
       setCommentText('');
       setCommentError('');
+      // Re-fetch comments to show the new one
+      const commentsResponse = await axios.get(
+        `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${content._id}/comments`,
+        {
+          headers: { Authorization: `Bearer ${userToken}` },
+        }
+      );
+      setComments(commentsResponse.data.comments || []);
     } catch (error) {
       console.error('Error adding comment:', {
         response: error.response?.data,
@@ -250,8 +276,8 @@ const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
               </CommentSubmit>
             </CommentForm>
             <CommentList>
-              {content.comments && content.comments.length > 0 ? (
-                content.comments.map((comment, index) => (
+              {comments && comments.length > 0 ? (
+                comments.map((comment, index) => (
                   <CommentItem key={comment._id || index}>
                     <CommentUser>
                       <CommentProfileImage
