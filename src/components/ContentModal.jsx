@@ -340,19 +340,10 @@ const ModalOverlay = styled.div`
 `;
 
 const CloseButtonWrapper = styled.div`
-  position: absolute;
-  top: calc(50% - 38vh); /* Align with top of modal, accounting for max-height */
-  right: calc(50% - 47.5vw + 1rem); /* Position to the right of modal */
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
   z-index: 10013;
-  margin-right: 0.5rem;
-
-  @media (min-width: 640px) {
-    right: calc(50% - 300px + 1rem); /* Adjust for max-width: 600px */
-  }
-
-  @media (min-width: 768px) {
-    right: calc(50% - 400px + 1rem); /* Adjust for max-width: 800px */
-  }
 `;
 
 const CloseButton = styled.button`
