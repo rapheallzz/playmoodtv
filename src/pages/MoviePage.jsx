@@ -15,6 +15,8 @@ import WelcomePopup from '../components/Welcomepop';
 import MovieHeader from '../components/headers/MovieHeader';
 import Footer from '../components/footer/Footer';
 import HighlightShareModal from '../components/modals/HighlightShareModal';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function MoviePage() {
   const [info, setInfo] = useState(false);
@@ -255,7 +257,7 @@ export default function MoviePage() {
       );
       if (response.status === 201) {
         setSubscribed(true);
-        alert('Subscribed successfully');
+        toast.success('Subscribed successfully');
       }
     } catch (error) {
       console.error('Error subscribing:', error);
@@ -276,7 +278,7 @@ export default function MoviePage() {
       );
       if (response.status === 200) {
         setSubscribed(false);
-        alert('Unsubscribed successfully');
+        toast.success('Unsubscribed successfully');
       }
     } catch (error) {
       console.error('Error unsubscribing:', error);
@@ -369,6 +371,7 @@ export default function MoviePage() {
 
   return (
     <Movie>
+      <ToastContainer />
       <div className="h-auto">
         <MovieHeader />
         {/* Video Holder */}
