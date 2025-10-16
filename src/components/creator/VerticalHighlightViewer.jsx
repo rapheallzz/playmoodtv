@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import contentService from '../../features/contentService';
+import { useWebSocket } from '../../context/WebSocketContext';
 import CommentSection from './CommentSection';
 import {
   VerticalScrollViewer,
@@ -31,12 +32,14 @@ import { toast } from 'react-toastify';
 import HighlightShareModal from '../modals/HighlightShareModal';
 
 const VerticalHighlightViewer = ({
-  highlights,
+  highlights: initialHighlights,
   startIndex,
   onClose,
 }) => {
   const navigate = useNavigate();
+  const socket = useWebSocket();
   const { user } = useSelector((state) => state.auth);
+  const [highlights, setHighlights] = useState(initialHighlights);
   const storyRefs = useRef([]);
   const videoRefs = useRef([]);
   const viewerRef = useRef(null);
@@ -53,6 +56,11 @@ const VerticalHighlightViewer = ({
   const [shareUrl, setShareUrl] = useState('');
   const isProgrammaticScroll = useRef(false);
   const scrollTimeout = useRef(null);
+  const selectedHighlightRef = useRef(null);
+
+  useEffect(() => {
+    selectedHighlightRef.current = selectedHighlight;
+  }, [selectedHighlight]);
 
   // Cleanup timeout on component unmount
   useEffect(() => {
@@ -60,6 +68,53 @@ const VerticalHighlightViewer = ({
       clearTimeout(scrollTimeout.current);
     };
   }, []);
+
+  useEffect(() => {
+    if (socket) {
+      const handleContentLiked = ({ contentId, likes }) => {
+        if (highlights.some(h => h.content._id === contentId)) {
+          setLikedHighlights(prev => new Set(prev).add(contentId));
+          setHighlights(prev =>
+            prev.map(h =>
+              h.content._id === contentId ? { ...h, content: { ...h.content, likesCount: likes } } : h
+            )
+          );
+        }
+      };
+
+      const handleContentUnliked = ({ contentId, likes }) => {
+        if (highlights.some(h => h.content._id === contentId)) {
+          setLikedHighlights(prev => {
+            const newLiked = new Set(prev);
+            newLiked.delete(contentId);
+            return newLiked;
+          });
+          setHighlights(prev =>
+            prev.map(h =>
+              h.content._id === contentId ? { ...h, content: { ...h.content, likesCount: likes } } : h
+            )
+          );
+        }
+      };
+
+      const handleCommentAdded = ({ contentId, comment }) => {
+        if (selectedHighlightRef.current?.content._id === contentId) {
+          setComments(prev => [...prev, comment]);
+          setTotalComments(prev => prev + 1);
+        }
+      };
+
+      socket.on('content_liked', handleContentLiked);
+      socket.on('content_unliked', handleContentUnliked);
+      socket.on('comment_added', handleCommentAdded);
+
+      return () => {
+        socket.off('content_liked', handleContentLiked);
+        socket.off('content_unliked', handleContentUnliked);
+        socket.off('comment_added', handleCommentAdded);
+      };
+    }
+  }, [socket, highlights]);
 
   // Effect to sync liked highlights with user state
   useEffect(() => {

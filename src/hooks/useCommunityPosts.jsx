@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const useCommunityPosts = (user, activeTab) => {
+const useCommunityPosts = (user, activeTab, socket, apiUrl) => {
   const [communityPosts, setCommunityPosts] = useState([]);
   const [isLoadingPosts, setIsLoadingPosts] = useState(false);
   const [newPostContent, setNewPostContent] = useState('');
@@ -15,7 +15,7 @@ const useCommunityPosts = (user, activeTab) => {
       setIsLoadingPosts(true);
       try {
         const response = await axios.get(
-          `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/channel/${user._id}`,
+          `${apiUrl}/api/channel/${user._id}`,
           {
             headers: { Authorization: `Bearer ${user.token}` },
           }
@@ -42,7 +42,43 @@ const useCommunityPosts = (user, activeTab) => {
     if (user && user._id && activeTab === 'Community') {
       fetchCommunityPosts();
     }
-  }, [user, activeTab]);
+  }, [user, activeTab, apiUrl]);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on('community_post_liked', ({ postId, likes }) => {
+        setCommunityPosts(prevPosts =>
+          prevPosts.map(post =>
+            post._id === postId ? { ...post, likes } : post
+          )
+        );
+      });
+
+      socket.on('community_post_unliked', ({ postId, likes }) => {
+        setCommunityPosts(prevPosts =>
+          prevPosts.map(post =>
+            post._id === postId ? { ...post, likes } : post
+          )
+        );
+      });
+
+      socket.on('community_post_comment_added', ({ postId, comment }) => {
+        setCommunityPosts(prevPosts =>
+          prevPosts.map(post =>
+            post._id === postId
+              ? { ...post, comments: [...post.comments, comment] }
+              : post
+          )
+        );
+      });
+
+      return () => {
+        socket.off('community_post_liked');
+        socket.off('community_post_unliked');
+        socket.off('community_post_comment_added');
+      };
+    }
+  }, [socket]);
 
   const handleCreatePost = async () => {
     try {
