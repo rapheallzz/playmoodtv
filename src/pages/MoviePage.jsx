@@ -93,6 +93,12 @@ export default function MoviePage() {
     };
   }, [contentId, user]);
 
+  useEffect(() => {
+    if (user && movie) {
+      setIsLiked(user.like.includes(movie._id));
+    }
+  }, [user, movie]);
+
   // Fetch movie data with paginated comments
   useEffect(() => {
     const fetchMovieDataById = async () => {
@@ -313,12 +319,6 @@ export default function MoviePage() {
       .then(() => alert('URL copied to clipboard!'))
       .catch((err) => console.error('Failed to copy: ', err));
   };
-
-  useEffect(() => {
-    if (user && movie) {
-      setIsLiked(user.like.includes(movie._id));
-    }
-  }, [user, movie]);
 
   const handleHeartClick = async () => {
     if (!user) {
