@@ -8,12 +8,13 @@ import MovieBurger from '../components/headers/MovieBurger';
 import instagram from '/instagram.png';
 import logo from '/PLAYMOOD_DEF.png';
 import profile from '/icon-profile.png';
-import { FaPlay, FaHeart, FaBell, FaDonate, FaUser, FaEye, FaLink } from 'react-icons/fa';
+import { FaPlay, FaHeart, FaBell, FaDonate, FaUser, FaEye, FaPaperPlane } from 'react-icons/fa';
 import Sliderinterviews from '../components/miscSlider/SliderInterview';
 import SliderDocumentaries from '../components/miscSlider/SliderDocumentaries';
 import WelcomePopup from '../components/Welcomepop';
 import MovieHeader from '../components/headers/MovieHeader';
 import Footer from '../components/footer/Footer';
+import HighlightShareModal from '../components/modals/HighlightShareModal';
 
 export default function MoviePage() {
   const [info, setInfo] = useState(false);
@@ -30,6 +31,8 @@ export default function MoviePage() {
   const [comments, setComments] = useState([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [shareUrl, setShareUrl] = useState('');
   const COMMENTS_PER_PAGE = 5;
 
   const navigate = useNavigate();
@@ -415,8 +418,13 @@ export default function MoviePage() {
                     <FaHeart className={`cursor-pointer ${isLiked ? 'text-red-500' : 'text-white'}`} />
                     <h6 className="text-white text-[0.6rem]">{like || 0}</h6>
                   </div>
-                  <div className="flex gap-1 items-center" onClick={handleCopyLink}>
-                    <FaLink className="text-white cursor-pointer" />
+                  <div className="flex gap-1 items-center" onClick={() => {
+                    const encodedContentId = btoa(movie._id);
+                    const url = `${window.location.origin}/highlight/${encodedContentId}`;
+                    setShareUrl(url);
+                    setIsShareModalOpen(true);
+                  }}>
+                    <FaPaperPlane className="text-white cursor-pointer" />
                   </div>
                 </div>
               </div>
@@ -571,6 +579,12 @@ export default function MoviePage() {
             onLogin={() => setShowWelcomePopup(false)}
             onRegister={() => setShowWelcomePopup(false)}
           />
+          {isShareModalOpen && (
+            <HighlightShareModal
+              shareUrl={shareUrl}
+              onClose={() => setIsShareModalOpen(false)}
+            />
+          )}
         </div>
         {/* Footer */}
 
