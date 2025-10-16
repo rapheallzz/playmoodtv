@@ -1528,7 +1528,7 @@ export const TextInfoContainer = styled.div`
   max-width: 75%;
 `;
 
-export const HighlightTitle = styled.h4`
+export const HighlightViewerTitle = styled.h4`
   margin: 10px 0 0 0;
   font-weight: normal;
   white-space: pre-wrap;

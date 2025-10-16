@@ -21,7 +21,7 @@ import {
   CenterPlayPauseButton,
   BottomInfoContainer,
   TextInfoContainer,
-  HighlightTitle
+  HighlightViewerTitle
 } from '../../styles/CreatorPageStyles';
 import {
   FaTimes, FaHeart, FaComment, FaPaperPlane, FaChevronUp, FaChevronDown,
@@ -368,7 +368,7 @@ const VerticalHighlightViewer = ({
                     <CreatorName>@{highlight.creator.name}</CreatorName>
                   </CreatorInfo>
                 )}
-                <HighlightTitle>{highlight.content.title}</HighlightTitle>
+                <HighlightViewerTitle>{highlight.content.title}</HighlightViewerTitle>
               </TextInfoContainer>
               <ActionsContainer>
                 <ViewerActionButton
