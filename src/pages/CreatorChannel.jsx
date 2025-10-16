@@ -20,6 +20,7 @@ import ErrorPopup from '../components/ErrorPopup';
 import useHighlights from '../hooks/useHighlights';
 import CreatorChannelSkeleton from '../components/skeletons/CreatorChannelSkeleton';
 import HighlightsSection from '../components/creator/HighlightsSection';
+import { Helmet } from 'react-helmet-async';
 import VerticalHighlightViewer from '../components/creator/VerticalHighlightViewer';
 
 // Pulse animation for right arrow
@@ -600,6 +601,22 @@ const fetchPlaylists = async () => {
 
   return (
     <div className="w-full h-auto overflow-x-hidden flex flex-col items-center bg-black">
+      <Helmet>
+        <title>{creatorData?.name || 'Creator Channel'}</title>
+        <meta
+          name="description"
+          content={creatorData?.about || 'Check out this creator on Playmood.'}
+        />
+        <meta property="og:title" content={creatorData?.name || 'Creator Channel'} />
+        <meta
+          property="og:description"
+          content={creatorData?.about || 'Check out this creator on Playmood.'}
+        />
+        <meta property="og:image" content={creatorData?.profileImage} />
+        <meta property="og:url" content={window.location.href} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image" content={creatorData?.profileImage} />
+      </Helmet>
       {/* Error Popup */}
       <ErrorPopup
         showPopup={showErrorPopup}
