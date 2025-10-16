@@ -1512,14 +1512,34 @@ export const CreatorName = styled.span`
   font-size: 1rem;
 `;
 
+export const BottomInfoContainer = styled.div`
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  color: white;
+  z-index: 10;
+`;
+
+export const TextInfoContainer = styled.div`
+  max-width: 75%;
+`;
+
+export const HighlightTitle = styled.h4`
+  margin: 10px 0 0 0;
+  font-weight: normal;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+`;
+
 export const ActionsContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 20px;
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
 `;
 
 export const ViewerActionButton = styled.button`
