@@ -518,11 +518,11 @@ export default function MoviePage() {
                     <CommentItem key={comment._id || index}>
                       <CommentUser>
                         <CommentProfileImage
-                          src={comment.user.profileImage || 'https://via.placeholder.com/32'}
-                          alt={comment.user.name}
+                        src={comment.user?.profileImage || 'https://via.placeholder.com/32'}
+                        alt={comment.user?.name || 'Anonymous'}
                         />
                         <div>
-                          <CommentUserName>{comment.user.name}</CommentUserName>
+                        <CommentUserName>{comment.user?.name || 'Anonymous'}</CommentUserName>
                           <CommentTimestamp>
                             {new Date(comment.createdAt).toLocaleDateString()}
                           </CommentTimestamp>
