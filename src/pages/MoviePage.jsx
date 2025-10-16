@@ -159,7 +159,7 @@ export default function MoviePage() {
         setLoading(false);
       }
     };
-    fetchMovieDataById();
+    fetchMovieData();
   }, [contentId, user, page]);
 
   // Fetch more comments
