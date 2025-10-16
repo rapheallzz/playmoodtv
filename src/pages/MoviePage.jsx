@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { likeContent, unlikeContent } from '../features/authSlice';
 import axios from 'axios';
 import MovieBurger from '../components/headers/MovieBurger';
 import instagram from '/instagram.png';
@@ -32,7 +33,9 @@ export default function MoviePage() {
   const COMMENTS_PER_PAGE = 5;
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
+  const [isLiked, setIsLiked] = useState(false);
   const { slug } = useParams();
   const contentId = slug && /^[0-9a-fA-F]{24}$/.test(slug.split('-').pop()) ? slug.split('-').pop() : null;
   const videoRef = useRef(null);
@@ -311,11 +314,26 @@ export default function MoviePage() {
       .catch((err) => console.error('Failed to copy: ', err));
   };
 
-  const handleHeartClick = () => {
+  useEffect(() => {
+    if (user && movie) {
+      setIsLiked(user.like.includes(movie._id));
+    }
+  }, [user, movie]);
+
+  const handleHeartClick = async () => {
     if (!user) {
       setShowWelcomePopup(true);
-    } else {
-      console.log('User liked the movie');
+      return;
+    }
+    try {
+      if (isLiked) {
+        await dispatch(unlikeContent({ contentId: movie._id })).unwrap();
+      } else {
+        await dispatch(likeContent({ contentId: movie._id })).unwrap();
+      }
+      setIsLiked(!isLiked);
+    } catch (error) {
+      console.error('Failed to like/unlike content:', error);
     }
   };
 
@@ -386,7 +404,7 @@ export default function MoviePage() {
                     <h6 className="text-white text-[0.6rem]">{views || 0}</h6>
                   </div>
                   <div className="flex gap-1 items-center" onClick={handleHeartClick}>
-                    <FaHeart className="text-white cursor-pointer" />
+                    <FaHeart className={`cursor-pointer ${isLiked ? 'text-red-500' : 'text-white'}`} />
                     <h6 className="text-white text-[0.6rem]">{like || 0}</h6>
                   </div>
                   <div className="flex gap-1 items-center" onClick={handleCopyLink}>
