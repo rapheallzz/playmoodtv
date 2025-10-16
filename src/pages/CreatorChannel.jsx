@@ -644,10 +644,10 @@ const fetchPlaylists = async () => {
       <div className="w-full flex justify-between py-6 px-10">
         <div className="flex gap-5">
           <div className="md:w-24 md:h-24 w-20 h-20 rounded-full bg-white flex items-center justify-center font-semibold">
-            <img
+            <ProfileImage
               src={creatorData?.profileImage || 'https://via.placeholder.com/80'}
               alt="profile"
-              className="md:w-20 md:h-20 w-16 h-16 rounded-full object-cover"
+              className="md:w-20 md:h-20 w-16 h-16"
             />
           </div>
           <div className="gap-2">
@@ -1178,8 +1178,6 @@ const ModalHeader = styled.div`
 `;
 
 const ProfileImage = styled.img`
-  width: 60px;
-  height: 60px;
   border-radius: 50%;
   object-fit: cover;
   background: #ccc;
