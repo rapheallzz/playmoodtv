@@ -118,7 +118,7 @@ const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
     return null;
   }
 
-  const isLiked = user?.likes?.includes(content._id);
+  const isLiked = user?.like?.includes(content._id);
   const isInWatchlist = user?.watchlist?.includes(content._id);
 
   const handleLike = async () => {
