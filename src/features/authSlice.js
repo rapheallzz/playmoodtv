@@ -367,8 +367,11 @@ export const authSlice = createSlice({
       .addCase(likeContent.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        if (state.user && state.user.like) {
-          state.user.like.push(action.payload);
+        if (state.user) {
+          state.user = {
+            ...state.user,
+            like: [...(state.user.like || []), action.payload],
+          };
         }
       })
       .addCase(likeContent.rejected, (state, action) => {
@@ -381,8 +384,11 @@ export const authSlice = createSlice({
       .addCase(unlikeContent.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        if (state.user && state.user.like) {
-          state.user.like = state.user.like.filter((id) => id !== action.payload);
+        if (state.user) {
+          state.user = {
+            ...state.user,
+            like: state.user.like?.filter((id) => id !== action.payload) || [],
+          };
         }
       })
       .addCase(unlikeContent.rejected, (state, action) => {
