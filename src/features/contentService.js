@@ -16,19 +16,6 @@ const updateLocalStorage = (contentId, action) => {
   localStorage.setItem('user', JSON.stringify(user));
 };
 
-// Function to update localStorage for liking/unliking content
-const updateLocalStorageLike = (contentId, action) => {
-  let user = JSON.parse(localStorage.getItem('user')) || { like: [] };
-
-  if (action === 'like') {
-    user.like = user.like ? [...user.like, contentId] : [contentId];
-  } else if (action === 'unlike') {
-    user.like = user.like?.filter((id) => id !== contentId) || [];
-  }
-
-  localStorage.setItem('user', JSON.stringify(user));
-};
-
 // Like content
 const likeContent = async ({ contentId, token }) => {
   try {
@@ -42,7 +29,6 @@ const likeContent = async ({ contentId, token }) => {
         },
       }
     );
-    updateLocalStorageLike(contentId, 'like');
     return response.data;
   } catch (error) {
     const message =
@@ -64,7 +50,6 @@ const unlikeContent = async ({ contentId, token }) => {
         },
       }
     );
-    updateLocalStorageLike(contentId, 'unlike');
     return response.data;
   } catch (error) {
     const message =
