@@ -339,11 +339,24 @@ export default function MoviePage() {
       return;
     }
     try {
-      if (isLiked) {
-        await dispatch(unlikeContent({ contentId: movie._id })).unwrap();
-      } else {
-        await dispatch(likeContent({ contentId: movie._id })).unwrap();
-      }
+      const action = isLiked ? unlikeContent : likeContent;
+      await dispatch(action({ contentId: movie._id })).unwrap();
+
+      // Optimistically update the movie state to reflect the change immediately
+      setMovie((prevMovie) => {
+        const currentLikes = prevMovie.likes || [];
+        const userId = user._id || user.userId;
+        let newLikes;
+
+        if (isLiked) {
+          // Unlike: remove user's ID
+          newLikes = currentLikes.filter((id) => id !== userId);
+        } else {
+          // Like: add user's ID
+          newLikes = [...currentLikes, userId];
+        }
+        return { ...prevMovie, likes: newLikes };
+      });
       setIsLiked(!isLiked);
     } catch (error) {
       console.error('Failed to like/unlike content:', error);
@@ -354,7 +367,7 @@ export default function MoviePage() {
     setInfo(!info);
   };
 
-  const { title, description, credit, views, like, user: movieUser } = movie;
+  const { title, description, credit, views, likes, user: movieUser } = movie;
 
      const handleCreatorClick = () => {
     if (movieUser?._id) {
@@ -419,7 +432,7 @@ export default function MoviePage() {
                   </div>
                   <div className="flex gap-1 items-center" onClick={handleHeartClick}>
                     <FaHeart className={`cursor-pointer ${isLiked ? 'text-red-500' : 'text-white'}`} />
-                    <h6 className="text-white text-[0.6rem]">{like || 0}</h6>
+                    <h6 className="text-white text-[0.6rem]">{likes?.length || 0}</h6>
                   </div>
                   <div className="flex gap-1 items-center" onClick={() => {
                     const encodedContentId = btoa(movie._id);
