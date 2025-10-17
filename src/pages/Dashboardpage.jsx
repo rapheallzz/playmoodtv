@@ -25,6 +25,7 @@ import {jwtDecode} from 'jwt-decode'; // Ensure this import is present
 import EmailVerificationModal from '../components/modals/EmailVerificationModal';
 import { io } from 'socket.io-client';
 import ChangePassword from '../components/ChangePassword';
+import ImageCropModal from '../components/modals/ImageCropModal';
 
 const defaultProfileIcon = '/default-profile.png';
 
@@ -38,6 +39,8 @@ function Dashboardpage() {
   const [creatorApplicationStatus, setCreatorApplicationStatus] = useState(null);
   const [profileImage, setProfileImage] = useState(null);
   const [profileImagePreview, setProfileImagePreview] = useState(null);
+  const [imageToCrop, setImageToCrop] = useState(null);
+  const [showCropModal, setShowCropModal] = useState(false);
   const [activeAction, setActiveAction] = useState('LIKES');
   const [activeInteractionTab, setActiveInteractionTab] = useState('SUBSCRIPTION');
   const [isLoadingUser, setIsLoadingUser] = useState(true);
@@ -118,8 +121,24 @@ function Dashboardpage() {
   const handleProfileImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setProfileImage(file);
-      setProfileImagePreview(URL.createObjectURL(file));
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImageToCrop(reader.result);
+        setShowCropModal(true);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCropComplete = async (croppedImageBlob) => {
+    const croppedImageUrl = URL.createObjectURL(croppedImageBlob);
+    setProfileImagePreview(croppedImageUrl);
+    setProfileImage(croppedImageBlob);
+    setShowCropModal(false);
+    try {
+      await updateProfileImage(userId, croppedImageBlob, authUser.token);
+    } catch (error) {
+      setProfileImagePreview(authUser.profileImage || defaultProfileIcon);
     }
   };
 
@@ -289,7 +308,7 @@ function Dashboardpage() {
     }
   }, [authUser, userToken, dispatch, navigate, fetchCreatorApplicationStatus, hasFetched]);
 
-  const updateProfileImage = async (userId, file, token) => {
+  const updateProfileImage = async (userId, imageBlob, token) => {
     if (!userId) {
       console.error('updateProfileImage: userId is undefined');
       toast.error('User ID is missing. Please try logging in again.');
@@ -306,7 +325,10 @@ function Dashboardpage() {
     }
     try {
       const formData = new FormData();
+      // Convert blob to file
+      const file = new File([imageBlob], "profile.jpg", { type: "image/jpeg" });
       formData.append('profileImage', file);
+
       const response = await axios.put(
         `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/${userId}`,
         formData,
@@ -537,6 +559,14 @@ function Dashboardpage() {
           userId={userId}
         />
 
+        {showCropModal && (
+          <ImageCropModal
+            src={imageToCrop}
+            onCrop={handleCropComplete}
+            onClose={() => setShowCropModal(false)}
+          />
+        )}
+
         {channels && (
           <div className="h-[500px] w-[1000px] absolute top-[100px] left-[250px] z-[1001] overflow-hidden flex justify-center items-center rounded-2xl md:w-4/5 md:h-4/5 md:left-20 md:top-[100px]">
             <button
@@ -587,18 +617,7 @@ function Dashboardpage() {
                 id="profileImage"
                 className="hidden"
                 accept="image/*"
-                onChange={async (e) => {
-                  const file = e.target.files[0];
-                  if (file) {
-                    setProfileImage(file);
-                    setProfileImagePreview(URL.createObjectURL(file));
-                    try {
-                      await updateProfileImage(userId, file, authUser.token);
-                    } catch (error) {
-                      setProfileImagePreview(authUser.profileImage || defaultProfileIcon);
-                    }
-                  }
-                }}
+                onChange={handleProfileImageChange}
               />
               <h1 className="text-white">{authUser && authUser.name}</h1>
             </>
