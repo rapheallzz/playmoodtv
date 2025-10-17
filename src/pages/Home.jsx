@@ -443,18 +443,6 @@ const VideoCategory = styled.div`
   }
 `;
 
-const VideoCategoryHighlights = styled.div`
-  width: 92%;
-  margin: 20px;
-  display: flex;
-  flex-direction: column;
-  height: 380px;
-  min-height: 220px;
-  box-sizing: border-box;
-  z-index: 210;
-  padding-top: 30px;
-`;
-
 const VideoCategoryResponsive = styled(VideoCategory)`
   @media screen and (max-width: 495px) {
     height: auto;
@@ -462,10 +450,23 @@ const VideoCategoryResponsive = styled(VideoCategory)`
   }
 `;
 
-const VideoCategoryHighlightsResponsive = styled(VideoCategoryHighlights)`
+const VideoCategoryHighlights = styled(VideoCategory)`
+  height: 220px;
+  min-height: 220px;
+  padding-top: 30px;
+
+  @media screen and (max-width: 768px) {
+    height: 180px;
+    min-height: 180px;
+  }
+
   @media screen and (max-width: 495px) {
-    height: auto;
-    padding-bottom: 20px;
+    height: 150px;
+    min-height: 150px;
+    padding-top: 10px;
+    width: 100%;
+    margin: 0;
+    padding: 0 20px;
   }
 `;
 
@@ -859,10 +860,10 @@ function HomeContent({
             <Videocategorytitle>Top 10</Videocategorytitle>
             <SliderTopTen />
           </VideoCategory>
-          <VideoCategoryHighlightsResponsive>
+          <VideoCategoryHighlights>
             <Videocategorytitle>Highlights</Videocategorytitle>
             <HighlightsHome />
-          </VideoCategoryHighlightsResponsive>
+          </VideoCategoryHighlights>
           <VideoCategoryResponsive>
             <Videocategorytitle>New on Playmood</Videocategorytitle>
             <SliderNew />

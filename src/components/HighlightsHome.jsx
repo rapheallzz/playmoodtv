@@ -103,7 +103,6 @@ const HighlightsHome = () => {
         {Array.from({ length: 8 }).map((_, i) => (
           <SkeletonHighlightItem key={i}>
             <SkeletonHighlightCircle className="circle" />
-            <SkeletonText width="50px" />
           </SkeletonHighlightItem>
         ))}
       </SkeletonHighlightsWrapper>
