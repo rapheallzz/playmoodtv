@@ -210,9 +210,13 @@ const VerticalHighlightViewer = ({
 
     const handleTimeUpdate = () => {
       if (video.currentTime >= endTime) {
-        video.pause();
-        updatePlayerState(currentIndex, { isPlaying: false });
         video.currentTime = startTime;
+        const playPromise = video.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(err => {
+            console.error("Failed to loop video snippet:", err);
+          });
+        }
       }
     };
 
