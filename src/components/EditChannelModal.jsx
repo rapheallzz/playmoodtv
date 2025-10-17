@@ -29,6 +29,7 @@ const EditChannelModal = ({
   const [crop, setCrop] = useState({ unit: '%', width: 30, aspect: 16 / 9 });
   const [previewUrl, setPreviewUrl] = useState();
   const [fileError, setFileError] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
 
   const onSelectFile = (e) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -216,16 +217,18 @@ const EditChannelModal = ({
           </button>
           <button
             onClick={async () => {
+              setIsSaving(true);
               const result = await handleUpdateChannelInfo();
               if (result && result.success) {
                 toast.success('Channel information updated successfully!');
                 onClose();
               }
+              setIsSaving(false);
             }}
             className="bg-[#541011] text-white p-2 rounded-md hover:bg-red-800 transition-colors"
-            disabled={fileError || !creatorName.trim()}
+            disabled={isSaving || fileError || !creatorName.trim()}
           >
-            Save Changes
+            {isSaving ? 'Saving...' : 'Save Changes'}
           </button>
         </div>
       </div>
