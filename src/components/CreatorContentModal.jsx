@@ -209,7 +209,6 @@ const CreatorContentModal = ({ isOpen, creator, onClose }) => {
                     <ActionButton onClick={handleNavigateToCreator}>Visit Channel</ActionButton>
                   </ButtonGroup>
                   <ActionIcons>
-                   And
                     <FaHeart
                       className={`cursor-pointer text-lg sm:text-xl ${isLiked ? 'text-red-600 fill-current' : 'text-gray-400'}`}
                       onClick={handleLike}
