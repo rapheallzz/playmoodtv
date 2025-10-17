@@ -162,12 +162,21 @@ const VerticalHighlightViewer = ({
             video.muted = playerState.isMuted;
             video.volume = playerState.volume;
 
+            const highlight = highlights[index];
+            const startTime = highlight?.content?.shortPreview?.start;
+            const endTime = highlight?.content?.shortPreview?.end;
+
+            if (startTime !== undefined) {
+              if (video.currentTime < startTime || (endTime !== undefined && video.currentTime > endTime)) {
+                video.currentTime = startTime;
+              }
+            }
+
             if (playerState.isPlaying) {
               const playPromise = video.play();
               if (playPromise !== undefined) {
                 playPromise.catch((e) => {
                   if (e.name === 'NotAllowedError' && !playerState.isMuted) {
-                    // Autoplay with sound was prevented. Mute and try again.
                     console.warn('Autoplay with sound was blocked. Muting video.');
                     updatePlayerState(index, { isMuted: true });
                   } else if (e.name !== 'AbortError') {
@@ -184,7 +193,32 @@ const VerticalHighlightViewer = ({
         }
       }
     });
-  }, [currentIndex, playerStates]);
+  }, [currentIndex, playerStates, highlights]);
+
+  // Effect to enforce highlight end times
+  useEffect(() => {
+    const video = videoRefs.current[currentIndex];
+    if (!video) return;
+
+    const highlight = highlights[currentIndex];
+    const startTime = highlight?.content?.shortPreview?.start;
+    const endTime = highlight?.content?.shortPreview?.end;
+
+    if (startTime === undefined || endTime === undefined) {
+      return; // No snippet defined
+    }
+
+    const handleTimeUpdate = () => {
+      if (video.currentTime >= endTime) {
+        video.pause();
+        updatePlayerState(currentIndex, { isPlaying: false });
+        video.currentTime = startTime;
+      }
+    };
+
+    video.addEventListener('timeupdate', handleTimeUpdate);
+    return () => video.removeEventListener('timeupdate', handleTimeUpdate);
+  }, [currentIndex, highlights]);
 
   // Effect to manage IntersectionObserver for updating currentIndex
   useEffect(() => {
@@ -407,9 +441,16 @@ const VerticalHighlightViewer = ({
               <Video
                 ref={el => videoRefs.current[index] = el}
                 src={highlight.content.video}
-                loop
                 playsInline
                 onClick={togglePlay}
+                onLoadedMetadata={(e) => {
+                  const video = e.target;
+                  const highlight = highlights[index];
+                  const startTime = highlight?.content?.shortPreview?.start;
+                  if (startTime !== undefined) {
+                    video.currentTime = startTime;
+                  }
+                }}
               />
             ) : (
               <p>Video not available.</p>
