@@ -179,8 +179,8 @@ const VerticalHighlightViewer = ({
     const highlight = highlights[currentIndex];
     let startTime = highlight?.content?.shortPreview?.start ?? 0;
     let endTime = highlight?.content?.shortPreview?.end ?? video.duration;
-    if (endTime - startTime > 30) {
-      endTime = startTime + 30;
+    if (endTime - startTime > 60) {
+      endTime = startTime + 60;
     }
 
     // Time update handler for looping
