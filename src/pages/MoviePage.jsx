@@ -100,7 +100,7 @@ export default function MoviePage() {
 
   useEffect(() => {
     if (user && movie) {
-      setIsLiked(user.like.includes(movie._id));
+      setIsLiked(user?.like?.includes(movie._id));
     }
   }, [user, movie]);
 
