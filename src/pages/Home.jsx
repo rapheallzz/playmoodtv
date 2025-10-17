@@ -453,7 +453,8 @@ const VideoCategoryResponsive = styled(VideoCategory)`
 const VideoCategoryHighlights = styled(VideoCategory)`
   height: 220px;
   min-height: 220px;
-  padding-top: 30px;
+  padding-top: 10px;
+  padding-bottom: 20px;
 
   @media screen and (max-width: 768px) {
     height: 180px;
@@ -467,6 +468,7 @@ const VideoCategoryHighlights = styled(VideoCategory)`
     width: 100%;
     margin: 0;
     padding: 0 20px;
+    padding-bottom: 30px;
   }
 `;
 
@@ -500,17 +502,17 @@ const VideoCategoryCircle = styled.div`
 const Videocategorytitle = styled.h3`
   font-size: 1.5rem;
   color: white;
-  padding-bottom: 30px;
+  padding-bottom: 15px;
   font-weight: 600;
 
   @media only screen and (min-width: 300px) {
     font-size: 1.5rem;
-    padding: 5px 5px 20px 25px;
+    padding: 5px 5px 15px 25px;
   }
 
   @media only screen and (min-width: 800px) {
     font-size: 1.8rem;
-    padding: 5px 5px 20px 60px;
+    padding: 5px 5px 15px 60px;
   }
 `;
 
