@@ -79,8 +79,7 @@ function Dashboardpage() {
       profileImage: imageUrl,
     };
 
-    dispatch(updateAuthUserReducer(updatedUser));
-    localStorage.setItem('user', JSON.stringify(updatedUser));
+    dispatch(updateAuthUser(updatedUser));
   }, [authUser, dispatch]);
 
   // Derive userId from token if not in authUser
