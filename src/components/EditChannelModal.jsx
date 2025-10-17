@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { toast } from 'react-toastify';
 import { FaInstagram, FaTiktok, FaLinkedin } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
+import ReactCrop from 'react-image-crop';
+import 'react-image-crop/dist/ReactCrop.css';
 
 const EditChannelModal = ({
   isOpen,
@@ -22,43 +24,73 @@ const EditChannelModal = ({
   setBannerImageFile,
   handleUpdateChannelInfo,
 }) => {
-  const [bannerImageFile, setLocalBannerImageFile] = useState(null);
-  const [previewUrl, setPreviewUrl] = useState(null);
+  const [upImg, setUpImg] = useState();
+  const imgRef = useRef(null);
+  const [crop, setCrop] = useState({ unit: '%', width: 30, aspect: 16 / 9 });
+  const [previewUrl, setPreviewUrl] = useState();
   const [fileError, setFileError] = useState('');
 
-  useEffect(() => {
-    if (bannerImageFile) {
-      const url = URL.createObjectURL(bannerImageFile);
-      setPreviewUrl(url);
-      setBannerImageFile(bannerImageFile);
-      return () => URL.revokeObjectURL(url);
-    } else {
-      setPreviewUrl(null);
-      setBannerImageFile(null);
-    }
-  }, [bannerImageFile, setBannerImageFile]);
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
+  const onSelectFile = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
       const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
       const maxSize = 5 * 1024 * 1024;
       if (!validTypes.includes(file.type)) {
         setFileError('Please upload a JPEG or PNG image.');
-        setLocalBannerImageFile(null);
+        setUpImg(null);
         return;
       }
       if (file.size > maxSize) {
         setFileError('File size must be less than 5MB.');
-        setLocalBannerImageFile(null);
+        setUpImg(null);
         return;
       }
       setFileError('');
-      setLocalBannerImageFile(file);
-    } else {
-      setFileError('');
-      setLocalBannerImageFile(null);
+      const reader = new FileReader();
+      reader.addEventListener('load', () => setUpImg(reader.result));
+      reader.readAsDataURL(file);
     }
+  };
+
+  const makeClientCrop = async (crop) => {
+    if (imgRef.current && crop.width && crop.height) {
+      createCropPreview(imgRef.current, crop, 'newFile.jpeg');
+    }
+  };
+
+  const createCropPreview = async (image, crop, fileName) => {
+    const canvas = document.createElement('canvas');
+    const scaleX = image.naturalWidth / image.width;
+    const scaleY = image.naturalHeight / image.height;
+    canvas.width = crop.width;
+    canvas.height = crop.height;
+    const ctx = canvas.getContext('2d');
+
+    ctx.drawImage(
+      image,
+      crop.x * scaleX,
+      crop.y * scaleY,
+      crop.width * scaleX,
+      crop.height * scaleY,
+      0,
+      0,
+      crop.width,
+      crop.height
+    );
+
+    return new Promise((resolve) => {
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          console.error('Canvas is empty');
+          return;
+        }
+        blob.name = fileName;
+        window.URL.revokeObjectURL(previewUrl);
+        const newUrl = window.URL.createObjectURL(blob);
+        setPreviewUrl(newUrl);
+        setBannerImageFile(new File([blob], fileName, { type: blob.type }));
+      }, 'image/jpeg');
+    });
   };
 
   if (!isOpen) return null;
@@ -95,7 +127,7 @@ const EditChannelModal = ({
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Banner Image</label>
-              {bannerImage && !previewUrl &&(
+              {bannerImage && !upImg &&(
                 <div className="mt-2 mb-2">
                   <img src={bannerImage} alt="Current Banner" className="w-full h-32 object-cover rounded-md" />
                 </div>
@@ -103,9 +135,20 @@ const EditChannelModal = ({
               <input
                 type="file"
                 accept="image/jpeg,image/png,image/jpg"
-                onChange={handleFileChange}
+                onChange={onSelectFile}
                 className="mt-1 p-2 border rounded-md w-full text-sm"
               />
+              {upImg && (
+                <div>
+                  <ReactCrop
+                    crop={crop}
+                    onChange={(c) => setCrop(c)}
+                    onComplete={makeClientCrop}
+                  >
+                    <img ref={imgRef} src={upImg} />
+                  </ReactCrop>
+                </div>
+              )}
               {previewUrl && (
                 <div className="mt-2 mb-2">
                   <img src={previewUrl} alt="Banner Preview" className="w-full h-32 object-cover rounded-md" />
