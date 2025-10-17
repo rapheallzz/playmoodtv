@@ -1123,7 +1123,7 @@ export const StyledContentSection = styled.div`
 `;
 
 export const HighlightsSectionContainer = styled.div`
-  padding: 24px 60px;
+  padding: 24px 50px;
   width: 100%;
 `;
 
