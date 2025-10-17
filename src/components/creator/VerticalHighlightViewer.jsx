@@ -134,95 +134,98 @@ const VerticalHighlightViewer = ({
     setPlayerStates(initialStates);
   }, [highlights, startIndex]);
 
-  // Effect to manage video playback and scrolling
+  // Consolidated effect for video playback management
   useEffect(() => {
-    // Set a flag to prevent the IntersectionObserver from firing during programmatic scroll
-    isProgrammaticScroll.current = true;
-
     // Scroll to the current highlight
     if (storyRefs.current[currentIndex]) {
+      isProgrammaticScroll.current = true;
       storyRefs.current[currentIndex].scrollIntoView({
         behavior: 'smooth',
         block: 'center',
       });
+      clearTimeout(scrollTimeout.current);
+      scrollTimeout.current = setTimeout(() => {
+        isProgrammaticScroll.current = false;
+      }, 1000);
     }
 
-    // Reset the flag after the scroll animation is likely to have finished.
-    clearTimeout(scrollTimeout.current);
-    scrollTimeout.current = setTimeout(() => {
-      isProgrammaticScroll.current = false;
-    }, 1000); // 1-second delay
+    // Autoplay the current video, and pause others
+    setPlayerStates(prev => {
+      const newStates = { ...prev };
+      highlights.forEach((_, index) => {
+        const isCurrent = index === currentIndex;
+        newStates[index] = { ...(newStates[index] || { isMuted: false, volume: 1 }), isPlaying: isCurrent };
+      });
+      return newStates;
+    });
 
-    // Manage video playback
+    // Pause all other videos
     videoRefs.current.forEach((video, index) => {
-      if (video) {
-        const playerState = playerStates[index];
-        if (index === currentIndex) {
-          if (playerState) {
-            video.muted = playerState.isMuted;
-            video.volume = playerState.volume;
-
-            const highlight = highlights[index];
-            const startTime = highlight?.content?.shortPreview?.start;
-            const endTime = highlight?.content?.shortPreview?.end;
-
-            if (startTime !== undefined) {
-              if (video.currentTime < startTime || (endTime !== undefined && video.currentTime > endTime)) {
-                video.currentTime = startTime;
-              }
-            }
-
-            if (playerState.isPlaying) {
-              const playPromise = video.play();
-              if (playPromise !== undefined) {
-                playPromise.catch((e) => {
-                  if (e.name === 'NotAllowedError' && !playerState.isMuted) {
-                    console.warn('Autoplay with sound was blocked. Muting video.');
-                    updatePlayerState(index, { isMuted: true });
-                  } else if (e.name !== 'AbortError') {
-                    console.error('Video play failed:', e);
-                  }
-                });
-              }
-            } else {
-              video.pause();
-            }
-          }
-        } else {
-          video.pause();
-        }
+      if (video && index !== currentIndex) {
+        video.pause();
       }
     });
-  }, [currentIndex, playerStates, highlights]);
 
-  // Effect to enforce highlight end times
-  useEffect(() => {
+    // Setup the current video
     const video = videoRefs.current[currentIndex];
     if (!video) return;
 
     const highlight = highlights[currentIndex];
-    const startTime = highlight?.content?.shortPreview?.start;
-    const endTime = highlight?.content?.shortPreview?.end;
+    let startTime = highlight?.content?.shortPreview?.start ?? 0;
+    let endTime = highlight?.content?.shortPreview?.end ?? video.duration;
 
-    if (startTime === undefined || endTime === undefined) {
-      return; // No snippet defined
+    // Enforce 30-second limit
+    if (endTime - startTime > 30) {
+      endTime = startTime + 30;
     }
 
+    // Set initial time
+    video.currentTime = startTime;
+
+    const playVideo = () => {
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((e) => {
+          if (e.name === 'NotAllowedError' && !video.muted) {
+            console.warn('Autoplay with sound was blocked. Muting video.');
+            updatePlayerState(currentIndex, { isMuted: true });
+            // The state update will re-trigger this effect, which will attempt to play again.
+          } else if (e.name !== 'AbortError') {
+            console.error('Video play failed:', e);
+          }
+        });
+      }
+    };
+
+    // Apply player state
+    const playerState = playerStates[currentIndex];
+    if (playerState) {
+      video.muted = playerState.isMuted;
+      video.volume = playerState.volume;
+      if (playerState.isPlaying) {
+        playVideo();
+      } else {
+        video.pause();
+      }
+    } else {
+      // Default to playing if no state exists yet
+      playVideo();
+    }
+
+    // Time update listener for looping
     const handleTimeUpdate = () => {
       if (video.currentTime >= endTime) {
         video.currentTime = startTime;
-        const playPromise = video.play();
-        if (playPromise !== undefined) {
-          playPromise.catch(err => {
-            console.error("Failed to loop video snippet:", err);
-          });
-        }
+        playVideo(); // Re-play to loop
       }
     };
 
     video.addEventListener('timeupdate', handleTimeUpdate);
-    return () => video.removeEventListener('timeupdate', handleTimeUpdate);
-  }, [currentIndex, highlights]);
+    return () => {
+      video.removeEventListener('timeupdate', handleTimeUpdate);
+    };
+
+  }, [currentIndex, highlights, playerStates]);
 
   // Effect to manage IntersectionObserver for updating currentIndex
   useEffect(() => {
