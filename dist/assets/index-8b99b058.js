@@ -6576,7 +6576,7 @@ Error generating stack: `+o.message+`
     padding: 0 15px;
   }
 `,d6=k.div`
-  padding: 24px 60px;
+  padding: 24px 50px;
   width: 100%;
 `,aZ=k.div`
   display: flex;
@@ -7715,10 +7715,10 @@ Error generating stack: `+o.message+`
     padding-bottom: 20px;
   }
 `,dte=k(Vn)`
-  height: 220px;
+  height: 320px;
   min-height: 220px;
   padding-top: 10px;
-  padding-bottom: 20px;
+  padding-bottom: 40px;
 
   @media screen and (max-width: 768px) {
     height: 180px;
@@ -7726,12 +7726,12 @@ Error generating stack: `+o.message+`
   }
 
   @media screen and (max-width: 495px) {
-    height: 150px;
+    height: 180px;
     min-height: 150px;
     padding-top: 10px;
     width: 100%;
     margin: 0;
-    padding: 0 20px;
+    padding: 0 10px;
     padding-bottom: 30px;
   }
 `,Bx=k.div`
