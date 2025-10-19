@@ -19,7 +19,7 @@ const updateLocalStorage = (contentId, action) => {
 // Like content
 const likeContent = async ({ contentId, token }) => {
   try {
-    const response = await axios.post(
+    const response = await axios.put(
       `${API_URL}/content/${contentId}/like`,
       {},
       {
@@ -40,7 +40,7 @@ const likeContent = async ({ contentId, token }) => {
 // Unlike content
 const unlikeContent = async ({ contentId, token }) => {
   try {
-    const response = await axios.post(
+    const response = await axios.put(
       `${API_URL}/content/${contentId}/unlike`,
       {},
       {
