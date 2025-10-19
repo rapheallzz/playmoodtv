@@ -12,6 +12,8 @@ import styled, { keyframes } from 'styled-components';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { jwtDecode } from 'jwt-decode';
 
+const API_URL = 'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api';
+
 // Pulse animation for right arrow
 const pulse = keyframes`
   0% {
@@ -88,7 +90,7 @@ export default function SliderLiked() {
 
       try {
         const response = await axios.get(
-          `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/likes`,
+          `${API_URL}/content/likes`,
           {
             headers: {
               Authorization: `Bearer ${userToken}`,

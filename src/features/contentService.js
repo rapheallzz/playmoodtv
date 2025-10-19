@@ -1,7 +1,7 @@
 // contentService.js
 import axios from 'axios';
 
-const API_URL = 'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users';
+const API_URL = 'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api';
 
 // Function to update localStorage for adding or removing content from the watchlist
 const updateLocalStorage = (contentId, action) => {
@@ -20,8 +20,8 @@ const updateLocalStorage = (contentId, action) => {
 const likeContent = async ({ contentId, token }) => {
   try {
     const response = await axios.post(
-      `${API_URL}/like`,
-      { contentId },
+      `${API_URL}/content/${contentId}/like`,
+      {},
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -41,8 +41,8 @@ const likeContent = async ({ contentId, token }) => {
 const unlikeContent = async ({ contentId, token }) => {
   try {
     const response = await axios.post(
-      `${API_URL}/unlike`,
-      { contentId },
+      `${API_URL}/content/${contentId}/unlike`,
+      {},
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -62,7 +62,7 @@ const unlikeContent = async ({ contentId, token }) => {
 const commentOnContent = async ({ contentId, comment, token }) => {
   try {
     const response = await axios.post(
-      `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${contentId}/comment`,
+      `${API_URL}/content/${contentId}/comment`,
       { comment },
       {
         headers: {
@@ -83,7 +83,7 @@ const commentOnContent = async ({ contentId, comment, token }) => {
 const getComments = async ({ contentId, token }) => {
   try {
     const response = await axios.get(
-      `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${contentId}/comments`,
+      `${API_URL}/content/${contentId}/comments`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -102,7 +102,7 @@ const getComments = async ({ contentId, token }) => {
 const addToWatchlist = async ({ userId, contentId, token }) => {
   try {
     const response = await axios.post(
-      `${API_URL}/watchlist/add`,
+      `${API_URL}/users/watchlist/add`,
       { contentId },
       {
         headers: {
@@ -124,7 +124,7 @@ const addToWatchlist = async ({ userId, contentId, token }) => {
 const removeFromWatchlist = async ({ userId, contentId, token }) => {
   try {
     const response = await axios.put(
-      `${API_URL}/watchlist/remove${userId}`,
+      `${API_URL}/users/watchlist/remove${userId}`,
       { contentId },
       {
         headers: {
