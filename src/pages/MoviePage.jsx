@@ -175,7 +175,7 @@ export default function MoviePage() {
       }
     };
     fetchMovieData();
-  }, [contentId, user, page]);
+  }, [contentId]);
 
   // Fetch more comments
   const fetchMoreComments = async () => {
