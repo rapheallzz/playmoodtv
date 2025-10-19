@@ -19,7 +19,7 @@ import SliderSoon from '../components/sliders/SliderSoon';
 import SliderTeens from '../components/sliders/SliderTeens';
 import SliderOnly from '../components/sliders/SliderOnly';
 import SliderSocial from '../components/sliders/SliderSocial';
-import ShareModal from '../components/ShareModal';
+import HighlightShareModal from '../components/modals/HighlightShareModal';
 import WelcomePopup from '../components/Welcomepop';
 import instagram from '/instagram.png';
 import channelsimg from '../assets/channels.png';
@@ -832,7 +832,15 @@ function HomeContent({
                         LIKE
                         <img src={user?.like?.includes(homePageData[activeSlide]?._id) ? redheart : whiteheart} alt="heart" />
                       </NeonButton>
-                      <NeonButton onClick={() => setShareModalOpen((prev) => !prev)}>
+                      <NeonButton onClick={() => {
+                        const currentContent = homePageData[activeSlide];
+                        if (currentContent) {
+                          const encodedContentId = btoa(currentContent._id);
+                          const url = `${window.location.origin}/highlight/${encodedContentId}`;
+                          setShareUrl(url);
+                          setShareModalOpen(true);
+                        }
+                      }}>
                         SHARE
                         <img src={sendmessage} alt="share" />
                       </NeonButton>
@@ -841,10 +849,9 @@ function HomeContent({
                       </NeonButton>
                     </ButtonContainer>
                     {shareModalOpen && (
-                      <ShareModal
-                        open={shareModalOpen}
-                        onClose={() => setShareModalOpen(false)}
+                      <HighlightShareModal
                         shareUrl={shareUrl}
+                        onClose={() => setShareModalOpen(false)}
                       />
                     )}
                   </BannerContent>
@@ -952,7 +959,7 @@ export default function Home() {
   const [homePageData, setHomePageData] = useState([]);
   const [contentIndex, setContentIndex] = useState(0);
   const [shareModalOpen, setShareModalOpen] = useState(false);
-  const [shareUrl] = useState('');
+  const [shareUrl, setShareUrl] = useState('');
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
   const [likedContent, setLikedContent] = useState([]);
   const sliderContainerRef = useRef(null);
