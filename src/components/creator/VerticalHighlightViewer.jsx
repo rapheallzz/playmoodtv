@@ -307,11 +307,26 @@ const VerticalHighlightViewer = ({
   const handleLikeClick = (highlightId) => {
     if (!user) return;
     const isLiked = user.like.includes(highlightId);
-    if (isLiked) {
-      dispatch(unlikeContent({ contentId: highlightId }));
-    } else {
-      dispatch(likeContent({ contentId: highlightId }));
-    }
+    const action = isLiked ? unlikeContent : likeContent;
+
+    dispatch(action({ contentId: highlightId }));
+
+    setHighlights((prevHighlights) =>
+      prevHighlights.map((h) => {
+        if (h.content._id === highlightId) {
+          return {
+            ...h,
+            content: {
+              ...h.content,
+              likesCount: isLiked
+                ? (h.content.likesCount || 1) - 1
+                : (h.content.likesCount || 0) + 1,
+            },
+          };
+        }
+        return h;
+      })
+    );
   };
 
   const handleCommentIconClick = async (highlight) => {
