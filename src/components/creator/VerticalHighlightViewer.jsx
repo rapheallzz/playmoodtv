@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { likeContent, unlikeContent } from '../../features/authSlice';
 import contentService from '../../features/contentService';
 import { useWebSocket } from '../../context/WebSocketContext';
 import CommentSection from './CommentSection';
@@ -37,6 +38,7 @@ const VerticalHighlightViewer = ({
   onClose,
 }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const socket = useWebSocket();
   const { user } = useSelector((state) => state.auth);
   const [highlights, setHighlights] = useState(initialHighlights);
@@ -45,7 +47,6 @@ const VerticalHighlightViewer = ({
   const viewerRef = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(startIndex);
   const [playerStates, setPlayerStates] = useState({});
-  const [likedHighlights, setLikedHighlights] = useState(new Set(user?.like || []));
   const [isCommentSectionOpen, setCommentSectionOpen] = useState(false);
   const [comments, setComments] = useState([]);
   const [selectedHighlight, setSelectedHighlight] = useState(null);
@@ -74,7 +75,6 @@ const VerticalHighlightViewer = ({
     if (socket) {
       const handleContentLiked = ({ contentId, likes }) => {
         if (highlights.some(h => h.content._id === contentId)) {
-          setLikedHighlights(prev => new Set(prev).add(contentId));
           setHighlights(prev =>
             prev.map(h =>
               h.content._id === contentId ? { ...h, content: { ...h.content, likesCount: likes } } : h
@@ -85,11 +85,6 @@ const VerticalHighlightViewer = ({
 
       const handleContentUnliked = ({ contentId, likes }) => {
         if (highlights.some(h => h.content._id === contentId)) {
-          setLikedHighlights(prev => {
-            const newLiked = new Set(prev);
-            newLiked.delete(contentId);
-            return newLiked;
-          });
           setHighlights(prev =>
             prev.map(h =>
               h.content._id === contentId ? { ...h, content: { ...h.content, likesCount: likes } } : h
@@ -117,10 +112,6 @@ const VerticalHighlightViewer = ({
     }
   }, [socket, highlights]);
 
-  // Effect to sync liked highlights with user state
-  useEffect(() => {
-    setLikedHighlights(new Set(user?.like || []));
-  }, [user?.like]);
 
   // Initialize player states
   useEffect(() => {
@@ -313,32 +304,13 @@ const VerticalHighlightViewer = ({
     }
   };
 
-  const handleLikeClick = async (highlightId) => {
-    if (!user || !user.token) {
-      console.error('User not authenticated');
-      return;
-    }
-
-    const isLiked = likedHighlights.has(highlightId);
-    const action = isLiked ? 'unlike' : 'like';
-
-    try {
-      if (isLiked) {
-        await contentService.unlikeContent({ contentId: highlightId, token: user.token });
-      } else {
-        await contentService.likeContent({ contentId: highlightId, token: user.token });
-      }
-      setLikedHighlights(prev => {
-        const newLiked = new Set(prev);
-        if (isLiked) {
-          newLiked.delete(highlightId);
-        } else {
-          newLiked.add(highlightId);
-        }
-        return newLiked;
-      });
-    } catch (error) {
-      console.error(`Failed to ${action} highlight:`, error);
+  const handleLikeClick = (highlightId) => {
+    if (!user) return;
+    const isLiked = user.like.includes(highlightId);
+    if (isLiked) {
+      dispatch(unlikeContent({ contentId: highlightId }));
+    } else {
+      dispatch(likeContent({ contentId: highlightId }));
     }
   };
 
@@ -483,7 +455,7 @@ const VerticalHighlightViewer = ({
               <ActionsContainer>
                 <ViewerActionButton
                   onClick={() => handleLikeClick(highlight.content._id)}
-                  className={likedHighlights.has(highlight.content._id) ? 'liked' : ''}
+                  className={user?.like?.includes(highlight.content._id) ? 'liked' : ''}
                 >
                   <FaHeart />
                   <span>{highlight.content.likesCount || 0}</span>

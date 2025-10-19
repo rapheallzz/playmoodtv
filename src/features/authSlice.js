@@ -368,10 +368,10 @@ export const authSlice = createSlice({
         state.isLoading = false;
         state.isSuccess = true;
         if (state.user) {
-          state.user = {
-            ...state.user,
-            like: [...(state.user.like || []), action.payload],
-          };
+          const newLikes = [...(state.user.like || []), action.payload];
+          const newUser = { ...state.user, like: newLikes };
+          state.user = newUser;
+          localStorage.setItem('user', JSON.stringify(newUser));
         }
       })
       .addCase(likeContent.rejected, (state, action) => {
@@ -385,10 +385,10 @@ export const authSlice = createSlice({
         state.isLoading = false;
         state.isSuccess = true;
         if (state.user) {
-          state.user = {
-            ...state.user,
-            like: state.user.like?.filter((id) => id !== action.payload) || [],
-          };
+          const newLikes = state.user.like?.filter((id) => id !== action.payload) || [];
+          const newUser = { ...state.user, like: newLikes };
+          state.user = newUser;
+          localStorage.setItem('user', JSON.stringify(newUser));
         }
       })
       .addCase(unlikeContent.rejected, (state, action) => {
