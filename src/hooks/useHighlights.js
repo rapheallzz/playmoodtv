@@ -13,7 +13,11 @@ const useHighlights = (user, creatorId) => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/highlights/creator/${idToFetch}`);
+      const response = await axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/highlights/creator/${idToFetch}`, {
+        headers: {
+          'Cache-Control': 'no-cache',
+        },
+      });
       setHighlights(response.data);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to fetch highlights.');
