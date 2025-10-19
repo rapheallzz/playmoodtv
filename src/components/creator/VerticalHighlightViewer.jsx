@@ -57,6 +57,7 @@ const VerticalHighlightViewer = ({
   const isProgrammaticScroll = useRef(false);
   const scrollTimeout = useRef(null);
   const selectedHighlightRef = useRef(null);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   useEffect(() => {
     selectedHighlightRef.current = selectedHighlight;
@@ -139,9 +140,12 @@ const VerticalHighlightViewer = ({
     if (storyRefs.current[currentIndex]) {
       isProgrammaticScroll.current = true;
       storyRefs.current[currentIndex].scrollIntoView({
-        behavior: 'smooth',
+        behavior: isInitialLoad ? 'auto' : 'smooth',
         block: 'center',
       });
+      if (isInitialLoad) {
+        setIsInitialLoad(false);
+      }
       clearTimeout(scrollTimeout.current);
       scrollTimeout.current = setTimeout(() => {
         isProgrammaticScroll.current = false;
