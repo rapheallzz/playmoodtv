@@ -593,7 +593,11 @@ function HomeContent({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
+        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/', {
+          headers: {
+            'Cache-Control': 'no-cache',
+          },
+        });
         setHomePageData(response.data);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -632,24 +636,27 @@ function HomeContent({
   };
 
   const handleLike = async () => {
-    setIsLiked(!isLiked);
     try {
       if (user && user._id) {
         const currentContent = homePageData[activeSlide];
         if (currentContent) {
           const contentId = currentContent._id;
           const isContentLiked = user.like && user.like.includes(contentId);
-          if (isContentLiked) {
-            await dispatch(unlikeContent({ userId: user._id, contentId }));
-          } else {
-            await dispatch(likeContent({ userId: user._id, contentId }));
-          }
+
+          // Dispatch the correct action
+          const action = isContentLiked ? unlikeContent({ contentId }) : likeContent({ contentId });
+          await dispatch(action).unwrap();
+
+          // Optimistically update the UI
+          setIsLiked(!isContentLiked);
         }
       } else {
         setShowWelcomePopup(true);
       }
     } catch (error) {
       console.error('Error liking/unliking content:', error);
+      // Optionally, revert the UI change if the API call fails
+      // setIsLiked(isLiked);
     }
   };
 
@@ -823,7 +830,7 @@ function HomeContent({
                     <ButtonContainer marginTop>
                       <NeonButton onClick={handleLike}>
                         LIKE
-                        <img src={isLiked ? redheart : whiteheart} alt="heart" />
+                        <img src={user?.like?.includes(homePageData[activeSlide]?._id) ? redheart : whiteheart} alt="heart" />
                       </NeonButton>
                       <NeonButton onClick={() => setShareModalOpen((prev) => !prev)}>
                         SHARE
@@ -960,7 +967,11 @@ export default function Home() {
   useEffect(() => {
     if (encodedContentId) {
       const contentId = atob(encodedContentId);
-      axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${contentId}`)
+      axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${contentId}`, {
+        headers: {
+          'Cache-Control': 'no-cache',
+        },
+      })
         .then(response => {
           setHighlightData(response.data);
         })
