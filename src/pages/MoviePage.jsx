@@ -118,14 +118,24 @@ export default function MoviePage() {
         // Fetch movie data
         const movieResponse = await axios.get(
           `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${contentId}`,
-          { headers: user?.token ? { Authorization: `Bearer ${user.token}` } : {} }
+          {
+            headers: {
+              ...(user?.token && { Authorization: `Bearer ${user.token}` }),
+              'Cache-Control': 'no-cache',
+            },
+          }
         );
         setMovie(movieResponse.data);
 
         // Fetch comments
         const commentsResponse = await axios.get(
           `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${contentId}/comments?page=1&limit=${COMMENTS_PER_PAGE}`,
-          { headers: user?.token ? { Authorization: `Bearer ${user.token}` } : {} }
+          {
+            headers: {
+              ...(user?.token && { Authorization: `Bearer ${user.token}` }),
+              'Cache-Control': 'no-cache',
+            },
+          }
         );
         setComments(commentsResponse.data.comments || []);
         setHasMore(commentsResponse.data.comments?.length === COMMENTS_PER_PAGE);
@@ -174,7 +184,12 @@ export default function MoviePage() {
       const nextPage = page + 1;
       const response = await axios.get(
         `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${contentId}/comments?page=${nextPage}&limit=${COMMENTS_PER_PAGE}`,
-        { headers: user?.token ? { Authorization: `Bearer ${user.token}` } : {} }
+        {
+          headers: {
+            ...(user?.token && { Authorization: `Bearer ${user.token}` }),
+            'Cache-Control': 'no-cache',
+          },
+        }
       );
       setComments([...comments, ...response.data.comments]);
       setPage(nextPage);
