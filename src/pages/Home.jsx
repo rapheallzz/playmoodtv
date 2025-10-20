@@ -661,24 +661,24 @@ function HomeContent({
     }
   };
 
-  const handleWatchlist = async () => {
+  const currentContent = homePageData[activeSlide];
+  const isWatchlisted = user?.watchlist?.includes(currentContent?._id);
+
+  const handleWatchlistClick = async () => {
+    if (!user) {
+      setShowWelcomePopup(true);
+      return;
+    }
+
     try {
-      if (user && user._id) {
-        const currentContent = homePageData[activeSlide];
-        if (currentContent) {
-          const contentId = currentContent._id;
-          const isWatchlisted = user.watchlist && user.watchlist.includes(contentId);
-          if (isWatchlisted) {
-            await dispatch(removeFromWatchlist({ userId: user._id, contentId }));
-          } else {
-            await dispatch(addToWatchlist({ userId: user._id, contentId }));
-          }
-        }
+      const contentId = currentContent._id;
+      if (isWatchlisted) {
+        await dispatch(removeFromWatchlist({ userId: user._id, contentId }));
       } else {
-        setShowWelcomePopup(true);
+        await dispatch(addToWatchlist({ userId: user._id, contentId }));
       }
     } catch (error) {
-      console.error('Error adding/removing from watchlist:', error);
+      console.error('Error updating watchlist:', error);
     }
   };
 
@@ -833,8 +833,8 @@ function HomeContent({
                         WATCH NOW
                         <img src={playbutton} alt="play" />
                       </NeonButton>
-                      <NeonButton onClick={handleWatchlist}>
-                        ADD TO WATCHLIST
+                      <NeonButton onClick={handleWatchlistClick}>
+                        {isWatchlisted ? 'REMOVE FROM WATCHLIST' : 'ADD TO WATCHLIST'}
                         <img src={plusbutton} alt="add" />
                       </NeonButton>
                     </ButtonContainer>
