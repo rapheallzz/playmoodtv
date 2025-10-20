@@ -18,6 +18,7 @@ const CreateHighlightModal = ({
   const [contentId, setContentId] = useState('');
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
+  const [title, setTitle] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -33,7 +34,7 @@ const CreateHighlightModal = ({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!contentId || startTime === '' || endTime === '') {
+    if (!contentId || startTime === '' || endTime === '' || !title) {
       setError('All fields are required.');
       return;
     }
@@ -48,6 +49,7 @@ const CreateHighlightModal = ({
       contentId,
       startTime: parseFloat(startTime),
       endTime: parseFloat(endTime),
+      title,
     });
 
     setIsLoading(false);
@@ -83,6 +85,17 @@ const CreateHighlightModal = ({
                 </option>
               ))}
             </select>
+          </div>
+
+          <div style={{ marginBottom: '16px' }}>
+            <label htmlFor="title" style={{ display: 'block', marginBottom: '8px' }}>Title</label>
+            <input
+              id="title"
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              style={{ width: '100%', padding: '8px' }}
+            />
           </div>
 
           {selectedVideo && (
