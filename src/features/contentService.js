@@ -102,7 +102,7 @@ const getComments = async ({ contentId, token }) => {
 const addToWatchlist = async ({ userId, contentId, token }) => {
   try {
     const response = await axios.post(
-      `${API_URL}/users/watchlist/add`,
+      `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/watchlist/add`,
       { contentId },
       {
         headers: {
