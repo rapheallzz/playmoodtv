@@ -3,21 +3,26 @@ import {
   FacebookShareButton,
   TwitterShareButton,
   WhatsappShareButton,
-  LinkedinShareButton,
 } from 'react-share';
-
+import { toast } from 'react-toastify';
 import {
   FaFacebook,
   FaTwitter,
   FaWhatsapp,
   FaInstagram,
-  FaLinkedin,
+  FaCopy,
 } from 'react-icons/fa';
 
 import styled from 'styled-components';
 
 
 const ShareModal = ({ open, onClose, shareUrl }) => {
+  const handleCopy = () => {
+    navigator.clipboard.writeText(shareUrl);
+    toast.success('Link copied to clipboard!');
+    onClose();
+  };
+
   return (
     <ShareModalContainer>
       {/* Modal content */}
@@ -45,23 +50,9 @@ const ShareModal = ({ open, onClose, shareUrl }) => {
         <SocialIcon as={FaWhatsapp} />
       </WhatsappShareButton>
 
-      {/* <InstagramShareButton
-        url={shareUrl}
-        title="Check out this video on PlayMood"
-        onClick={() => onClose()}
-      >
-        <SocialIcon as={FaInstagram} />
-      </InstagramShareButton> */}
-            
         <SocialIcon as={FaInstagram} />
 
-      <LinkedinShareButton
-        url={shareUrl}
-        title="Check out this video on PlayMood"
-        onClick={() => onClose()}
-      >
-        <SocialIcon as={FaLinkedin} />
-      </LinkedinShareButton>
+      <SocialIcon as={FaCopy} onClick={handleCopy} />
 
     </ShareModalContainer>
   );

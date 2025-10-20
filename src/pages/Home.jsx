@@ -545,6 +545,7 @@ function HomeContent({
   setContentIndex,
   shareModalOpen,
   setShareModalOpen,
+  setShareUrl,
   shareUrl,
   showWelcomePopup,
   setShowWelcomePopup,
@@ -703,6 +704,16 @@ function HomeContent({
     setActiveSlide(index);
   };
 
+  const handleShare = () => {
+    const currentContent = homePageData[activeSlide];
+    if (currentContent) {
+      const slug = `${currentContent.title.replace(/\s+/g, '-')}-${currentContent._id}`;
+      const url = `${window.location.origin}/movie/${slug}`;
+      setShareUrl(url);
+      setShareModalOpen(true);
+    }
+  };
+
   const CookiesPopup = () => (
     <CookiesPopupContainer>
       <div className="popup-content">
@@ -832,7 +843,7 @@ function HomeContent({
                         LIKE
                         <img src={user?.like?.includes(homePageData[activeSlide]?._id) ? redheart : whiteheart} alt="heart" />
                       </NeonButton>
-                      <NeonButton onClick={() => setShareModalOpen((prev) => !prev)}>
+                      <NeonButton onClick={handleShare}>
                         SHARE
                         <img src={sendmessage} alt="share" />
                       </NeonButton>
@@ -952,7 +963,7 @@ export default function Home() {
   const [homePageData, setHomePageData] = useState([]);
   const [contentIndex, setContentIndex] = useState(0);
   const [shareModalOpen, setShareModalOpen] = useState(false);
-  const [shareUrl] = useState('');
+  const [shareUrl, setShareUrl] = useState('');
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
   const [likedContent, setLikedContent] = useState([]);
   const sliderContainerRef = useRef(null);
@@ -1012,6 +1023,7 @@ export default function Home() {
       shareModalOpen={shareModalOpen}
       setShareModalOpen={setShareModalOpen}
       shareUrl={shareUrl}
+      setShareUrl={setShareUrl}
       showWelcomePopup={showWelcomePopup}
       setShowWelcomePopup={setShowWelcomePopup}
       likedContent={likedContent}
