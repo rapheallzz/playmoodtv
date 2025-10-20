@@ -123,8 +123,8 @@ const addToWatchlist = async ({ userId, contentId, token }) => {
 // Remove from watchlist
 const removeFromWatchlist = async ({ userId, contentId, token }) => {
   try {
-    const response = await axios.put(
-      `${API_URL}/users/watchlist/remove${userId}`,
+    const response = await axios.post(
+      `${API_URL}/content/watchlist/remove`,
       { contentId },
       {
         headers: {
