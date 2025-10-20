@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { FaPaperPlane, FaHeart, FaPlus, FaCheck } from 'react-icons/fa';
 import { likeContent, unlikeContent, addToWatchlist, removeFromWatchlist } from '../features/authSlice';
 import styled from 'styled-components';
+import HighlightShareModal from './modals/HighlightShareModal';
 
 const CreatorContentModal = ({ isOpen, creator, onClose }) => {
   const navigate = useNavigate();
@@ -18,7 +19,8 @@ const CreatorContentModal = ({ isOpen, creator, onClose }) => {
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
   const [commentText, setCommentText] = useState('');
   const [commentError, setCommentError] = useState('');
-  const [copyModal, setCopyModal] = useState({ show: false, message: '', isError: false });
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [shareUrl, setShareUrl] = useState('');
   const videoRef = useRef(null);
 
   // Fetch recent content for the creator
@@ -143,19 +145,13 @@ const CreatorContentModal = ({ isOpen, creator, onClose }) => {
     }
   };
 
-  const handleCopyLink = (e) => {
-    e.stopPropagation();
-    const pageUrl = window.location.href;
-    navigator.clipboard.writeText(pageUrl)
-      .then(() => {
-        setCopyModal({ show: true, message: 'Link copied to clipboard!', isError: false });
-        setTimeout(() => setCopyModal({ show: false, message: '', isError: false }), 3000);
-      })
-      .catch((err) => {
-        console.error('Failed to copy: ', err);
-        setCopyModal({ show: true, message: 'Failed to copy link. Please try again.', isError: true });
-        setTimeout(() => setCopyModal({ show: false, message: '', isError: false }), 3000);
-      });
+  const handleShare = () => {
+    if (content) {
+      const encodedContentId = btoa(content._id);
+      const url = `${window.location.origin}/highlight/${encodedContentId}`;
+      setShareUrl(url);
+      setIsShareModalOpen(true);
+    }
   };
 
   if (!isOpen || !creator) return null;
@@ -223,7 +219,7 @@ const CreatorContentModal = ({ isOpen, creator, onClose }) => {
                     </span>
                     <FaPaperPlane
                       className="text-[#541011] cursor-pointer text-lg sm:text-xl"
-                      onClick={handleCopyLink}
+                      onClick={handleShare}
                       aria-label="Copy link"
                     />
                   </ActionIcons>
@@ -288,13 +284,11 @@ const CreatorContentModal = ({ isOpen, creator, onClose }) => {
           </PopupContainer>
         </PopupOverlay>
       )}
-      {copyModal.show && (
-        <CopyModal isError={copyModal.isError}>
-          <p>{copyModal.message}</p>
-          <button onClick={() => setCopyModal({ show: false, message: '', isError: false })}>
-            Close
-          </button>
-        </CopyModal>
+      {isShareModalOpen && (
+        <HighlightShareModal
+          shareUrl={shareUrl}
+          onClose={() => setIsShareModalOpen(false)}
+        />
       )}
     </ModalOverlay>
   );

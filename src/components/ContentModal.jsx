@@ -6,6 +6,7 @@ import { likeContent, unlikeContent, addToWatchlist, removeFromWatchlist } from 
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import styled from 'styled-components';
+import HighlightShareModal from './modals/HighlightShareModal';
 
 const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
@@ -18,6 +19,8 @@ const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
   const videoRef = useRef(null);
   const [copyModal, setCopyModal] = useState({ show: false, message: '', isError: false });
   const modalRef = useRef(null); // Ref for modal container
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [shareUrl, setShareUrl] = useState('');
 
   // Log content prop for debugging
   useEffect(() => {
@@ -192,19 +195,11 @@ const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
     }
   };
 
-  const handleCopyLink = (e) => {
-    e.stopPropagation();
-    const pageUrl = window.location.href;
-    navigator.clipboard.writeText(pageUrl)
-      .then(() => {
-        setCopyModal({ show: true, message: 'Link copied to clipboard!', isError: false });
-        setTimeout(() => setCopyModal({ show: false, message: '', isError: false }), 3000);
-      })
-      .catch((err) => {
-        console.error('Failed to copy: ', err);
-        setCopyModal({ show: true, message: 'Failed to copy link. Please try again.', isError: true });
-        setTimeout(() => setCopyModal({ show: false, message: '', isError: false }), 3000);
-      });
+  const handleShare = () => {
+    const encodedContentId = btoa(content._id);
+    const url = `${window.location.origin}/highlight/${encodedContentId}`;
+    setShareUrl(url);
+    setIsShareModalOpen(true);
   };
 
   const handleCloseCopyModal = () => {
@@ -252,7 +247,7 @@ const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
               </span>
               <FaPaperPlane
                 className="text-[#541011] cursor-pointer text-lg sm:text-xl"
-                onClick={handleCopyLink}
+                onClick={handleShare}
                 aria-label="Copy link"
               />
             </ActionIcons>
@@ -314,11 +309,11 @@ const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
           </PopupContainer>
         </PopupOverlay>
       )}
-      {copyModal.show && (
-        <CopyModal isError={copyModal.isError} onClick={handleCloseCopyModal}>
-          <p>{copyModal.message}</p>
-          <button onClick={handleCloseCopyModal}>Close</button>
-        </CopyModal>
+      {isShareModalOpen && (
+        <HighlightShareModal
+          shareUrl={shareUrl}
+          onClose={() => setIsShareModalOpen(false)}
+        />
       )}
     </ModalOverlay>
   );
