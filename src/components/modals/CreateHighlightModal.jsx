@@ -7,6 +7,8 @@ import {
   ModalButtonCancel,
   ModalButtonSubmit,
   ErrorMessage,
+  StyledInput,
+  StyledSelect,
 } from '../../styles/CreatorPageStyles';
 
 const CreateHighlightModal = ({
@@ -70,13 +72,12 @@ const CreateHighlightModal = ({
         <ModalTitle>Create Highlight</ModalTitle>
         {error && <ErrorMessage>{error}</ErrorMessage>}
         <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: '16px' }}>
+          <div>
             <label htmlFor="video-select" style={{ display: 'block', marginBottom: '8px' }}>Select Video</label>
-            <select
+            <StyledSelect
               id="video-select"
               value={contentId}
               onChange={handleVideoChange}
-              style={{ width: '100%', padding: '8px' }}
             >
               <option value="" disabled>Choose a video</option>
               {availableVideos.map((video) => (
@@ -84,17 +85,16 @@ const CreateHighlightModal = ({
                   {video.title}
                 </option>
               ))}
-            </select>
+            </StyledSelect>
           </div>
 
-          <div style={{ marginBottom: '16px' }}>
+          <div>
             <label htmlFor="title" style={{ display: 'block', marginBottom: '8px' }}>Title</label>
-            <input
+            <StyledInput
               id="title"
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              style={{ width: '100%', padding: '8px' }}
             />
           </div>
 
@@ -113,25 +113,23 @@ const CreateHighlightModal = ({
           )}
 
           <div style={{ display: 'flex', gap: '16px' }}>
-            <div style={{ marginBottom: '16px', flex: 1 }}>
+            <div style={{ flex: 1 }}>
               <label htmlFor="start-time" style={{ display: 'block', marginBottom: '8px' }}>Start Time (s)</label>
-              <input
+              <StyledInput
                 id="start-time"
                 type="number"
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
-                style={{ width: '100%', padding: '8px' }}
                 min="0"
               />
             </div>
-            <div style={{ marginBottom: '16px', flex: 1 }}>
+            <div style={{ flex: 1 }}>
               <label htmlFor="end-time" style={{ display: 'block', marginBottom: '8px' }}>End Time (s)</label>
-              <input
+              <StyledInput
                 id="end-time"
                 type="number"
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
-                style={{ width: '100%', padding: '8px' }}
                 min="0"
               />
             </div>

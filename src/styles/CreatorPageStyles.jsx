@@ -1594,3 +1594,31 @@ export const NavigationArrow = styled.button`
     font-size: 1.5rem;
   }
 `;
+
+export const StyledInput = styled.input`
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  font-size: 0.9rem;
+
+  @media screen and (max-width: 480px) {
+    padding: 6px;
+    font-size: 0.8rem;
+  }
+`;
+
+export const StyledSelect = styled.select`
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  font-size: 0.9rem;
+
+  @media screen and (max-width: 480px) {
+    padding: 6px;
+    font-size: 0.8rem;
+  }
+`;
