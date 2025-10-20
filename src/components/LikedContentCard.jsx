@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { FaPlay, FaHeart, FaShare, FaPlus } from 'react-icons/fa';
-import LinkCopied from './sliders/linkCopied';
 import WelcomePopup from './Welcomepop';
+import HighlightShareModal from './modals/HighlightShareModal';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { likeContent, unlikeContent, addToWatchlist, removeFromWatchlist } from '../features/authSlice';
@@ -11,8 +11,9 @@ const LikedContentCard = ({ likedContent, homePageData, contentIndex, isVisibleO
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
-  const [showPopup, setShowPopup] = useState(false);
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [shareUrl, setShareUrl] = useState('');
 
   // Use likedContent if available, otherwise fall back to homePageData
   const contentArray = likedContent.length > 0 ? likedContent : homePageData;
@@ -36,16 +37,10 @@ const LikedContentCard = ({ likedContent, homePageData, contentIndex, isVisibleO
   }
 
   const handleShareClick = () => {
-    const videoUrl = currentContent.video || '';
-    console.log('Sharing video URL:', videoUrl);
-    navigator.clipboard.writeText(videoUrl)
-      .then(() => {
-        setShowPopup(true);
-        setTimeout(() => setShowPopup(false), 3000);
-      })
-      .catch((error) => {
-        console.error('Error copying to clipboard:', error);
-      });
+    const encodedContentId = btoa(currentContent._id);
+    const url = `${window.location.origin}/highlight/${encodedContentId}`;
+    setShareUrl(url);
+    setIsShareModalOpen(true);
   };
 
   const handlePlayNow = () => {
@@ -134,11 +129,16 @@ const LikedContentCard = ({ likedContent, homePageData, contentIndex, isVisibleO
           </CardContained>
         </CardContain>
       </CardContainer>
-      <LinkCopied showPopup={showPopup} onClose={() => setShowPopup(false)} />
       <WelcomePopup
         showPopup={showWelcomePopup}
         onClose={() => setShowWelcomePopup(false)}
       />
+      {isShareModalOpen && (
+        <HighlightShareModal
+          shareUrl={shareUrl}
+          onClose={() => setIsShareModalOpen(false)}
+        />
+      )}
     </CenteredContainer>
   );
 };
