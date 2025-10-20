@@ -93,7 +93,7 @@ const CopyButton = styled.button`
   }
 `;
 
-const HighlightShareModal = ({ shareUrl, onClose }) => {
+const HighlightShareModal = React.forwardRef(({ shareUrl, onClose }, ref) => {
   const copyToClipboard = () => {
     navigator.clipboard.writeText(shareUrl);
     toast.success('Link copied to clipboard!');
@@ -101,7 +101,7 @@ const HighlightShareModal = ({ shareUrl, onClose }) => {
 
   return (
     <ModalOverlay onClick={onClose}>
-      <ModalContent onClick={(e) => e.stopPropagation()}>
+      <ModalContent ref={ref} onClick={(e) => e.stopPropagation()}>
         <CloseButton onClick={onClose}>
           <FaTimes />
         </CloseButton>
@@ -127,6 +127,6 @@ const HighlightShareModal = ({ shareUrl, onClose }) => {
       </ModalContent>
     </ModalOverlay>
   );
-};
+});
 
 export default HighlightShareModal;

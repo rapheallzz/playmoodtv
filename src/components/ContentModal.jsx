@@ -17,20 +17,18 @@ const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
   const dispatch = useDispatch();
   const { user, userToken } = useSelector((state) => state.auth);
   const videoRef = useRef(null);
-  const [copyModal, setCopyModal] = useState({ show: false, message: '', isError: false });
-  const modalRef = useRef(null); // Ref for modal container
+  const modalRef = useRef(null);
+  const shareModalRef = useRef(null);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [shareUrl, setShareUrl] = useState('');
 
-  // Log content prop for debugging
-  useEffect(() => {
-    console.log('Content prop:', content);
-  }, [content]);
-
-  // Handle click outside to close modal
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (modalRef.current && !modalRef.current.contains(event.target)) {
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target) &&
+        (!shareModalRef.current || !shareModalRef.current.contains(event.target))
+      ) {
         onClose();
       }
     };
@@ -44,7 +42,6 @@ const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
     };
   }, [isOpen, onClose]);
 
-  // Fetch comments when modal opens
   useEffect(() => {
     const fetchComments = async () => {
       if (isOpen && content?._id) {
@@ -65,7 +62,6 @@ const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
     fetchComments();
   }, [isOpen, content?._id, userToken]);
 
-  // Derive userId from user or token
   const getUserId = () => {
     if (user?.userId) return user.userId;
     if (userToken) {
@@ -79,8 +75,6 @@ const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
     return null;
   };
 
-
-  // Handle comment submission
   const handleAddComment = async (e) => {
     e.preventDefault();
     if (!userToken) {
@@ -103,12 +97,6 @@ const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
         contentId: content._id, 
         text: commentText 
       };
-      console.log('Submitting comment:', {
-        url: commentUrl,
-        payload,
-        contentId: content._id,
-        token: userToken.substring(0, 10) + '...',
-      });
       const response = await axios.post(
         commentUrl,
         payload,
@@ -119,10 +107,8 @@ const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
           },
         }
       );
-      console.log('Comment response:', response.data);
       setCommentText('');
       setCommentError('');
-      // Re-fetch comments to show the new one
       const commentsResponse = await axios.get(
         `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${content._id}/comments`,
         {
@@ -131,19 +117,12 @@ const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
       );
       setComments(commentsResponse.data.comments || []);
     } catch (error) {
-      console.error('Error adding comment:', {
-        response: error.response?.data,
-        status: error.response?.status,
-        message: error.message,
-      });
       const errorMessage = error.response?.data?.error || 'Failed to add comment. Please try again.';
       setCommentError(errorMessage);
     }
   };
 
-  // Early return after hooks
   if (!isOpen || !content || !content._id || typeof content._id !== 'string' || content._id.trim() === '') {
-    console.warn('ContentModal: Invalid or missing content', { isOpen, content });
     return null;
   }
 
@@ -155,7 +134,6 @@ const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
       const userId = getUserId();
       if (userId && userToken) {
         const contentId = content._id;
-        console.log('handleLike:', { isLiked, contentId, userId });
         if (isLiked) {
           await dispatch(unlikeContent({ contentId, token: userToken })).unwrap();
         } else {
@@ -166,7 +144,6 @@ const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
         setShowWelcomePopup(true);
       }
     } catch (error) {
-      console.error('Error liking/unliking content:', error);
       const errorMessage = error.message || 'Failed to like/unlike content. Please try again.';
       setActionError(errorMessage);
       setTimeout(() => setActionError(''), 3000);
@@ -188,7 +165,6 @@ const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
         setShowWelcomePopup(true);
       }
     } catch (error) {
-      console.error('Error adding/removing from watchlist:', error);
       const errorMessage = error.message || 'Failed to update watchlist. Please try again.';
       setActionError(errorMessage);
       setTimeout(() => setActionError(''), 3000);
@@ -200,10 +176,6 @@ const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
     const url = `${window.location.origin}/highlight/${encodedContentId}`;
     setShareUrl(url);
     setIsShareModalOpen(true);
-  };
-
-  const handleCloseCopyModal = () => {
-    setCopyModal({ show: false, message: '', isError: false });
   };
 
   const modalContent = (
@@ -311,6 +283,7 @@ const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
       )}
       {isShareModalOpen && (
         <HighlightShareModal
+          ref={shareModalRef}
           shareUrl={shareUrl}
           onClose={() => setIsShareModalOpen(false)}
         />
@@ -620,53 +593,6 @@ const PopupContainer = styled.div`
   @media (min-width: 640px) {
     max-width: 300px;
     padding: 1.25rem;
-  }
-`;
-
-const CopyModal = styled.div`
-  position: fixed;
-  top: 1rem;
-  right: 1rem;
-  background: ${({ isError }) => (isError ? '#ff4d4f' : '#541011')};
-  color: white;
-  padding: 0.75rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  z-index: 10012;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  align-items: center;
-  width: 90%;
-  max-width: 260px;
-
-  @media (min-width: 640px) {
-    max-width: 280px;
-    padding: 1rem;
-  }
-
-  p {
-    margin: 0;
-    font-size: 0.75rem;
-    text-align: center;
-
-    @media (min-width: 640px) {
-      font-size: 0.875rem;
-    }
-  }
-
-  button {
-    background: #fff;
-    color: ${({ isError }) => (isError ? '#ff4d4f' : '#28a745')};
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.75rem;
-
-    @media (min-width: 640px) {
-      font-size: 0.875rem;
-    }
   }
 `;
 
