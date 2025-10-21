@@ -304,13 +304,16 @@ const VerticalHighlightViewer = ({
     }
   };
 
-  const handleLikeClick = (highlightId) => {
-    if (!user) return;
+  const handleLikeClick = async (highlightId) => {
+    if (!user) {
+      toast.error('You must be logged in to like content.');
+      return;
+    }
+
     const isLiked = user.like.includes(highlightId);
     const action = isLiked ? unlikeContent : likeContent;
 
-    dispatch(action({ contentId: highlightId }));
-
+    // Optimistic UI update
     setHighlights((prevHighlights) =>
       prevHighlights.map((h) => {
         if (h.content._id === highlightId) {
@@ -327,6 +330,30 @@ const VerticalHighlightViewer = ({
         return h;
       })
     );
+
+    try {
+      await dispatch(action({ contentId: highlightId })).unwrap();
+    } catch (error) {
+      console.error('Failed to like/unlike content:', error);
+      toast.error(`Failed to ${isLiked ? 'unlike' : 'like'} content. Please try again.`);
+      // Revert the UI change on error
+      setHighlights((prevHighlights) =>
+        prevHighlights.map((h) => {
+          if (h.content._id === highlightId) {
+            return {
+              ...h,
+              content: {
+                ...h.content,
+                likesCount: isLiked
+                  ? (h.content.likesCount || 0) + 1
+                  : (h.content.likesCount || 1) - 1,
+              },
+            };
+          }
+          return h;
+        })
+      );
+    }
   };
 
   const handleCommentIconClick = async (highlight) => {
@@ -361,24 +388,43 @@ const VerticalHighlightViewer = ({
 
   const handleCommentSubmit = async (comment) => {
     if (!user || !user.token || !selectedHighlight) {
-      console.error('Cannot submit comment, user or highlight data is missing');
+      toast.error('You must be logged in to comment.');
       return;
     }
+
+    const tempId = `temp-${Date.now()}`;
+    const newComment = {
+      _id: tempId,
+      text: comment,
+      user: {
+        _id: user.userId || user._id,
+        name: user.name,
+        profileImage: user.profileImage,
+      },
+      createdAt: new Date().toISOString(),
+    };
+
+    // Optimistic UI update
+    setComments((prevComments) => [newComment, ...prevComments]);
+    setTotalComments((prev) => prev + 1);
+
     try {
-      await contentService.commentOnContent({
+      const response = await contentService.commentOnContent({
         contentId: selectedHighlight.content._id,
         comment,
         token: user.token,
       });
-      // Refresh comments after posting
-      const response = await contentService.getComments({
-        contentId: selectedHighlight.content._id,
-        token: user.token,
-      });
-      setComments(response.comments || []);
-      setTotalComments(response.totalComments || 0);
+
+      // Replace temporary comment with the one from the server
+      setComments((prevComments) =>
+        prevComments.map((c) => (c._id === tempId ? response.comment : c))
+      );
     } catch (error) {
-      console.error('Failed to submit or refresh comments:', error);
+      console.error('Failed to submit comment:', error);
+      toast.error('Failed to post comment. Please try again.');
+      // Revert the UI change on error
+      setComments((prevComments) => prevComments.filter((c) => c._id !== tempId));
+      setTotalComments((prev) => prev - 1);
     }
   };
 
