@@ -42,6 +42,7 @@ const VerticalHighlightViewer = ({
   const socket = useWebSocket();
   const { user } = useSelector((state) => state.auth);
   const [highlights, setHighlights] = useState(initialHighlights);
+  const [isLiked, setIsLiked] = useState(false);
   const storyRefs = useRef([]);
   const videoRefs = useRef([]);
   const viewerRef = useRef(null);
@@ -59,6 +60,12 @@ const VerticalHighlightViewer = ({
   const scrollTimeout = useRef(null);
   const selectedHighlightRef = useRef(null);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
+
+  useEffect(() => {
+    if (user && highlights[currentIndex]) {
+      setIsLiked(user.like.includes(highlights[currentIndex].content._id));
+    }
+  }, [user, currentIndex, highlights]);
 
   useEffect(() => {
     selectedHighlightRef.current = selectedHighlight;
@@ -310,8 +317,9 @@ const VerticalHighlightViewer = ({
       return;
     }
 
-    const isLiked = user.like.includes(highlightId);
-    const action = isLiked ? unlikeContent : likeContent;
+    const newIsLiked = !isLiked;
+    setIsLiked(newIsLiked);
+    const action = newIsLiked ? likeContent : unlikeContent;
 
     // Optimistic UI update
     setHighlights((prevHighlights) =>
@@ -321,9 +329,9 @@ const VerticalHighlightViewer = ({
             ...h,
             content: {
               ...h.content,
-              likesCount: isLiked
-                ? (h.content.likesCount || 1) - 1
-                : (h.content.likesCount || 0) + 1,
+              likesCount: newIsLiked
+                ? (h.content.likesCount || 0) + 1
+                : (h.content.likesCount || 1) - 1,
             },
           };
         }
@@ -335,8 +343,9 @@ const VerticalHighlightViewer = ({
       await dispatch(action({ contentId: highlightId })).unwrap();
     } catch (error) {
       console.error('Failed to like/unlike content:', error);
-      toast.error(`Failed to ${isLiked ? 'unlike' : 'like'} content. Please try again.`);
+      toast.error(`Failed to ${newIsLiked ? 'like' : 'unlike'} content. Please try again.`);
       // Revert the UI change on error
+      setIsLiked(!newIsLiked);
       setHighlights((prevHighlights) =>
         prevHighlights.map((h) => {
           if (h.content._id === highlightId) {
@@ -344,9 +353,9 @@ const VerticalHighlightViewer = ({
               ...h,
               content: {
                 ...h.content,
-                likesCount: isLiked
-                  ? (h.content.likesCount || 0) + 1
-                  : (h.content.likesCount || 1) - 1,
+                likesCount: newIsLiked
+                  ? (h.content.likesCount || 1) - 1
+                  : (h.content.likesCount || 0) + 1,
               },
             };
           }
@@ -516,7 +525,7 @@ const VerticalHighlightViewer = ({
               <ActionsContainer>
                 <ViewerActionButton
                   onClick={() => handleLikeClick(highlight.content._id)}
-                  className={user?.like?.includes(highlight.content._id) ? 'liked' : ''}
+                  className={isLiked ? 'liked' : ''}
                 >
                   <FaHeart />
                   <span>{highlight.content.likesCount || 0}</span>

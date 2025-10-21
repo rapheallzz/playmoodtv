@@ -63,7 +63,7 @@ const commentOnContent = async ({ contentId, comment, token }) => {
   try {
     const response = await axios.post(
       `${API_URL}/content/${contentId}/comment`,
-      { comment },
+      { text: comment },
       {
         headers: {
           Authorization: `Bearer ${token}`,
