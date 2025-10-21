@@ -408,6 +408,26 @@ export default function MoviePage() {
 
   const { title, description, credit, views, likes, user: movieUser } = movie;
 
+  const handleNextVideo = async () => {
+    try {
+      const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
+      const allContent = response.data;
+      const currentCategory = movie.category;
+      const relatedContent = allContent.filter(content => content.category === currentCategory && content._id !== movie._id);
+
+      if (relatedContent.length > 0) {
+        const nextVideo = relatedContent[Math.floor(Math.random() * relatedContent.length)];
+        const creatorSlug = `${nextVideo.title.replace(/\s+/g, '-')}-${nextVideo._id}`;
+        navigate(`/movie/${creatorSlug}`);
+      } else {
+        toast.info('No more videos in this category.');
+      }
+    } catch (error) {
+      console.error('Error fetching next video:', error);
+      toast.error('Could not load the next video.');
+    }
+  };
+
      const handleCreatorClick = () => {
     if (movieUser?._id) {
       const encodedId = btoa(movieUser._id);
@@ -490,7 +510,10 @@ export default function MoviePage() {
                 >
                   <FaPlay /> Play Again
                 </button>
-                <button className="w-[50%] gap-2 bg-[#541011] text-[#f3f3f3] p-[10px] px-[15px] border-none rounded-[5px] cursor-pointer text-[10px] font-normal transition-colors duration-300 ease-in-out hover:bg-white hover:text-[#541011] flex items-center justify-center m-[5px]">
+                <button
+                  className="w-[50%] gap-2 bg-[#541011] text-[#f3f3f3] p-[10px] px-[15px] border-none rounded-[5px] cursor-pointer text-[10px] font-normal transition-colors duration-300 ease-in-out hover:bg-white hover:text-[#541011] flex items-center justify-center m-[5px]"
+                  onClick={handleNextVideo}
+                >
                   NEXT VIDEO
                 </button>
               </div>
