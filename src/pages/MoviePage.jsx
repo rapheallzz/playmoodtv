@@ -35,6 +35,7 @@ export default function MoviePage() {
   const [hasMore, setHasMore] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [shareUrl, setShareUrl] = useState('');
+    const [subscribedCreators, setSubscribedCreators] = useState([]);
   const COMMENTS_PER_PAGE = 5;
 
   const navigate = useNavigate();
@@ -103,6 +104,29 @@ export default function MoviePage() {
       setIsLiked(user?.like?.includes(movie._id));
     }
   }, [user, movie]);
+
+    useEffect(() => {
+    const fetchSubscribedCreators = async () => {
+      if (user) {
+        try {
+          const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/subscribe/creators', {
+            headers: { Authorization: `Bearer ${user.token}` },
+          });
+          setSubscribedCreators(response.data);
+        } catch (error) {
+          console.error('Error fetching subscribed creators:', error);
+        }
+      }
+    };
+    fetchSubscribedCreators();
+  }, [user]);
+
+  useEffect(() => {
+    if (movie?.user && subscribedCreators) {
+      const isUserSubscribed = subscribedCreators.some(creator => creator._id === movie.user._id);
+      setSubscribed(isUserSubscribed);
+    }
+  }, [movie, subscribedCreators]);
 
   // Fetch movie data and comments separately
   useEffect(() => {
