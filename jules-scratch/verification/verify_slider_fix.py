@@ -6,7 +6,7 @@ async def main():
     async with async_playwright() as p:
         browser = await p.chromium.launch()
         page = await browser.new_page()
-        await page.goto("http://localhost:4173/")
+        await page.goto("http://localhost:4175/")
 
         # Accept cookies
         accept_button = page.locator(".accept-btn")

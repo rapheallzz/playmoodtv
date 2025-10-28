@@ -41,7 +41,7 @@ const CustomNextArrow = (props) => {
   );
 };
 
-export default function SliderSocial() {
+export default function SliderFashion() {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
