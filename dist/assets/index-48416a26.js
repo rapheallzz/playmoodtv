@@ -477,7 +477,7 @@ Error generating stack: `+o.message+`
 `;function kt(){const e=Be(),[t,r]=p.useState([]),[n,i]=p.useState(!1),[o,a]=p.useState(null),[l,c]=p.useState(null);p.useEffect(()=>{async function m(){try{console.log("Requesting data from API");const g=await re.get("https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/");if(console.log("API response:",g),g.data&&Array.isArray(g.data)){const x=g.data.filter(y=>y.category==="Teen");r(x)}else console.error("Unexpected data format:",g.data),c("Unexpected data format.")}catch(g){console.error("Error fetching data:",g),c("Error fetching data.")}}m()},[]);const d=m=>{a(m),i(!0)},u=()=>{i(!1),a(null)},f=(m,g)=>`${m.toLowerCase().replace(/[^a-z0-9]+/g,"-")}-${g}`,h=m=>{const g=f(m.title,m._id);console.log("Navigating to movie with slug:",g),e(`/movie/${g}`)},v={dots:!1,infinite:!0,speed:500,slidesToShow:3,slidesToScroll:1,initialSlide:0,autoplay:!0,autoplaySpeed:3e3,cssEase:"linear",arrows:!1,swipeToSlide:!0,lazyLoad:"ondemand",responsive:[{breakpoint:1024,settings:{slidesToShow:3,slidesToScroll:1,infinite:!0,dots:!0,arrows:!0}},{breakpoint:600,settings:{slidesToShow:2,slidesToScroll:1,initialSlide:2,arrows:!0}},{breakpoint:480,settings:{slidesToShow:2,slidesToScroll:1,arrows:!1,centerMode:!0,centerPadding:"20px"}}]};return s.jsxs(lG,{children:[l?s.jsx("div",{className:"error-message",children:l}):s.jsx(Xe,{...v,children:Array.isArray(t)&&t.map((m,g)=>s.jsx("div",{className:"sidebar-slide",children:s.jsx(oo,{img:m.thumbnail,title:m.title,movie:m,views:m.views,desc:m.description,customStyle:{},onVideoClick:()=>d(m)})},m._id))}),s.jsx(st,{isOpen:n,content:o,onClose:u,handleNavigateToMovie:h})]})}const lG=k.div`
   .sidebar-slide {
     width: 300px; /* Increased width for better visibility */
-
+  
     margin: 0 4px; /* Horizontal spacing */
     cursor: pointer;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
@@ -601,7 +601,7 @@ Error generating stack: `+o.message+`
 `;function l6(){const e=Be(),[t,r]=p.useState([]),[n,i]=p.useState(!1),[o,a]=p.useState(null),[l,c]=p.useState(null);p.useEffect(()=>{async function m(){try{console.log("Requesting data from API");const g=await re.get("https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/");if(console.log("API response:",g),g.data&&Array.isArray(g.data)){const x=g.data.filter(y=>y.category==="Top 10");r(x)}else console.error("Unexpected data format:",g.data),c("Unexpected data format.")}catch(g){console.error("Error fetching data:",g),c("Error fetching data.")}}m()},[]);const d=m=>{a(m),i(!0)},u=()=>{i(!1),a(null)},f=(m,g)=>`${m.toLowerCase().replace(/[^a-z0-9]+/g,"-")}-${g}`,h=m=>{const g=f(m.title,m._id);console.log("Navigating to movie with slug:",g),e(`/movie/${g}`)},v={dots:!1,infinite:!0,speed:500,slidesToShow:3,slidesToScroll:1,initialSlide:0,autoplay:!0,autoplaySpeed:3e3,cssEase:"linear",arrows:!1,swipeToSlide:!0,lazyLoad:"ondemand",responsive:[{breakpoint:1024,settings:{slidesToShow:3,slidesToScroll:1,infinite:!0,dots:!0,arrows:!0}},{breakpoint:600,settings:{slidesToShow:2,slidesToScroll:1,initialSlide:2,arrows:!0}},{breakpoint:480,settings:{slidesToShow:2,slidesToScroll:1,arrows:!1,centerMode:!0,centerPadding:"20px"}}]};return s.jsxs(cG,{children:[l?s.jsx("div",{className:"error-message",children:l}):s.jsx(Xe,{...v,children:Array.isArray(t)&&t.map((m,g)=>s.jsx("div",{className:"sidebar-slide",children:s.jsx(oo,{img:m.thumbnail,title:m.title,movie:m,views:m.views,desc:m.description,customStyle:{},onVideoClick:()=>d(m)})},m._id))}),s.jsx(st,{isOpen:n,content:o,onClose:u,handleNavigateToMovie:h})]})}const cG=k.div`
   .sidebar-slide {
     width: 300px; /* Increased width for better visibility */
-
+  
     margin: 0 4px; /* Horizontal spacing */
     cursor: pointer;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
@@ -725,7 +725,7 @@ Error generating stack: `+o.message+`
 `;function c6(){const e=Be(),[t,r]=p.useState([]),[n,i]=p.useState(!1),[o,a]=p.useState(null),[l,c]=p.useState(null);p.useEffect(()=>{async function m(){try{const g=await re.get("https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/new");g.data&&Array.isArray(g.data)?r(g.data):(console.error("Unexpected data format:",g.data),c("Unexpected data format."))}catch(g){console.error("Error fetching data:",g),c("Error fetching data.")}}m()},[]);const d=m=>{a(m),i(!0)},u=()=>{i(!1),a(null)},f=(m,g)=>`${m.toLowerCase().replace(/[^a-z0-9]+/g,"-")}-${g}`,h=m=>{const g=f(m.title,m._id);e(`/movie/${g}`)},v={dots:!1,infinite:!0,speed:500,slidesToShow:3,slidesToScroll:1,initialSlide:0,autoplay:!0,autoplaySpeed:3e3,cssEase:"linear",arrows:!1,swipeToSlide:!0,lazyLoad:"ondemand",responsive:[{breakpoint:1024,settings:{slidesToShow:3,slidesToScroll:1,infinite:!0,dots:!0,arrows:!0}},{breakpoint:600,settings:{slidesToShow:2,slidesToScroll:1,initialSlide:2,arrows:!0}},{breakpoint:480,settings:{slidesToShow:2,slidesToScroll:1,arrows:!1,centerMode:!0,centerPadding:"20px"}}]};return s.jsxs(dG,{children:[l?s.jsx("div",{className:"error-message",children:l}):s.jsx(Xe,{...v,children:Array.isArray(t)&&t.map((m,g)=>s.jsx("div",{className:"sidebar-slide",children:s.jsx(oo,{img:m.thumbnail,title:m.title,movie:m,views:m.views,desc:m.description,customStyle:{},onVideoClick:()=>d(m)})},m._id))}),s.jsx(st,{isOpen:n,content:o,onClose:u,handleNavigateToMovie:h})]})}const dG=k.div`
   .sidebar-slide {
     width: 300px; /* Increased width for better visibility */
-
+  
     margin: 0 4px; /* Horizontal spacing */
     cursor: pointer;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
@@ -921,7 +921,7 @@ Error generating stack: `+o.message+`
   gap: 1rem;
   margin-bottom: 1rem;
   cursor: pointer;
-
+  
    &:hover {
     color: #541011; /* Subtle hover effect *
   }
@@ -1303,7 +1303,7 @@ Error generating stack: `+o.message+`
     //   width: 100px;
     //   height: 100px;
     // }
-
+      
     // @media (max-width: 480px) {
     //   width: 40vw;
     //   height: 40vw;
@@ -1432,7 +1432,7 @@ Error generating stack: `+o.message+`
     //   width: 100px;
     //   height: 100px;
     // }
-
+      
     // @media (max-width: 480px) {
     //   width: 40vw;
     //   height: 40vw;
@@ -1562,7 +1562,7 @@ Error generating stack: `+o.message+`
     //   width: 100px;
     //   height: 100px;
     // }
-
+      
     // @media (max-width: 480px) {
     //   width: 40vw;
     //   height: 40vw;
@@ -1594,7 +1594,7 @@ Error generating stack: `+o.message+`
 `;function f6(){const[e,t]=p.useState([]),[r,n]=p.useState(null),[i,o]=p.useState(null),[a,l]=p.useState(!1);p.useEffect(()=>{(async()=>{try{const h=await re.get("https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/creators",{headers:{"Cache-Control":"no-cache",Pragma:"no-cache",Expires:"0"}});Array.isArray(h.data)?t(h.data):(console.error("Response data is not an array:",h.data),n("Unexpected data format."))}catch(h){console.error("Error fetching creators:",h),n("Error fetching creators.")}})()},[]);const c=f=>{o(f),l(!0)},d=()=>{l(!1),o(null)},u={dots:!1,infinite:!0,speed:500,slidesToShow:2,slidesToScroll:1,initialSlide:0,autoplay:!0,autoplaySpeed:3e3,cssEase:"linear",arrows:!1,swipeToSlide:!0,lazyLoad:"ondemand",responsive:[{breakpoint:1024,settings:{slidesToShow:2,slidesToScroll:1,infinite:!0,dots:!0,arrows:!0}},{breakpoint:600,settings:{slidesToShow:2,slidesToScroll:1,arrows:!0,centerMode:!0,centerPadding:"10px"}},{breakpoint:480,settings:{slidesToShow:1.5,slidesToScroll:1,arrows:!1,centerMode:!0,centerPadding:"5px"}},{breakpoint:360,settings:{slidesToShow:1.5,slidesToScroll:1,arrows:!1,centerMode:!0,centerPadding:"5px"}}]};return s.jsx(KG,{children:r?s.jsx("div",{className:"error-message",children:r}):s.jsxs(s.Fragment,{children:[s.jsx(Xe,{...u,children:Array.isArray(e)&&e.map((f,h)=>s.jsx("div",{className:"slidescircle",children:s.jsx(KS,{img:f.profileImage,movie:f,onVideoClick:()=>c(f)})},f._id))}),s.jsx(To,{isOpen:a,creator:i,onClose:d})]})})}function p6(){const e=Be(),[t,r]=p.useState([]),[n,i]=p.useState(!1),[o,a]=p.useState(null),[l,c]=p.useState(null);p.useEffect(()=>{async function m(){try{console.log("Requesting data from API");const g=await re.get("https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/");if(console.log("API response:",g),g.data&&Array.isArray(g.data)){const x=g.data.filter(y=>y.category==="Teen");r(x)}else console.error("Unexpected data format:",g.data),c("Unexpected data format.")}catch(g){console.error("Error fetching data:",g),c("Error fetching data.")}}m()},[]);const d=m=>{a(m),i(!0)},u=()=>{i(!1),a(null)},f=(m,g)=>`${m.toLowerCase().replace(/[^a-z0-9]+/g,"-")}-${g}`,h=m=>{const g=f(m.title,m._id);console.log("Navigating to movie with slug:",g),e(`/movie/${g}`)},v={dots:!1,infinite:!0,speed:500,slidesToShow:3,slidesToScroll:1,initialSlide:0,autoplay:!0,autoplaySpeed:3e3,cssEase:"linear",arrows:!1,swipeToSlide:!0,lazyLoad:"ondemand",responsive:[{breakpoint:1024,settings:{slidesToShow:3,slidesToScroll:1,infinite:!0,dots:!0,arrows:!0}},{breakpoint:600,settings:{slidesToShow:2,slidesToScroll:1,initialSlide:2,arrows:!0}},{breakpoint:480,settings:{slidesToShow:2,slidesToScroll:1,arrows:!1,centerMode:!0,centerPadding:"20px"}}]};return s.jsxs(YG,{children:[l?s.jsx("div",{className:"error-message",children:l}):s.jsx(Xe,{...v,children:Array.isArray(t)&&t.map((m,g)=>s.jsx("div",{className:"sidebar-slide",children:s.jsx(oo,{img:m.thumbnail,title:m.title,movie:m,views:m.views,desc:m.description,customStyle:{},onVideoClick:()=>d(m)})},m._id))}),s.jsx(st,{isOpen:n,content:o,onClose:u,handleNavigateToMovie:h})]})}const YG=k.div`
   .sidebar-slide {
     width: 300px; /* Increased width for better visibility */
-
+  
     margin: 0 4px; /* Horizontal spacing */
     cursor: pointer;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
@@ -1718,7 +1718,7 @@ Error generating stack: `+o.message+`
 `;function h6(){const e=Be(),[t,r]=p.useState([]),[n,i]=p.useState(!1),[o,a]=p.useState(null),[l,c]=p.useState(null);p.useEffect(()=>{async function m(){try{console.log("Requesting data from API");const g=await re.get("https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/");if(console.log("API response:",g),g.data&&Array.isArray(g.data)){const x=g.data.filter(y=>y.category==="InterView");r(x)}else console.error("Unexpected data format:",g.data),c("Unexpected data format.")}catch(g){console.error("Error fetching data:",g),c("Error fetching data.")}}m()},[]);const d=m=>{a(m),i(!0)},u=()=>{i(!1),a(null)},f=(m,g)=>`${m.toLowerCase().replace(/[^a-z0-9]+/g,"-")}-${g}`,h=m=>{const g=f(m.title,m._id);console.log("Navigating to movie with slug:",g),e(`/movie/${g}`)},v={dots:!1,infinite:!0,speed:500,slidesToShow:3,slidesToScroll:1,initialSlide:0,autoplay:!0,autoplaySpeed:3e3,cssEase:"linear",arrows:!1,swipeToSlide:!0,lazyLoad:"ondemand",responsive:[{breakpoint:1024,settings:{slidesToShow:3,slidesToScroll:1,infinite:!0,dots:!0,arrows:!0}},{breakpoint:600,settings:{slidesToShow:2,slidesToScroll:1,initialSlide:2,arrows:!0}},{breakpoint:480,settings:{slidesToShow:2,slidesToScroll:1,arrows:!1,centerMode:!0,centerPadding:"20px"}}]};return s.jsxs(qG,{children:[l?s.jsx("div",{className:"error-message",children:l}):s.jsx(Xe,{...v,children:Array.isArray(t)&&t.map((m,g)=>s.jsx("div",{className:"sidebar-slide",children:s.jsx(oo,{img:m.thumbnail,title:m.title,movie:m,views:m.views,desc:m.description,customStyle:{},onVideoClick:()=>d(m)})},m._id))}),s.jsx(st,{isOpen:n,content:o,onClose:u,handleNavigateToMovie:h})]})}const qG=k.div`
   .sidebar-slide {
     width: 300px; /* Increased width for better visibility */
-
+  
     margin: 0 4px; /* Horizontal spacing */
     cursor: pointer;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
@@ -1842,7 +1842,7 @@ Error generating stack: `+o.message+`
 `;function Xm(){const e=Be(),[t,r]=p.useState([]),[n,i]=p.useState(!1),[o,a]=p.useState(null),[l,c]=p.useState(null);p.useEffect(()=>{async function m(){try{console.log("Requesting data from API");const g=await re.get("https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/");if(console.log("API response:",g),g.data&&Array.isArray(g.data)){const x=g.data.filter(y=>y.category==="Fashion Show");r(x)}else console.error("Unexpected data format:",g.data),c("Unexpected data format.")}catch(g){console.error("Error fetching data:",g),c("Error fetching data.")}}m()},[]);const d=m=>{a(m),i(!0)},u=()=>{i(!1),a(null)},f=(m,g)=>`${m.toLowerCase().replace(/[^a-z0-9]+/g,"-")}-${g}`,h=m=>{const g=f(m.title,m._id);console.log("Navigating to movie with slug:",g),e(`/movie/${g}`)},v={dots:!1,infinite:!0,speed:500,slidesToShow:3,slidesToScroll:1,initialSlide:0,autoplay:!0,autoplaySpeed:3e3,cssEase:"linear",arrows:!1,swipeToSlide:!0,lazyLoad:"ondemand",responsive:[{breakpoint:1024,settings:{slidesToShow:3,slidesToScroll:1,infinite:!0,dots:!0,arrows:!0}},{breakpoint:600,settings:{slidesToShow:2,slidesToScroll:1,initialSlide:2,arrows:!0}},{breakpoint:480,settings:{slidesToShow:2,slidesToScroll:1,arrows:!1,centerMode:!0,centerPadding:"20px"}}]};return s.jsxs(GG,{children:[l?s.jsx("div",{className:"error-message",children:l}):s.jsx(Xe,{...v,children:Array.isArray(t)&&t.map((m,g)=>s.jsx("div",{className:"sidebar-slide",children:s.jsx(oo,{img:m.thumbnail,title:m.title,movie:m,views:m.views,desc:m.description,customStyle:{},onVideoClick:()=>d(m)})},m._id))}),s.jsx(st,{isOpen:n,content:o,onClose:u,handleNavigateToMovie:h})]})}const GG=k.div`
   .sidebar-slide {
     width: 300px; /* Increased width for better visibility */
-
+  
     margin: 0 4px; /* Horizontal spacing */
     cursor: pointer;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
@@ -1966,7 +1966,7 @@ Error generating stack: `+o.message+`
 `;function m6(){const e=Be(),[t,r]=p.useState([]),[n,i]=p.useState(!1),[o,a]=p.useState(null),[l,c]=p.useState(null);p.useEffect(()=>{async function m(){try{console.log("Requesting data from API");const g=await re.get("https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/");if(console.log("API response:",g),g.data&&Array.isArray(g.data)){const x=g.data.filter(y=>y.category==="Documentarie");r(x)}else console.error("Unexpected data format:",g.data),c("Unexpected data format.")}catch(g){console.error("Error fetching data:",g),c("Error fetching data.")}}m()},[]);const d=m=>{a(m),i(!0)},u=()=>{i(!1),a(null)},f=(m,g)=>`${m.toLowerCase().replace(/[^a-z0-9]+/g,"-")}-${g}`,h=m=>{const g=f(m.title,m._id);console.log("Navigating to movie with slug:",g),e(`/movie/${g}`)},v={dots:!1,infinite:!0,speed:500,slidesToShow:3,slidesToScroll:1,initialSlide:0,autoplay:!0,autoplaySpeed:3e3,cssEase:"linear",arrows:!1,swipeToSlide:!0,lazyLoad:"ondemand",responsive:[{breakpoint:1024,settings:{slidesToShow:3,slidesToScroll:1,infinite:!0,dots:!0,arrows:!0}},{breakpoint:600,settings:{slidesToShow:2,slidesToScroll:1,initialSlide:2,arrows:!0}},{breakpoint:480,settings:{slidesToShow:2,slidesToScroll:1,arrows:!1,centerMode:!0,centerPadding:"20px"}}]};return s.jsxs(XG,{children:[l?s.jsx("div",{className:"error-message",children:l}):s.jsx(Xe,{...v,children:Array.isArray(t)&&t.map((m,g)=>s.jsx("div",{className:"sidebar-slide",children:s.jsx(oo,{img:m.thumbnail,title:m.title,movie:m,views:m.views,desc:m.description,customStyle:{},onVideoClick:()=>d(m)})},m._id))}),s.jsx(st,{isOpen:n,content:o,onClose:u,handleNavigateToMovie:h})]})}const XG=k.div`
   .sidebar-slide {
     width: 300px; /* Increased width for better visibility */
-
+  
     margin: 0 4px; /* Horizontal spacing */
     cursor: pointer;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
@@ -2090,7 +2090,7 @@ Error generating stack: `+o.message+`
 `;function g6(){const e=Be(),[t,r]=p.useState([]),[n,i]=p.useState(!1),[o,a]=p.useState(null),[l,c]=p.useState(null);p.useEffect(()=>{async function m(){try{console.log("Requesting data from API");const g=await re.get("https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/");if(console.log("API response:",g),g.data&&Array.isArray(g.data)){const x=g.data.filter(y=>y.category==="Behind the camera");r(x)}else console.error("Unexpected data format:",g.data),c("Unexpected data format.")}catch(g){console.error("Error fetching data:",g),c("Error fetching data.")}}m()},[]);const d=m=>{a(m),i(!0)},u=()=>{i(!1),a(null)},f=(m,g)=>`${m.toLowerCase().replace(/[^a-z0-9]+/g,"-")}-${g}`,h=m=>{const g=f(m.title,m._id);console.log("Navigating to movie with slug:",g),e(`/movie/${g}`)},v={dots:!1,infinite:!0,speed:500,slidesToShow:3,slidesToScroll:1,initialSlide:0,autoplay:!0,autoplaySpeed:3e3,cssEase:"linear",arrows:!1,swipeToSlide:!0,lazyLoad:"ondemand",responsive:[{breakpoint:1024,settings:{slidesToShow:3,slidesToScroll:1,infinite:!0,dots:!0,arrows:!0}},{breakpoint:600,settings:{slidesToShow:2,slidesToScroll:1,initialSlide:2,arrows:!0}},{breakpoint:480,settings:{slidesToShow:2,slidesToScroll:1,arrows:!1,centerMode:!0,centerPadding:"20px"}}]};return s.jsxs(QG,{children:[l?s.jsx("div",{className:"error-message",children:l}):s.jsx(Xe,{...v,children:Array.isArray(t)&&t.map((m,g)=>s.jsx("div",{className:"sidebar-slide",children:s.jsx(oo,{img:m.thumbnail,title:m.title,movie:m,views:m.views,desc:m.description,customStyle:{},onVideoClick:()=>d(m)})},m._id))}),s.jsx(st,{isOpen:n,content:o,onClose:u,handleNavigateToMovie:h})]})}const QG=k.div`
   .sidebar-slide {
     width: 300px; /* Increased width for better visibility */
-
+  
     margin: 0 4px; /* Horizontal spacing */
     cursor: pointer;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
@@ -2214,7 +2214,7 @@ Error generating stack: `+o.message+`
 `;function v6(){const e=Be(),[t,r]=p.useState([]),[n,i]=p.useState(!1),[o,a]=p.useState(null),[l,c]=p.useState(null);p.useEffect(()=>{async function m(){try{console.log("Requesting data from API");const g=await re.get("https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/");if(console.log("API response:",g),g.data&&Array.isArray(g.data)){const x=g.data.filter(y=>y.category==="Documentarie");r(x)}else console.error("Unexpected data format:",g.data),c("Unexpected data format.")}catch(g){console.error("Error fetching data:",g),c("Error fetching data.")}}m()},[]);const d=m=>{a(m),i(!0)},u=()=>{i(!1),a(null)},f=(m,g)=>`${m.toLowerCase().replace(/[^a-z0-9]+/g,"-")}-${g}`,h=m=>{const g=f(m.title,m._id);console.log("Navigating to movie with slug:",g),e(`/movie/${g}`)},v={dots:!1,infinite:!0,speed:500,slidesToShow:3,slidesToScroll:1,initialSlide:0,autoplay:!0,autoplaySpeed:3e3,cssEase:"linear",arrows:!1,swipeToSlide:!0,lazyLoad:"ondemand",responsive:[{breakpoint:1024,settings:{slidesToShow:3,slidesToScroll:1,infinite:!0,dots:!0,arrows:!0}},{breakpoint:600,settings:{slidesToShow:2,slidesToScroll:1,initialSlide:2,arrows:!0}},{breakpoint:480,settings:{slidesToShow:2,slidesToScroll:1,arrows:!1,centerMode:!0,centerPadding:"20px"}}]};return s.jsxs(JG,{children:[l?s.jsx("div",{className:"error-message",children:l}):s.jsx(Xe,{...v,children:Array.isArray(t)&&t.map((m,g)=>s.jsx("div",{className:"sidebar-slide",children:s.jsx(oo,{img:m.thumbnail,title:m.title,movie:m,views:m.views,desc:m.description,customStyle:{},onVideoClick:()=>d(m)})},m._id))}),s.jsx(st,{isOpen:n,content:o,onClose:u,handleNavigateToMovie:h})]})}const JG=k.div`
   .sidebar-slide {
     width: 300px; /* Increased width for better visibility */
-
+  
     margin: 0 4px; /* Horizontal spacing */
     cursor: pointer;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
@@ -2338,7 +2338,7 @@ Error generating stack: `+o.message+`
 `;function x6(){const e=Be(),[t,r]=p.useState([]),[n,i]=p.useState(!1),[o,a]=p.useState(null),[l,c]=p.useState(null);p.useEffect(()=>{async function m(){try{console.log("Requesting data from API");const g=await re.get("https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/");if(console.log("API response:",g),g.data&&Array.isArray(g.data)){const x=g.data.filter(y=>y.category==="Teen");r(x)}else console.error("Unexpected data format:",g.data),c("Unexpected data format.")}catch(g){console.error("Error fetching data:",g),c("Error fetching data.")}}m()},[]);const d=m=>{a(m),i(!0)},u=()=>{i(!1),a(null)},f=(m,g)=>`${m.toLowerCase().replace(/[^a-z0-9]+/g,"-")}-${g}`,h=m=>{const g=f(m.title,m._id);console.log("Navigating to movie with slug:",g),e(`/movie/${g}`)},v={dots:!1,infinite:!0,speed:500,slidesToShow:3,slidesToScroll:1,initialSlide:0,autoplay:!0,autoplaySpeed:3e3,cssEase:"linear",arrows:!1,swipeToSlide:!0,lazyLoad:"ondemand",responsive:[{breakpoint:1024,settings:{slidesToShow:3,slidesToScroll:1,infinite:!0,dots:!0,arrows:!0}},{breakpoint:600,settings:{slidesToShow:2,slidesToScroll:1,initialSlide:2,arrows:!0}},{breakpoint:480,settings:{slidesToShow:2,slidesToScroll:1,arrows:!1,centerMode:!0,centerPadding:"20px"}}]};return s.jsxs(ZG,{children:[l?s.jsx("div",{className:"error-message",children:l}):s.jsx(Xe,{...v,children:Array.isArray(t)&&t.map((m,g)=>s.jsx("div",{className:"sidebar-slide",children:s.jsx(oo,{img:m.thumbnail,title:m.title,movie:m,views:m.views,desc:m.description,customStyle:{},onVideoClick:()=>d(m)})},m._id))}),s.jsx(st,{isOpen:n,content:o,onClose:u,handleNavigateToMovie:h})]})}const ZG=k.div`
   .sidebar-slide {
     width: 300px; /* Increased width for better visibility */
-
+  
     margin: 0 4px; /* Horizontal spacing */
     cursor: pointer;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
@@ -2462,7 +2462,7 @@ Error generating stack: `+o.message+`
 `;function y6(){const e=Be(),[t,r]=p.useState([]),[n,i]=p.useState(!1),[o,a]=p.useState(null),[l,c]=p.useState(null);p.useEffect(()=>{async function m(){try{console.log("Requesting data from API");const g=await re.get("https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/");if(console.log("API response:",g),g.data&&Array.isArray(g.data)){const x=g.data.filter(y=>y.category==="Top 10");r(x)}else console.error("Unexpected data format:",g.data),c("Unexpected data format.")}catch(g){console.error("Error fetching data:",g),c("Error fetching data.")}}m()},[]);const d=m=>{a(m),i(!0)},u=()=>{i(!1),a(null)},f=(m,g)=>`${m.toLowerCase().replace(/[^a-z0-9]+/g,"-")}-${g}`,h=m=>{const g=f(m.title,m._id);console.log("Navigating to movie with slug:",g),e(`/movie/${g}`)},v={dots:!1,infinite:!0,speed:500,slidesToShow:3,slidesToScroll:1,initialSlide:0,autoplay:!0,autoplaySpeed:3e3,cssEase:"linear",arrows:!1,swipeToSlide:!0,lazyLoad:"ondemand",responsive:[{breakpoint:1024,settings:{slidesToShow:3,slidesToScroll:1,infinite:!0,dots:!0,arrows:!0}},{breakpoint:600,settings:{slidesToShow:2,slidesToScroll:1,initialSlide:2,arrows:!0}},{breakpoint:480,settings:{slidesToShow:2,slidesToScroll:1,arrows:!1,centerMode:!0,centerPadding:"20px"}}]};return s.jsxs(eX,{children:[l?s.jsx("div",{className:"error-message",children:l}):s.jsx(Xe,{...v,children:Array.isArray(t)&&t.map((m,g)=>s.jsx("div",{className:"sidebar-slide",children:s.jsx(oo,{img:m.thumbnail,title:m.title,movie:m,views:m.views,desc:m.description,customStyle:{},onVideoClick:()=>d(m)})},m._id))}),s.jsx(st,{isOpen:n,content:o,onClose:u,handleNavigateToMovie:h})]})}const eX=k.div`
   .sidebar-slide {
     width: 300px; /* Increased width for better visibility */
-
+  
     margin: 0 4px; /* Horizontal spacing */
     cursor: pointer;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
@@ -5242,7 +5242,7 @@ Error generating stack: `+o.message+`
   font-size: 12px;
   font-weight: bold;
   text-align: center;
-  color: #ffffff;
+  color: #ffffff; 
 `,T4=k.span`
   margin: 0 6px;
   font-size: 14px;
@@ -7761,7 +7761,7 @@ Error generating stack: `+o.message+`
     }
   }
 
-
+  
 `;function kte({}){p.useState(!1);const e=Be();p.useState(!1);const[t,r]=p.useState(!0),n=Jt(),{user:i}=vt(tt=>tt.auth),[o,a]=p.useState(""),[l,c]=p.useState([]),[d,u]=p.useState([]),f=()=>{n(pn()),n(So()),e("/")};p.useEffect(()=>{(async()=>{try{const rt=await re.get("https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/");u(rt.data)}catch(rt){console.error("Error fetching data:",rt)}})()},[]),p.useEffect(()=>{v()},[o,d]);const h=tt=>{a(tt.target.value)},v=()=>{const tt=d.filter(rt=>{var D;return(D=rt.name)==null?void 0:D.toLowerCase().includes(o.toLowerCase())});c(tt)};p.useState(!1),p.useState(!1),p.useState(!1);const[m,g]=p.useState(!0),[x,y]=p.useState(!0),[w,b]=p.useState(!0),[j,S]=p.useState(!0),[C,P]=p.useState(!0),[E,N]=p.useState(!0),[O,A]=p.useState(!0),[T,R]=p.useState(!0),[I,_]=p.useState(!0),B=()=>{g(!m)},V=()=>{g(!m)},$=()=>{y(!x)},L=()=>{y(!x)},W=()=>{b(!w)},F=()=>{b(!w)},z=()=>{S(!j)},ge=()=>{S(!j)},J=()=>{P(!C)},M=()=>{P(!C)},ce=()=>{N(!E)},be=()=>{N(!E)},ue=()=>{A(!O)},oe=()=>{A(!O)},te=()=>{R(!T)},Q=()=>{R(!T)},Y=()=>{_(!I)},ae=()=>{_(!I)},[le,H]=p.useState(!0),K=()=>{H(!le)},[de,xe]=p.useState(!1),je=()=>{xe(!de)},[Te,Re]=p.useState(!1),[qe,fe]=p.useState(!1),[ke,ee]=p.useState(!1),[X,ne]=p.useState(!1),[me,Pe]=p.useState(!1),[De,Je]=p.useState(!1),[ye,Oe]=p.useState(!1),[we,wt]=p.useState(!1),[Tt,Lt]=p.useState(!1),[Kt,Mr]=p.useState(!1),[Ir,sn]=p.useState(!1),[Sr,pi]=p.useState(!1),[Jr,yn]=p.useState(!1),[mr,wn]=p.useState(!1),[jr,hi]=p.useState(!1),mi=()=>{Re(!Te)},U=()=>{fe(!qe)},G=()=>{ne(!X)},Z=()=>{ee(!ke)},he=()=>{Pe(!me)},_e=()=>{Je(!De)},Fe=()=>{Oe(!ye)},Ke=()=>{wt(!we)},Me=()=>{Lt(!Tt)},Le=()=>{Mr(!Kt)},Ie=()=>{sn(!Ir)},ze=()=>{pi(!Sr)},We=()=>{yn(!Jr)},Ze=()=>{wn(!mr)},jt=()=>{hi(!jr)};return s.jsxs(Cte,{children:[s.jsx("div",{className:"flex justify-between flex-col  items-center "}),s.jsx(_te,{children:le?s.jsx(Pte,{children:window.innerWidth<=768?s.jsx($S,{size:30,color:"white",onClick:K}):s.jsx(Ete,{children:t?s.jsx("img",{src:Yi}):s.jsx("img",{src:Yi})})}):s.jsxs(Ote,{onMouseLeave:K,children:[s.jsxs("div",{className:"flex align-middle justify-between",children:[i&&s.jsx("button",{className:"bg-red-600 text-white  px-3 rounded-md text-xs cursor-pointer  transition-colors duration-300 ease-in-out",onClick:f,children:"Logout"}),s.jsx("button",{className:" w-8 h-8 text-sm rounded-full text-white",onClick:K,children:" X "})]}),s.jsxs("div",{className:"mt-33",children:[i&&s.jsx("div",{className:"",children:s.jsxs("div",{className:" flex gap-5 align-middle my-4 ",children:[s.jsx("img",{className:" w-8 h-8",src:Yi,onClick:()=>{e("/dashboard")}}),s.jsx("h1",{className:"text-sm self-center ",children:i.name})]})}),!de&&s.jsxs(s.Fragment,{children:[!i&&s.jsxs("div",{onClick:()=>{e("/login")},children:[" ",s.jsx("button",{className:"font-semibold text-[10px] w-28 h-10 bg-red-950 text-white rounded-md",children:"Sign In / Register"})]}),s.jsx("div",{className:"search_tab",children:s.jsxs("div",{className:"flex items-center",children:[m?s.jsx("img",{src:Qu,onMouseEnter:B}):s.jsx("img",{src:Ju,onMouseOut:V}),s.jsx("input",{type:"text",placeholder:"Search...",value:o,onChange:h,className:"ml-2 p-1 bg-transparent  border-b border-white text-red-200 text-sm focus:outline-none"})]})}),s.jsx("div",{className:"search_results",children:l.map((tt,rt)=>s.jsx("div",{className:"search_result_item",children:tt.name},rt))}),s.jsxs("div",{className:"home_tab",onClick:()=>{e("/")},children:[x?s.jsx("img",{src:Xu,onMouseEnter:$}):s.jsx("img",{src:rf,onMouseOut:L}),s.jsx("p",{children:"Home"})]}),s.jsxs("div",{className:"recommended_tab",onClick:()=>{e("/recommended")},children:[w?s.jsx("img",{src:Zu,onMouseEnter:W}):s.jsx("img",{src:ef,onMouseOut:F}),s.jsx("p",{children:"Recommended"})]}),s.jsxs("div",{className:"new_tab",onClick:()=>{e("/newplaymood")},children:[j?s.jsx("img",{src:Ku,onMouseEnter:z}):s.jsx("img",{src:nf,onMouseOut:ge}),s.jsx("p",{children:"New on playmood"})]}),s.jsxs("div",{className:"channels_tab",onClick:()=>{e("/channels")},children:[C?s.jsx("img",{src:Yu,onMouseEnter:J}):s.jsx("img",{src:of,onMouseOut:M}),s.jsx("p",{children:"Channels"})]}),s.jsxs("div",{className:"spaces_tab",onClick:()=>{e("/spaces")},children:[E?s.jsx("img",{src:tf,onMouseEnter:ce}):s.jsx("img",{src:af,onMouseOut:be}),s.jsx("p",{children:"Spaces"})]}),s.jsxs("div",{className:"schedule_tab",onClick:()=>{e("/schedule")},children:[O?s.jsx("img",{src:sf,onMouseEnter:ue}):s.jsx("img",{src:lf,onMouseOut:oe}),s.jsx("p",{children:"Schedule"})]}),s.jsxs("div",{className:"favorites_tab",onClick:()=>{e("/favourites")},children:[T?s.jsx("img",{src:qu,onMouseEnter:te}):s.jsx("img",{src:df,onMouseOut:Q}),s.jsx("p",{children:"Favorites"})]})]}),s.jsxs("div",{className:"categories",onClick:je,children:[I?s.jsx("img",{src:Gu,onMouseEnter:ae}):s.jsx("img",{src:cf,onMouseOut:Y}),s.jsx("p",{children:"Categories"})]}),de&&s.jsxs("div",{className:"categories_subsection",children:[s.jsx("h3",{onClick:mi,children:"TOP 10"}),Te&&s.jsx(kt,{}),s.jsx("h3",{onClick:U,children:"New on Playmood"}),qe&&s.jsx(kt,{}),s.jsx("h3",{onClick:Z,children:"Channels"}),ke&&s.jsx(kt,{}),s.jsx("h3",{onClick:G,children:"Diaries"}),X&&s.jsx(kt,{}),s.jsx("h3",{onClick:he,children:"Spaces"}),me&&s.jsx(kt,{}),s.jsx("h3",{onClick:_e,children:"Recommendations for you"}),De&&s.jsx(kt,{}),s.jsx("h3",{onClick:Fe,children:"Interviews"}),ye&&s.jsx(kt,{}),s.jsx("h3",{onClick:Ke,children:"Fashion Shows Stories"}),we&&s.jsx(kt,{}),s.jsx("h3",{onClick:he,children:"Spaces"}),me&&s.jsx(kt,{}),s.jsx("h3",{onClick:Me,children:"Documentaries and Reports"}),Tt&&s.jsx(kt,{}),s.jsx("h3",{onClick:Le,children:"Behind the cameras"}),Kt&&s.jsx(kt,{}),s.jsx("h3",{onClick:Ie,children:"Soon in Playmood"}),Ir&&s.jsx(kt,{}),s.jsx("h3",{onClick:ze,children:"Teen"}),Sr&&s.jsx(kt,{}),s.jsx("h3",{onClick:We,children:"Best in Fashion"}),Jr&&s.jsx(kt,{}),s.jsx("h3",{onClick:Ze,children:"Only in Playmood"}),mr&&s.jsx(kt,{}),s.jsx("h3",{onClick:jt,children:"Watchlist"}),jr&&s.jsx(kt,{})]})]})]})})]})}const Cte=k.div`
     height: 80px;
     width: 100%;
@@ -7770,15 +7770,15 @@ Error generating stack: `+o.message+`
     color: white;
     position: fixed;
     top: 0px;
-    left: 0px;
+    left: 0px; 
     // z-index: 1001;
-`;k.div`
+`;k.div` 
     width:100%;
     height: fit-content;
     justify-content: center;
     flex-direction:column;
     align-items: center;
-    padding:5px 5px 5px 60px;
+    padding:5px 5px 5px 60px;   
 `;k.div`h
   width:100%;
   display:flex;
@@ -7806,7 +7806,7 @@ Error generating stack: `+o.message+`
     display: flex;
     align-items: center;
     justify-content: Space-between;
-    gap: 10px;
+    gap: 10px; 
     .profile-container{
       width: 40px;
       background-color:rgb(140,7,52);
@@ -7816,13 +7816,13 @@ Error generating stack: `+o.message+`
         align-items: center;
         border-radius:100%;
         cursor: pointer;
-
+       
         img{
             width: 80%;
             height: 80%;
-
-
-
+            
+          
+           
         }
     }
     .main-logo{
@@ -7832,7 +7832,7 @@ Error generating stack: `+o.message+`
         padding-right:150px;
     }
 `;const Pte=k.div`
-    width: 60px;
+    width: 60px; 
     height: 100vh;
     background-color: transparent;
     display: flex;
@@ -8284,7 +8284,7 @@ gap: 18px;
     color: white;
     position: fixed;
     top: 0px;
-    right: 0px;
+    right: 0px; 
      z-index: 10;
 `;k.div`
     width:100%;
@@ -8292,7 +8292,7 @@ gap: 18px;
     display: flex;
     align-items: center;
     justify-content: Space-between;
-    gap: 10px;
+    gap: 10px; 
     .profile-container{
       width: 40px;
       background-color:rgb(140,7,52);
@@ -8302,13 +8302,13 @@ gap: 18px;
         align-items: center;
         border-radius:100%;
         cursor: pointer;
-
+       
         img{
             width: 80%;
             height: 80%;
-
-
-
+            
+          
+           
         }
     }
     .main-logo{
@@ -8318,7 +8318,7 @@ gap: 18px;
         padding-right:150px;
     }
 `;const Ute=k.div`
-    width: 60px;
+    width: 60px; 
     height: 100vh;
     background-color: transparent;
     display: flex;
@@ -8775,7 +8775,7 @@ gap: 18px;
    @media (max-width: 768px) {
 
    height: auto;
-
+  
   }
 `,xre=k.div`
   display: flex;
@@ -8958,7 +8958,7 @@ gap: 18px;
 `,Pre=k.h2`
     color: white;
     font-size: 1rem;
-`,Do=k.h3`
+`,Do=k.h3`  
     color: white;
     font-size: 0.9rem;
 `,Ere=k.div`
@@ -8989,7 +8989,7 @@ gap: 18px;
       left:8px
     }
   }
-`,va=k.p`
+`,va=k.p`  
     color:white;
     line-height: 1.5;
     font-size: 0.7rem;
@@ -9014,10 +9014,10 @@ gap: 18px;
 `,Are=k.h2`
     color: white;
     font-size: 1rem;
-`,xa=k.h3`
+`,xa=k.h3`  
     color: white;
     font-size: 0.9rem;
-`,ya=k.p`
+`,ya=k.p`  
     color:white;
     line-height: 1.5;
     font-size: 0.7rem;
@@ -10432,7 +10432,7 @@ gap: 18px;
    @media (max-width: 768px) {
 
    height: auto;
-
+  
   }
 `,Dye=k.div`
   display: flex;
@@ -10581,7 +10581,7 @@ gap: 18px;
    @media (max-width: 768px) {
 
    height: auto;
-
+  
   }
 `,Kye=k.div`
   display: flex;
@@ -10730,7 +10730,7 @@ gap: 18px;
    @media (max-width: 768px) {
 
    height: auto;
-
+  
   }
 `,rwe=k.div`
   display: flex;
@@ -10918,7 +10918,7 @@ gap: 18px;
    @media (max-width: 768px) {
 
    height: auto;
-
+  
   }
 `,fwe=k.div`
   display: flex;
@@ -11102,7 +11102,7 @@ gap: 18px;
 `;const ywe=k.div`
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: center; 
   gap: 20px; /* Space between items */
   width: 100%;
 
@@ -11149,7 +11149,7 @@ gap: 18px;
    @media (max-width: 768px) {
 
    height: auto;
-
+  
   }
 `,Pwe=k.div`
   display: flex;
@@ -11298,7 +11298,7 @@ gap: 18px;
    @media (max-width: 768px) {
 
    height: auto;
-
+  
   }
 `,Dwe=k.div`
   display: flex;
@@ -11447,7 +11447,7 @@ gap: 18px;
    @media (max-width: 768px) {
 
    height: auto;
-
+  
   }
 `,Kwe=k.div`
   display: flex;
@@ -11596,7 +11596,7 @@ gap: 18px;
    @media (max-width: 768px) {
 
    height: auto;
-
+  
   }
 `,r1e=k.div`
   display: flex;
@@ -11745,7 +11745,7 @@ gap: 18px;
    @media (max-width: 768px) {
 
    height: auto;
-
+  
   }
 `,f1e=k.div`
   display: flex;
@@ -11894,7 +11894,7 @@ gap: 18px;
    @media (max-width: 768px) {
 
    height: auto;
-
+  
   }
 `,S1e=k.div`
   display: flex;
@@ -12043,7 +12043,7 @@ gap: 18px;
    @media (max-width: 768px) {
 
    height: auto;
-
+  
   }
 `,N1e=k.div`
   display: flex;
@@ -12192,7 +12192,7 @@ gap: 18px;
    @media (max-width: 768px) {
 
    height: auto;
-
+  
   }
 `,U1e=k.div`
   display: flex;
@@ -12341,7 +12341,7 @@ gap: 18px;
    @media (max-width: 768px) {
 
    height: auto;
-
+  
   }
 `,J1e=k.div`
   display: flex;
@@ -12494,7 +12494,7 @@ gap: 18px;
 `;const cbe=k.div`
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: center; 
   gap: 20px; /* Space between items */
   width: 100%;
 
