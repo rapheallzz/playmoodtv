@@ -1198,6 +1198,10 @@ const ProfileImage = styled.img`
   border-radius: 50%;
   object-fit: cover;
   background: #ccc;
+  width: 60px;
+  height: 60px;
+  min-width: 60px;
+  min-height: 60px;
 `;
 
 const ModalBody = styled.div`
