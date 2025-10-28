@@ -73,17 +73,6 @@ export default function SliderRecommended() {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    // This useEffect hook triggers a resize event on mount.
-    // This is a workaround to fix a bug in react-slick where sliders
-    // don't render correctly on mobile until the window is resized.
-    const timer = setTimeout(() => {
-      window.dispatchEvent(new Event('resize'));
-    }, 100); // A small delay to ensure the slider is mounted
-
-    return () => clearTimeout(timer);
-  }, []);
-
   const handleOpenModal = (content) => {
     setModalContent(content);
     setIsModalOpen(true);
@@ -111,7 +100,7 @@ export default function SliderRecommended() {
 
   const settings = {
     dots: false,
-    infinite: false,
+    infinite: data.length > 5,
     speed: 300,
     slidesToShow: 5,
     slidesToScroll: 1,
@@ -126,7 +115,7 @@ export default function SliderRecommended() {
         settings: {
           slidesToShow: 3,
           slidesToScroll: 1,
-          infinite: false,
+          infinite: data.length > 3,
           dots: true,
           arrows: true,
         },

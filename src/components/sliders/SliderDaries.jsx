@@ -192,17 +192,6 @@ export default function SliderDairies() {
     fetchCreators();
   }, []);
 
-  useEffect(() => {
-    // This useEffect hook triggers a resize event on mount.
-    // This is a workaround to fix a bug in react-slick where sliders
-    // don't render correctly on mobile until the window is resized.
-    const timer = setTimeout(() => {
-      window.dispatchEvent(new Event('resize'));
-    }, 100); // A small delay to ensure the slider is mounted
-
-    return () => clearTimeout(timer);
-  }, []);
-
   // Update slider position when data changes
   useEffect(() => {
     if (sliderRef.current && data.length > 0) {
