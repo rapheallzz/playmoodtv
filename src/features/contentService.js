@@ -87,6 +87,7 @@ const getComments = async ({ contentId, token }) => {
       {
         headers: {
           Authorization: `Bearer ${token}`,
+          'Cache-Control': 'no-cache',
         },
       }
     );
