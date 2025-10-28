@@ -63,7 +63,7 @@ const VerticalHighlightViewer = ({
 
   useEffect(() => {
     if (user && highlights[currentIndex]) {
-      setIsLiked(user.like.includes(highlights[currentIndex].content._id));
+      setIsLiked(user.like?.includes(highlights[currentIndex].content._id) || false);
     }
   }, [user, currentIndex, highlights]);
 
