@@ -5,7 +5,7 @@ import 'slick-carousel/slick/slick-theme.css';
 import axios from 'axios';
 import Slidercontent from '../Slidercont';
 import { useNavigate } from 'react-router-dom';
-import ContentModal from '../ContentModal'; 
+import ContentModal from '../ContentModal';
 
 
 import styled, { keyframes } from 'styled-components';
@@ -75,6 +75,17 @@ export default function SliderCamera() {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    // This useEffect hook triggers a resize event on mount.
+    // This is a workaround to fix a bug in react-slick where sliders
+    // don't render correctly on mobile until the window is resized.
+    const timer = setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+    }, 100); // A small delay to ensure the slider is mounted
+
+    return () => clearTimeout(timer);
+  }, []);
+
   const handleOpenModal = (content) => {
     setModalContent(content);
     setIsModalOpen(true);
@@ -102,7 +113,7 @@ export default function SliderCamera() {
 
   const settings = {
     dots: false,
-    infinite: false, 
+    infinite: false,
     speed: 300,
     slidesToShow: 5,
     slidesToScroll: 1,

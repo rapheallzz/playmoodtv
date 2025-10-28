@@ -68,6 +68,17 @@ export default function SliderNew() {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    // This useEffect hook triggers a resize event on mount.
+    // This is a workaround to fix a bug in react-slick where sliders
+    // don't render correctly on mobile until the window is resized.
+    const timer = setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+    }, 100); // A small delay to ensure the slider is mounted
+
+    return () => clearTimeout(timer);
+  }, []);
+
   const handleOpenModal = (content) => {
     setModalContent(content);
     setIsModalOpen(true);
