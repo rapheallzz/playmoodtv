@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate, useLocation, useParams } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
+import BASE_API_URL from '../apiConfig';
 import MobileBurger from '../components/headers/MobileBurger';
 import DesktopHeader from '../components/headers/DesktopHeader';
 import instagram from '/instagram.png';
@@ -217,7 +218,7 @@ export default function CreatorChannel() {
         if (h.content.video) return h;
         try {
           const res = await axios.get(
-            `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${h.content._id}`
+            `${BASE_API_URL}/api/content/${h.content._id}`
           );
           return { ...h, content: { ...h.content, video: res.data.video } };
         } catch (e) {
@@ -247,7 +248,7 @@ export default function CreatorChannel() {
       try {
         const token = user?.token || localStorage.getItem('token');
         const channelResponse = await axios.get(
-          `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/channel/${creatorId}`,
+          `${BASE_API_URL}/api/channel/${creatorId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -299,7 +300,7 @@ export default function CreatorChannel() {
       }
       if (subscribed) {
         await axios.put(
-          `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/subscribe`,
+          `${BASE_API_URL}/api/subscribe`,
           { creatorId: creatorId },
           {
             headers: {
@@ -314,7 +315,7 @@ export default function CreatorChannel() {
         }));
       } else {
         await axios.post(
-          `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/subscribe`,
+          `${BASE_API_URL}/api/subscribe`,
           { creatorId: creatorId },
           {
             headers: {
@@ -367,7 +368,7 @@ const fetchCommunityPosts = async () => {
     }
 
     const response = await axios.get(
-      `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/community/${creatorId}`,
+      `${BASE_API_URL}/api/community/${creatorId}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -410,7 +411,7 @@ const fetchPlaylists = async () => {
   try {
     // No token is needed for public playlists, but if your API requires it, add it back.
     const response = await axios.get(
-      `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/playlists/user/${creatorId}/public`
+      `${BASE_API_URL}/api/playlists/user/${creatorId}/public`
     );
     setPlaylists(response.data.playlists || []);
   } catch (err) {
@@ -435,7 +436,7 @@ const fetchPlaylists = async () => {
         ? `/api/community/${postId}/unlike`
         : `/api/community/${postId}/like`;
       await axios.put(
-        `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com${endpoint}`,
+        `${BASE_API_URL}${endpoint}`,
         {},
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -474,7 +475,7 @@ const fetchPlaylists = async () => {
     try {
       const token = user?.token || localStorage.getItem('token');
       const response = await axios.post(
-        `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/community/${postId}/comment`,
+        `${BASE_API_URL}/api/community/${postId}/comment`,
         { content: newComment[postId] },
         {
           headers: { Authorization: `Bearer ${token}` },

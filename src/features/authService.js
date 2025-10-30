@@ -1,8 +1,9 @@
 import axios from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
+import BASE_API_URL from '../apiConfig';
 
 
-const API_URL = 'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/';
+const API_URL = `${BASE_API_URL}/api/users/`;
 
 
 

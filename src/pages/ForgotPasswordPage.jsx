@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import playmood from '/PLAYMOOD_DEF.png';
+import BASE_API_URL from '../apiConfig';
 
 const ForgotPasswordPage = () => {
   const [email, setEmail] = useState('');
@@ -15,7 +16,7 @@ const ForgotPasswordPage = () => {
     setError('');
     setMessage('');
     try {
-      const response = await axios.post('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/forget-password', { email });
+      const response = await axios.post(`${BASE_API_URL}/api/users/forget-password`, { email });
       setMessage(response.data.message);
       toast.success(response.data.message);
     } catch (err) {

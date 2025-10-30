@@ -8,6 +8,7 @@ import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import countryList from 'react-select-country-list';
 import { FaGoogle } from 'react-icons/fa';
+import BASE_API_URL from '../apiConfig';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -101,7 +102,7 @@ const Register = () => {
   };
 
   const handleGoogleSignup = () => {
-    window.location.href = 'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/auth/google';
+    window.location.href = `${BASE_API_URL}/api/users/auth/google`;
   };
 
   return (

@@ -10,6 +10,7 @@ import { AiOutlineClose, AiOutlineUser, AiOutlineHeart, AiOutlineStar, AiOutline
 import { FaEdit } from 'react-icons/fa';
 import SliderLiked from '../components/sliders/SlideLiked';
 import UserWatchlist from '../components/sliders/UserSliderWatchlist';
+import BASE_API_URL from '../apiConfig';
 import UserFavourite from '../components/sliders/UserSliderFavourite';
 import UserRecommended from '../components/miscSlider/UserSliderRecommended';
 import TermsModal from '../components/Terms';
@@ -178,7 +179,7 @@ function Dashboardpage() {
     }
 
     try {
-      const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/profile/', {
+      const response = await axios.get(`${BASE_API_URL}/api/users/profile/`, {
         headers: { Authorization: `Bearer ${authUser.token}` },
       });
       const fetchedUser = response.data;
@@ -244,7 +245,7 @@ function Dashboardpage() {
     if (authUser && authUser.token) {
       try {
         const response = await axios.get(
-          `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/creator-application-status?_=${new Date().getTime()}`,
+          `${BASE_API_URL}/api/users/creator-application-status?_=${new Date().getTime()}`,
           {
             headers: { Authorization: `Bearer ${authUser.token}` },
           }
@@ -330,7 +331,7 @@ function Dashboardpage() {
       formData.append('profileImage', file);
 
       const response = await axios.put(
-        `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/${userId}`,
+        `${BASE_API_URL}/api/users/${userId}`,
         formData,
         {
           headers: {
@@ -409,7 +410,7 @@ function Dashboardpage() {
         updatedProfileImage = await updateProfileImage(userId, profileImage, authUser.token);
       }
       const response = await axios.put(
-        `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/${userId}`,
+        `${BASE_API_URL}/api/users/${userId}`,
         {
           name: personalData.name,
           email: personalData.email,
@@ -458,7 +459,7 @@ function Dashboardpage() {
   const confirmApplyAsCreator = async () => {
     try {
       const response = await axios.post(
-        'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/rolechange',
+        `${BASE_API_URL}/api/rolechange`,
         { userId, requestedRole: 'creator' },
         { headers: { Authorization: `Bearer ${authUser.token}` } }
       );
@@ -511,7 +512,7 @@ function Dashboardpage() {
 
   useEffect(() => {
     if (authUser && authUser.role !== 'creator' && userId) {
-      const socket = io('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com', {
+      const socket = io(BASE_API_URL, {
         transports: ['websocket'],
       });
 

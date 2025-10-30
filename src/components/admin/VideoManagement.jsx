@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import BASE_API_URL from '../../apiConfig';
 import ViewModal from '../ViewModal';
 import { VideoModal } from '../ModalVU';
 import { UpdateContentModal } from '../UpdateContentModal';
@@ -27,7 +28,7 @@ const VideoManagement = () => {
   const fetchContents = async () => {
     setLoading(true);
     try {
-      let url = 'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/';
+      let url = `${BASE_API_URL}/api/content/`;
       if (selectedCategory && selectedCategory !== 'all') {
         url += `?category=${selectedCategory}`;
       }
@@ -44,7 +45,7 @@ const VideoManagement = () => {
 
   const fetchUnapprovedContents = async () => {
     try {
-      const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/unapproved', {
+      const response = await axios.get(`${BASE_API_URL}/api/content/unapproved`, {
         headers: { Authorization: `Bearer ${user.token}` },
       });
       setUnapprovedContents(response.data);
@@ -61,7 +62,7 @@ const VideoManagement = () => {
   const approveVideo = async (contentId) => {
     try {
       await axios.put(
-        `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/approve/${contentId}`,
+        `${BASE_API_URL}/api/content/approve/${contentId}`,
         {},
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
@@ -76,7 +77,7 @@ const VideoManagement = () => {
   const declineVideo = async (contentId) => {
     try {
       await axios.put(
-        `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/decline/${contentId}`,
+        `${BASE_API_URL}/api/content/decline/${contentId}`,
         {},
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
@@ -90,7 +91,7 @@ const VideoManagement = () => {
   const deleteContents = async (contentId) => {
     try {
       await axios.delete(
-        `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${contentId}`,
+        `${BASE_API_URL}/api/content/${contentId}`,
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
       toast.success('Video deleted successfully.');

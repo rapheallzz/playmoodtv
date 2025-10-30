@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import playmood from '/PLAYMOOD_DEF.png';
+import BASE_API_URL from '../apiConfig';
 
 const ResetPasswordPage = () => {
   const { token } = useParams();
@@ -23,7 +24,7 @@ const ResetPasswordPage = () => {
     setError('');
     setMessage('');
     try {
-      const response = await axios.post(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/reset-password/${token}`, { password });
+      const response = await axios.post(`${BASE_API_URL}/api/users/reset-password/${token}`, { password });
       setMessage(response.data.message);
       toast.success(response.data.message);
       setTimeout(() => navigate('/login'), 2000);

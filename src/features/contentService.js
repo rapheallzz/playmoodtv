@@ -1,7 +1,8 @@
 // contentService.js
 import axios from 'axios';
+import BASE_API_URL from '../apiConfig';
 
-const API_URL = 'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api';
+const API_URL = `${BASE_API_URL}/api`;
 
 // Function to update localStorage for adding or removing content from the watchlist
 const updateLocalStorage = (contentId, action) => {

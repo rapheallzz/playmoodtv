@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import BASE_API_URL from '../../apiConfig';
 
 const UserManagement = () => {
   const { user } = useSelector((state) => state.auth);
@@ -18,7 +19,7 @@ const UserManagement = () => {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/', {
+      const response = await axios.get(`${BASE_API_URL}/api/users/`, {
         headers: { Authorization: `Bearer ${user.token}` },
       });
       setUsers(response.data);
@@ -31,7 +32,7 @@ const UserManagement = () => {
 
   const fetchCreatorRequests = async () => {
     try {
-      const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/rolechange/', {
+      const response = await axios.get(`${BASE_API_URL}/api/rolechange/`, {
         headers: { Authorization: `Bearer ${user.token}` },
       });
       const uniqueRequests = response.data
@@ -46,7 +47,7 @@ const UserManagement = () => {
   const updateUserRole = async (userId, role) => {
     try {
       await axios.put(
-        `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/role/${userId}`,
+        `${BASE_API_URL}/api/users/role/${userId}`,
         { role },
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
@@ -60,7 +61,7 @@ const UserManagement = () => {
   const approveCreatorRequest = async (requestId) => {
     try {
       await axios.put(
-        `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/rolechange/${requestId}`,
+        `${BASE_API_URL}/api/rolechange/${requestId}`,
         { status: 'approved' },
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
@@ -75,7 +76,7 @@ const UserManagement = () => {
   const declineCreatorRequest = async (requestId) => {
     try {
       await axios.put(
-        `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/rolechange/${requestId}`,
+        `${BASE_API_URL}/api/rolechange/${requestId}`,
         { status: 'declined' },
         { headers: { Authorization: `Bearer ${user.token}` } }
       );

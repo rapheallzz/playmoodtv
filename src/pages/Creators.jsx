@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 import { Link } from 'react-router-dom';
+import BASE_API_URL from '../apiConfig';
 import styled from 'styled-components';
 import MobileBurger from '../components/headers/MobileBurger';
 import DesktopHeader from '../components/headers/DesktopHeader';
@@ -36,11 +37,11 @@ export default function Creator() {
         try {
           setError(null);
           // Fetch creator's videos
-          const contentResponse = await axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/creator/${creatorId}`);
+          const contentResponse = await axios.get(`${BASE_API_URL}/api/content/creator/${creatorId}`);
           setCreatorContent(contentResponse.data);
 
           // Fetch creator's public playlists
-          const playlistResponse = await axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/playlists/user/${creatorId}/public`);
+          const playlistResponse = await axios.get(`${BASE_API_URL}/api/playlists/user/${creatorId}/public`);
           setPlaylists(playlistResponse.data.playlists || []);
 
         } catch (err) {

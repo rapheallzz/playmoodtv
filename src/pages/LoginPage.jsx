@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import playmood from '/PLAYMOOD_DEF.png';
 import { login, reset } from '../features/authSlice';
 import { FaGoogle } from 'react-icons/fa';
+import BASE_API_URL from '../apiConfig';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -51,7 +52,7 @@ const Login = () => {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = 'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/auth/google';
+    window.location.href = `${BASE_API_URL}/api/users/auth/google`;
   };
 
   return (

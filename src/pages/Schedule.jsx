@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import MobileBurger from '../components/headers/MobileBurger';
 import DesktopHeader from '../components/headers/DesktopHeader';
+import BASE_API_URL from '../apiConfig';
 import styled from "styled-components";
 
 export default function Schedule() {
@@ -22,7 +23,7 @@ export default function Schedule() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
+        const response = await axios.get(`${BASE_API_URL}/api/content/`);
         setData(response.data);
         console.log(response.data); 
       } catch (error) {

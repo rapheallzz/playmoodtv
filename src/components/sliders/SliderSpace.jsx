@@ -5,6 +5,7 @@ import 'slick-carousel/slick/slick-theme.css';
 import axios from 'axios';
 import styled, { keyframes } from 'styled-components';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import BASE_API_URL from '../../apiConfig';
 import CreatorContentModal from '../CreatorContentModal';
 import Slidercirclecontent from '../Slidercirclecontent';
 
@@ -165,7 +166,7 @@ export default function SliderSpace() {
   useEffect(() => {
     const fetchCreators = async () => {
       try {
-        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/creators', {
+        const response = await axios.get(`${BASE_API_URL}/api/users/creators`, {
           headers: {
             'Cache-Control': 'no-cache',
             'Pragma': 'no-cache',

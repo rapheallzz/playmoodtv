@@ -26,12 +26,13 @@ import useCommunityPosts from '../hooks/useCommunityPosts';
 import useHighlights from '../hooks/useHighlights';
 import axios from 'axios';
 
+import BASE_API_URL from '../apiConfig';
 export default function CreatorPage() {
   const navigate = useNavigate();
   const socket = useWebSocket();
   const { user } = useSelector((state) => state.auth);
   const [activeTab, setActiveTab] = useState('Uploads');
-  const apiUrl = 'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com';
+  const apiUrl = BASE_API_URL;
   const [activeSubTab, setActiveSubTab] = useState('Approved');
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [showContentModal, setShowContentModal] = useState(false);
@@ -135,7 +136,7 @@ export default function CreatorPage() {
         if (h.content.video) return h;
         try {
           const res = await axios.get(
-            `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${h.content._id}`
+            `${BASE_API_URL}/api/content/${h.content._id}`
           );
           return { ...h, content: { ...h.content, video: res.data.video } };
         } catch (e) {

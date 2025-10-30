@@ -3,9 +3,10 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
+import BASE_API_URL from '../apiConfig';
 
 const UpdateContentModal = ({ onClose, contentId }) => {
- 
+
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -21,13 +22,13 @@ const UpdateContentModal = ({ onClose, contentId }) => {
 
   // Update form data when contentId prop changes
   useEffect(() => {
-    
+
     const fetchContentDetails = async () => {
-      if (!contentId) return; 
+      if (!contentId) return;
 
       try {
         const response = await axios.get(
-          `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${contentId}`
+          `${BASE_API_URL}/api/content/${contentId}`
         );
 
            if (response.status === 200) {
@@ -39,7 +40,7 @@ const UpdateContentModal = ({ onClose, contentId }) => {
         console.error('Error fetching content details:', error);
       }
     };
-      
+
     // Call the fetchContentDetails function when contentId changes
     fetchContentDetails(); // Call the fetchContentDetails function regardless of contentId
   }, [contentId]);
@@ -71,7 +72,7 @@ const UpdateContentModal = ({ onClose, contentId }) => {
 
     try {
       const response = await axios.put(
-        `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${contentId}`,
+        `${BASE_API_URL}/api/content/${contentId}`,
         updateData,
         {
           headers: {
@@ -108,20 +109,20 @@ const UpdateContentModal = ({ onClose, contentId }) => {
                         name='title'
                         onChange={handleInputChange}
                     />
-                    
+
                     <label>Video Description</label>
                     <TextArea
                         name='description'
                         onChange={handleInputChange}
                     />
-                    
+
                     <label>Production Credits</label>
                     <Input
                         type='text'
                         name='credit'
                         onChange={handleInputChange}
                     />
-                    
+
                     <label>Category</label>
                     <Select
                         name='category'
@@ -138,14 +139,14 @@ const UpdateContentModal = ({ onClose, contentId }) => {
                             <option value='Daries'>Daries</option>
                         {/* Add other category options */}
                     </Select>
-                    
+
                     <label>Upload Video Image</label>
                     <Input
                         type='file'
                         accept='image/*'
                        onChange={handleFileChange}
                     />
-                    
+
                     <label>Upload Video</label>
                     <Input
                         type='file'
@@ -158,7 +159,7 @@ const UpdateContentModal = ({ onClose, contentId }) => {
                        </UploadButton>
 
                                  {/* Success notification */}
-                        
+
                         {success && (
                         <SuccessNotification>
                        <p>Video uploaded successfully!</p>

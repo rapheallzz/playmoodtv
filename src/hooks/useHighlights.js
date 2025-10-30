@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
+import BASE_API_URL from '../apiConfig';
 
 const useHighlights = (user, creatorId) => {
   const [highlights, setHighlights] = useState([]);
@@ -13,7 +14,7 @@ const useHighlights = (user, creatorId) => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/highlights/creator/${idToFetch}`, {
+      const response = await axios.get(`${BASE_API_URL}/api/highlights/creator/${idToFetch}`, {
         headers: {
           'Cache-Control': 'no-cache',
         },
@@ -46,7 +47,7 @@ const useHighlights = (user, creatorId) => {
         },
       };
       const response = await axios.post(
-        'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/highlights',
+        `${BASE_API_URL}/api/highlights`,
         {
           ...highlightData,
           creatorId: user._id,

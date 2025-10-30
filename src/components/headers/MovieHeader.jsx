@@ -34,6 +34,7 @@ import SidebarSliderc from '../slidersidebarc';
 import { useSelector, useDispatch } from 'react-redux'
 import { logout, reset } from '.././../features/authSlice'
 import axios from 'axios';
+import BASE_API_URL from '../../apiConfig';
 
 export default function MovieHeader({ }) {
   const [dropbar, set_drop_bar] = useState(false);
@@ -65,7 +66,7 @@ export default function MovieHeader({ }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
+        const response = await axios.get(`${BASE_API_URL}/api/content/`);
         setData(response.data);
       } catch (error) {
         console.error('Error fetching data:', error);

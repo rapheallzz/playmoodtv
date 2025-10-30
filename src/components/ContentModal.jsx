@@ -6,6 +6,7 @@ import { likeContent, unlikeContent, addToWatchlist, removeFromWatchlist } from 
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import styled from 'styled-components';
+import BASE_API_URL from '../apiConfig';
 import HighlightShareModal from './modals/HighlightShareModal';
 
 const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
@@ -47,7 +48,7 @@ const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
       if (isOpen && content?._id) {
         try {
           const response = await axios.get(
-            `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${content._id}/comments`,
+            `${BASE_API_URL}/api/content/${content._id}/comments`,
             {
               headers: { Authorization: `Bearer ${userToken}` },
             }
@@ -92,7 +93,7 @@ const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
     }
 
     try {
-      const commentUrl = `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${content._id}/comment`;
+      const commentUrl = `${BASE_API_URL}/api/content/${content._id}/comment`;
       const payload = { 
         contentId: content._id, 
         text: commentText 
@@ -110,7 +111,7 @@ const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
       setCommentText('');
       setCommentError('');
       const commentsResponse = await axios.get(
-        `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${content._id}/comments`,
+        `${BASE_API_URL}/api/content/${content._id}/comments`,
         {
           headers: { Authorization: `Bearer ${userToken}` },
         }

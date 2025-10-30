@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import axios from 'axios';
+import BASE_API_URL from '../apiConfig';
 import {
   HighlightsSectionContainer,
 } from '../styles/CreatorPageStyles';
@@ -24,9 +25,9 @@ const HighlightsHome = () => {
       try {
         // Fetch all highlights, recent highlights, and creators concurrently
         const [allHighlightsResponse, recentHighlightsResponse, creatorsResponse] = await Promise.all([
-          axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/highlights/all'),
-          axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/highlights/recent'),
-          axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/creators')
+          axios.get(`${BASE_API_URL}/api/highlights/all`),
+          axios.get(`${BASE_API_URL}/api/highlights/recent`),
+          axios.get(`${BASE_API_URL}/api/users/creators`)
         ]);
 
         // Set all highlights to be displayed
@@ -64,7 +65,7 @@ const HighlightsHome = () => {
         try {
           // Fetch full content details to get the creator's information
           const res = await axios.get(
-            `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${h.content._id}`
+            `${BASE_API_URL}/api/content/${h.content._id}`
           );
           const contentDetails = res.data;
 

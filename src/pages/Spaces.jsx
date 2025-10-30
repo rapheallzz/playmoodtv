@@ -6,6 +6,7 @@ import 'slick-carousel/slick/slick-theme.css';
 import axios from 'axios';
 import MobileBurger from '../components/headers/MobileBurger';
 import DesktopHeader from '../components/headers/DesktopHeader';
+import BASE_API_URL from '../apiConfig';
 import Navigation from '../components/Navigation';
 import Slidercirclecontent from '../components/Slidercirclecontent';
 import CreatorContentModal from '../components/CreatorContentModal';
@@ -70,7 +71,7 @@ export default function Spaces() {
     async function fetchCreators() {
       try {
         console.log('Requesting creators from API');
-        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/creators', {
+        const response = await axios.get(`${BASE_API_URL}/api/users/creators`, {
           headers: {
             'Cache-Control': 'no-cache',
             'Pragma': 'no-cache',

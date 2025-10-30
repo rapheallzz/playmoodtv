@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { FaPaperPlane, FaHeart, FaPlus, FaCheck } from 'react-icons/fa';
 import { likeContent, unlikeContent, addToWatchlist, removeFromWatchlist } from '../features/authSlice';
 import styled from 'styled-components';
+import BASE_API_URL from '../apiConfig';
 import HighlightShareModal from './modals/HighlightShareModal';
 
 const CreatorContentModal = ({ isOpen, creator, onClose }) => {
@@ -31,7 +32,7 @@ const CreatorContentModal = ({ isOpen, creator, onClose }) => {
       try {
         setLoading(true);
         const response = await axios.get(
-          `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${creator._id}/recent`
+          `${BASE_API_URL}/api/content/${creator._id}/recent`
         );
         if (response.data.content) {
           setContent(response.data.content);
@@ -71,7 +72,7 @@ const CreatorContentModal = ({ isOpen, creator, onClose }) => {
 
     try {
       const response = await axios.post(
-        `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${content._id}/comment`,
+        `${BASE_API_URL}/api/content/${content._id}/comment`,
         { contentId: content._id, text: commentText },
         { headers: { Authorization: `Bearer ${user.token}`, 'Content-Type': 'application/json' } }
       );

@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { updateAuthUserReducer } from '../../features/authSlice';
+import BASE_API_URL from '../../apiConfig';
 import MessageModal from '../MessageModal'; // For displaying messages after application
 
 const CreatorApplicationModal = ({ onClose }) => {
@@ -18,7 +19,7 @@ const CreatorApplicationModal = ({ onClose }) => {
     if (authUser && authUser.token) {
       try {
         const response = await axios.get(
-          `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/creator-application-status?_=${new Date().getTime()}`,
+          `${BASE_API_URL}/api/users/creator-application-status?_=${new Date().getTime()}`,
           {
             headers: { Authorization: `Bearer ${authUser.token}` },
           }
@@ -50,7 +51,7 @@ const CreatorApplicationModal = ({ onClose }) => {
   const confirmApplyAsCreator = async () => {
     try {
       const response = await axios.post(
-        'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/rolechange',
+        `${BASE_API_URL}/api/rolechange`,
         { userId: authUser.userId, requestedRole: 'creator' },
         { headers: { Authorization: `Bearer ${authUser.token}` } }
       );

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import BASE_API_URL from '../apiConfig';
 
 const useChannelDetails = (user) => {
   const [bannerImage, setBannerImage] = useState('');
@@ -24,7 +25,7 @@ const useChannelDetails = (user) => {
       isFetchingRef.current = true;
       try {
         const response = await axios.get(
-          `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/channel/my-channel/${user._id}`,
+          `${BASE_API_URL}/api/channel/my-channel/${user._id}`,
           { headers: { Authorization: `Bearer ${user.token}` } }
         );
         const content = Array.isArray(response.data.content) ? response.data.content : [];
@@ -57,7 +58,7 @@ const useChannelDetails = (user) => {
   const uploadBannerAndGetUrl = async (file, token) => {
     // 1. Get signature from the backend
     const { data } = await axios.post(
-      `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/signature`,
+      `${BASE_API_URL}/api/content/signature`,
       {},
       { headers: { Authorization: `Bearer ${token}` } }
     );
@@ -105,7 +106,7 @@ const useChannelDetails = (user) => {
 
       // Step 3: Send a single PUT request to update all channel info
       const response = await axios.put(
-        `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/channel/${user._id}`,
+        `${BASE_API_URL}/api/channel/${user._id}`,
         payload,
         {
           headers: {

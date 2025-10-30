@@ -35,6 +35,7 @@ import LikedContentCard from '../components/LikedContentCard';
 import axios from 'axios';
 import { likeContent, unlikeContent, addToWatchlist, removeFromWatchlist } from '../features/authSlice';
 import Footer from '../components/footer/Footer';
+import BASE_API_URL from '../apiConfig';
 import SliderTopTen from '../components/sliders/SliderTopTen';
 import HighlightsHome from '../components/HighlightsHome';
 import { Helmet } from 'react-helmet-async';
@@ -594,7 +595,7 @@ function HomeContent({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/', {
+        const response = await axios.get(`${BASE_API_URL}/api/content/`, {
           headers: {
             'Cache-Control': 'no-cache',
           },
@@ -978,7 +979,7 @@ export default function Home() {
   useEffect(() => {
     if (encodedContentId) {
       const contentId = atob(encodedContentId);
-      axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${contentId}`, {
+      axios.get(`${BASE_API_URL}/api/content/${contentId}`, {
         headers: {
           'Cache-Control': 'no-cache',
         },

@@ -6,6 +6,7 @@ import { likeContent, unlikeContent } from '../features/authSlice';
 import axios from 'axios';
 import MovieBurger from '../components/headers/MovieBurger';
 import instagram from '/instagram.png';
+import BASE_API_URL from '../apiConfig';
 import logo from '/PLAYMOOD_DEF.png';
 import profile from '/icon-profile.png';
 import { FaPlay, FaHeart, FaBell, FaDonate, FaUser, FaEye, FaPaperPlane } from 'react-icons/fa';
@@ -56,7 +57,7 @@ export default function MoviePage() {
     try {
       console.log('Saving progress for contentId:', contentId, 'time:', currentTime);
       const response = await axios.post(
-        `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/progress/${contentId}`,
+        `${BASE_API_URL}/api/content/progress/${contentId}`,
         { progress: currentTime },
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
@@ -109,7 +110,7 @@ export default function MoviePage() {
     const fetchSubscribedCreators = async () => {
       if (user) {
         try {
-          const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/subscribe/creators', {
+          const response = await axios.get(`${BASE_API_URL}/api/subscribe/creators`, {
             headers: { Authorization: `Bearer ${user.token}` },
           });
           setSubscribedCreators(response.data);
@@ -141,7 +142,7 @@ export default function MoviePage() {
         setLoading(true);
         // Fetch movie data
         const movieResponse = await axios.get(
-          `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${contentId}`,
+          `${BASE_API_URL}/api/content/${contentId}`,
           {
             headers: {
               ...(user?.token && { Authorization: `Bearer ${user.token}` }),
@@ -153,7 +154,7 @@ export default function MoviePage() {
 
         // Fetch comments
         const commentsResponse = await axios.get(
-          `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${contentId}/comments?page=1&limit=${COMMENTS_PER_PAGE}`,
+          `${BASE_API_URL}/api/content/${contentId}/comments?page=1&limit=${COMMENTS_PER_PAGE}`,
           {
             headers: {
               ...(user?.token && { Authorization: `Bearer ${user.token}` }),
@@ -167,7 +168,7 @@ export default function MoviePage() {
         // Fetch user progress
         if (user && user.token) {
           axios.get(
-            `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/progress/${contentId}`,
+            `${BASE_API_URL}/api/content/progress/${contentId}`,
             { headers: { Authorization: `Bearer ${user.token}` } }
           ).then(progressResponse => {
             if (progressResponse.data && progressResponse.data.progress && videoRef.current) {
@@ -207,7 +208,7 @@ export default function MoviePage() {
     try {
       const nextPage = page + 1;
       const response = await axios.get(
-        `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${contentId}/comments?page=${nextPage}&limit=${COMMENTS_PER_PAGE}`,
+        `${BASE_API_URL}/api/content/${contentId}/comments?page=${nextPage}&limit=${COMMENTS_PER_PAGE}`,
         {
           headers: {
             ...(user?.token && { Authorization: `Bearer ${user.token}` }),
@@ -244,7 +245,7 @@ export default function MoviePage() {
     }
 
     try {
-      const commentUrl = `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${contentId}/comment`;
+      const commentUrl = `${BASE_API_URL}/api/content/${contentId}/comment`;
       const payload = {
         contentId: contentId,
         text: commentText
@@ -290,7 +291,7 @@ export default function MoviePage() {
     }
     try {
       const response = await axios.post(
-        'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/subscribe/',
+        `${BASE_API_URL}/api/subscribe/`,
         { creatorId: movie?.user?._id },
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
@@ -311,7 +312,7 @@ export default function MoviePage() {
     }
     try {
       const response = await axios.put(
-        'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/subscribe/',
+        `${BASE_API_URL}/api/subscribe/`,
         { creatorId: movie?.user?._id },
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
@@ -410,7 +411,7 @@ export default function MoviePage() {
 
   const handleNextVideo = async () => {
     try {
-      const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
+      const response = await axios.get(`${BASE_API_URL}/api/content/`);
       const allContent = response.data;
       const currentCategory = movie.category;
       const relatedContent = allContent.filter(content => content.category === currentCategory && content._id !== movie._id);

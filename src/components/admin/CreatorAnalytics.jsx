@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import { getCreatorDashboard, getCreatorPerformance, getCreatorEngagement } from '../../services/analyticsService';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import WatchTimeAnalyticsModal from './WatchTimeAnalyticsModal';
+import BASE_API_URL from '../../apiConfig';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#AF19FF'];
 
@@ -22,7 +23,7 @@ const CreatorAnalytics = () => {
   useEffect(() => {
     const fetchCreators = async () => {
       try {
-        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/creators', {
+        const response = await axios.get(`${BASE_API_URL}/api/users/creators`, {
           headers: { Authorization: `Bearer ${user.token}` },
         });
         setCreators(response.data);

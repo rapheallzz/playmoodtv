@@ -7,6 +7,7 @@ import 'slick-carousel/slick/slick-theme.css';
 import axios from 'axios';
 import MobileBurger from '../components/headers/MobileBurger';
 import DesktopHeader from '../components/headers/DesktopHeader';
+import BASE_API_URL from '../apiConfig';
 import Navigation from '../components/Navigation';
 import Slidercontent from '../components/Slidercont';
 import ContentModal from '../components/ContentModal';
@@ -70,7 +71,7 @@ export default function NewPlaymood() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/new');
+        const response = await axios.get(`${BASE_API_URL}/api/content/new`);
         if (response.data && Array.isArray(response.data)) {
           setData(response.data);
         } else {

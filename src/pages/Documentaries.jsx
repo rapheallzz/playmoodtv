@@ -7,6 +7,7 @@ import 'slick-carousel/slick/slick-theme.css';
 import axios from 'axios';
 import MobileBurger from '../components/headers/MobileBurger';
 import DesktopHeader from '../components/headers/DesktopHeader';
+import BASE_API_URL from '../apiConfig';
 import Navigation from '../components/Navigation';
 import Slidercontent from '../components/Slidercont';
 import ContentModal from '../components/ContentModal';
@@ -71,7 +72,7 @@ export default function Documentarie() {
     async function fetchData() {
       try {
         console.log('Requesting data from API');
-        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
+        const response = await axios.get(`${BASE_API_URL}/api/content/`);
         console.log('API response:', response);
         if (response.data && Array.isArray(response.data)) {
           const filteredData = response.data.filter((content) => content.category === 'Documentarie');
