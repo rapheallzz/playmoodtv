@@ -500,7 +500,6 @@ export const PostHeader = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 10px;
 
   @media screen and (max-width: 480px) {
     gap: 8px;
@@ -553,17 +552,14 @@ export const FeedPostCardContainer = styled.div`
   background-color: #1a1a1a;
   border: 1px solid #333;
   border-radius: 8px;
-  margin-bottom: 20px;
   color: white;
-  max-width: 600px;
-  margin: 20px auto;
 `;
 
 export const CardHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 15px;
+  padding: 8px 12px;
 `;
 
 export const UserInfo = styled.div`
@@ -800,6 +796,24 @@ export const FeedContainer = styled.div`
 
   @media screen and (max-width: 768px) {
     padding: 0 20px;
+  }
+
+  .desktop-slider {
+    display: block;
+  }
+
+  .mobile-collage {
+    display: none;
+  }
+
+  @media screen and (max-width: 768px) {
+    .desktop-slider {
+      display: none;
+    }
+
+    .mobile-collage {
+      display: block;
+    }
   }
 `;
 

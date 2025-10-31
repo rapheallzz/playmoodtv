@@ -26,17 +26,14 @@ async def main():
         # Click on the "Feeds" tab
         await page.click('button:text("Feeds")')
 
-        # Verify that at least one feed post card is visible
-        await expect(page.locator('div[class^="FeedPostCardContainer"]')).to_be_visible()
+        # Verify that the desktop slider is visible
+        await expect(page.locator('div.desktop-slider')).to_be_visible()
+        await page.screenshot(path="jules-scratch/verification/desktop_view.png")
 
-        # Click the share button on the first post
-        await page.locator('button:has(svg[class^="FaPaperPlane"])').first.click()
-
-        # Verify that the share modal appears
-        await expect(page.locator('div[class^="share-modal-content"]')).to_be_visible()
-
-        # Take a screenshot
-        await page.screenshot(path="jules-scratch/verification/verification.png")
+        # Resize to mobile and verify collage
+        await page.set_viewport_size({"width": 375, "height": 667})
+        await expect(page.locator('div.mobile-collage')).to_be_visible()
+        await page.screenshot(path="jules-scratch/verification/mobile_view.png")
 
         await browser.close()
 
