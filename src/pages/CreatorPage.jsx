@@ -19,6 +19,8 @@ import EditPlaylistModal from '../components/modals/EditPlaylistModal';
 import CreateHighlightModal from '../components/modals/CreateHighlightModal';
 import CreateFeedPostModal from '../components/modals/CreateFeedPostModal';
 import FeedPostViewerModal from '../components/modals/FeedPostViewerModal';
+import FeedPostDetailModal from '../components/modals/FeedPostDetailModal';
+import HighlightShareModal from '../components/modals/HighlightShareModal';
 import HighlightsSection from '../components/creator/HighlightsSection';
 import VerticalHighlightViewer from '../components/creator/VerticalHighlightViewer';
 import CreatorPageSkeleton from '../components/skeletons/CreatorPageSkeleton';
@@ -54,7 +56,10 @@ export default function CreatorPage() {
   const [highlightStartIndex, setHighlightStartIndex] = useState(0);
   const [enrichedHighlights, setEnrichedHighlights] = useState([]);
   const [showFeedPostViewerModal, setShowFeedPostViewerModal] = useState(false);
+  const [showFeedPostDetailModal, setShowFeedPostDetailModal] = useState(false);
   const [selectedFeedPost, setSelectedFeedPost] = useState(null);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [shareableContent, setShareableContent] = useState(null);
 
   // Channel details hook
   const {
@@ -120,6 +125,9 @@ export default function CreatorPage() {
     setShowCreateHighlightModal(false);
     setShowCreateFeedPostModal(false);
     setShowFeedPostViewerModal(false);
+    setShowFeedPostDetailModal(false);
+    setShowShareModal(false);
+    setShareableContent(null);
     setModalContent(null);
     setEditingPlaylist(null);
     setSelectedPlaylistId(null);
@@ -232,13 +240,18 @@ export default function CreatorPage() {
               likeFeedPost(postId);
             }
           }}
-          onComment={(postId) => {
-            // Placeholder for comment functionality
-            console.log('Comment on post:', postId);
+          onComment={(post) => {
+            setSelectedFeedPost(post);
+            setShowFeedPostDetailModal(true);
           }}
           onShare={(post) => {
-            // Placeholder for share functionality
-            console.log('Share post:', post);
+            setShareableContent({
+              ...post,
+              // The share modal might expect a `title` property.
+              // Let's use the caption or a default value.
+              title: post.caption || 'Check out this post!',
+            });
+            setShowShareModal(true);
           }}
           user={user}
         />
@@ -402,6 +415,25 @@ export default function CreatorPage() {
           isOpen={showFeedPostViewerModal}
           onClose={closeAllModals}
           post={selectedFeedPost}
+        />
+      )}
+      {showFeedPostDetailModal && (
+        <FeedPostDetailModal
+          isOpen={showFeedPostDetailModal}
+          onClose={closeAllModals}
+          post={selectedFeedPost}
+          onCommentSubmit={addCommentToFeed}
+          user={user}
+        />
+      )}
+      {showShareModal && shareableContent && (
+        <HighlightShareModal
+          isOpen={showShareModal}
+          onClose={closeAllModals}
+          contentToShare={{
+            ...shareableContent,
+            url: `${window.location.origin}/creator/${creatorName.replace(/\s+/g, '-')}-${btoa(user._id)}`,
+          }}
         />
       )}
       {showVerticalHighlightViewer && enrichedHighlights.length > 0 && (

@@ -549,28 +549,257 @@ export const PostContent = styled.p`
   }
 `;
 
+export const FeedPostCardContainer = styled.div`
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  color: white;
+  max-width: 600px;
+  margin: 20px auto;
+`;
+
+export const CardHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+`;
+
+export const UserInfo = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`;
+
+export const Username = styled.span`
+  font-weight: 600;
+`;
+
+export const PostTime = styled.span`
+  color: #888;
+  font-size: 0.8rem;
+`;
+
+export const OptionsButton = styled.button`
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+`;
+
+export const CardMedia = styled.div`
+  width: 100%;
+  /* To maintain aspect ratio, e.g., 4:5 for portraits */
+  padding-top: 125%;
+  position: relative;
+  background-color: #000;
+`;
+
+export const MediaSlider = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  .slick-slide img,
+  .slick-slide video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+`;
+
+export const MediaItem = styled.div`
+  /* For single media items, not in a slider */
+  img, video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+`;
+
+export const CardActions = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 15px;
+
+  div {
+    display: flex;
+    gap: 15px;
+  }
+`;
+
+export const FeedActionButton = styled.button`
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+
+  &.liked {
+    color: #ff3b5c;
+  }
+`;
+
+export const LikesCounter = styled.div`
+  padding: 0 15px;
+  font-weight: 600;
+  font-size: 0.9rem;
+`;
+
+export const CardCaption = styled.div`
+  padding: 5px 15px;
+
+  p {
+    margin: 0;
+
+    span {
+      font-weight: 600;
+      margin-right: 5px;
+    }
+  }
+`;
+
+export const ViewCommentsButton = styled.button`
+  background: none;
+  border: none;
+  color: #888;
+  padding: 5px 15px;
+  cursor: pointer;
+  font-size: 0.9rem;
+`;
+
+export const FeedPostDetailContainer = styled.div`
+  display: flex;
+  width: 100%;
+  height: 100%;
+`;
+
+export const FeedPostDetailModalContainer = styled.div`
+  display: flex;
+  width: 90vw;
+  height: 90vh;
+  max-width: 1200px;
+`;
+
+export const MediaContainer = styled.div`
+  flex: 1.5;
+  background-color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+
+  img, video {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+  max-height: 800px;
+  background-color: #1a1a1a;
+  color: white;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    max-height: 100vh;
+  }
+`;
+
+export const PostMediaContainer = styled.div`
+  flex: 1.5;
+  background-color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+
+  img, video {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+`;
+
+export const PostDetailsContainer = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+`;
+
+export const CommentsContainer = styled.div`
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 10px 0;
+`;
+
+export const CommentWrapper = styled.div`
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+`;
+
+export const CommentAuthor = styled.span`
+  font-weight: 600;
+  margin-right: 8px;
+`;
+
+export const CommentText = styled.span`
+  line-height: 1.4;
+`;
+
+export const CommentTimestamp = styled.div`
+  color: #888;
+  font-size: 0.8rem;
+  margin-top: 4px;
+`;
+
+export const AddCommentContainer = styled.div`
+  border-top: 1px solid #333;
+  padding-top: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`;
+
+export const CommentInput = styled.input`
+  flex-grow: 1;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1rem;
+  outline: none;
+
+  &::placeholder {
+    color: #888;
+  }
+`;
+
+export const PostCommentButton = styled.button`
+  background: none;
+  border: none;
+  color: #0095f6;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:disabled {
+    color: #555;
+    cursor: not-allowed;
+  }
+`;
+
 export const FeedContainer = styled.div`
   width: 100%;
   padding: 0 60px;
 
-  .desktop-slider {
-    display: block;
-  }
-
-  .mobile-collage {
-    display: none;
-  }
-
   @media screen and (max-width: 768px) {
     padding: 0 20px;
-
-    .desktop-slider {
-      display: none;
-    }
-
-    .mobile-collage {
-      display: block;
-    }
   }
 `;
 
@@ -694,14 +923,6 @@ export const CommentContent = styled.p`
   }
 `;
 
-export const CommentTimestamp = styled.span`
-  font-size: 0.7rem;
-  color: #999;
-
-  @media screen and (max-width: 480px) {
-    font-size: 0.6rem;
-  }
-`;
 
 export const CommentForm = styled.div`
   display: flex;
@@ -712,20 +933,6 @@ export const CommentForm = styled.div`
   }
 `;
 
-export const CommentInput = styled.input`
-  flex: 1;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background: #333;
-  color: #fff;
-  font-size: 0.9rem;
-
-  @media screen and (max-width: 480px) {
-    padding: 6px;
-    font-size: 0.8rem;
-  }
-`;
 
 export const CommentSubmit = styled.button`
   background: #541011;

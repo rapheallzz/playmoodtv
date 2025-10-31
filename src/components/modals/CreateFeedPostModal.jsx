@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import {
-  ModalOverlay,
+  Modal,
   ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
+  ModalTitle,
+  ModalButtons,
+  ModalButtonCancel,
+  ModalButtonSubmit,
   CloseButton,
   StyledInput,
-  StyledTextArea,
-  ActionButton,
+  ModalTextarea,
 } from '../../styles/CreatorPageStyles';
 
 const CreateFeedPostModal = ({ isOpen, onClose, onCreateFeedPost }) => {
@@ -35,27 +35,24 @@ const CreateFeedPostModal = ({ isOpen, onClose, onCreateFeedPost }) => {
   if (!isOpen) return null;
 
   return (
-    <ModalOverlay>
+    <Modal>
       <ModalContent>
-        <ModalHeader>
-          <h2>Create Feed Post</h2>
-          <CloseButton onClick={onClose}>&times;</CloseButton>
-        </ModalHeader>
-        <ModalBody>
-          <StyledTextArea
-            placeholder="What's on your mind?"
-            value={caption}
-            onChange={(e) => setCaption(e.target.value)}
-          />
-          <StyledInput type="file" multiple onChange={handleFileChange} />
-        </ModalBody>
-        <ModalFooter>
-          <ActionButton onClick={handleSubmit} disabled={isUploading}>
+        <ModalTitle>Create Feed Post</ModalTitle>
+        <CloseButton onClick={onClose}>&times;</CloseButton>
+        <ModalTextarea
+          placeholder="What's on your mind?"
+          value={caption}
+          onChange={(e) => setCaption(e.target.value)}
+        />
+        <StyledInput type="file" multiple onChange={handleFileChange} />
+        <ModalButtons>
+          <ModalButtonCancel onClick={onClose}>Cancel</ModalButtonCancel>
+          <ModalButtonSubmit onClick={handleSubmit} disabled={isUploading}>
             {isUploading ? 'Posting...' : 'Post'}
-          </ActionButton>
-        </ModalFooter>
+          </ModalButtonSubmit>
+        </ModalButtons>
       </ModalContent>
-    </ModalOverlay>
+    </Modal>
   );
 };
 

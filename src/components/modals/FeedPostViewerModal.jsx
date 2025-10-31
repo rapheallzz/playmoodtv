@@ -3,7 +3,7 @@ import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import {
-  ModalOverlay,
+  Modal,
   ModalContent,
   CloseButton,
   FeedImage,
@@ -21,7 +21,7 @@ const FeedPostViewerModal = ({ isOpen, onClose, post }) => {
   };
 
   return (
-    <ModalOverlay onClick={onClose}>
+    <Modal onClick={onClose}>
       <ModalContent onClick={(e) => e.stopPropagation()}>
         <CloseButton onClick={onClose}>&times;</CloseButton>
         <Slider {...sliderSettings}>
@@ -32,7 +32,7 @@ const FeedPostViewerModal = ({ isOpen, onClose, post }) => {
           ))}
         </Slider>
       </ModalContent>
-    </ModalOverlay>
+    </Modal>
   );
 };
 
