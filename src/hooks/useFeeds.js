@@ -33,13 +33,13 @@ const useFeeds = (user) => {
     try {
       // 1. Get signature from backend
       const sigResponse = await api.post('/api/content/signature');
-      const { signature, timestamp, api_key, folder } = sigResponse.data;
+      const { signature, timestamp, api_key: cloudinaryApiKey, folder } = sigResponse.data;
 
       // 2. Upload files to Cloudinary
       const uploadPromises = Array.from(mediaFiles).map(async (file) => {
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('api_key', api_key);
+        formData.append('api_key', cloudinaryApiKey);
         formData.append('timestamp', timestamp);
         formData.append('signature', signature);
         formData.append('folder', folder);
