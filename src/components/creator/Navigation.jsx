@@ -22,6 +22,13 @@ const Navigation = ({ activeTab, setActiveTab, navigate, setShowDonationModal })
         PLAYLIST
       </NavButton>
       <NavButton
+        className={activeTab === 'Feeds' ? 'active' : ''}
+        onClick={() => setActiveTab('Feeds')}
+        aria-label="Feeds"
+      >
+        FEEDS
+      </NavButton>
+      <NavButton
         className={activeTab === 'Donations' ? 'active' : ''}
         onClick={() => setShowDonationModal(true)}
         aria-label="Donations"

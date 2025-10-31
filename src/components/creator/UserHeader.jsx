@@ -26,6 +26,7 @@ const UserHeader = ({
   setShowVideoModal,
   setShowEditModal,
   setShowCreateHighlightModal,
+  setShowCreateFeedPostModal,
 }) => {
   const [showCreateDropdown, setShowCreateDropdown] = useState(false);
 
@@ -70,6 +71,10 @@ const UserHeader = ({
               <DropdownItem onClick={() => { setShowCommunityModal(true); setShowCreateDropdown(false); }}>
                 <FaPenSquare />
                 <span>Create Post</span>
+              </DropdownItem>
+              <DropdownItem onClick={() => { setShowCreateFeedPostModal(true); setShowCreateDropdown(false); }}>
+                <FaPlus />
+                <span>Create Feed</span>
               </DropdownItem>
             </CreateDropdown>
           )}

@@ -17,6 +17,7 @@ import EditPostModal from '../components/modals/EditPostModal';
 import CreatePlaylistModal from '../components/modals/CreatePlaylistModal';
 import EditPlaylistModal from '../components/modals/EditPlaylistModal';
 import CreateHighlightModal from '../components/modals/CreateHighlightModal';
+import CreateFeedPostModal from '../components/modals/CreateFeedPostModal';
 import HighlightsSection from '../components/creator/HighlightsSection';
 import VerticalHighlightViewer from '../components/creator/VerticalHighlightViewer';
 import CreatorPageSkeleton from '../components/skeletons/CreatorPageSkeleton';
@@ -24,6 +25,8 @@ import useChannelDetails from '../hooks/useChannelDetails';
 import usePlaylists from '../hooks/usePlaylists';
 import useCommunityPosts from '../hooks/useCommunityPosts';
 import useHighlights from '../hooks/useHighlights';
+import useFeeds from '../hooks/useFeeds';
+import FeedSection from '../components/creator/FeedSection';
 import axios from 'axios';
 
 import BASE_API_URL from '../apiConfig';
@@ -43,6 +46,7 @@ export default function CreatorPage() {
   const [showCreatePlaylistModal, setShowCreatePlaylistModal] = useState(false);
   const [showEditPlaylistModal, setShowEditPlaylistModal] = useState(false);
   const [showCreateHighlightModal, setShowCreateHighlightModal] = useState(false);
+  const [showCreateFeedPostModal, setShowCreateFeedPostModal] = useState(false);
   const [modalContent, setModalContent] = useState(null);
   const [viewedHighlights, setViewedHighlights] = useState(new Set());
   const [showVerticalHighlightViewer, setShowVerticalHighlightViewer] = useState(false);
@@ -85,6 +89,14 @@ export default function CreatorPage() {
     fetchHighlights,
   } = useHighlights(user);
 
+  // Feeds hook
+  const {
+    feeds,
+    isLoadingFeeds,
+    error: feedsError,
+    createFeedPost,
+  } = useFeeds(user);
+
   const approvedVideos = useMemo(() => {
     return data.filter(content => content.isApproved && content.video) || [];
   }, [data]);
@@ -100,6 +112,7 @@ export default function CreatorPage() {
     setShowEditPostModal(false);
     setShowContentModal(false);
     setShowCreateHighlightModal(false);
+    setShowCreateFeedPostModal(false);
     setModalContent(null);
     setEditingPlaylist(null);
     setSelectedPlaylistId(null);
@@ -181,6 +194,7 @@ export default function CreatorPage() {
         setShowVideoModal={setShowVideoModal}
         setShowEditModal={setShowEditModal}
         setShowCreateHighlightModal={setShowCreateHighlightModal}
+        setShowCreateFeedPostModal={setShowCreateFeedPostModal}
       />
       <Navigation
         activeTab={activeTab}
@@ -193,9 +207,12 @@ export default function CreatorPage() {
         onSelectHighlight={handleSelectHighlight}
         viewedHighlights={viewedHighlights}
       />
-      <ContentSection
-        activeTab={activeTab}
-        activeSubTab={activeSubTab}
+      {activeTab === 'Feeds' ? (
+        <FeedSection feeds={feeds} isLoadingFeeds={isLoadingFeeds} />
+      ) : (
+        <ContentSection
+          activeTab={activeTab}
+          activeSubTab={activeSubTab}
         setActiveSubTab={setActiveSubTab}
         data={data}
         communityPosts={communityPosts}
@@ -237,7 +254,8 @@ export default function CreatorPage() {
         selectedPlaylistId={selectedPlaylistId}
         selectedPlaylistVideos={selectedPlaylistVideos}
         isLoadingPlaylistVideos={isLoadingPlaylistVideos}
-      />
+        />
+      )}
       {showContentModal && (
         <ContentModal
           isOpen={showContentModal}
@@ -337,6 +355,13 @@ export default function CreatorPage() {
           onClose={closeAllModals}
           onCreate={createHighlight}
           availableVideos={approvedVideos}
+        />
+      )}
+      {showCreateFeedPostModal && (
+        <CreateFeedPostModal
+          isOpen={showCreateFeedPostModal}
+          onClose={closeAllModals}
+          onCreateFeedPost={createFeedPost}
         />
       )}
       {showVerticalHighlightViewer && enrichedHighlights.length > 0 && (
