@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import BASE_API_URL from '../../apiConfig';
 import ContentModal from "../ContentModal";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import Slidercontent from "../CustomSlidercontent";
@@ -113,7 +114,7 @@ const CustomSlider = () => {
     async function fetchData() {
       try {
         const response = await axios.get(
-          "https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/"
+          `${BASE_API_URL}/api/content/`
         );
         if (response.data && Array.isArray(response.data)) {
           const filteredData = response.data

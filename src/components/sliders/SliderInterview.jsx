@@ -3,6 +3,7 @@ import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import axios from 'axios';
+import BASE_API_URL from '../../apiConfig';
 import Slidercontent from '../Slidercont';
 import { useNavigate } from 'react-router-dom';
 import ContentModal from '../ContentModal';
@@ -53,7 +54,7 @@ export default function SliderInterview() {
     async function fetchData() {
       try {
         console.log('Requesting data from API');
-        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
+        const response = await axios.get(`${BASE_API_URL}/api/content/`);
         console.log('API response:', response);
         if (response.data && Array.isArray(response.data)) {
           const filteredData = response.data.filter((content) => content.category === 'Interview');
