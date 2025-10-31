@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
+import BASE_API_URL from '../apiConfig';
 
 const usePlaylists = (user) => {
   const [playlists, setPlaylists] = useState([]);
@@ -21,7 +22,7 @@ const usePlaylists = (user) => {
     setIsLoadingPlaylists(true);
     try {
       const response = await axios.get(
-        `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/playlists/user/${user._id}`,
+        `${BASE_API_URL}/api/playlists/user/${user._id}`,
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
       const playlistsData = Array.isArray(response.data.playlists) ? response.data.playlists : [];
@@ -46,7 +47,7 @@ const usePlaylists = (user) => {
     setIsLoadingPlaylistVideos(true);
     try {
       const response = await axios.get(
-        `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/playlists/${playlistId}`,
+        `${BASE_API_URL}/api/playlists/${playlistId}`,
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
       const playlistData = response.data?.playlist;
@@ -67,7 +68,7 @@ const usePlaylists = (user) => {
   const fetchAvailableVideos = useCallback(async () => {
     try {
       const response = await axios.get(
-        `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/channel/my-channel/${user._id}`,
+        `${BASE_API_URL}/api/channel/my-channel/${user._id}`,
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
       setAvailableVideos(response.data.content.filter(video => video.isApproved) || []);
@@ -98,7 +99,7 @@ const usePlaylists = (user) => {
           prev.map((p) => (p._id === editingPlaylist._id ? { ...p, ...payload } : p))
         );
         await axios.put(
-          `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/playlists/${editingPlaylist._id}`,
+          `${BASE_API_URL}/api/playlists/${editingPlaylist._id}`,
           payload,
           { headers: { Authorization: `Bearer ${user.token}` } }
         );
@@ -108,7 +109,7 @@ const usePlaylists = (user) => {
         const newPlaylistData = { ...payload, _id: tempId, videos: [] };
         setPlaylists((prev) => [...prev, newPlaylistData]);
         const response = await axios.post(
-          'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/playlists',
+          `${BASE_API_URL}/api/playlists`,
           payload,
           { headers: { Authorization: `Bearer ${user.token}` } }
         );
@@ -143,7 +144,7 @@ const usePlaylists = (user) => {
     }
     try {
       await axios.delete(
-        `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/playlists/${playlistId}`,
+        `${BASE_API_URL}/api/playlists/${playlistId}`,
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
       return { success: true };
@@ -176,7 +177,7 @@ const usePlaylists = (user) => {
 
     try {
       await axios.post(
-        `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/playlists/${playlistId}/videos/${contentId}`,
+        `${BASE_API_URL}/api/playlists/${playlistId}/videos/${contentId}`,
         {},
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
@@ -207,7 +208,7 @@ const usePlaylists = (user) => {
 
     try {
       await axios.delete(
-        `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/playlists/${playlistId}/videos/${contentId}`,
+        `${BASE_API_URL}/api/playlists/${playlistId}/videos/${contentId}`,
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
       return { success: true };

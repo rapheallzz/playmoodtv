@@ -3,6 +3,7 @@ import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import axios from 'axios';
+import BASE_API_URL from '../../apiConfig';
 import Slidercontent from '../Slidercont';
 import { useNavigate } from 'react-router-dom';
 import ContentModal from '../ContentModal';
@@ -52,7 +53,7 @@ export default function SliderTopTen() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/top-ten');
+        const response = await axios.get(`${BASE_API_URL}/api/content/top-ten`);
         if (response.data && Array.isArray(response.data)) {
           setData(response.data); // Set all data without filtering
         } else {
