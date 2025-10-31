@@ -592,52 +592,30 @@ export const FeedImage = styled.img`
   object-fit: cover;
 `;
 
+export const FeedVideo = styled.video`
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+`;
+
+export const MultiMediaIndicator = styled.div`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: white;
+  font-size: 1.5rem;
+`;
+
+export const FeedActions = styled.div`
+  display: flex;
+  justify-content: space-around;
+  padding: 10px;
+`;
+
 export const FeedCaption = styled.p`
   color: white;
   padding: 10px;
   font-size: 0.9rem;
-`;
-
-export const ModalOverlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-`;
-
-export const ModalHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #ddd;
-`;
-
-export const ModalBody = styled.div`
-  padding: 20px 0;
-`;
-
-export const ModalFooter = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  padding-top: 10px;
-  border-top: 1px solid #ddd;
-`;
-
-export const StyledTextArea = styled.textarea`
-  width: 100%;
-  padding: 10px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  resize: vertical;
-  min-height: 100px;
-  margin-bottom: 10px;
 `;
 
 export const PostActions = styled.div`

@@ -18,6 +18,7 @@ import CreatePlaylistModal from '../components/modals/CreatePlaylistModal';
 import EditPlaylistModal from '../components/modals/EditPlaylistModal';
 import CreateHighlightModal from '../components/modals/CreateHighlightModal';
 import CreateFeedPostModal from '../components/modals/CreateFeedPostModal';
+import FeedPostViewerModal from '../components/modals/FeedPostViewerModal';
 import HighlightsSection from '../components/creator/HighlightsSection';
 import VerticalHighlightViewer from '../components/creator/VerticalHighlightViewer';
 import CreatorPageSkeleton from '../components/skeletons/CreatorPageSkeleton';
@@ -52,6 +53,8 @@ export default function CreatorPage() {
   const [showVerticalHighlightViewer, setShowVerticalHighlightViewer] = useState(false);
   const [highlightStartIndex, setHighlightStartIndex] = useState(0);
   const [enrichedHighlights, setEnrichedHighlights] = useState([]);
+  const [showFeedPostViewerModal, setShowFeedPostViewerModal] = useState(false);
+  const [selectedFeedPost, setSelectedFeedPost] = useState(null);
 
   // Channel details hook
   const {
@@ -95,6 +98,9 @@ export default function CreatorPage() {
     isLoadingFeeds,
     error: feedsError,
     createFeedPost,
+    likeFeedPost,
+    unlikeFeedPost,
+    addCommentToFeed,
   } = useFeeds(user);
 
   const approvedVideos = useMemo(() => {
@@ -113,6 +119,7 @@ export default function CreatorPage() {
     setShowContentModal(false);
     setShowCreateHighlightModal(false);
     setShowCreateFeedPostModal(false);
+    setShowFeedPostViewerModal(false);
     setModalContent(null);
     setEditingPlaylist(null);
     setSelectedPlaylistId(null);
@@ -208,7 +215,33 @@ export default function CreatorPage() {
         viewedHighlights={viewedHighlights}
       />
       {activeTab === 'Feeds' ? (
-        <FeedSection feeds={feeds} isLoadingFeeds={isLoadingFeeds} />
+        <FeedSection
+          feeds={feeds}
+          isLoadingFeeds={isLoadingFeeds}
+          onPostClick={(post) => {
+            if (post.media && post.media.length > 1) {
+              setSelectedFeedPost(post);
+              setShowFeedPostViewerModal(true);
+            }
+          }}
+          onLike={(postId) => {
+            const post = feeds.find((p) => p._id === postId);
+            if (post.likes.includes(user._id)) {
+              unlikeFeedPost(postId);
+            } else {
+              likeFeedPost(postId);
+            }
+          }}
+          onComment={(postId) => {
+            // Placeholder for comment functionality
+            console.log('Comment on post:', postId);
+          }}
+          onShare={(post) => {
+            // Placeholder for share functionality
+            console.log('Share post:', post);
+          }}
+          user={user}
+        />
       ) : (
         <ContentSection
           activeTab={activeTab}
@@ -362,6 +395,13 @@ export default function CreatorPage() {
           isOpen={showCreateFeedPostModal}
           onClose={closeAllModals}
           onCreateFeedPost={createFeedPost}
+        />
+      )}
+      {showFeedPostViewerModal && (
+        <FeedPostViewerModal
+          isOpen={showFeedPostViewerModal}
+          onClose={closeAllModals}
+          post={selectedFeedPost}
         />
       )}
       {showVerticalHighlightViewer && enrichedHighlights.length > 0 && (
