@@ -32,7 +32,7 @@ const useFeeds = (user) => {
     if (!user) return;
     try {
       // 1. Get signature from backend
-      const sigResponse = await api.post('/api/content/signature');
+      const sigResponse = await api.post('/api/content/signature', { type: 'images' });
       const { signature, timestamp, api_key: cloudinaryApiKey, folder } = sigResponse.data;
 
       // 2. Upload files to Cloudinary
@@ -42,7 +42,6 @@ const useFeeds = (user) => {
         formData.append('api_key', cloudinaryApiKey);
         formData.append('timestamp', timestamp);
         formData.append('signature', signature);
-        formData.append('folder', folder);
 
         const cloudinaryResponse = await axios.post(
           'https://api.cloudinary.com/v1_1/di97mcvbu/image/upload',
