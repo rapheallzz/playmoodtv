@@ -65,17 +65,25 @@ const FeedSection = ({ feeds, isLoadingFeeds, onPostClick }) => {
       arrows: false,
     };
 
+    const handleSliderClick = (e) => {
+      // Stop click from propagating to the parent container
+      // which opens the modal. This allows slider interaction.
+      e.stopPropagation();
+    };
+
     return (
       <FeedPostCardContainer key={feed._id} onClick={() => onPostClick(feed)}>
         <FeedItem>
           {feed.media.length > 1 ? (
-            <Slider {...mediaSliderSettings}>
-              {feed.media.map((mediaItem) => (
-                <div key={mediaItem._id}>
-                  <FeedImage src={mediaItem.url} alt={feed.caption} />
-                </div>
-              ))}
-            </Slider>
+            <div onClick={handleSliderClick}>
+              <Slider {...mediaSliderSettings}>
+                {feed.media.map((mediaItem) => (
+                  <div key={mediaItem._id}>
+                    <FeedImage src={mediaItem.url} alt={feed.caption} />
+                  </div>
+                ))}
+              </Slider>
+            </div>
           ) : (
             <FeedImage src={feed.media[0].url} alt={feed.caption} />
           )}
