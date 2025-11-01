@@ -607,17 +607,6 @@ export const ModalCardMedia = styled.div`
     height: 100%;
     object-fit: contain;
   }
-
-  .slick-dots {
-    bottom: 10px;
-    li button:before {
-      color: white;
-      opacity: 0.5;
-    }
-    li.slick-active button:before {
-      opacity: 1;
-    }
-  }
 `;
 
 export const ModalCardContent = styled.div`
@@ -731,18 +720,6 @@ export const FeedItem = styled.div`
   background: #1a1a1a;
   border-radius: 8px;
   overflow: hidden;
-  position: relative;
-
-  .slick-dots {
-    bottom: 10px;
-    li button:before {
-      color: white;
-      opacity: 0.5;
-    }
-    li.slick-active button:before {
-      opacity: 1;
-    }
-  }
 `;
 
 export const FeedImage = styled.img`

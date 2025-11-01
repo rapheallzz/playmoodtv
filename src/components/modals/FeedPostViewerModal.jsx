@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Slider from 'react-slick';
 import { FaHeart, FaComment, FaPaperPlane, FaTimes } from 'react-icons/fa';
 import {
@@ -20,6 +20,17 @@ import {
 } from '../../styles/CreatorPageStyles';
 
 const FeedPostViewerModal = ({ post, onClose }) => {
+  const [showSlider, setShowSlider] = useState(false);
+
+  useEffect(() => {
+    if (post) {
+      const timer = setTimeout(() => {
+        setShowSlider(true);
+      }, 100); // Small delay to allow modal to render
+      return () => clearTimeout(timer);
+    }
+  }, [post]);
+
   if (!post) return null;
 
   const mediaSliderSettings = {
@@ -38,7 +49,7 @@ const FeedPostViewerModal = ({ post, onClose }) => {
       </CloseButton>
       <ModalCard onClick={(e) => e.stopPropagation()}>
         <ModalCardMedia>
-          {post.media.length > 1 ? (
+          {showSlider && post.media.length > 1 ? (
             <Slider {...mediaSliderSettings}>
               {post.media.map((mediaItem) => (
                 <div key={mediaItem._id}>
@@ -51,10 +62,12 @@ const FeedPostViewerModal = ({ post, onClose }) => {
               ))}
             </Slider>
           ) : (
-            post.media[0].url.endsWith('.mp4') ? (
-              <video src={post.media[0].url} controls autoPlay loop />
-            ) : (
-              <img src={post.media[0].url} alt={post.caption} />
+            post.media.length > 0 && (
+              post.media[0].url.endsWith('.mp4') ? (
+                <video src={post.media[0].url} controls autoPlay loop />
+              ) : (
+                <img src={post.media[0].url} alt={post.caption} />
+              )
             )
           )}
         </ModalCardMedia>
