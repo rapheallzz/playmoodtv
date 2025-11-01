@@ -653,6 +653,22 @@ export const ModalCardActions = styled.div`
   gap: 15px;
   padding-top: 10px;
   border-top: 1px solid #333;
+  svg {
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+`;
+
+export const CloseButton = styled.button`
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  z-index: 1001;
 `;
 
 export const ModalCardInput = styled.input`
@@ -1451,17 +1467,6 @@ export const HighlightViewerContent = styled.div`
     width: 100%;
     height: 100%;
   }
-`;
-
-export const CloseButton = styled.button`
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background: transparent;
-  border: none;
-  color: white;
-  font-size: 1.5rem;
-  cursor: pointer;
 `;
 
 export const ProgressBarContainer = styled.div`

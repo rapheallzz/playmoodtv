@@ -1,12 +1,20 @@
 import React from 'react';
+import { FaHeart, FaComment, FaPaperPlane, FaTimes } from 'react-icons/fa';
 import {
   ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  ModalTitle,
-  ModalButtonCancel,
+  ModalCard,
+  ModalCardMedia,
+  ModalCardContent,
+  ModalCardHeader,
+  ModalCardCaption,
+  ModalCardComments,
+  ModalCardComment,
+  ModalCardCommentUser,
+  ModalCardActions,
+  ModalCardInput,
+  ProfileImage,
+  CreatorName,
+  CloseButton,
 } from '../../styles/CreatorPageStyles';
 
 const FeedPostViewerModal = ({ post, onClose }) => {
@@ -14,22 +22,39 @@ const FeedPostViewerModal = ({ post, onClose }) => {
 
   return (
     <ModalOverlay onClick={onClose} data-testid="feed-post-viewer-modal">
-      <ModalContent onClick={(e) => e.stopPropagation()}>
-        <ModalHeader>
-          <ModalTitle>{post.caption}</ModalTitle>
-          <ModalButtonCancel onClick={onClose}>Close</ModalButtonCancel>
-        </ModalHeader>
-        <ModalBody>
-          <div style={{ display: 'flex' }}>
-            <div style={{ flex: 1 }}>
-              <img src={post.media[0].url} alt={post.caption} style={{ width: '100%' }} />
-            </div>
-            <div style={{ flex: 1, paddingLeft: '20px' }}>
-              <p>Comments and other details will go here.</p>
-            </div>
-          </div>
-        </ModalBody>
-      </ModalContent>
+      <CloseButton onClick={onClose} style={{ top: '20px', right: '20px', fontSize: '1.5rem' }}>
+        <FaTimes />
+      </CloseButton>
+      <ModalCard onClick={(e) => e.stopPropagation()}>
+        <ModalCardMedia>
+          {post.media[0].url.endsWith('.mp4') ? (
+            <video src={post.media[0].url} controls autoPlay loop />
+          ) : (
+            <img src={post.media[0].url} alt={post.caption} />
+          )}
+        </ModalCardMedia>
+        <ModalCardContent>
+          <ModalCardHeader>
+            <ProfileImage src={post.user?.profileImage} alt={post.user?.name} style={{ width: '40px', height: '40px' }} />
+            <CreatorName>{post.user?.name}</CreatorName>
+          </ModalCardHeader>
+          <ModalCardCaption>{post.caption}</ModalCardCaption>
+          <ModalCardComments>
+            {post.comments.map((comment) => (
+              <ModalCardComment key={comment._id}>
+                <ModalCardCommentUser>{comment.user.name}</ModalCardCommentUser>
+                <span>{comment.text}</span>
+              </ModalCardComment>
+            ))}
+          </ModalCardComments>
+          <ModalCardActions>
+            <FaHeart />
+            <FaComment />
+            <FaPaperPlane />
+          </ModalCardActions>
+          <ModalCardInput placeholder="Add a comment..." />
+        </ModalCardContent>
+      </ModalCard>
     </ModalOverlay>
   );
 };
