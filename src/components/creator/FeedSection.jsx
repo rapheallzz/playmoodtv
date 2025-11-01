@@ -1,19 +1,15 @@
+
 import React from 'react';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import { FaHeart, FaComment } from 'react-icons/fa';
+import FeedPost from './FeedPost';
 import {
   FeedContainer,
   FeedGrid,
-  FeedItem,
-  FeedImage,
   NoPostsMessage,
   CustomPrevArrow,
   CustomNextArrow,
-  FeedPostCardContainer,
-  MediaHoverOverlay,
-  HoverIcon,
 } from '../../styles/CreatorPageStyles';
 
 const getSliderSettings = (itemCount) => ({
@@ -55,60 +51,21 @@ const FeedSection = ({ feeds, isLoadingFeeds, onPostClick }) => {
     return <NoPostsMessage>No feed posts yet.</NoPostsMessage>;
   }
 
-  const renderFeedPost = (feed) => {
-    const mediaSliderSettings = {
-      dots: true,
-      infinite: feed.media.length > 1,
-      speed: 500,
-      slidesToShow: 1,
-      slidesToScroll: 1,
-      arrows: false,
-    };
-
-    const handleSliderClick = (e) => {
-      // Stop click from propagating to the parent container
-      // which opens the modal. This allows slider interaction.
-      e.stopPropagation();
-    };
-
-    return (
-      <FeedPostCardContainer key={feed._id} onClick={() => onPostClick(feed)}>
-        <FeedItem>
-          {feed.media.length > 1 ? (
-            <div onClick={handleSliderClick}>
-              <Slider {...mediaSliderSettings}>
-                {feed.media.map((mediaItem) => (
-                  <div key={mediaItem._id}>
-                    <FeedImage src={mediaItem.url} alt={feed.caption} />
-                  </div>
-                ))}
-              </Slider>
-            </div>
-          ) : (
-            <FeedImage src={feed.media[0].url} alt={feed.caption} />
-          )}
-          <MediaHoverOverlay className="media-hover-overlay">
-            <HoverIcon>
-              <FaHeart /> {feed.likes.length}
-            </HoverIcon>
-            <HoverIcon>
-              <FaComment /> {feed.comments.length}
-            </HoverIcon>
-          </MediaHoverOverlay>
-        </FeedItem>
-      </FeedPostCardContainer>
-    );
-  };
-
   return (
     <FeedContainer>
       <div className="desktop-slider">
         <Slider {...getSliderSettings(feeds.length)}>
-          {feeds.map(renderFeedPost)}
+          {feeds.map((feed) => (
+            <FeedPost key={feed._id} feed={feed} onPostClick={onPostClick} />
+          ))}
         </Slider>
       </div>
       <div className="mobile-collage">
-        <FeedGrid>{feeds.map(renderFeedPost)}</FeedGrid>
+        <FeedGrid>
+          {feeds.map((feed) => (
+            <FeedPost key={feed._id} feed={feed} onPostClick={onPostClick} />
+          ))}
+        </FeedGrid>
       </div>
     </FeedContainer>
   );
