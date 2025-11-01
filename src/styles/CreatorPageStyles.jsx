@@ -1809,6 +1809,14 @@ export const NavigationArrow = styled.button`
   svg {
     font-size: 1.5rem;
   }
+
+  &.prev-arrow {
+    left: 10px;
+  }
+
+  &.next-arrow {
+    right: 10px;
+  }
 `;
 
 export const StyledInput = styled.input`

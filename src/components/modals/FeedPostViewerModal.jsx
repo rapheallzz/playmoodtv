@@ -1,7 +1,6 @@
 
-import React, { useState, useEffect } from 'react';
-import Slider from 'react-slick';
-import { FaHeart, FaComment, FaPaperPlane, FaTimes } from 'react-icons/fa';
+import React, { useState } from 'react';
+import { FaHeart, FaComment, FaPaperPlane, FaTimes, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import {
   ModalOverlay,
   ModalCard,
@@ -17,30 +16,25 @@ import {
   ProfileImage,
   CreatorName,
   CloseButton,
+  NavigationArrow,
 } from '../../styles/CreatorPageStyles';
 
 const FeedPostViewerModal = ({ post, onClose }) => {
-  const [showSlider, setShowSlider] = useState(false);
-
-  useEffect(() => {
-    if (post) {
-      const timer = setTimeout(() => {
-        setShowSlider(true);
-      }, 100); // Small delay to allow modal to render
-      return () => clearTimeout(timer);
-    }
-  }, [post]);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   if (!post) return null;
 
-  const mediaSliderSettings = {
-    dots: true,
-    infinite: post.media.length > 1,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    arrows: false,
+  const handleNext = (e) => {
+    e.stopPropagation();
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % post.media.length);
   };
+
+  const handlePrev = (e) => {
+    e.stopPropagation();
+    setCurrentIndex((prevIndex) => (prevIndex - 1 + post.media.length) % post.media.length);
+  };
+
+  const currentMedia = post.media[currentIndex];
 
   return (
     <ModalOverlay onClick={onClose} data-testid="feed-post-viewer-modal">
@@ -49,26 +43,20 @@ const FeedPostViewerModal = ({ post, onClose }) => {
       </CloseButton>
       <ModalCard onClick={(e) => e.stopPropagation()}>
         <ModalCardMedia>
-          {showSlider && post.media.length > 1 ? (
-            <Slider {...mediaSliderSettings}>
-              {post.media.map((mediaItem) => (
-                <div key={mediaItem._id}>
-                  {mediaItem.url.endsWith('.mp4') ? (
-                    <video src={mediaItem.url} controls autoPlay loop />
-                  ) : (
-                    <img src={mediaItem.url} alt={post.caption} />
-                  )}
-                </div>
-              ))}
-            </Slider>
+          {currentMedia.url.endsWith('.mp4') ? (
+            <video src={currentMedia.url} controls autoPlay loop />
           ) : (
-            post.media.length > 0 && (
-              post.media[0].url.endsWith('.mp4') ? (
-                <video src={post.media[0].url} controls autoPlay loop />
-              ) : (
-                <img src={post.media[0].url} alt={post.caption} />
-              )
-            )
+            <img src={currentMedia.url} alt={post.caption} />
+          )}
+          {post.media.length > 1 && (
+            <>
+              <NavigationArrow className="prev-arrow" onClick={handlePrev}>
+                <FaChevronLeft />
+              </NavigationArrow>
+              <NavigationArrow className="next-arrow" onClick={handleNext}>
+                <FaChevronRight />
+              </NavigationArrow>
+            </>
           )}
         </ModalCardMedia>
         <ModalCardContent>
