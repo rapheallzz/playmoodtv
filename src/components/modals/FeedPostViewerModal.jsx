@@ -1,4 +1,6 @@
+
 import React from 'react';
+import Slider from 'react-slick';
 import { FaHeart, FaComment, FaPaperPlane, FaTimes } from 'react-icons/fa';
 import {
   ModalOverlay,
@@ -20,6 +22,15 @@ import {
 const FeedPostViewerModal = ({ post, onClose }) => {
   if (!post) return null;
 
+  const mediaSliderSettings = {
+    dots: true,
+    infinite: post.media.length > 1,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    arrows: false,
+  };
+
   return (
     <ModalOverlay onClick={onClose} data-testid="feed-post-viewer-modal">
       <CloseButton onClick={onClose} style={{ top: '20px', right: '20px', fontSize: '1.5rem' }}>
@@ -27,10 +38,24 @@ const FeedPostViewerModal = ({ post, onClose }) => {
       </CloseButton>
       <ModalCard onClick={(e) => e.stopPropagation()}>
         <ModalCardMedia>
-          {post.media[0].url.endsWith('.mp4') ? (
-            <video src={post.media[0].url} controls autoPlay loop />
+          {post.media.length > 1 ? (
+            <Slider {...mediaSliderSettings}>
+              {post.media.map((mediaItem) => (
+                <div key={mediaItem._id}>
+                  {mediaItem.url.endsWith('.mp4') ? (
+                    <video src={mediaItem.url} controls autoPlay loop />
+                  ) : (
+                    <img src={mediaItem.url} alt={post.caption} />
+                  )}
+                </div>
+              ))}
+            </Slider>
           ) : (
-            <img src={post.media[0].url} alt={post.caption} />
+            post.media[0].url.endsWith('.mp4') ? (
+              <video src={post.media[0].url} controls autoPlay loop />
+            ) : (
+              <img src={post.media[0].url} alt={post.caption} />
+            )
           )}
         </ModalCardMedia>
         <ModalCardContent>
