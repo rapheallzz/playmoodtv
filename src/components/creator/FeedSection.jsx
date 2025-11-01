@@ -2,15 +2,18 @@ import React from 'react';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import { FaHeart, FaComment } from 'react-icons/fa';
 import {
   FeedContainer,
   FeedGrid,
   FeedItem,
   FeedImage,
-  FeedCaption,
   NoPostsMessage,
   CustomPrevArrow,
   CustomNextArrow,
+  FeedPostCardContainer,
+  MediaHoverOverlay,
+  HoverIcon,
 } from '../../styles/CreatorPageStyles';
 
 const getSliderSettings = (itemCount) => ({
@@ -43,7 +46,7 @@ const getSliderSettings = (itemCount) => ({
   ],
 });
 
-const FeedSection = ({ feeds, isLoadingFeeds }) => {
+const FeedSection = ({ feeds, isLoadingFeeds, onPostClick }) => {
   if (isLoadingFeeds) {
     return <NoPostsMessage>Loading feeds...</NoPostsMessage>;
   }
@@ -52,27 +55,31 @@ const FeedSection = ({ feeds, isLoadingFeeds }) => {
     return <NoPostsMessage>No feed posts yet.</NoPostsMessage>;
   }
 
+  const renderFeedPost = (feed) => (
+    <FeedPostCardContainer key={feed._id} onClick={() => onPostClick(feed)}>
+      <FeedItem>
+        <FeedImage src={feed.media[0].url} alt={feed.caption} />
+        <MediaHoverOverlay className="media-hover-overlay">
+          <HoverIcon>
+            <FaHeart /> {feed.likes.length}
+          </HoverIcon>
+          <HoverIcon>
+            <FaComment /> {feed.comments.length}
+          </HoverIcon>
+        </MediaHoverOverlay>
+      </FeedItem>
+    </FeedPostCardContainer>
+  );
+
   return (
     <FeedContainer>
       <div className="desktop-slider">
         <Slider {...getSliderSettings(feeds.length)}>
-          {feeds.map((feed) => (
-            <FeedItem key={feed._id}>
-              <FeedImage src={feed.media[0].url} alt={feed.caption} />
-              <FeedCaption>{feed.caption}</FeedCaption>
-            </FeedItem>
-          ))}
+          {feeds.map(renderFeedPost)}
         </Slider>
       </div>
       <div className="mobile-collage">
-        <FeedGrid>
-          {feeds.map((feed) => (
-            <FeedItem key={feed._id}>
-              <FeedImage src={feed.media[0].url} alt={feed.caption} />
-              <FeedCaption>{feed.caption}</FeedCaption>
-            </FeedItem>
-          ))}
-        </FeedGrid>
+        <FeedGrid>{feeds.map(renderFeedPost)}</FeedGrid>
       </div>
     </FeedContainer>
   );

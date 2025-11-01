@@ -18,6 +18,7 @@ import CreatePlaylistModal from '../components/modals/CreatePlaylistModal';
 import EditPlaylistModal from '../components/modals/EditPlaylistModal';
 import CreateHighlightModal from '../components/modals/CreateHighlightModal';
 import CreateFeedPostModal from '../components/modals/CreateFeedPostModal';
+import FeedPostViewerModal from '../components/modals/FeedPostViewerModal';
 import HighlightsSection from '../components/creator/HighlightsSection';
 import VerticalHighlightViewer from '../components/creator/VerticalHighlightViewer';
 import CreatorPageSkeleton from '../components/skeletons/CreatorPageSkeleton';
@@ -47,6 +48,8 @@ export default function CreatorPage() {
   const [showEditPlaylistModal, setShowEditPlaylistModal] = useState(false);
   const [showCreateHighlightModal, setShowCreateHighlightModal] = useState(false);
   const [showCreateFeedPostModal, setShowCreateFeedPostModal] = useState(false);
+  const [showFeedPostViewerModal, setShowFeedPostViewerModal] = useState(false);
+  const [selectedFeedPost, setSelectedFeedPost] = useState(null);
   const [modalContent, setModalContent] = useState(null);
   const [viewedHighlights, setViewedHighlights] = useState(new Set());
   const [showVerticalHighlightViewer, setShowVerticalHighlightViewer] = useState(false);
@@ -113,6 +116,8 @@ export default function CreatorPage() {
     setShowContentModal(false);
     setShowCreateHighlightModal(false);
     setShowCreateFeedPostModal(false);
+    setShowFeedPostViewerModal(false);
+    setSelectedFeedPost(null);
     setModalContent(null);
     setEditingPlaylist(null);
     setSelectedPlaylistId(null);
@@ -208,7 +213,14 @@ export default function CreatorPage() {
         viewedHighlights={viewedHighlights}
       />
       {activeTab === 'Feeds' ? (
-        <FeedSection feeds={feeds} isLoadingFeeds={isLoadingFeeds} />
+        <FeedSection
+          feeds={feeds}
+          isLoadingFeeds={isLoadingFeeds}
+          onPostClick={(feed) => {
+            setSelectedFeedPost(feed);
+            setShowFeedPostViewerModal(true);
+          }}
+        />
       ) : (
         <ContentSection
           activeTab={activeTab}
@@ -362,6 +374,12 @@ export default function CreatorPage() {
           isOpen={showCreateFeedPostModal}
           onClose={closeAllModals}
           onCreateFeedPost={createFeedPost}
+        />
+      )}
+      {showFeedPostViewerModal && (
+        <FeedPostViewerModal
+          post={selectedFeedPost}
+          onClose={closeAllModals}
         />
       )}
       {showVerticalHighlightViewer && enrichedHighlights.length > 0 && (

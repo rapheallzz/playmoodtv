@@ -549,6 +549,126 @@ export const PostContent = styled.p`
   }
 `;
 
+export const FeedPostCardContainer = styled.div`
+  position: relative;
+  cursor: pointer;
+
+  &:hover .media-hover-overlay {
+    opacity: 1;
+  }
+`;
+
+export const MediaHoverOverlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+`;
+
+export const HoverIcon = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 1.2rem;
+`;
+
+export const ModalCard = styled.div`
+  display: flex;
+  background-color: #1a1a1a;
+  color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  width: 80%;
+  max-width: 900px;
+  height: 80vh;
+`;
+
+export const ModalCardMedia = styled.div`
+  flex: 1.5;
+  background-color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+
+  img,
+  video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+`;
+
+export const ModalCardContent = styled.div`
+  flex: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+`;
+
+export const ModalCardHeader = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #333;
+`;
+
+export const ModalCardCaption = styled.p`
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 10px 0;
+  border-bottom: 1px solid #333;
+`;
+
+export const ModalCardComments = styled.div`
+  overflow-y: auto;
+  flex-grow: 1;
+  padding: 10px 0;
+`;
+
+export const ModalCardComment = styled.div`
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+`;
+
+export const ModalCardCommentUser = styled.span`
+  font-weight: bold;
+  margin-right: 5px;
+`;
+
+export const ModalCardActions = styled.div`
+  display: flex;
+  gap: 15px;
+  padding-top: 10px;
+  border-top: 1px solid #333;
+`;
+
+export const ModalCardInput = styled.input`
+  width: 100%;
+  padding: 10px;
+  background-color: #333;
+  border: 1px solid #555;
+  border-radius: 5px;
+  color: white;
+  margin-top: 10px;
+
+  &::placeholder {
+    color: #888;
+  }
+`;
+
 export const FeedContainer = styled.div`
   width: 100%;
   padding: 0 60px;
