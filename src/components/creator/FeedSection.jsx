@@ -55,21 +55,42 @@ const FeedSection = ({ feeds, isLoadingFeeds, onPostClick }) => {
     return <NoPostsMessage>No feed posts yet.</NoPostsMessage>;
   }
 
-  const renderFeedPost = (feed) => (
-    <FeedPostCardContainer key={feed._id} onClick={() => onPostClick(feed)}>
-      <FeedItem>
-        <FeedImage src={feed.media[0].url} alt={feed.caption} />
-        <MediaHoverOverlay className="media-hover-overlay">
-          <HoverIcon>
-            <FaHeart /> {feed.likes.length}
-          </HoverIcon>
-          <HoverIcon>
-            <FaComment /> {feed.comments.length}
-          </HoverIcon>
-        </MediaHoverOverlay>
-      </FeedItem>
-    </FeedPostCardContainer>
-  );
+  const renderFeedPost = (feed) => {
+    const mediaSliderSettings = {
+      dots: true,
+      infinite: feed.media.length > 1,
+      speed: 500,
+      slidesToShow: 1,
+      slidesToScroll: 1,
+      arrows: false,
+    };
+
+    return (
+      <FeedPostCardContainer key={feed._id} onClick={() => onPostClick(feed)}>
+        <FeedItem>
+          {feed.media.length > 1 ? (
+            <Slider {...mediaSliderSettings}>
+              {feed.media.map((mediaItem) => (
+                <div key={mediaItem._id}>
+                  <FeedImage src={mediaItem.url} alt={feed.caption} />
+                </div>
+              ))}
+            </Slider>
+          ) : (
+            <FeedImage src={feed.media[0].url} alt={feed.caption} />
+          )}
+          <MediaHoverOverlay className="media-hover-overlay">
+            <HoverIcon>
+              <FaHeart /> {feed.likes.length}
+            </HoverIcon>
+            <HoverIcon>
+              <FaComment /> {feed.comments.length}
+            </HoverIcon>
+          </MediaHoverOverlay>
+        </FeedItem>
+      </FeedPostCardContainer>
+    );
+  };
 
   return (
     <FeedContainer>
