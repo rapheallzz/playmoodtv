@@ -39,6 +39,8 @@ export default function MoviePage() {
   const [subscribedCreators, setSubscribedCreators] = useState([]);
   const [selectedCaption, setSelectedCaption] = useState(null);
   const [isCaptionMenuOpen, setIsCaptionMenuOpen] = useState(false);
+  const [captionSentences, setCaptionSentences] = useState([]);
+  const [currentCaptionIndex, setCurrentCaptionIndex] = useState(0);
   const COMMENTS_PER_PAGE = 5;
 
   const navigate = useNavigate();
@@ -130,6 +132,22 @@ export default function MoviePage() {
       setSubscribed(isUserSubscribed);
     }
   }, [movie, subscribedCreators]);
+
+  useEffect(() => {
+    if (selectedCaption) {
+      const sentences = selectedCaption.text.split(/[.!?]+\s/).filter(Boolean);
+      setCaptionSentences(sentences);
+      setCurrentCaptionIndex(0);
+
+      const interval = setInterval(() => {
+        setCurrentCaptionIndex((prevIndex) => (prevIndex + 1) % sentences.length);
+      }, 5000);
+
+      return () => clearInterval(interval);
+    } else {
+      setCaptionSentences([]);
+    }
+  }, [selectedCaption]);
 
   // Fetch movie data and comments separately
   useEffect(() => {
@@ -465,7 +483,7 @@ export default function MoviePage() {
             <source src={movie?.video} type="video/mp4" />
           </video>
           <CaptionContainer>
-            {selectedCaption && <CaptionText>{selectedCaption.text}</CaptionText>}
+            {captionSentences.length > 0 && <CaptionText>{captionSentences[currentCaptionIndex]}</CaptionText>}
           </CaptionContainer>
           <CaptionControl>
             <CaptionButton onClick={() => setIsCaptionMenuOpen(!isCaptionMenuOpen)}>
@@ -906,7 +924,7 @@ const Loading = styled.div`
 
 const CaptionContainer = styled.div`
   position: absolute;
-  bottom: 60px;
+  bottom: 80px;
   left: 50%;
   transform: translateX(-50%);
   width: 80%;
@@ -925,7 +943,7 @@ const CaptionText = styled.p`
 
 const CaptionControl = styled.div`
   position: absolute;
-  bottom: 20px;
+  bottom: 50px;
   right: 20px;
 `;
 
@@ -940,7 +958,7 @@ const CaptionButton = styled.button`
 
 const CaptionMenu = styled.div`
   position: absolute;
-  bottom: 40px;
+  bottom: 50px;
   right: 0;
   background-color: rgba(0, 0, 0, 0.8);
   border-radius: 5px;
