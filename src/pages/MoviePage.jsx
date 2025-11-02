@@ -943,7 +943,7 @@ const CaptionText = styled.p`
 
 const CaptionControl = styled.div`
   position: absolute;
-  bottom: 50px;
+  top: 20px;
   right: 20px;
 `;
 
@@ -958,7 +958,7 @@ const CaptionButton = styled.button`
 
 const CaptionMenu = styled.div`
   position: absolute;
-  bottom: 50px;
+  top: 40px;
   right: 0;
   background-color: rgba(0, 0, 0, 0.8);
   border-radius: 5px;
