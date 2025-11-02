@@ -7988,7 +7988,7 @@ Error generating stack: `+o.message+`
     top: 0px;
     left: 0px; 
     // z-index: 1001;
-`;j.div`
+`;j.div` 
     width:100%;
     height: fit-content;
     justify-content: center;
@@ -8955,7 +8955,7 @@ gap: 18px;
   font-size: 1.2rem;
 `,Yre=j.div`
   position: absolute;
-  bottom: 50px;
+  top: 20px;
   right: 20px;
 `,qre=j.button`
   background-color: rgba(0, 0, 0, 0.5);
@@ -8966,7 +8966,7 @@ gap: 18px;
   cursor: pointer;
 `,Gre=j.div`
   position: absolute;
-  bottom: 50px;
+  top: 40px;
   right: 0;
   background-color: rgba(0, 0, 0, 0.8);
   border-radius: 5px;
@@ -9215,7 +9215,7 @@ gap: 18px;
 `,fne=j.h2`
     color: white;
     font-size: 1rem;
-`,Lo=j.h3`
+`,Lo=j.h3`  
     color: white;
     font-size: 0.9rem;
 `,pne=j.div`
@@ -9246,7 +9246,7 @@ gap: 18px;
       left:8px
     }
   }
-`,wa=j.p`
+`,wa=j.p`  
     color:white;
     line-height: 1.5;
     font-size: 0.7rem;
@@ -9271,10 +9271,10 @@ gap: 18px;
 `,vne=j.h2`
     color: white;
     font-size: 1rem;
-`,ba=j.h3`
+`,ba=j.h3`  
     color: white;
     font-size: 0.9rem;
-`,Sa=j.p`
+`,Sa=j.p`  
     color:white;
     line-height: 1.5;
     font-size: 0.7rem;
