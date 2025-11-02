@@ -36,7 +36,9 @@ export default function MoviePage() {
   const [hasMore, setHasMore] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [shareUrl, setShareUrl] = useState('');
-    const [subscribedCreators, setSubscribedCreators] = useState([]);
+  const [subscribedCreators, setSubscribedCreators] = useState([]);
+  const [selectedCaption, setSelectedCaption] = useState(null);
+  const [isCaptionMenuOpen, setIsCaptionMenuOpen] = useState(false);
   const COMMENTS_PER_PAGE = 5;
 
   const navigate = useNavigate();
@@ -462,6 +464,32 @@ export default function MoviePage() {
           >
             <source src={movie?.video} type="video/mp4" />
           </video>
+          <CaptionContainer>
+            {selectedCaption && <CaptionText>{selectedCaption.text}</CaptionText>}
+          </CaptionContainer>
+          <CaptionControl>
+            <CaptionButton onClick={() => setIsCaptionMenuOpen(!isCaptionMenuOpen)}>
+              CC
+            </CaptionButton>
+            {isCaptionMenuOpen && (
+              <CaptionMenu>
+                <CaptionMenuItem onClick={() => {
+                  setSelectedCaption(null);
+                  setIsCaptionMenuOpen(false);
+                }}>
+                  Off
+                </CaptionMenuItem>
+                {movie?.captions?.map((caption) => (
+                  <CaptionMenuItem key={caption.languageCode} onClick={() => {
+                    setSelectedCaption(caption);
+                    setIsCaptionMenuOpen(false);
+                  }}>
+                    {caption.languageCode.toUpperCase()}
+                  </CaptionMenuItem>
+                ))}
+              </CaptionMenu>
+            )}
+          </CaptionControl>
         </div>
         <Hamburger>
           <MovieBurger />
@@ -874,4 +902,57 @@ const Loading = styled.div`
   color: #fff;
   text-align: center;
   font-size: 1.2rem;
+`;
+
+const CaptionContainer = styled.div`
+  position: absolute;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  text-align: center;
+  pointer-events: none;
+`;
+
+const CaptionText = styled.p`
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  display: inline;
+  font-size: 1.2rem;
+`;
+
+const CaptionControl = styled.div`
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+`;
+
+const CaptionButton = styled.button`
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: 1px solid white;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+`;
+
+const CaptionMenu = styled.div`
+  position: absolute;
+  bottom: 40px;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  border-radius: 5px;
+  padding: 5px;
+  min-width: 100px;
+`;
+
+const CaptionMenuItem = styled.div`
+  color: white;
+  padding: 5px 10px;
+  cursor: pointer;
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
 `;
