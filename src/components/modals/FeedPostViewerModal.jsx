@@ -1,6 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { FaHeart, FaComment, FaPaperPlane, FaTimes, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import contentService from '../../features/contentService';
 import {
   ModalOverlay,
   ModalCard,
@@ -19,18 +21,69 @@ import {
   NavigationArrow,
   DotsContainer,
   Dot,
+  LikesContainer,
 } from '../../styles/CreatorPageStyles';
 
 const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const { user } = useSelector((state) => state.auth);
+  const [isLiked, setIsLiked] = useState(false);
+  const [likesCount, setLikesCount] = useState(0);
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState('');
 
   useEffect(() => {
     setCurrentIndex(0);
-  }, [post]);
+    if (post) {
+      setIsLiked(post.likes.includes(user?._id));
+      setLikesCount(post.likes.length);
+      setComments(post.comments);
+    }
+  }, [post, user]);
+
+  const handleLikeToggle = async () => {
+    if (!user) return; // or show a login prompt
+    const newIsLiked = !isLiked;
+    const originalIsLiked = isLiked;
+    const originalLikesCount = likesCount;
+
+    setIsLiked(newIsLiked);
+    setLikesCount(newLikesCount);
+
+    try {
+      if (newIsLiked) {
+        await contentService.likeFeedPost({ feedId: post._id, token: user.token });
+      } else {
+        await contentService.unlikeFeedPost({ feedId: post._id, token: user.token });
+      }
+    } catch (error) {
+      console.error('Failed to update like status:', error);
+      // Revert the state on error
+      setIsLiked(originalIsLiked);
+      setLikesCount(originalLikesCount);
+    }
+  };
+
+  const handleCommentSubmit = async (e) => {
+    if (e.key === 'Enter' && newComment.trim() !== '') {
+      if (!user) return;
+
+      try {
+        const updatedPost = await contentService.commentOnFeedPost({
+          feedId: post._id,
+          comment: newComment,
+          token: user.token,
+        });
+        setComments(updatedPost.comments);
+        setNewComment('');
+      } catch (error) {
+        console.error('Failed to add comment:', error);
+      }
+    }
+  };
 
   if (!post) return null;
 
-  // Add a guard to prevent rendering with an invalid index while the post is changing.
   if (currentIndex >= post.media.length) {
     return null;
   }
@@ -70,7 +123,7 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
           </ModalCardHeader>
           <ModalCardCaption>{post.caption}</ModalCardCaption>
           <ModalCardComments>
-            {post.comments.map((comment) => (
+            {comments.map((comment) => (
               <ModalCardComment key={comment._id}>
                 <ModalCardCommentUser>{comment.user.name}</ModalCardCommentUser>
                 <span>{comment.text}</span>
@@ -78,11 +131,20 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
             ))}
           </ModalCardComments>
           <ModalCardActions>
-            <FaHeart />
+            <FaHeart
+              style={{ color: isLiked ? 'red' : 'inherit', cursor: 'pointer' }}
+              onClick={handleLikeToggle}
+            />
             <FaComment />
             <FaPaperPlane />
           </ModalCardActions>
-          <ModalCardInput placeholder="Add a comment..." />
+          <LikesContainer>{likesCount} likes</LikesContainer>
+          <ModalCardInput
+            placeholder="Add a comment..."
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            onKeyDown={handleCommentSubmit}
+          />
         </ModalCardContent>
       </ModalCard>
     </ModalOverlay>

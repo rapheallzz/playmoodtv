@@ -1685,6 +1685,13 @@ export const PlayerControl = styled.button`
   padding: 5px;
 `;
 
+export const LikesContainer = styled.div`
+  font-size: 0.9rem;
+  color: #ccc;
+  margin-top: 10px;
+  padding-left: 5px;
+`;
+
 export const CenterPlayPauseButton = styled.button`
   position: absolute;
   top: 50%;
