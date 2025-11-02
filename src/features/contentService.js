@@ -153,6 +153,7 @@ const likeFeedPost = async ({ feedId, token }) => {
       {
         headers: {
           Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
         },
       }
     );
@@ -173,6 +174,7 @@ const unlikeFeedPost = async ({ feedId, token }) => {
       {
         headers: {
           Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
         },
       }
     );
@@ -189,10 +191,11 @@ const commentOnFeedPost = async ({ feedId, comment, token }) => {
   try {
     const response = await axios.post(
       `${API_URL}/feed/${feedId}/comment`,
-      { text: comment },
+      { feedId, text: comment },
       {
         headers: {
           Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
         },
       }
     );

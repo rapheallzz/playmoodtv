@@ -22,6 +22,8 @@ import {
   DotsContainer,
   Dot,
   LikesContainer,
+  CommentInputContainer,
+  SendButton,
 } from '../../styles/CreatorPageStyles';
 
 const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
@@ -44,6 +46,7 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
   const handleLikeToggle = async () => {
     if (!user) return; // or show a login prompt
     const newIsLiked = !isLiked;
+    const newLikesCount = newIsLiked ? likesCount + 1 : likesCount - 1;
     const originalIsLiked = isLiked;
     const originalLikesCount = likesCount;
 
@@ -64,21 +67,27 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
     }
   };
 
-  const handleCommentSubmit = async (e) => {
-    if (e.key === 'Enter' && newComment.trim() !== '') {
-      if (!user) return;
+  const submitComment = async () => {
+    if (newComment.trim() === '' || !user) {
+      return;
+    }
+    try {
+      const updatedPost = await contentService.commentOnFeedPost({
+        feedId: post._id,
+        comment: newComment,
+        token: user.token,
+      });
+      setComments(updatedPost.comments);
+      setNewComment('');
+    } catch (error) {
+      console.error('Failed to add comment:', error);
+    }
+  };
 
-      try {
-        const updatedPost = await contentService.commentOnFeedPost({
-          feedId: post._id,
-          comment: newComment,
-          token: user.token,
-        });
-        setComments(updatedPost.comments);
-        setNewComment('');
-      } catch (error) {
-        console.error('Failed to add comment:', error);
-      }
+  const handleCommentKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      submitComment();
     }
   };
 
@@ -139,12 +148,15 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
             <FaPaperPlane />
           </ModalCardActions>
           <LikesContainer>{likesCount} likes</LikesContainer>
-          <ModalCardInput
-            placeholder="Add a comment..."
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-            onKeyDown={handleCommentSubmit}
-          />
+          <CommentInputContainer>
+            <ModalCardInput
+              placeholder="Add a comment..."
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              onKeyDown={handleCommentKeyDown}
+            />
+            <SendButton onClick={submitComment}>Send</SendButton>
+          </CommentInputContainer>
         </ModalCardContent>
       </ModalCard>
     </ModalOverlay>

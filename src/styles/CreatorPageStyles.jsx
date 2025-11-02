@@ -1692,6 +1692,27 @@ export const LikesContainer = styled.div`
   padding-left: 5px;
 `;
 
+export const CommentInputContainer = styled.div`
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+`;
+
+export const SendButton = styled.button`
+  background-color: #541011;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  margin-left: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #7a181a;
+  }
+`;
+
 export const CenterPlayPauseButton = styled.button`
   position: absolute;
   top: 50%;
