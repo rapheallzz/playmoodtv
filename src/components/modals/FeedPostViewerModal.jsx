@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaHeart, FaComment, FaPaperPlane, FaTimes, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import {
   ModalOverlay,
@@ -17,22 +17,18 @@ import {
   CreatorName,
   CloseButton,
   NavigationArrow,
+  DotsContainer,
+  Dot,
 } from '../../styles/CreatorPageStyles';
 
-const FeedPostViewerModal = ({ post, onClose }) => {
+const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  useEffect(() => {
+    setCurrentIndex(0);
+  }, [post]);
+
   if (!post) return null;
-
-  const handleNext = (e) => {
-    e.stopPropagation();
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % post.media.length);
-  };
-
-  const handlePrev = (e) => {
-    e.stopPropagation();
-    setCurrentIndex((prevIndex) => (prevIndex - 1 + post.media.length) % post.media.length);
-  };
 
   const currentMedia = post.media[currentIndex];
 
@@ -49,16 +45,19 @@ const FeedPostViewerModal = ({ post, onClose }) => {
             <img src={currentMedia.url} alt={post.caption} />
           )}
           {post.media.length > 1 && (
-            <>
-              <NavigationArrow className="prev-arrow" onClick={handlePrev}>
-                <FaChevronLeft />
-              </NavigationArrow>
-              <NavigationArrow className="next-arrow" onClick={handleNext}>
-                <FaChevronRight />
-              </NavigationArrow>
-            </>
+            <DotsContainer>
+              {post.media.map((_, index) => (
+                <Dot key={index} isActive={index === currentIndex} onClick={() => setCurrentIndex(index)} />
+              ))}
+            </DotsContainer>
           )}
         </ModalCardMedia>
+        <NavigationArrow className="prev-arrow" onClick={onPrev}>
+          <FaChevronLeft />
+        </NavigationArrow>
+        <NavigationArrow className="next-arrow" onClick={onNext}>
+          <FaChevronRight />
+        </NavigationArrow>
         <ModalCardContent>
           <ModalCardHeader>
             <ProfileImage src={post.user?.profileImage} alt={post.user?.name} style={{ width: '40px', height: '40px' }} />

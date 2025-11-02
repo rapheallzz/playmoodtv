@@ -549,6 +549,25 @@ export const PostContent = styled.p`
   }
 `;
 
+export const DotsContainer = styled.div`
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 5px;
+`;
+
+export const Dot = styled.button`
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: ${(props) => (props.isActive ? 'white' : 'rgba(255, 255, 255, 0.5)')};
+  border: none;
+  padding: 0;
+  cursor: pointer;
+`;
+
 export const FeedPostCardContainer = styled.div`
   position: relative;
   cursor: pointer;
@@ -594,6 +613,7 @@ export const ModalCard = styled.div`
 `;
 
 export const ModalCardMedia = styled.div`
+  position: relative;
   flex: 1.5;
   background-color: black;
   display: flex;

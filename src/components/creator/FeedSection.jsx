@@ -55,8 +55,8 @@ const FeedSection = ({ feeds, isLoadingFeeds, onPostClick }) => {
     return <NoPostsMessage>No feed posts yet.</NoPostsMessage>;
   }
 
-  const renderFeedPost = (feed) => (
-    <FeedPostCardContainer key={feed._id} onClick={() => onPostClick(feed)}>
+  const renderFeedPost = (feed, index) => (
+    <FeedPostCardContainer key={feed._id} onClick={() => onPostClick(feed, index)}>
       <FeedItem>
         <FeedImage src={feed.media[0].url} alt={feed.caption} />
         <MediaHoverOverlay className="media-hover-overlay">

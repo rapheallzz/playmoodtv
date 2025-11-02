@@ -50,11 +50,24 @@ export default function CreatorPage() {
   const [showCreateFeedPostModal, setShowCreateFeedPostModal] = useState(false);
   const [showFeedPostViewerModal, setShowFeedPostViewerModal] = useState(false);
   const [selectedFeedPost, setSelectedFeedPost] = useState(null);
+  const [selectedFeedPostIndex, setSelectedFeedPostIndex] = useState(0);
   const [modalContent, setModalContent] = useState(null);
   const [viewedHighlights, setViewedHighlights] = useState(new Set());
   const [showVerticalHighlightViewer, setShowVerticalHighlightViewer] = useState(false);
   const [highlightStartIndex, setHighlightStartIndex] = useState(0);
   const [enrichedHighlights, setEnrichedHighlights] = useState([]);
+
+  const handleNextFeed = () => {
+    const nextIndex = (selectedFeedPostIndex + 1) % feeds.length;
+    setSelectedFeedPostIndex(nextIndex);
+    setSelectedFeedPost(feeds[nextIndex]);
+  };
+
+  const handlePreviousFeed = () => {
+    const prevIndex = (selectedFeedPostIndex - 1 + feeds.length) % feeds.length;
+    setSelectedFeedPostIndex(prevIndex);
+    setSelectedFeedPost(feeds[prevIndex]);
+  };
 
   // Channel details hook
   const {
@@ -216,8 +229,9 @@ export default function CreatorPage() {
         <FeedSection
           feeds={feeds}
           isLoadingFeeds={isLoadingFeeds}
-          onPostClick={(feed) => {
+          onPostClick={(feed, index) => {
             setSelectedFeedPost(feed);
+            setSelectedFeedPostIndex(index);
             setShowFeedPostViewerModal(true);
           }}
         />
@@ -380,6 +394,8 @@ export default function CreatorPage() {
         <FeedPostViewerModal
           post={selectedFeedPost}
           onClose={closeAllModals}
+          onNext={handleNextFeed}
+          onPrev={handlePreviousFeed}
         />
       )}
       {showVerticalHighlightViewer && enrichedHighlights.length > 0 && (
