@@ -19,10 +19,13 @@ import 'slick-carousel/slick/slick-theme.css';
 import ContentModal from '../components/ContentModal';
 import ErrorPopup from '../components/ErrorPopup';
 import useHighlights from '../hooks/useHighlights';
+import useFeeds from '../hooks/useFeeds';
 import CreatorChannelSkeleton from '../components/skeletons/CreatorChannelSkeleton';
 import HighlightsSection from '../components/creator/HighlightsSection';
 import { Helmet } from 'react-helmet-async';
 import VerticalHighlightViewer from '../components/creator/VerticalHighlightViewer';
+import FeedSection from '../components/creator/FeedSection';
+import FeedPostViewerModal from '../components/modals/FeedPostViewerModal';
 
 // Pulse animation for right arrow
 const pulse = keyframes`
@@ -187,7 +190,10 @@ export default function CreatorChannel() {
   const [newComment, setNewComment] = useState({});
   const [playlists, setPlaylists] = useState([]);
   const [isLoadingPlaylists, setIsLoadingPlaylists] = useState(false);
-  const [activeTab, setActiveTab] = useState('VIDEOS'); // TABS: VIDEOS, PLAYLISTS, COMMUNITY
+  const [activeTab, setActiveTab] = useState('VIDEOS');
+  const [showFeedPostViewerModal, setShowFeedPostViewerModal] = useState(false);
+  const [selectedFeedPost, setSelectedFeedPost] = useState(null);
+  const [selectedFeedPostIndex, setSelectedFeedPostIndex] = useState(0);
 
   const creatorId = creatorSlug ? (() => {
     try {
@@ -203,10 +209,26 @@ export default function CreatorChannel() {
     highlights,
     isLoading: isLoadingHighlights,
   } = useHighlights(user, creatorId);
+  const {
+    feeds,
+    isLoadingFeeds,
+  } = useFeeds(user, creatorId);
   const [viewedHighlights, setViewedHighlights] = useState(new Set());
   const [showVerticalHighlightViewer, setShowVerticalHighlightViewer] = useState(false);
   const [highlightStartIndex, setHighlightStartIndex] = useState(0);
   const [enrichedHighlights, setEnrichedHighlights] = useState([]);
+
+  const handleNextFeed = () => {
+    const nextIndex = (selectedFeedPostIndex + 1) % feeds.length;
+    setSelectedFeedPostIndex(nextIndex);
+    setSelectedFeedPost(feeds[nextIndex]);
+  };
+
+  const handlePreviousFeed = () => {
+    const prevIndex = (selectedFeedPostIndex - 1 + feeds.length) % feeds.length;
+    setSelectedFeedPostIndex(prevIndex);
+    setSelectedFeedPost(feeds[prevIndex]);
+  };
 
   const handleSelectHighlight = async (highlight, index) => {
     setHighlightStartIndex(index);
@@ -701,6 +723,12 @@ const fetchPlaylists = async () => {
             VIDEOS
           </button>
           <button
+            className={`text-white text-[12px] md:text-sm font-medium bg-transparent border-none cursor-pointer ${activeTab === 'FEEDS' ? 'underline' : ''}`}
+            onClick={() => handleTabClick('FEEDS')}
+          >
+            FEEDS
+          </button>
+          <button
             className={`text-white text-[12px] md:text-sm font-medium bg-transparent border-none cursor-pointer ${activeTab === 'PLAYLISTS' ? 'underline' : ''}`}
             onClick={() => handleTabClick('PLAYLISTS')}
           >
@@ -754,6 +782,18 @@ const fetchPlaylists = async () => {
               </SliderContainer>
             )}
           </>
+        )}
+
+        {activeTab === 'FEEDS' && (
+          <FeedSection
+            feeds={feeds}
+            isLoadingFeeds={isLoadingFeeds}
+            onPostClick={(feed, index) => {
+              setSelectedFeedPost(feed);
+              setSelectedFeedPostIndex(index);
+              setShowFeedPostViewerModal(true);
+            }}
+          />
         )}
 
         {activeTab === 'PLAYLISTS' && (
@@ -951,6 +991,15 @@ const fetchPlaylists = async () => {
           }}
           creatorName={creatorData.name}
           profileImage={creatorData.profileImage}
+        />
+      )}
+
+      {showFeedPostViewerModal && (
+        <FeedPostViewerModal
+          post={selectedFeedPost}
+          onClose={() => setShowFeedPostViewerModal(false)}
+          onNext={handleNextFeed}
+          onPrev={handlePreviousFeed}
         />
       )}
     </div>

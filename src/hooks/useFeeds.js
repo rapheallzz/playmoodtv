@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import BASE_API_URL from '../apiConfig';
 
-const useFeeds = (user) => {
+const useFeeds = (user, creatorId = null) => {
   const [feeds, setFeeds] = useState([]);
   const [isLoadingFeeds, setIsLoadingFeeds] = useState(false);
   const [error, setError] = useState(null);
@@ -16,10 +16,13 @@ const useFeeds = (user) => {
   });
 
   const fetchFeeds = async () => {
-    if (!user) return;
+    const userIdToFetch = creatorId || user?._id;
+    if (!userIdToFetch) return;
+
     setIsLoadingFeeds(true);
+    setError(null);
     try {
-      const response = await api.get(`/api/feed/user/${user._id}`);
+      const response = await api.get(`/api/feed/user/${userIdToFetch}`);
       setFeeds(response.data);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to fetch feeds.');
