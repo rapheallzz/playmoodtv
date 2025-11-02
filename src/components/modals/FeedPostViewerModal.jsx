@@ -30,6 +30,11 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
 
   if (!post) return null;
 
+  // Add a guard to prevent rendering with an invalid index while the post is changing.
+  if (currentIndex >= post.media.length) {
+    return null;
+  }
+
   const currentMedia = post.media[currentIndex];
 
   return (
