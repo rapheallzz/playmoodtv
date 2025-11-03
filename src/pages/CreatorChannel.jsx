@@ -711,8 +711,8 @@ const fetchPlaylists = async () => {
       </div>
 
       {/* Navigation Links */}
-      <div className="w-full flex justify-between py-6 px-10">
-        <div className="flex justify-between md:w-1/3 w-full">
+      <div className="w-full flex justify-between py-6 px-10 overflow-x-auto whitespace-nowrap scrollbar-hide">
+        <div className="flex gap-4">
           <a className="text-white text-sm font-medium hover:cursor-pointer" onClick={() => navigate('/')}>
             HOME
           </a>

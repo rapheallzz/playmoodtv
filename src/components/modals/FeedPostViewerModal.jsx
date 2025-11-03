@@ -33,13 +33,14 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
   const [likesCount, setLikesCount] = useState(0);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
+  const [isCommentsOpen, setIsCommentsOpen] = useState(false);
 
   useEffect(() => {
     setCurrentIndex(0);
     if (post) {
-      setIsLiked(post.likes.includes(user?._id));
-      setLikesCount(post.likes.length);
-      setComments(post.comments);
+      setIsLiked(post.likes?.includes(user?._id) || false);
+      setLikesCount(post.likes?.length || 0);
+      setComments(post.comments || []);
     }
   }, [post, user]);
 
@@ -77,7 +78,7 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
         comment: newComment,
         token: user.token,
       });
-      setComments(updatedPost.comments);
+      setComments(updatedPost.comments || []);
       setNewComment('');
     } catch (error) {
       console.error('Failed to add comment:', error);
@@ -91,7 +92,7 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
     }
   };
 
-  if (!post) return null;
+  if (!post || !post.media || post.media.length === 0) return null;
 
   if (currentIndex >= post.media.length) {
     return null;
@@ -111,7 +112,7 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
           ) : (
             <img src={currentMedia.url} alt={post.caption} />
           )}
-          {post.media.length > 1 && (
+          {(post.media?.length || 0) > 1 && (
             <DotsContainer>
               {post.media.map((_, index) => (
                 <Dot key={index} isActive={index === currentIndex} onClick={() => setCurrentIndex(index)} />
@@ -131,32 +132,39 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
             <CreatorName>{post.user?.name}</CreatorName>
           </ModalCardHeader>
           <ModalCardCaption>{post.caption}</ModalCardCaption>
-          <ModalCardComments>
-            {comments.map((comment) => (
-              <ModalCardComment key={comment._id}>
-                <ModalCardCommentUser>{comment.user.name}</ModalCardCommentUser>
-                <span>{comment.text}</span>
-              </ModalCardComment>
-            ))}
-          </ModalCardComments>
+          {isCommentsOpen && (
+            <>
+              <ModalCardComments>
+                {comments.map((comment) => (
+                  <ModalCardComment key={comment._id}>
+                    <ModalCardCommentUser>{comment.user.name}</ModalCardCommentUser>
+                    <span>{comment.text}</span>
+                  </ModalCardComment>
+                ))}
+              </ModalCardComments>
+              <CommentInputContainer>
+                <ModalCardInput
+                  placeholder="Add a comment..."
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  onKeyDown={handleCommentKeyDown}
+                />
+                <SendButton onClick={submitComment}>Send</SendButton>
+              </CommentInputContainer>
+            </>
+          )}
           <ModalCardActions>
             <FaHeart
               style={{ color: isLiked ? 'red' : 'inherit', cursor: 'pointer' }}
               onClick={handleLikeToggle}
             />
-            <FaComment />
+            <FaComment
+              onClick={() => setIsCommentsOpen(!isCommentsOpen)}
+              style={{ cursor: 'pointer' }}
+            />
             <FaPaperPlane />
           </ModalCardActions>
           <LikesContainer>{likesCount} likes</LikesContainer>
-          <CommentInputContainer>
-            <ModalCardInput
-              placeholder="Add a comment..."
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              onKeyDown={handleCommentKeyDown}
-            />
-            <SendButton onClick={submitComment}>Send</SendButton>
-          </CommentInputContainer>
         </ModalCardContent>
       </ModalCard>
     </ModalOverlay>

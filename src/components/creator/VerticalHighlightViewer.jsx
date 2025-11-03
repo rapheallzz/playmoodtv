@@ -543,6 +543,17 @@ const VerticalHighlightViewer = ({
                   <FaPaperPlane />
                   <span>Share</span>
                 </ViewerActionButton>
+
+                <ViewerActionButton
+                  onClick={() => {
+                    const slug = `${highlight.content.title.replace(/\s+/g, '-')}-${highlight.content._id}`;
+                    navigate(`/movie/${slug}`);
+                    onClose();
+                  }}
+                >
+                  <FaExpand />
+                  <span>Watch Full Video</span>
+                </ViewerActionButton>
               </ActionsContainer>
             </BottomInfoContainer>
           </VideoContainer>
