@@ -196,7 +196,7 @@ const Slidercontent = React.memo(function Slidercontent({
 
   return (
     <div
-      className="relative overflow-hidden md:w-full h-[78%] w-full max-w-[200px] md:max-w-none md:mr-0.5"
+      className="relative overflow-hidden w-full h-full md:mr-0.5"
       onMouseEnter={handleHover}
       onMouseLeave={handleHoverOut}
       onMouseDown={handleTouchStart}
@@ -214,15 +214,15 @@ const Slidercontent = React.memo(function Slidercontent({
       <div className="absolute top-2.5 w-full px-1 flex justify-between"></div>
       {!hover && !isVideoPlaying ? (
         <>
-          <div className="md:h-[70%] h-[70%]">
+          <div className="h-[70%]">
             <img
               className="w-full h-full object-cover cursor-pointer"
               src={img}
               alt={title}
             />
           </div>
-          <div className="absolute md:bottom-3  w-full bg-black bg-opacity-50 flex justify-between p-3 gap-2.5">
-            <h3 className="text-white text-[8px] md:text-[16px]  font-normal  w-[80%]" style={customStyle || {}}>
+          <div className="absolute bottom-0 w-full bg-black bg-opacity-50 flex justify-between p-2 md:p-3 gap-2.5">
+            <h3 className="text-white text-xs md:text-base font-normal w-[80%]" style={customStyle || {}}>
               {titleSpliced}
             </h3>
             {isMobile && !hover && !isVideoPlaying && (
@@ -242,7 +242,7 @@ const Slidercontent = React.memo(function Slidercontent({
             loop
             autoPlay={isVideoPlaying}
             muted
-            className="w-full object-cover h-36 cursor-pointer max-w-[200px] md:max-w-none mx-auto"
+            className="w-full h-auto object-cover cursor-pointer"
           >
             <source
               src={
@@ -253,22 +253,22 @@ const Slidercontent = React.memo(function Slidercontent({
             />
           </video>
           <div
-            className="h-52 w-full bg-black p-2 flex flex-col gap-2 mb-8"
+            className="absolute bottom-0 w-full bg-black bg-opacity-75 p-2 flex flex-col gap-2"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex justify-between align-middle ">
+            <div className="flex justify-between items-center">
               <div className="flex items-center gap-2">
-                <div className="flex w-8 h-4  md:w-20 md:h-4  rounded-sm bg-white justify-center gap-1 items-center">
-                  <h6 className="text-black text-[0.15rem] md:text-[0.40rem] text-center">
+                <div className="flex px-1 py-0.5 rounded-sm bg-white justify-center items-center">
+                  <h6 className="text-black text-[0.5rem] md:text-xs text-center">
                     By: {movieUser?.name || 'Anonymous'}
                   </h6>
                 </div>
-                <div className="flex items-center gap-1 text-white text-[0.5rem]">
+                <div className="flex items-center gap-1 text-white text-xs">
                   <FaEye className="text-white" />
                   <span>{views || 0}</span>
                 </div>
               </div>
-              <div className="flex justify-end gap-1 items-center text-[10px]  md:text-[16px]">
+              <div className="flex justify-end gap-2 items-center text-sm md:text-base">
                 <FaHeart
                   className={`cursor-pointer ${isLiked ? 'text-red-600 fill-current' : 'text-gray-400'}`}
                   onClick={handleLike}
@@ -280,15 +280,15 @@ const Slidercontent = React.memo(function Slidercontent({
                   {isInWatchlist ? <FaCheck /> : <FaPlus />}
                 </span>
                 <FaPaperPlane
-                  className="text-white text-[10px]  md:text-[16px] cursor-pointer"
+                  className="text-white cursor-pointer"
                   onClick={handleCopyLink}
                 />
               </div>
             </div>
-            <h4 className="text-white text-[12px] md:text-[16px] font-semibold" style={customStyle || {}}>
+            <h4 className="text-white text-sm md:text-base font-semibold" style={customStyle || {}}>
               {titleSpliced}
             </h4>
-            <p className="text-white text-[8px] md:text-[12px] font-light">{description}</p>
+            <p className="text-white text-xs md:text-sm font-light">{description}</p>
             {progress > 0 && (
               <div className="w-full bg-gray-700 rounded-full h-2">
                 <div
