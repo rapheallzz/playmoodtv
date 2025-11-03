@@ -37,9 +37,9 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
   useEffect(() => {
     setCurrentIndex(0);
     if (post) {
-      setIsLiked(post.likes.includes(user?._id));
-      setLikesCount(post.likes.length);
-      setComments(post.comments);
+      setIsLiked(post.likes?.includes(user?._id) || false);
+      setLikesCount(post.likes?.length || 0);
+      setComments(post.comments || []);
     }
   }, [post, user]);
 
