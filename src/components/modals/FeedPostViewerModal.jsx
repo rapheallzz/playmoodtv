@@ -77,7 +77,7 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
         comment: newComment,
         token: user.token,
       });
-      setComments(updatedPost.comments);
+      setComments(updatedPost.comments || []);
       setNewComment('');
     } catch (error) {
       console.error('Failed to add comment:', error);
@@ -91,7 +91,7 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
     }
   };
 
-  if (!post) return null;
+  if (!post || !post.media || post.media.length === 0) return null;
 
   if (currentIndex >= post.media.length) {
     return null;
@@ -111,7 +111,7 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
           ) : (
             <img src={currentMedia.url} alt={post.caption} />
           )}
-          {post.media.length > 1 && (
+          {(post.media?.length || 0) > 1 && (
             <DotsContainer>
               {post.media.map((_, index) => (
                 <Dot key={index} isActive={index === currentIndex} onClick={() => setCurrentIndex(index)} />
