@@ -60,7 +60,7 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
       } else {
         await contentService.unlikeFeedPost({ feedId: post._id, token: user.token });
       }
-    } catch (error) {
+    } catch  (error) {
       console.error('Failed to update like status:', error);
       // Revert the state on error
       setIsLiked(originalIsLiked);
