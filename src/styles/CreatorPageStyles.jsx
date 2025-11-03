@@ -296,8 +296,15 @@ export const NavLinks = styled.div`
   width: 53.33%;
 
   @media screen and (max-width: 768px) {
-    width: 100%;
-    flex-direction: column;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
     gap: 12px;
     align-items: center;
   }
