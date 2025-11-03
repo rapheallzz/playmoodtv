@@ -296,6 +296,8 @@ export const NavLinks = styled.div`
   width: 53.33%;
 
   @media screen and (max-width: 768px) {
+    width: 100%;
+    justify-content: flex-start;
     overflow-x: auto;
     white-space: nowrap;
     scrollbar-width: none;
@@ -1630,11 +1632,19 @@ export const LargeHighlightTitle = styled(HighlightTitle)`
 `;
 
 export const VideoGrid = styled.div`
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 16px;
-  justify-content: flex-start;
+  justify-content: center;
   width: 100%;
+
+  @media screen and (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media screen and (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 export const VerticalScrollViewer = styled.div`
