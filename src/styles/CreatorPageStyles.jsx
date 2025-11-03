@@ -649,7 +649,7 @@ export const ModalCardContent = styled.div`
 
   @media (max-width: 768px) {
     flex: 1;
-    height: 40%;
+    min-height: 40%;
     padding: 10px;
   }
 `;

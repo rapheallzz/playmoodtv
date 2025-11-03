@@ -33,6 +33,7 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
   const [likesCount, setLikesCount] = useState(0);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
+  const [isCommentsOpen, setIsCommentsOpen] = useState(false);
 
   useEffect(() => {
     setCurrentIndex(0);
@@ -131,32 +132,39 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
             <CreatorName>{post.user?.name}</CreatorName>
           </ModalCardHeader>
           <ModalCardCaption>{post.caption}</ModalCardCaption>
-          <ModalCardComments>
-            {comments.map((comment) => (
-              <ModalCardComment key={comment._id}>
-                <ModalCardCommentUser>{comment.user.name}</ModalCardCommentUser>
-                <span>{comment.text}</span>
-              </ModalCardComment>
-            ))}
-          </ModalCardComments>
+          {isCommentsOpen && (
+            <>
+              <ModalCardComments>
+                {comments.map((comment) => (
+                  <ModalCardComment key={comment._id}>
+                    <ModalCardCommentUser>{comment.user.name}</ModalCardCommentUser>
+                    <span>{comment.text}</span>
+                  </ModalCardComment>
+                ))}
+              </ModalCardComments>
+              <CommentInputContainer>
+                <ModalCardInput
+                  placeholder="Add a comment..."
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  onKeyDown={handleCommentKeyDown}
+                />
+                <SendButton onClick={submitComment}>Send</SendButton>
+              </CommentInputContainer>
+            </>
+          )}
           <ModalCardActions>
             <FaHeart
               style={{ color: isLiked ? 'red' : 'inherit', cursor: 'pointer' }}
               onClick={handleLikeToggle}
             />
-            <FaComment />
+            <FaComment
+              onClick={() => setIsCommentsOpen(!isCommentsOpen)}
+              style={{ cursor: 'pointer' }}
+            />
             <FaPaperPlane />
           </ModalCardActions>
           <LikesContainer>{likesCount} likes</LikesContainer>
-          <CommentInputContainer>
-            <ModalCardInput
-              placeholder="Add a comment..."
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              onKeyDown={handleCommentKeyDown}
-            />
-            <SendButton onClick={submitComment}>Send</SendButton>
-          </CommentInputContainer>
         </ModalCardContent>
       </ModalCard>
     </ModalOverlay>
