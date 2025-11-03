@@ -610,6 +610,13 @@ export const ModalCard = styled.div`
   width: 80%;
   max-width: 900px;
   height: 80vh;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    width: 90vw;
+    height: 90vh;
+    max-width: 500px;
+  }
 `;
 
 export const ModalCardMedia = styled.div`
@@ -627,6 +634,11 @@ export const ModalCardMedia = styled.div`
     height: 100%;
     object-fit: contain;
   }
+
+  @media (max-width: 768px) {
+    flex: 1;
+    height: 60%;
+  }
 `;
 
 export const ModalCardContent = styled.div`
@@ -634,6 +646,12 @@ export const ModalCardContent = styled.div`
   padding: 20px;
   display: flex;
   flex-direction: column;
+
+  @media (max-width: 768px) {
+    flex: 1;
+    height: 40%;
+    padding: 10px;
+  }
 `;
 
 export const ModalCardHeader = styled.div`
