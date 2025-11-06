@@ -1872,12 +1872,12 @@ export const NavigationArrow = styled.button`
   z-index: 10;
 
   &.up-arrow {
-    bottom: 290px;
+    bottom: 350px;
     right: 20px;
   }
 
   &.down-arrow {
-    bottom: 240px;
+    bottom: 300px;
     right: 20px;
   }
 
