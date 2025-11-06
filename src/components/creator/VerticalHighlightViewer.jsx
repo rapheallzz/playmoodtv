@@ -27,7 +27,7 @@ import {
 } from '../../styles/CreatorPageStyles';
 import {
   FaTimes, FaHeart, FaComment, FaPaperPlane, FaChevronUp, FaChevronDown,
-  FaPlay, FaPause, FaExpand
+  FaPlay, FaPause, FaExpand, FaFilm
 } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import HighlightShareModal from '../modals/HighlightShareModal';
@@ -551,7 +551,7 @@ const VerticalHighlightViewer = ({
                     onClose();
                   }}
                 >
-                  <FaExpand />
+                  <FaFilm />
                   <span>Watch Full Video</span>
                 </ViewerActionButton>
               </ActionsContainer>

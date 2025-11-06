@@ -1830,7 +1830,7 @@ export const ActionsContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
+  gap: 15px;
 `;
 
 export const ViewerActionButton = styled.button`
@@ -1842,10 +1842,10 @@ export const ViewerActionButton = styled.button`
   flex-direction: column;
   align-items: center;
   gap: 5px;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
 
   svg {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     transition: color 0.3s ease;
   }
 
@@ -1872,17 +1872,17 @@ export const NavigationArrow = styled.button`
   z-index: 10;
 
   &.up-arrow {
-    bottom: 300px;
+    bottom: 220px;
     right: 20px;
   }
 
   &.down-arrow {
-    bottom: 240px;
+    bottom: 170px;
     right: 20px;
   }
 
   svg {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
   }
 
   &.prev-arrow {
