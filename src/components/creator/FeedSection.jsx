@@ -55,21 +55,26 @@ const FeedSection = ({ feeds, isLoadingFeeds, onPostClick }) => {
     return <NoPostsMessage>No feed posts yet.</NoPostsMessage>;
   }
 
-  const renderFeedPost = (feed, index) => (
-    <FeedPostCardContainer key={feed._id} onClick={() => onPostClick(feed, index)}>
-      <FeedItem>
-        <FeedImage src={feed.media[0].url} alt={feed.caption} />
-        <MediaHoverOverlay className="media-hover-overlay">
-          <HoverIcon>
-            <FaHeart /> {feed.likes.length}
-          </HoverIcon>
-          <HoverIcon>
-            <FaComment /> {feed.comments.length}
-          </HoverIcon>
-        </MediaHoverOverlay>
-      </FeedItem>
-    </FeedPostCardContainer>
-  );
+  const renderFeedPost = (feed, index) => {
+    if (!feed.media || feed.media.length === 0) {
+      return null;
+    }
+    return (
+      <FeedPostCardContainer key={feed._id} onClick={() => onPostClick(feed, index)}>
+        <FeedItem>
+          <FeedImage src={feed.media[0].url} alt={feed.caption} />
+          <MediaHoverOverlay className="media-hover-overlay">
+            <HoverIcon>
+              <FaHeart /> {feed.likes.length}
+            </HoverIcon>
+            <HoverIcon>
+              <FaComment /> {feed.comments.length}
+            </HoverIcon>
+          </MediaHoverOverlay>
+        </FeedItem>
+      </FeedPostCardContainer>
+    );
+  };
 
   return (
     <FeedContainer>
