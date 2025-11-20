@@ -2,3 +2,5 @@ node_modules
 dist
 npm_preview.log
 jules-scratch/
+npm_output.log
+.env

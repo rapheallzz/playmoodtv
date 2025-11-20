@@ -564,7 +564,7 @@ function HomeContent({
 }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const FALLBACK_VIDEO_URL = 'https://res.cloudinary.com/di97mcvbu/video/upload/v1708430555/contents/q1xhinruadpovy0jxf6f.mp4';
+  const FALLBACK_VIDEO_URL = `https://res.cloudinary.com/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/video/upload/v1708430555/contents/q1xhinruadpovy0jxf6f.mp4`;
   const [activeSlide, setActiveSlide] = useState(0);
 
   useEffect(() => {

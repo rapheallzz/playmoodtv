@@ -71,7 +71,7 @@ const useChannelDetails = (user) => {
     formData.append('timestamp', sigData.timestamp);
     formData.append('signature', sigData.signature);
 
-    const cloudinaryUrl = `https://api.cloudinary.com/v1_1/di97mcvbu/image/upload`;
+    const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`;
     const { data: cloudinaryData } = await axios.post(cloudinaryUrl, formData);
 
     // Return the full response to get URL and public_id
