@@ -234,26 +234,9 @@ const Slidercontent = React.memo(function Slidercontent({
           </div>
         </>
       ) : (
-        <div className="flex flex-col justify-between h-full w-full">
-          <div className="h-20 w-full bg-black"></div>
-          <video
-            ref={videoRef}
-            playsInline
-            loop
-            autoPlay={isVideoPlaying}
-            muted
-            className="w-full h-auto object-cover cursor-pointer"
-          >
-            <source
-              src={
-                movie?.video
-                  ? `${movie.video}#t=${previewTimestamps.start},${previewTimestamps.end}`
-                  : ''
-              }
-            />
-          </video>
+        <div className="flex flex-col justify-between h-full w-full bg-black">
           <div
-            className="absolute bottom-0 w-full bg-black bg-opacity-75 p-2 flex flex-col gap-2"
+            className="w-full p-2 flex flex-col gap-2"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-center">
@@ -298,6 +281,22 @@ const Slidercontent = React.memo(function Slidercontent({
               </div>
             )}
           </div>
+          <video
+            ref={videoRef}
+            playsInline
+            loop
+            autoPlay={isVideoPlaying}
+            muted
+            className="w-full h-auto object-cover cursor-pointer"
+          >
+            <source
+              src={
+                movie?.video
+                  ? `${movie.video}#t=${previewTimestamps.start},${previewTimestamps.end}`
+                  : ''
+              }
+            />
+          </video>
         </div>
       )}
       {showPopup && (
