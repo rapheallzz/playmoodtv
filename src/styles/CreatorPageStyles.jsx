@@ -345,8 +345,6 @@ export const StyledSliderContainer = styled.div`
   width: 100%;
   padding: 0 20px;
   margin: 0 auto;
-  display: flex;
-  justify-content: flex-start;
 
   .slick-slider {
     position: relative;
@@ -1645,10 +1643,14 @@ export const LargeHighlightTitle = styled(HighlightTitle)`
 
 export const VideoGrid = styled.div`
   display: flex;
-  flex-wrap: wrap;
   gap: 16px;
   justify-content: flex-start;
   width: 100%;
+  flex-wrap: wrap;
+
+  @media screen and (max-width: 768px) {
+    justify-content: center;
+  }
 `;
 
 export const VerticalScrollViewer = styled.div`
