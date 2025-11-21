@@ -60,7 +60,7 @@ const CreatorSlider = React.memo(function CreatorSlider({ img, title, movie, id,
       {hover ? (
         <div className="flex flex-col justify-between w-full h-full">
           <video playsInline loop autoPlay muted className="w-full h-full object-cover">
-            <source src={movie.shortPreview} />
+            <source src={movie?.shortPreview || movie?.video} />
           </video>
           <div className="absolute bottom-0 left-0 w-full bg-black bg-opacity-70 p-5">
             <div className="flex justify-end items-center">

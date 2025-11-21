@@ -564,7 +564,9 @@ export const CreatorSlider = styled.div`
   flex-direction: column;
   justify-content: space-between;
   width: 100%;
-  height: 100%;
+  max-width: 200px;
+  height: 280px;
+  margin: 0 auto;
   cursor: pointer;
 `;
 
