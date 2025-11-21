@@ -33,19 +33,19 @@ const getSliderSettings = (itemCount) => ({
     {
       breakpoint: 600,
       settings: {
-        slidesToShow: 2,
+        slidesToShow: 1,
         slidesToScroll: 1,
         initialSlide: 0,
-        infinite: itemCount > 2,
+        infinite: itemCount > 1,
         arrows: true,
       },
     },
     {
       breakpoint: 480,
       settings: {
-        slidesToShow: 2,
+        slidesToShow: 1,
         slidesToScroll: 1,
-        infinite: itemCount > 2,
+        infinite: itemCount > 1,
         arrows: false,
       },
     },
