@@ -5,7 +5,7 @@ import 'slick-carousel/slick/slick-theme.css';
 import { StyledContentSection, SectionTitle, SubTabNav, SubTabButton, StyledSliderContainer, NoPostsMessage, CustomPrevArrow, CustomNextArrow, VideoGrid } from '../../styles/CreatorPageStyles';
 import PlaylistSection from './PlaylistSection';
 import CommunitySection from './CommunitySection';
-import Slidercontent from '../Slidercont';
+import CreatorSlider from './CreatorSlider';
 import ContentModal from '../ContentModal';
 
 const getSliderSettings = (itemCount) => ({
@@ -115,7 +115,7 @@ const ContentSection = ({
                 <Slider {...getSliderSettings(approvedVideos.length)}>
                   {approvedVideos.map((content) => (
                     <div key={content._id} className="slides">
-                      <Slidercontent
+                      <CreatorSlider
                         img={content.thumbnail}
                         title={content.title}
                         movie={content}
@@ -123,10 +123,7 @@ const ContentSection = ({
                         desc={content.description}
                         shortPreview={content.shortPreview}
                         customStyle={{}}
-                        onVideoClick={() => {
-                          console.log('Uploads (Approved) slider clicked:', content);
-                          handleOpenContentModal(content);
-                        }}
+                        onVideoClick={() => handleOpenContentModal(content)}
                       />
                     </div>
                   ))}
@@ -135,7 +132,7 @@ const ContentSection = ({
                 <VideoGrid>
                   {approvedVideos.map((content) => (
                     <div key={content._id} className="slides">
-                      <Slidercontent
+                      <CreatorSlider
                         img={content.thumbnail}
                         title={content.title}
                         movie={content}
@@ -143,10 +140,7 @@ const ContentSection = ({
                         desc={content.description}
                         shortPreview={content.shortPreview}
                         customStyle={{}}
-                        onVideoClick={() => {
-                          console.log('Uploads (Approved) slider clicked:', content);
-                          handleOpenContentModal(content);
-                        }}
+                        onVideoClick={() => handleOpenContentModal(content)}
                       />
                     </div>
                   ))}
@@ -159,7 +153,7 @@ const ContentSection = ({
                 <Slider {...getSliderSettings(pendingVideos.length)}>
                   {pendingVideos.map((content) => (
                     <div key={content._id} className="slides">
-                      <Slidercontent
+                      <CreatorSlider
                         img={content.thumbnail}
                         title={content.title}
                         movie={content}
@@ -179,7 +173,7 @@ const ContentSection = ({
                 <VideoGrid>
                   {pendingVideos.map((content) => (
                     <div key={content._id} className="slides">
-                      <Slidercontent
+                      <CreatorSlider
                         img={content.thumbnail}
                         title={content.title}
                         movie={content}
@@ -222,7 +216,7 @@ const ContentSection = ({
                   <Slider {...getSliderSettings(selectedPlaylistVideos.length)}>
                     {selectedPlaylistVideos.map((video) => (
                       <div key={video._id} className="slides">
-                        <Slidercontent
+                        <CreatorSlider
                           img={video.thumbnail}
                           title={video.title}
                           movie={video}
@@ -230,10 +224,7 @@ const ContentSection = ({
                           desc={video.description || ''}
                           shortPreview={video.shortPreview || video.video}
                           customStyle={{}}
-                          onVideoClick={() => {
-                            console.log('Playlist slider clicked:', video);
-                            handleOpenContentModal(video);
-                          }}
+                          onVideoClick={() => handleOpenContentModal(video)}
                         />
                       </div>
                     ))}
@@ -242,7 +233,7 @@ const ContentSection = ({
                   <VideoGrid>
                     {selectedPlaylistVideos.map((video) => (
                       <div key={video._id} className="slides">
-                        <Slidercontent
+                        <CreatorSlider
                           img={video.thumbnail}
                           title={video.title}
                           movie={video}
@@ -250,10 +241,7 @@ const ContentSection = ({
                           desc={video.description || ''}
                           shortPreview={video.shortPreview || video.video}
                           customStyle={{}}
-                          onVideoClick={() => {
-                            console.log('Playlist slider clicked:', video);
-                            handleOpenContentModal(video);
-                          }}
+                          onVideoClick={() => handleOpenContentModal(video)}
                         />
                       </div>
                     ))}

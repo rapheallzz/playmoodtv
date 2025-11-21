@@ -558,6 +558,16 @@ export const PostContent = styled.p`
   }
 `;
 
+export const CreatorSlider = styled.div`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+`;
+
 export const DotsContainer = styled.div`
   position: absolute;
   bottom: 10px;
