@@ -35,7 +35,7 @@ import LikedContentCard from '../components/LikedContentCard';
 import axios from 'axios';
 import { likeContent, unlikeContent, addToWatchlist, removeFromWatchlist } from '../features/authSlice';
 import Footer from '../components/footer/Footer';
-import BASE_API_URL from '../apiConfig';
+import BASE_API_URL, { CLOUDINARY_CLOUD_NAME } from '../apiConfig';
 import SliderTopTen from '../components/sliders/SliderTopTen';
 import HighlightsHome from '../components/HighlightsHome';
 import { Helmet } from 'react-helmet-async';
@@ -564,7 +564,7 @@ function HomeContent({
 }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const FALLBACK_VIDEO_URL = `https://res.cloudinary.com/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/video/upload/v1708430555/contents/q1xhinruadpovy0jxf6f.mp4`;
+  const FALLBACK_VIDEO_URL = `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/video/upload/v1708430555/contents/q1xhinruadpovy0jxf6f.mp4`;
   const [activeSlide, setActiveSlide] = useState(0);
 
   useEffect(() => {

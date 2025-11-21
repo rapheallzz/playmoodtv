@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import BASE_API_URL from '../apiConfig';
+import BASE_API_URL, { CLOUDINARY_CLOUD_NAME } from '../apiConfig';
 
 const useFeeds = (user, creatorId = null) => {
   const [feeds, setFeeds] = useState([]);
@@ -47,7 +47,7 @@ const useFeeds = (user, creatorId = null) => {
         formData.append('signature', signature);
 
         const cloudinaryResponse = await axios.post(
-          `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`,
+          `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
           formData
         );
         return {

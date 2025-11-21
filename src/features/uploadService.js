@@ -1,7 +1,8 @@
 import axios from 'axios';
+import { CLOUDINARY_CLOUD_NAME } from '../apiConfig';
 
 const uploadToCloudinary = async (file, signatureData, resourceType, onProgress) => {
-  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+  const cloudName = CLOUDINARY_CLOUD_NAME;
   const uploadUrl = `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`;
   const chunkSize = 20 * 1024 * 1024; // 20MB
 

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import BASE_API_URL from '../apiConfig';
+import BASE_API_URL, { CLOUDINARY_CLOUD_NAME } from '../apiConfig';
 
 const useChannelDetails = (user) => {
   const [bannerImage, setBannerImage] = useState('');
@@ -71,7 +71,7 @@ const useChannelDetails = (user) => {
     formData.append('timestamp', sigData.timestamp);
     formData.append('signature', sigData.signature);
 
-    const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`;
+    const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
     const { data: cloudinaryData } = await axios.post(cloudinaryUrl, formData);
 
     // Return the full response to get URL and public_id
