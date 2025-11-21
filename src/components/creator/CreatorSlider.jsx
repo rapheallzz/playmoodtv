@@ -58,20 +58,22 @@ const CreatorSlider = React.memo(function CreatorSlider({ img, title, movie, id,
         </div>
       )}
       {hover ? (
-        <div className="flex flex-col w-full h-full bg-black overflow-hidden">
-          <div className="w-full" style={{ height: '60%' }}>
+        <div className="flex flex-col w-full h-full bg-black">
+          <div className="h-3/5">
             <video playsInline loop autoPlay muted className="w-full h-full object-cover">
               <source src={movie?.shortPreview || movie?.video} />
             </video>
           </div>
-          <div className="flex flex-col p-3" style={{ height: '40%' }}>
+          <div className="flex-grow p-3 flex flex-col justify-between">
+            <div>
+              <h4 className="text-white text-sm font-semibold">{titleSpliced}</h4>
+              <p className="text-white text-xs font-light mt-1">{description}</p>
+            </div>
             <div className="flex justify-end items-center">
               <img src={whiteheart} alt="like" className="w-5 h-5" onClick={handleLikeClick} />
               <div className="w-2"></div>
               <FaPaperPlane color="white" className="text-xl" />
             </div>
-            <h4 className="text-white text-sm font-semibold mt-1">{titleSpliced}</h4>
-            <p className="text-white text-xs font-light mt-1">{description}</p>
           </div>
         </div>
       ) : (
