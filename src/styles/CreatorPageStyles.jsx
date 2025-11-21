@@ -566,6 +566,16 @@ export const CreatorSlider = styled.div`
   height: 280px;
   margin: 0 auto;
   cursor: pointer;
+
+  @media (max-width: 768px) {
+    max-width: 180px;
+    height: 260px;
+  }
+
+  @media (max-width: 480px) {
+    max-width: 150px;
+    height: 220px;
+  }
 `;
 
 export const DotsContainer = styled.div`
