@@ -8,7 +8,7 @@ import { HiDotsVertical } from 'react-icons/hi';
 import { FaPaperPlane } from 'react-icons/fa';
 import HeartOutlineIcon from '../Hearticon';
 import { useDispatch, useSelector } from 'react-redux';
-import { likeVideo } from '../../features/authSlice';
+import { likeContent } from '../../features/authSlice';
 import { CreatorSlider as StyledCreatorSlider } from '../../styles/CreatorPageStyles';
 
 const CreatorSlider = React.memo(function CreatorSlider({ img, title, movie, id, customStyle, onVideoClick }) {
@@ -34,9 +34,8 @@ const CreatorSlider = React.memo(function CreatorSlider({ img, title, movie, id,
         console.log('User not logged in');
         return;
       }
-      const userId = user.id;
-      const contentId = id;
-      await dispatch(likeVideo({ userId, videoId: contentId }));
+      const contentId = movie._id;
+      await dispatch(likeContent({ contentId }));
     } catch (error) {
       console.error('Error liking content:', error);
     }
