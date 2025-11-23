@@ -565,7 +565,6 @@ export const CreatorSlider = styled.div`
   max-width: 200px;
   height: auto;
   aspect-ratio: 200 / 280;
-  margin: 0 auto;
   cursor: pointer;
   overflow: hidden;
   border-radius: 8px;
@@ -1656,7 +1655,7 @@ export const VideoGrid = styled.div`
   flex-wrap: wrap;
 
   @media screen and (max-width: 768px) {
-    justify-content: center;
+    justify-content: flex-start;
   }
 `;
 
