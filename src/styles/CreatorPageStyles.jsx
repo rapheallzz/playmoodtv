@@ -751,6 +751,7 @@ export const ModalCardInput = styled.input`
 export const FeedContainer = styled.div`
   width: 100%;
   padding: 0 60px;
+  margin-bottom: 40px;
 
   .desktop-slider {
     display: block;
@@ -1402,6 +1403,7 @@ export const StyledContentSection = styled.div`
   width: 100%;
   padding: 0 60px;
   background-color: transparent;
+  margin-bottom: 40px;
 
   @media screen and (max-width: 768px) {
     padding: 0 20px;
