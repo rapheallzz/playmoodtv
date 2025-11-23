@@ -26,7 +26,7 @@ import {
   SendButton,
 } from '../../styles/CreatorPageStyles';
 
-const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
+const FeedPostViewerModal = ({ post, onClose, onNext, onPrev, onUpdatePost }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const { user } = useSelector((state) => state.auth);
   const [isLiked, setIsLiked] = useState(false);
@@ -80,6 +80,9 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
       });
       setComments(updatedPost.comments || []);
       setNewComment('');
+      if (onUpdatePost) {
+        onUpdatePost(updatedPost);
+      }
     } catch (error) {
       console.error('Failed to add comment:', error);
     }
