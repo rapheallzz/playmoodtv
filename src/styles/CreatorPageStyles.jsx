@@ -571,7 +571,7 @@ export const CreatorSlider = styled.div`
   border-radius: 8px;
 
   @media (max-width: 600px) {
-    max-width: 300px;
+    max-width: 260px;
   }
 `;
 
