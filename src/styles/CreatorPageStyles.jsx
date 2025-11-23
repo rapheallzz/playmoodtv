@@ -562,12 +562,17 @@ export const CreatorSlider = styled.div`
   flex-direction: column;
   justify-content: space-between;
   width: 100%;
+  max-width: 200px;
   height: auto;
-  aspect-ratio: 9 / 16;
+  aspect-ratio: 200 / 280;
   margin: 0 auto;
   cursor: pointer;
   overflow: hidden;
   border-radius: 8px;
+
+  @media (max-width: 600px) {
+    max-width: 300px;
+  }
 `;
 
 export const DotsContainer = styled.div`
