@@ -563,19 +563,12 @@ export const CreatorSlider = styled.div`
   justify-content: space-between;
   width: 100%;
   max-width: 200px;
-  height: 280px;
+  height: auto;
+  aspect-ratio: 9 / 16;
   margin: 0 auto;
   cursor: pointer;
-
-  @media (max-width: 768px) {
-    max-width: 180px;
-    height: 260px;
-  }
-
-  @media (max-width: 480px) {
-    max-width: 150px;
-    height: 220px;
-  }
+  overflow: hidden;
+  border-radius: 8px;
 `;
 
 export const DotsContainer = styled.div`
