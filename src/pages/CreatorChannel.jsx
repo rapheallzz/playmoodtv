@@ -212,6 +212,7 @@ export default function CreatorChannel() {
   const {
     feeds,
     isLoadingFeeds,
+    setFeeds,
   } = useFeeds(user, creatorId);
   const [viewedHighlights, setViewedHighlights] = useState(new Set());
   const [showVerticalHighlightViewer, setShowVerticalHighlightViewer] = useState(false);
@@ -252,6 +253,15 @@ export default function CreatorChannel() {
 
     setEnrichedHighlights(enrichedData);
     setShowVerticalHighlightViewer(true); // Data is ready, now we can show the viewer
+  };
+
+  const handleUpdateFeedPost = (updatedPost) => {
+    setFeeds((prevFeeds) =>
+      prevFeeds.map((feed) =>
+        feed._id === updatedPost._id ? updatedPost : feed
+      )
+    );
+    setSelectedFeedPost(updatedPost);
   };
 
   // Fetch creator data, subscriber count, and subscription status
@@ -1000,6 +1010,7 @@ const fetchPlaylists = async () => {
           onClose={() => setShowFeedPostViewerModal(false)}
           onNext={handleNextFeed}
           onPrev={handlePreviousFeed}
+          onUpdatePost={handleUpdateFeedPost}
         />
       )}
     </div>
