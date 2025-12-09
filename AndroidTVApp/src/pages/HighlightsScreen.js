@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, FlatList, Dimensions } from 'react-native';
-import Video from 'react-native-video';
+import { Video } from 'expo-av';
 import { useSelector } from 'react-redux';
 
 const { height } = Dimensions.get('window');
@@ -17,7 +17,8 @@ const HighlightsScreen = () => {
         source={{ uri: item.video }}
         style={styles.video}
         resizeMode="contain"
-        repeat
+        shouldPlay
+        isLooping
       />
       <Text style={styles.title}>{item.title}</Text>
     </View>

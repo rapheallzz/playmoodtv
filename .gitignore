@@ -4,4 +4,4 @@ npm_preview.log
 jules-scratch/
 *.log
 AndroidTVApp/node_modules/
-AndroidTVApp/android/build/
+AndroidTVApp/.expo/

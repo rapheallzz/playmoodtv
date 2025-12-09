@@ -1,32 +1,36 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import Video from 'react-native-video';
+import { View, Text, StyleSheet, TouchableOpacity, Button } from 'react-native';
+import { Video } from 'expo-av';
 import { useNavigation } from '@react-navigation/native';
 
 const VideoPlayerScreen = ({ route }) => {
   const { item } = route.params;
   const navigation = useNavigation();
-  const videoRef = useRef(null);
-  const [paused, setPaused] = useState(false);
+  const video = useRef(null);
+  const [status, setStatus] = useState({});
 
   return (
     <View style={styles.container}>
       <Video
-        ref={videoRef}
-        source={{ uri: item.video }}
+        ref={video}
         style={styles.video}
-        controls={true}
-        paused={paused}
+        source={{
+          uri: item.video,
+        }}
+        useNativeControls
         resizeMode="contain"
+        isLooping
+        onPlaybackStatusUpdate={status => setStatus(() => status)}
       />
       <View style={styles.overlay}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Text style={styles.backText}>Back</Text>
-        </TouchableOpacity>
+        <Button title="Back" onPress={() => navigation.goBack()} />
         <Text style={styles.title}>{item.title}</Text>
-        <TouchableOpacity onPress={() => setPaused(!paused)} style={styles.playPause}>
-          <Text style={styles.playPauseText}>{paused ? 'Play' : 'Pause'}</Text>
-        </TouchableOpacity>
+        <Button
+            title={status.isPlaying ? 'Pause' : 'Play'}
+            onPress={() =>
+              status.isPlaying ? video.current.pauseAsync() : video.current.playAsync()
+            }
+          />
       </View>
     </View>
   );
@@ -36,36 +40,23 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000',
+    justifyContent: 'center'
   },
   video: {
-    ...StyleSheet.absoluteFillObject,
+    alignSelf: 'center',
+    width: '100%',
+    height: '100%',
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'space-between',
     padding: 20,
-  },
-  backButton: {
-    alignSelf: 'flex-start',
-  },
-  backText: {
-    color: 'white',
-    fontSize: 18,
+    backgroundColor: 'rgba(0,0,0,0.2)'
   },
   title: {
     color: 'white',
     fontSize: 24,
     alignSelf: 'center',
-  },
-  playPause: {
-    alignSelf: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    padding: 10,
-    borderRadius: 5,
-  },
-  playPauseText: {
-    color: 'white',
-    fontSize: 18,
   },
 });
 

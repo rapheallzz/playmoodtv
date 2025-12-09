@@ -8,6 +8,7 @@ import HomeScreen from './src/pages/HomeScreen';
 import VideoPlayerScreen from './src/pages/VideoPlayerScreen';
 import HighlightsScreen from './src/pages/HighlightsScreen';
 import { restoreUser } from './src/features/authSlice';
+import { StatusBar } from 'expo-status-bar';
 
 const Stack = createNativeStackNavigator();
 
@@ -39,6 +40,7 @@ const AppContent = () => {
 function App() {
   return (
     <Provider store={store}>
+      <StatusBar style="light" />
       <AppContent />
     </Provider>
   );

@@ -47,10 +47,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
+    backgroundColor: '#000',
   },
   title: {
     fontSize: 24,
     marginBottom: 20,
+    color: 'white',
   },
   input: {
     width: '80%',
@@ -59,6 +61,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 20,
     paddingHorizontal: 10,
+    color: 'white',
   },
   error: {
     color: 'red',
