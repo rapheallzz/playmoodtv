@@ -7,6 +7,7 @@ import LoginScreen from './src/pages/LoginScreen';
 import HomeScreen from './src/pages/HomeScreen';
 import VideoPlayerScreen from './src/pages/VideoPlayerScreen';
 import HighlightsScreen from './src/pages/HighlightsScreen';
+import MoviePage from './src/pages/MoviePage';
 import { restoreUser } from './src/features/authSlice';
 import { StatusBar } from 'expo-status-bar';
 
@@ -28,6 +29,7 @@ const AppContent = () => {
             <Stack.Screen name="Home" component={HomeScreen} />
             <Stack.Screen name="VideoPlayer" component={VideoPlayerScreen} />
             <Stack.Screen name="Highlights" component={HighlightsScreen} />
+            <Stack.Screen name="MoviePage" component={MoviePage} />
           </>
         ) : (
           <Stack.Screen name="Login" component={LoginScreen} />

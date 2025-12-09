@@ -11,7 +11,7 @@ const ContentCard = ({ item, onPress }) => {
     if (onPress) {
       onPress();
     } else {
-      navigation.navigate('VideoPlayer', { item });
+      navigation.navigate('MoviePage', { item });
     }
   };
 

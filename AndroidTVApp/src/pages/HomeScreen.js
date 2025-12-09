@@ -38,7 +38,7 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <ScrollView style={styles.container}>
-      <Banner item={content[0]} />
+      <Banner items={content.slice(0, 3)} />
       {categories.map(category => (
         <Carousel
           key={category}

@@ -3,14 +3,12 @@ import { View, Text, StyleSheet, FlatList, Dimensions } from 'react-native';
 import { Video } from 'expo-av';
 import { LinearGradient } from 'expo-linear-gradient';
 import NeonButton from './NeonButton';
-import { useNavigation } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window');
 
 const Banner = ({ items }) => {
   const [activeSlide, setActiveSlide] = useState(0);
   const flatListRef = useRef(null);
-  const navigation = useNavigation();
 
   useEffect(() => {
     if (items && items.length > 0) {
@@ -43,7 +41,7 @@ const Banner = ({ items }) => {
         <Text style={styles.title}>{item.title}</Text>
         <Text style={styles.description} numberOfLines={3}>{item.description}</Text>
         <View style={styles.buttonContainer}>
-          <NeonButton title="WATCH NOW" onPress={() => navigation.navigate('MoviePage', { item })} />
+          <NeonButton title="WATCH NOW" onPress={() => {}} />
           <NeonButton title="ADD TO WATCHLIST" onPress={() => {}} />
         </View>
       </View>
