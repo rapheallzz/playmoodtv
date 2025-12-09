@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "AndroidTVApp",
+    "slug": "AndroidTVApp",
+    "version": "1.0.0",
+    "orientation": "landscape",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "banner": "./assets/tv-banner.png",
+      "userInterfaceStyle": "tv"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}
