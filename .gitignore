@@ -3,4 +3,5 @@ dist
 npm_preview.log
 jules-scratch/
 *.log
-AndroidTVApp/
+AndroidTVApp/node_modules/
+AndroidTVApp/android/build/
