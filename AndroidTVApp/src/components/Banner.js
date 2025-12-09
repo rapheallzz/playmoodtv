@@ -1,45 +1,68 @@
 import React from 'react';
-import { View, Text, ImageBackground, StyleSheet, Button } from 'react-native';
+import { View, Text, StyleSheet, Button } from 'react-native';
+import { Video } from 'expo-av';
 
 const Banner = ({ item }) => {
-  if (!item) return null;
+  if (!item || !item.video) return null;
 
   return (
-    <ImageBackground source={{ uri: item.thumbnail }} style={styles.banner}>
+    <View style={styles.bannerContainer}>
+      <Video
+        source={{ uri: item.video }}
+        style={styles.video}
+        isMuted
+        shouldPlay
+        isLooping
+        resizeMode="cover"
+      />
       <View style={styles.overlay}>
         <Text style={styles.title}>{item.title}</Text>
         <Text style={styles.description} numberOfLines={3}>{item.description}</Text>
         <View style={styles.buttonContainer}>
           <Button title="Watch Now" onPress={() => {}} />
+          <Button title="Add to Watchlist" onPress={() => {}} />
         </View>
       </View>
-    </ImageBackground>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  banner: {
+  bannerContainer: {
     width: '100%',
-    height: 300,
+    height: 400, // Increased height for a more cinematic feel
     justifyContent: 'flex-end',
   },
+  video: {
+    ...StyleSheet.absoluteFillObject,
+  },
   overlay: {
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    padding: 20,
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    justifyContent: 'center',
+    padding: 40,
   },
   title: {
     color: 'white',
-    fontSize: 24,
+    fontSize: 32,
     fontWeight: 'bold',
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: -1, height: 1 },
+    textShadowRadius: 10,
   },
   description: {
     color: 'white',
-    fontSize: 16,
-    marginVertical: 10,
+    fontSize: 18,
+    marginVertical: 15,
+    maxWidth: '50%',
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: -1, height: 1 },
+    textShadowRadius: 10,
   },
   buttonContainer: {
-    width: '30%',
-    marginTop: 10,
+    flexDirection: 'row',
+    marginTop: 20,
+    gap: 10, // Creates space between buttons
   },
 });
 

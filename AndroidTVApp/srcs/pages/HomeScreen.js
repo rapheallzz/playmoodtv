@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
-import { ScrollView, StyleSheet, ActivityIndicator, Text } from 'react-native';
+import { View, ScrollView, StyleSheet, ActivityIndicator, Text } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchContent } from '../features/contentSlice';
 import Banner from '../components/Banner';
 import Carousel from '../components/Carousel';
+import { TouchableHighlight } from 'react-native';
 
 const HomeScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -14,7 +15,7 @@ const HomeScreen = ({ navigation }) => {
   }, [dispatch]);
 
   const categories = [
-    'Highlights', 'Top 10', 'New on Playmood', 'Diaries', 'Spaces', 'Recommended for you',
+    'Top 10', 'New on Playmood', 'Diaries', 'Spaces', 'Recommended for you',
     'Interviews', 'Fashion Shows', 'Social', 'Documentaries and Reports',
     'Behind the Cameras', 'Soon in Playmood', 'Teens', 'Only in Playmood'
   ];
@@ -28,23 +29,26 @@ const HomeScreen = ({ navigation }) => {
   }
 
   const getContentForCategory = (category) => {
-    if (category === 'Highlights') {
-      // Logic to get highlights, for now, just a slice
-      return content.slice(10, 20);
-    }
-    // This is a placeholder logic.
     return content.slice(0, 10);
   }
 
   return (
     <ScrollView style={styles.container}>
       <Banner item={content[0]} />
+      <TouchableHighlight onPress={() => navigation.navigate('Highlights')}>
+        <View>
+          <Carousel
+            title="Highlights"
+            data={content.slice(10, 20)} // Using a different slice for highlights
+          />
+        </View>
+      </TouchableHighlight>
+
       {categories.map(category => (
         <Carousel
           key={category}
           title={category}
           data={getContentForCategory(category)}
-          navigation={navigation}
         />
       ))}
     </ScrollView>
