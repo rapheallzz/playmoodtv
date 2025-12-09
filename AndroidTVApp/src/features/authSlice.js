@@ -62,7 +62,7 @@ export const likeContent = createAsyncThunk('content/likeContent', async ({ cont
     if (!token) throw new Error('No token found');
     await contentService.likeContent({ contentId, token });
     return contentId;
-  } catch (error) => {
+  } catch (error) {
     return thunkAPI.rejectWithValue(error.message);
   }
 });
@@ -73,7 +73,7 @@ export const unlikeContent = createAsyncThunk('content/unlikeContent', async ({ 
     if (!token) throw new Error('No token found');
     await contentService.unlikeContent({ contentId, token });
     return contentId;
-  } catch (error) => {
+  } catch (error) {
     return thunkAPI.rejectWithValue(error.message);
   }
 });
