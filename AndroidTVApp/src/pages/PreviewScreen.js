@@ -31,13 +31,15 @@ const PreviewScreen = () => {
     );
   }
 
+  const videoSource = item.shortPreview ? { uri: item.shortPreview } : { uri: item.video };
+
   return (
     <View style={styles.container}>
       <ImageBackground source={{ uri: item.thumbnail }} style={styles.backgroundImage}>
-        {showVideo && item.video && (
+        {showVideo && videoSource.uri && (
           <Video
             ref={videoRef}
-            source={{ uri: item.video }}
+            source={videoSource}
             style={styles.backgroundImage}
             isMuted
             shouldPlay
