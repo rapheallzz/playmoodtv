@@ -18,7 +18,7 @@ const HomeScreen = ({ navigation }) => {
   }, [dispatch]);
 
   const categories = [
-    'My Watchlist', 'Liked Content', 'Highlights', 'Top 10', 'New on Playmood', 'Diaries', 'Spaces',
+    'Highlights', 'Top 10', 'New on Playmood', 'My Watchlist', 'Liked Content', 'Diaries', 'Spaces',
     'Recommended for you', 'Interviews', 'Fashion Shows', 'Social', 'Documentaries and Reports',
     'Behind the Cameras', 'Soon in Playmood', 'Teens', 'Only in Playmood'
   ];
