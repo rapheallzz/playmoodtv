@@ -12,7 +12,7 @@ const NeonButton = ({ title, onPress }) => {
       onBlur={() => setIsFocused(false)}
       underlayColor="#541011"
     >
-      <Text style={styles.text}>{title}</Text>
+      <Text style={[styles.text, isFocused && styles.textFocused]}>{title}</Text>
     </TouchableHighlight>
   );
 };
@@ -28,9 +28,10 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   focused: {
-    borderColor: '#541011', // Primary brand color
+    backgroundColor: '#541011', // Primary brand color
+    borderColor: '#541011',
     transform: [{ scale: 1.1 }],
-    shadowColor: '#541011', // Primary brand color
+    shadowColor: '#541011',
     shadowOffset: {
       width: 0,
       height: 0,
@@ -42,6 +43,9 @@ const styles = StyleSheet.create({
   text: {
     color: 'white',
     fontSize: 14,
+  },
+  textFocused: {
+    color: 'white',
   },
 });
 
