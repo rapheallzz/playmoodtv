@@ -7,7 +7,7 @@ const Carousel = ({ title, data, navigation }) => {
     if (title === 'Highlights') {
       navigation.navigate('Highlights', { item });
     } else {
-      navigation.navigate('VideoPlayer', { item });
+      navigation.navigate('Preview', { item });
     }
   };
 

@@ -5,7 +5,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from './src/pages/LoginScreen';
 import HomeScreen from './src/pages/HomeScreen';
-import VideoPlayerScreen from './src/pages/VideoPlayerScreen';
+import PreviewScreen from './src/pages/PreviewScreen';
 import HighlightsScreen from './src/pages/HighlightsScreen';
 import MoviePage from './src/pages/MoviePage';
 import { restoreUser } from './src/features/authSlice';
@@ -27,7 +27,7 @@ const AppContent = () => {
         {userToken ? (
           <>
             <Stack.Screen name="Home" component={HomeScreen} />
-            <Stack.Screen name="VideoPlayer" component={VideoPlayerScreen} />
+            <Stack.Screen name="Preview" component={PreviewScreen} />
             <Stack.Screen name="Highlights" component={HighlightsScreen} />
             <Stack.Screen name="MoviePage" component={MoviePage} />
           </>

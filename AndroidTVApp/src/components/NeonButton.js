@@ -28,9 +28,9 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   focused: {
-    borderColor: '#541011',
+    borderColor: '#541011', // Primary brand color
     transform: [{ scale: 1.1 }],
-    shadowColor: '#541011',
+    shadowColor: '#541011', // Primary brand color
     shadowOffset: {
       width: 0,
       height: 0,
