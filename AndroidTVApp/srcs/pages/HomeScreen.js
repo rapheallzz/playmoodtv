@@ -19,7 +19,7 @@ const HomeScreen = ({ navigation }) => {
 
   const categories = [
     'Highlights', 'Top 10', 'New on Playmood', 'My Watchlist', 'Liked Content', 'Channels', 'Diaries', 'Spaces',
-    'Recommended for you', 'Interviews', 'Fashion Shows', 'Social', 'Documentaries and Reports',
+    'Recommended for you', 'Interviews', 'Fashion Show', 'Social', 'Documentaries and Reports',
     'Behind the Cameras', 'Soon in Playmood', 'Teens', 'Only in Playmood'
   ];
 
@@ -32,13 +32,19 @@ const HomeScreen = ({ navigation }) => {
   }
 
   const getContentForCategory = (category) => {
-    switch (category) {
-      case 'My Watchlist':
+    const lowerCategory = category.toLowerCase();
+    switch (lowerCategory) {
+      case 'my watchlist':
         return watchlist;
-      case 'Liked Content':
+      case 'liked content':
         return likedContent;
       default:
-        return content.filter(item => item.category?.toLowerCase() === category.toLowerCase());
+        return content.filter(item => {
+          const itemCategory = item.category?.toLowerCase();
+          if (!itemCategory) return false;
+          // Check for both singular and plural forms
+          return itemCategory === lowerCategory || `${itemCategory}s` === lowerCategory;
+        });
     }
   }
 
@@ -52,15 +58,21 @@ const HomeScreen = ({ navigation }) => {
   return (
     <ScrollView style={styles.container}>
       <Banner items={content.slice(0, 3)} />
-      {categories.map(category => (
-        <Carousel
-          key={category}
-          title={category}
-          data={getContentForCategory(category)}
-          navigation={navigation}
-          cardType={getCardTypeForCategory(category)}
-        />
-      ))}
+      {categories.map(category => {
+        const data = getContentForCategory(category);
+        if (data && data.length > 0) {
+          return (
+            <Carousel
+              key={category}
+              title={category}
+              data={data}
+              navigation={navigation}
+              cardType={getCardTypeForCategory(category)}
+            />
+          );
+        }
+        return null;
+      })}
     </ScrollView>
   );
 };
