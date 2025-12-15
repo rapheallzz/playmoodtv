@@ -4,6 +4,8 @@ import { Video } from 'expo-av';
 import { LinearGradient } from 'expo-linear-gradient';
 import NeonButton from './NeonButton';
 import { useNavigation } from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux';
+import { likeContent, unlikeContent, addToWatchlist, removeFromWatchlist } from '../features/authSlice';
 
 const { width } = Dimensions.get('window');
 
@@ -11,6 +13,8 @@ const Banner = ({ items }) => {
   const [activeSlide, setActiveSlide] = useState(0);
   const flatListRef = useRef(null);
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.user);
 
   useEffect(() => {
     if (items && items.length > 0) {
@@ -25,30 +29,52 @@ const Banner = ({ items }) => {
     }
   }, [items]);
 
-  const renderItem = ({ item }) => (
-    <View style={styles.slide}>
-      <Video
-        source={{ uri: item.video }}
-        style={styles.video}
-        isMuted
-        shouldPlay
-        isLooping
-        resizeMode="cover"
-      />
-      <LinearGradient
-        colors={['transparent', 'rgba(0,0,0,0.8)', 'black']}
-        style={styles.gradient}
-      />
-      <View style={styles.contentContainer}>
-        <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.description} numberOfLines={3}>{item.description}</Text>
-        <View style={styles.buttonContainer}>
-          <NeonButton title="WATCH NOW" onPress={() => navigation.navigate('MoviePage', { item })} />
-          <NeonButton title="ADD TO WATCHLIST" onPress={() => {}} />
+  const renderItem = ({ item }) => {
+    const isLiked = user?.likes?.includes(item._id);
+    const isInWatchlist = user?.watchlist?.includes(item._id);
+
+    const handleLike = () => {
+      if (isLiked) {
+        dispatch(unlikeContent({ contentId: item._id }));
+      } else {
+        dispatch(likeContent({ contentId: item._id }));
+      }
+    };
+
+    const handleWatchlist = () => {
+      if (isInWatchlist) {
+        dispatch(removeFromWatchlist({ contentId: item._id }));
+      } else {
+        dispatch(addToWatchlist({ contentId: item._id }));
+      }
+    };
+
+    return (
+      <View style={styles.slide}>
+        <Video
+          source={{ uri: item.video }}
+          style={styles.video}
+          isMuted
+          shouldPlay
+          isLooping
+          resizeMode="cover"
+        />
+        <LinearGradient
+          colors={['transparent', 'rgba(0,0,0,0.8)', 'black']}
+          style={styles.gradient}
+        />
+        <View style={styles.contentContainer}>
+          <Text style={styles.title}>{item.title}</Text>
+          <Text style={styles.description} numberOfLines={3}>{item.description}</Text>
+          <View style={styles.buttonContainer}>
+            <NeonButton title="WATCH NOW" onPress={() => navigation.navigate('MoviePage', { item })} />
+            <NeonButton title={isLiked ? "Unlike" : "Like"} onPress={handleLike} />
+            <NeonButton title={isInWatchlist ? "Remove from Watchlist" : "Add to Watchlist"} onPress={handleWatchlist} />
+          </View>
         </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   if (!items || items.length === 0) return null;
 

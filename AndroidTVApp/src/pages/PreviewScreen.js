@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ImageBackground, ScrollView, TouchableHighlight } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRoute, useNavigation } from '@react-navigation/native';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Video } from 'expo-av';
 import NeonButton from '../components/NeonButton';
-import { likeContent, addToWatchlist } from '../features/authSlice';
+import { likeContent, unlikeContent, addToWatchlist, removeFromWatchlist } from '../features/authSlice';
 
 const PreviewScreen = () => {
   const route = useRoute();
@@ -13,15 +13,34 @@ const PreviewScreen = () => {
   const dispatch = useDispatch();
   const { item } = route.params;
   const [showVideo, setShowVideo] = useState(false);
-  const videoRef = useRef(null);
+  const user = useSelector((state) => state.auth.user);
+
+  const isLiked = user?.likes?.includes(item._id);
+  const isInWatchlist = user?.watchlist?.includes(item._id);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowVideo(true);
-    }, 2000); // Start video after 2 seconds
+    }, 2000);
 
     return () => clearTimeout(timer);
   }, []);
+
+  const handleLike = () => {
+    if (isLiked) {
+      dispatch(unlikeContent({ contentId: item._id }));
+    } else {
+      dispatch(likeContent({ contentId: item._id }));
+    }
+  };
+
+  const handleWatchlist = () => {
+    if (isInWatchlist) {
+      dispatch(removeFromWatchlist({ contentId: item._id }));
+    } else {
+      dispatch(addToWatchlist({ contentId: item._id }));
+    }
+  };
 
   if (!item) {
     return (
@@ -38,7 +57,6 @@ const PreviewScreen = () => {
       <ImageBackground source={{ uri: item.thumbnail }} style={styles.backgroundImage}>
         {showVideo && videoSource.uri && (
           <Video
-            ref={videoRef}
             source={videoSource}
             style={styles.backgroundImage}
             isMuted
@@ -64,8 +82,8 @@ const PreviewScreen = () => {
             <Text style={styles.description}>{item.description}</Text>
             <View style={styles.buttonContainer}>
               <NeonButton title="Play" onPress={() => navigation.navigate('MoviePage', { item })} />
-              <NeonButton title="Like" onPress={() => dispatch(likeContent({ contentId: item._id }))} />
-              <NeonButton title="Add to Watchlist" onPress={() => dispatch(addToWatchlist({ contentId: item._id }))} />
+              <NeonButton title={isLiked ? "Unlike" : "Like"} onPress={handleLike} />
+              <NeonButton title={isInWatchlist ? "Remove from Watchlist" : "Add to Watchlist"} onPress={handleWatchlist} />
             </View>
           </View>
         </ScrollView>
