@@ -18,7 +18,7 @@ const HomeScreen = ({ navigation }) => {
   }, [dispatch]);
 
   const categories = [
-    'Highlights', 'Top 10', 'New on Playmood', 'My Watchlist', 'Liked Content', 'Diaries', 'Spaces',
+    'Highlights', 'Top 10', 'New on Playmood', 'My Watchlist', 'Liked Content', 'Channels', 'Diaries', 'Spaces',
     'Recommended for you', 'Interviews', 'Fashion Shows', 'Social', 'Documentaries and Reports',
     'Behind the Cameras', 'Soon in Playmood', 'Teens', 'Only in Playmood'
   ];
@@ -37,11 +37,16 @@ const HomeScreen = ({ navigation }) => {
         return watchlist;
       case 'Liked Content':
         return likedContent;
-      case 'Highlights':
-        return content.slice(10, 20);
       default:
-        return content.slice(0, 10);
+        return content.filter(item => item.category?.toLowerCase() === category.toLowerCase());
     }
+  }
+
+  const getCardTypeForCategory = (category) => {
+    if (['Channels', 'Diaries', 'Spaces'].includes(category)) {
+      return 'circle';
+    }
+    return 'default';
   }
 
   return (
@@ -53,6 +58,7 @@ const HomeScreen = ({ navigation }) => {
           title={category}
           data={getContentForCategory(category)}
           navigation={navigation}
+          cardType={getCardTypeForCategory(category)}
         />
       ))}
     </ScrollView>
