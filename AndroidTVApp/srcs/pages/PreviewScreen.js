@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, ImageBackground, ScrollView, TouchableHighlight } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
+import { Video } from 'expo-av';
 import NeonButton from '../components/NeonButton';
 import { likeContent, addToWatchlist } from '../features/authSlice';
 
@@ -11,6 +12,16 @@ const PreviewScreen = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const { item } = route.params;
+  const [shouldPlay, setShouldPlay] = useState(false);
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShouldPlay(true);
+    }, 2000); // Start video after 2 seconds
+
+    return () => clearTimeout(timer);
+  }, []);
 
   if (!item) {
     return (
@@ -22,6 +33,17 @@ const PreviewScreen = () => {
 
   return (
     <View style={styles.container}>
+      {item.video && (
+        <Video
+          ref={videoRef}
+          source={{ uri: item.video }}
+          style={styles.backgroundImage}
+          isMuted
+          shouldPlay={shouldPlay}
+          isLooping
+          resizeMode="cover"
+        />
+      )}
       <ImageBackground source={{ uri: item.thumbnail }} style={styles.backgroundImage}>
         <LinearGradient
           colors={['transparent', 'rgba(0,0,0,0.8)', 'black']}
@@ -56,7 +78,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#000',
   },
   backgroundImage: {
-    flex: 1,
+    ...StyleSheet.absoluteFillObject,
     resizeMode: 'cover',
   },
   gradient: {
@@ -75,11 +97,11 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    justifyContent: 'center', // Center the content vertically
+    justifyContent: 'center',
   },
   detailsContainer: {
     padding: 40,
-    alignItems: 'center', // Center the content horizontally
+    alignItems: 'center',
   },
   title: {
     color: 'white',
@@ -93,7 +115,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginBottom: 20,
     textAlign: 'center',
-    maxWidth: '80%', // Constrain the width for better readability
+    maxWidth: '80%',
   },
   buttonContainer: {
     flexDirection: 'row',
