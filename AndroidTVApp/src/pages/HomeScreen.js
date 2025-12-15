@@ -17,6 +17,12 @@ const HomeScreen = ({ navigation }) => {
     dispatch(getLikedContent());
   }, [dispatch]);
 
+  useEffect(() => {
+    if (content.length > 0) {
+      console.log('Content data structure:', JSON.stringify(content.slice(0, 5), null, 2)); // Log first 5 items
+    }
+  }, [content]);
+
   const categories = [
     'Highlights', 'Top 10', 'New on Playmood', 'My Watchlist', 'Liked Content', 'Channels', 'Diaries', 'Spaces',
     'Recommended for you', 'Interviews', 'Fashion Shows', 'Social', 'Documentaries and Reports',
