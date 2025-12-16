@@ -102,28 +102,6 @@ export const removeFromWatchlist = createAsyncThunk('content/removeFromWatchlist
   }
 });
 
-export const getWatchlist = createAsyncThunk('content/getWatchlist', async (_, thunkAPI) => {
-  try {
-    const token = thunkAPI.getState().auth.user?.token;
-    if (!token) throw new Error('No token found');
-    const response = await contentService.getWatchlist({ token });
-    return response;
-  } catch (error) {
-    return thunkAPI.rejectWithValue(error.message);
-  }
-});
-
-export const getLikedContent = createAsyncThunk('content/getLikedContent', async (_, thunkAPI) => {
-  try {
-    const token = thunkAPI.getState().auth.user?.token;
-    if (!token) throw new Error('No token found');
-    const response = await contentService.getLikedContent({ token });
-    return response;
-  } catch (error) {
-    return thunkAPI.rejectWithValue(error.message);
-  }
-});
-
 export const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -170,12 +148,6 @@ export const authSlice = createSlice({
         if (state.user) {
           state.user.watchlist = state.user.watchlist?.filter((id) => id !== action.payload) || [];
         }
-      })
-      .addCase(getWatchlist.fulfilled, (state, action) => {
-        state.watchlist = action.payload;
-      })
-      .addCase(getLikedContent.fulfilled, (state, action) => {
-        state.likedContent = action.payload;
       });
   },
 });

@@ -3,6 +3,7 @@ import { ScrollView, StyleSheet, ActivityIndicator, Text } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchContent } from '../features/contentSlice';
 import { getWatchlist, getLikedContent } from '../features/userContentSlice';
+import { getTopTen } from '../features/topTenSlice';
 import Banner from '../components/Banner';
 import Carousel from '../components/Carousel';
 
@@ -10,11 +11,13 @@ const HomeScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const { content, isLoading: isContentLoading, isError: isContentError, message: contentMessage } = useSelector((state) => state.content);
   const { watchlist, likedContent, isLoading: isUserContentLoading, isError: isUserContentError } = useSelector((state) => state.userContent);
+  const { topTen, isLoading: isTopTenLoading, isError: isTopTenError } = useSelector((state) => state.topTen);
 
   useEffect(() => {
     dispatch(fetchContent());
     dispatch(getWatchlist());
     dispatch(getLikedContent());
+    dispatch(getTopTen());
   }, [dispatch]);
 
   const categories = [
@@ -23,11 +26,11 @@ const HomeScreen = ({ navigation }) => {
     'Behind the Cameras', 'Soon in Playmood', 'Teens', 'Only in Playmood'
   ];
 
-  if (isContentLoading || isUserContentLoading) {
+  if (isContentLoading || isUserContentLoading || isTopTenLoading) {
     return <ActivityIndicator size="large" style={styles.loader} />;
   }
 
-  if (isContentError || isUserContentError) {
+  if (isContentError || isUserContentError || isTopTenError) {
     return <Text style={styles.error}>{contentMessage}</Text>;
   }
 
@@ -38,12 +41,13 @@ const HomeScreen = ({ navigation }) => {
         return watchlist;
       case 'liked content':
         return likedContent;
+      case 'top 10':
+        return topTen;
       default:
         return content.filter(item => {
           const itemCategory = item.category?.toLowerCase();
           if (!itemCategory) return false;
-          // Check for both singular and plural forms
-          return itemCategory === lowerCategory || `${itemCategory}s` === lowerCategory;
+          return itemCategory === lowerCategory;
         });
     }
   }
@@ -60,18 +64,15 @@ const HomeScreen = ({ navigation }) => {
       <Banner items={content.slice(0, 3)} />
       {categories.map(category => {
         const data = getContentForCategory(category);
-        if (data && data.length > 0) {
-          return (
-            <Carousel
-              key={category}
-              title={category}
-              data={data}
-              navigation={navigation}
-              cardType={getCardTypeForCategory(category)}
-            />
-          );
-        }
-        return null;
+        return (
+          <Carousel
+            key={category}
+            title={category}
+            data={data}
+            navigation={navigation}
+            cardType={getCardTypeForCategory(category)}
+          />
+        );
       })}
     </ScrollView>
   );

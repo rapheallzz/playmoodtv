@@ -69,6 +69,15 @@ const getLikedContent = async ({ token }) => {
   }
 };
 
+const getTopTen = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/top-ten`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Failed to get top ten content.');
+  }
+};
+
 const contentService = {
   likeContent,
   unlikeContent,
@@ -76,6 +85,7 @@ const contentService = {
   removeFromWatchlist,
   getWatchlist,
   getLikedContent,
+  getTopTen,
 };
 
 export default contentService;
