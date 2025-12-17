@@ -34,6 +34,11 @@ const HomeScreen = ({ navigation }) => {
     return <Text style={styles.error}>{contentMessage}</Text>;
   }
 
+  console.log('Content from Redux:', content);
+  console.log('Watchlist from Redux:', watchlist);
+  console.log('Liked Content from Redux:', likedContent);
+  console.log('Top Ten from Redux:', topTen);
+
   const getContentForCategory = (category) => {
     const lowerCategory = category.toLowerCase();
     switch (lowerCategory) {
