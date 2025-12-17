@@ -19,6 +19,15 @@ const Carousel = ({ title, data, navigation, cardType = 'default' }) => {
     return <ContentCard item={item} onPress={() => handlePress(item)} />;
   };
 
+  if (!data || data.length === 0) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>{title}</Text>
+        <Text style={styles.emptyText}>No content available</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{title}</Text>
@@ -43,6 +52,10 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 15,
+  },
+  emptyText: {
+    color: 'grey',
+    fontSize: 16,
   },
 });
 
