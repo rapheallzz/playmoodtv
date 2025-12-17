@@ -47,8 +47,7 @@ const HomeScreen = ({ navigation }) => {
         return content.filter(item => {
           const itemCategory = item.category?.toLowerCase();
           if (!itemCategory) return false;
-          // Check for both singular and plural forms
-          return itemCategory === lowerCategory || `${itemCategory}s` === lowerCategory;
+          return itemCategory === lowerCategory;
         });
     }
   }
@@ -65,18 +64,15 @@ const HomeScreen = ({ navigation }) => {
       <Banner items={content.slice(0, 3)} />
       {categories.map(category => {
         const data = getContentForCategory(category);
-        if (data && data.length > 0) {
-          return (
-            <Carousel
-              key={category}
-              title={category}
-              data={data}
-              navigation={navigation}
-              cardType={getCardTypeForCategory(category)}
-            />
-          );
-        }
-        return null;
+        return (
+          <Carousel
+            key={category}
+            title={category}
+            data={data}
+            navigation={navigation}
+            cardType={getCardTypeForCategory(category)}
+          />
+        );
       })}
     </ScrollView>
   );
