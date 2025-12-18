@@ -3,10 +3,10 @@
     "name": "AndroidTVApp",
     "slug": "AndroidTVApp",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "landscape",
     "icon": "./assets/images/icon.png",
     "scheme": "androidtvapp",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "tv",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true
@@ -18,8 +18,16 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
+      "intentFilters": [
+        {
+          "action": "MAIN",
+          "category": [
+            "LEANBACK_LAUNCHER"
+          ]
+        }
+      ],
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackgestureEnabled": false
     },
     "web": {
       "output": "static",
