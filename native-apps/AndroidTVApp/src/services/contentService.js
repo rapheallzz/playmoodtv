@@ -24,7 +24,6 @@ const getTopTen = async (token) => {
     return response.data;
   };
 
-
 // Get single content by ID
 const getContentById = async (contentId, token) => {
     const config = {
