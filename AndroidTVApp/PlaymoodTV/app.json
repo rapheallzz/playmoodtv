@@ -1,0 +1,42 @@
+{
+  "expo": {
+    "name": "PlaymoodTV",
+    "slug": "PlaymoodTV",
+    "version": "1.0.0",
+    "orientation": "landscape",
+    "icon": "./assets/images/icon.png",
+    "scheme": "playmoodtv",
+    "userInterfaceStyle": "tv",
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "intentFilters": [
+        {
+          "action": "MAIN",
+          "category": [
+            "LEANBACK_LAUNCHER"
+          ]
+        }
+      ]
+    },
+    "web": {
+      "favicon": "./assets/images/favicon.png"
+    }
+  }
+}
