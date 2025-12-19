@@ -1,25 +1,37 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useLayoutEffect } from 'react';
 import { View, FlatList, ActivityIndicator } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchContent } from '../features/contentSlice';
+import { fetchContent, setSearchQuery } from '../features/contentSlice';
 import styled from 'styled-components/native';
 import ContentSlider from '../components/ContentSlider';
 import BannerSlider from '../components/BannerSlider';
+import SearchHeader from '../components/SearchHeader';
 
 const HomeScreen = ({ navigation }) => {
   const dispatch = useDispatch();
-  const { content, isLoading, isError, message } = useSelector(
+  const { content, filteredContent, isLoading, searchQuery } = useSelector(
     (state) => state.content
   );
   const [categories, setCategories] = useState({});
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      header: () => (
+        <SearchHeader
+          value={searchQuery}
+          onChangeText={(text) => dispatch(setSearchQuery(text))}
+        />
+      ),
+    });
+  }, [navigation, searchQuery, dispatch]);
 
   useEffect(() => {
     dispatch(fetchContent());
   }, [dispatch]);
 
   useEffect(() => {
-    if (content && content.length > 0) {
-      const groupedCategories = content.reduce((acc, item) => {
+    if (filteredContent && filteredContent.length > 0) {
+      const groupedCategories = filteredContent.reduce((acc, item) => {
         if (!acc[item.category]) {
           acc[item.category] = [];
         }
@@ -27,8 +39,10 @@ const HomeScreen = ({ navigation }) => {
         return acc;
       }, {});
       setCategories(groupedCategories);
+    } else {
+      setCategories({});
     }
-  }, [content]);
+  }, [filteredContent]);
 
   if (isLoading) {
     return (

@@ -3,7 +3,9 @@ import contentService from './contentService';
 
 const initialState = {
   content: [],
+  filteredContent: [],
   selectedContent: null,
+  searchQuery: '',
   isError: false,
   isSuccess: false,
   isLoading: false,
@@ -57,6 +59,16 @@ export const contentSlice = createSlice({
       state.isLoading = false;
       state.message = '';
     },
+    setSearchQuery: (state, action) => {
+      state.searchQuery = action.payload;
+      if (action.payload === '') {
+        state.filteredContent = state.content;
+      } else {
+        state.filteredContent = state.content.filter((item) =>
+          item.title.toLowerCase().includes(action.payload.toLowerCase())
+        );
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -67,6 +79,7 @@ export const contentSlice = createSlice({
         state.isLoading = false;
         state.isSuccess = true;
         state.content = action.payload;
+        state.filteredContent = action.payload;
       })
       .addCase(fetchContent.rejected, (state, action) => {
         state.isLoading = false;
@@ -89,5 +102,5 @@ export const contentSlice = createSlice({
   },
 });
 
-export const { reset } = contentSlice.actions;
+export const { reset, setSearchQuery } = contentSlice.actions;
 export default contentSlice.reducer;
