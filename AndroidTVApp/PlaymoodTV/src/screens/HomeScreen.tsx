@@ -16,7 +16,7 @@ const HomeScreen = ({ navigation }) => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      header: () => (
+      headerTitle: () => (
         <SearchHeader
           value={searchQuery}
           onChangeText={(text) => dispatch(setSearchQuery(text))}

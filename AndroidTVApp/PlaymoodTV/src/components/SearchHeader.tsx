@@ -1,29 +1,21 @@
 import React from 'react';
-import { View, TextInput } from 'react-native';
+import { TextInput } from 'react-native';
 import styled from 'styled-components/native';
 import { Ionicons } from '@expo/vector-icons';
 
 const SearchHeader = ({ value, onChangeText }) => {
   return (
-    <HeaderContainer>
-      <SearchContainer>
-        <SearchIcon name="search" size={20} color="#fff" />
-        <SearchInput
-          placeholder="Search..."
-          placeholderTextColor="#8e8e8e"
-          value={value}
-          onChangeText={onChangeText}
-        />
-      </SearchContainer>
-    </HeaderContainer>
+    <SearchContainer>
+      <SearchIcon name="search" size={20} color="#fff" />
+      <SearchInput
+        placeholder="Search..."
+        placeholderTextColor="#8e8e8e"
+        value={value}
+        onChangeText={onChangeText}
+      />
+    </SearchContainer>
   );
 };
-
-const HeaderContainer = styled.View`
-  background-color: #000;
-  padding: 10px;
-  width: 100%;
-`;
 
 const SearchContainer = styled.View`
   flex-direction: row;
@@ -31,6 +23,7 @@ const SearchContainer = styled.View`
   background-color: #1c1c1e;
   border-radius: 8px;
   padding: 5px 10px;
+  width: 100%;
 `;
 
 const SearchIcon = styled(Ionicons)`
