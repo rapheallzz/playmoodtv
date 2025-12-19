@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { View } from 'react-native';
 import { Provider, useDispatch } from 'react-redux';
 import { store } from './src/app/store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -9,6 +10,7 @@ import LoginScreen from './src/screens/LoginScreen';
 import RegistrationScreen from './src/screens/RegistrationScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import MovieScreen from './src/screens/MovieScreen';
+import Sidebar from './src/components/Sidebar';
 
 const Stack = createStackNavigator();
 
@@ -27,22 +29,18 @@ const AppContent = () => {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{
-            headerStyle: {
-              backgroundColor: '#000',
-            },
-            headerTintColor: '#fff',
-            title: '',
-          }}
-        />
-        <Stack.Screen name="Movie" component={MovieScreen} />
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Register" component={RegistrationScreen} />
-      </Stack.Navigator>
+      <View style={{ flex: 1, flexDirection: 'row' }}>
+        <Stack.Navigator
+          initialRouteName="Home"
+          screenOptions={{ headerShown: false }}
+        >
+          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="Movie" component={MovieScreen} />
+          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="Register" component={RegistrationScreen} />
+        </Stack.Navigator>
+        <Sidebar />
+      </View>
     </NavigationContainer>
   );
 };

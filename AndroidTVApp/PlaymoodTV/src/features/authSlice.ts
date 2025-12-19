@@ -189,18 +189,38 @@ export const authSlice = createSlice({
       .addCase(likeContent.fulfilled, (state, action) => {
         state.user.like.push(action.payload);
       })
+      .addCase(likeContent.rejected, (state, action) => {
+        // Revert optimistic update
+        state.user.like = state.user.like.filter(
+          (contentId) => contentId !== action.meta.arg.contentId
+        );
+      })
       .addCase(unlikeContent.fulfilled, (state, action) => {
         state.user.like = state.user.like.filter(
           (contentId) => contentId !== action.payload
         );
       })
+      .addCase(unlikeContent.rejected, (state, action) => {
+        // Revert optimistic update
+        state.user.like.push(action.meta.arg.contentId);
+      })
       .addCase(addToWatchlist.fulfilled, (state, action) => {
         state.user.watchlist.push(action.payload);
+      })
+      .addCase(addToWatchlist.rejected, (state, action) => {
+        // Revert optimistic update
+        state.user.watchlist = state.user.watchlist.filter(
+          (contentId) => contentId !== action.meta.arg.contentId
+        );
       })
       .addCase(removeFromWatchlist.fulfilled, (state, action) => {
         state.user.watchlist = state.user.watchlist.filter(
           (contentId) => contentId !== action.payload
         );
+      })
+      .addCase(removeFromWatchlist.rejected, (state, action) => {
+        // Revert optimistic update
+        state.user.watchlist.push(action.meta.arg.contentId);
       });
   },
 });
