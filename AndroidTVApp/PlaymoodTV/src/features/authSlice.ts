@@ -56,8 +56,11 @@ export const likeContent = createAsyncThunk(
   'auth/likeContent',
   async (contentId, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user.token;
-      return await authService.likeContent(contentId, token);
+      const user = thunkAPI.getState().auth.user;
+      if (!user || !user.token) {
+        return thunkAPI.rejectWithValue('User not logged in');
+      }
+      return await authService.likeContent(contentId, user.token);
     } catch (error) {
       const message =
         (error.response &&
@@ -75,8 +78,11 @@ export const unlikeContent = createAsyncThunk(
   'auth/unlikeContent',
   async (contentId, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user.token;
-      return await authService.unlikeContent(contentId, token);
+      const user = thunkAPI.getState().auth.user;
+      if (!user || !user.token) {
+        return thunkAPI.rejectWithValue('User not logged in');
+      }
+      return await authService.unlikeContent(contentId, user.token);
     } catch (error) {
       const message =
         (error.response &&
@@ -94,8 +100,11 @@ export const addToWatchlist = createAsyncThunk(
   'auth/addToWatchlist',
   async (contentId, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user.token;
-      return await authService.addToWatchlist(contentId, token);
+      const user = thunkAPI.getState().auth.user;
+      if (!user || !user.token) {
+        return thunkAPI.rejectWithValue('User not logged in');
+      }
+      return await authService.addToWatchlist(contentId, user.token);
     } catch (error) {
       const message =
         (error.response &&
@@ -113,8 +122,11 @@ export const removeFromWatchlist = createAsyncThunk(
   'auth/removeFromWatchlist',
   async (contentId, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user.token;
-      return await authService.removeFromWatchlist(contentId, token);
+      const user = thunkAPI.getState().auth.user;
+      if (!user || !user.token) {
+        return thunkAPI.rejectWithValue('User not logged in');
+      }
+      return await authService.removeFromWatchlist(contentId, user.token);
     } catch (error) {
       const message =
         (error.response &&

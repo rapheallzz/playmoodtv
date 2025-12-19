@@ -29,17 +29,17 @@ const MovieScreen = ({ route }) => {
 
   const handleLike = () => {
     if (isLiked) {
-      dispatch(unlikeContent(movie._id));
+      dispatch(unlikeContent({ contentId: movie._id }));
     } else {
-      dispatch(likeContent(movie._id));
+      dispatch(likeContent({ contentId: movie._id }));
     }
   };
 
   const handleWatchlist = () => {
     if (isWatchlisted) {
-      dispatch(removeFromWatchlist(movie._id));
+      dispatch(removeFromWatchlist({ contentId: movie._id }));
     } else {
-      dispatch(addToWatchlist(movie._id));
+      dispatch(addToWatchlist({ contentId: movie._id }));
     }
   };
 
