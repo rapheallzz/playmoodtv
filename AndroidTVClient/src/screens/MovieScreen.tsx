@@ -4,10 +4,10 @@ import { useRoute } from '@react-navigation/native';
 import styled from 'styled-components/native';
 import { Video } from 'expo-av';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../app/store';
-import { fetchContentById } from '../../features/content/contentSlice';
-import { likeContent, unlikeContent, addToWatchlist, removeFromWatchlist } from '../../features/auth/authSlice';
-import FocusableTouchableOpacity from '../../components/FocusableTouchableOpacity';
+import { AppDispatch, RootState } from '../app/store';
+import { fetchContentById } from '../features/content/contentSlice';
+import { likeContent, unlikeContent, addToWatchlist, removeFromWatchlist } from '../features/auth/authSlice';
+import FocusableTouchableOpacity from '../components/FocusableTouchableOpacity';
 
 const Container = styled.ScrollView`
   flex: 1;

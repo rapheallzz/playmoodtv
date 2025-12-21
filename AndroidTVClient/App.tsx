@@ -18,13 +18,17 @@ const AppNavigator = () => {
 
   useEffect(() => {
     const checkUser = async () => {
-      const storedUser = await AsyncStorage.getItem('user');
-      if (storedUser) {
-        dispatch(setUser(JSON.parse(storedUser)));
+      try {
+        const storedUser = await AsyncStorage.getItem('user');
+        if (storedUser) {
+          dispatch(setUser(JSON.parse(storedUser)));
+        }
+      } catch (error) {
+        console.error('Failed to load user from storage', error);
       }
     };
     checkUser();
-  }, []);
+  }, [dispatch]);
 
   return (
     <NavigationContainer>

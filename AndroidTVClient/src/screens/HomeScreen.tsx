@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import { ScrollView, ActivityIndicator } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../app/store';
-import { fetchContent, fetchTopTenContent } from '../../features/content/contentSlice';
+import { AppDispatch, RootState } from '../app/store';
+import { fetchContent, fetchTopTenContent } from '../features/content/contentSlice';
 import styled from 'styled-components/native';
-import Banner from '../../components/Banner/Banner';
-import Slider from '../../components/Slider/Slider';
+import Banner from '../components/Banner/Banner';
+import Slider from '../components/Slider/Slider';
 import { useNavigation } from '@react-navigation/native';
 
 const Container = styled.ScrollView`

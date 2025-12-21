@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Text } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { login, reset } from '../../features/auth/authSlice';
-import { AppDispatch, RootState } from '../../app/store';
+import { login, reset } from '../features/auth/authSlice';
+import { AppDispatch, RootState } from '../app/store';
 import styled from 'styled-components/native';
 import { useNavigation } from '@react-navigation/native';
-import FocusableTouchableOpacity from '../../components/FocusableTouchableOpacity';
+import FocusableTouchableOpacity from '../components/FocusableTouchableOpacity';
 
 const Container = styled.View`
   flex: 1;
