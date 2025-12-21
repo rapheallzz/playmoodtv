@@ -99,7 +99,7 @@ const HomeScreen = ({ navigation }: { navigation: any }) => {
       try {
         const [allRes, topTenRes] = await Promise.all([
           axios.get(`${EXPO_PUBLIC_API_URL}/api/content/`),
-          axios.get(`${EXPO_PUBLIC_API_URL}/api/top-ten`)
+          axios.get(`${EXPO_PUBLIC_API_URL}/api/content/top-ten`)
         ]);
 
         const all: Content[] = allRes.data;
