@@ -1,45 +1,56 @@
 import React, { useState, useRef } from 'react';
-import { TouchableOpacity, TouchableOpacityProps, Animated } from 'react-native';
+import { TouchableOpacity, TouchableOpacityProps, Animated, StyleProp, ViewStyle } from 'react-native';
 import styled from 'styled-components/native';
 
 interface FocusableTouchableOpacityProps extends TouchableOpacityProps {
   children: React.ReactNode;
 }
 
-const StyledTouchableOpacity = styled(TouchableOpacity)<{ $isFocused: boolean }>`
+// The styled component no longer needs to know about focus state.
+const StyledTouchableOpacity = styled(TouchableOpacity)`
   border-width: 2px;
-  border-color: ${(props) => (props.$isFocused ? '#FFFFFF' : 'transparent')};
-  transform: ${(props) => (props.$isFocused ? 'scale(1.1)' : 'scale(1.0)')};
+  border-color: transparent; /* Set a default */
 `;
 
-const FocusableTouchableOpacity: React.FC<FocusableTouchableOpacityProps> = ({ children, ...props }) => {
+const FocusableTouchableOpacity: React.FC<FocusableTouchableOpacityProps> = ({ children, style, ...props }) => {
   const [isFocused, setIsFocused] = useState(false);
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
-  const handleFocus = () => {
+  const handleFocus = (e: any) => {
     setIsFocused(true);
     Animated.spring(scaleAnim, {
       toValue: 1.1,
       useNativeDriver: true,
     }).start();
+    // Forward the onFocus event if it exists
+    props.onFocus?.(e);
   };
 
-  const handleBlur = () => {
+  const handleBlur = (e: any) => {
     setIsFocused(false);
     Animated.spring(scaleAnim, {
       toValue: 1,
       useNativeDriver: true,
     }).start();
+    // Forward the onBlur event if it exists
+    props.onBlur?.(e);
+  };
+
+  // Combine animated transform with conditional border color
+  // This is a more robust way to handle dynamic styles.
+  const dynamicStyles: StyleProp<ViewStyle> = {
+    borderColor: isFocused ? '#FFFFFF' : 'transparent',
+    transform: [{ scale: scaleAnim }],
   };
 
   return (
     <StyledTouchableOpacity
       {...props}
-      $isFocused={isFocused}
       onFocus={handleFocus}
       onBlur={handleBlur}
       activeOpacity={0.8}
-      style={{ transform: [{ scale: scaleAnim }] }}
+      // Combine incoming styles with our dynamic styles
+      style={[style, dynamicStyles]}
     >
       {children}
     </StyledTouchableOpacity>

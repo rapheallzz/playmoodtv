@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, ActivityIndicator, Image } from 'react-native';
+import { View, Text, TextInput, ActivityIndicator, Image, StyleSheet } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components/native';
 import { login, reset } from '../features/authSlice';
@@ -34,7 +34,8 @@ const Title = styled.Text`
   margin-bottom: 20px;
 `;
 
-const StyledInput = styled.TextInput<{ $hasFocus: boolean }>`
+// The styled component no longer needs to know about focus state.
+const StyledInput = styled.TextInput`
   height: 50px;
   background-color: #333;
   color: #fff;
@@ -43,7 +44,7 @@ const StyledInput = styled.TextInput<{ $hasFocus: boolean }>`
   margin-bottom: 15px;
   font-size: 16px;
   border-width: 2px;
-  border-color: ${(props) => (props.$hasFocus ? '#fff' : '#333')};
+  border-color: #333; /* Set a default */
 `;
 
 const ButtonText = styled.Text`
@@ -71,7 +72,6 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
 
   useEffect(() => {
     if (isError) {
-      // You might want a more TV-friendly way to show errors than a toast
       console.error(message);
     }
 
@@ -87,6 +87,15 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
     }
   };
 
+  // Dynamic styles for the inputs
+  const emailInputStyle = {
+    borderColor: emailFocused ? '#fff' : '#333',
+  };
+
+  const passwordInputStyle = {
+    borderColor: passwordFocused ? '#fff' : '#333',
+  };
+
   return (
     <Container>
       <Logo source={require('../../assets/playmood_logo.png')} />
@@ -99,7 +108,7 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
           onChangeText={setEmail}
           onFocus={() => setEmailFocused(true)}
           onBlur={() => setEmailFocused(false)}
-          $hasFocus={emailFocused}
+          style={emailInputStyle}
           keyboardType="email-address"
           autoCapitalize="none"
         />
@@ -111,7 +120,7 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
           secureTextEntry
           onFocus={() => setPasswordFocused(true)}
           onBlur={() => setPasswordFocused(false)}
-          $hasFocus={passwordFocused}
+          style={passwordInputStyle}
         />
         <FocusableTouchableOpacity onPress={handleLogin} disabled={isLoading}>
           {isLoading ? (
