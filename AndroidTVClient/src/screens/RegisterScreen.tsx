@@ -55,10 +55,6 @@ const RegisterScreen = () => {
       // Handle error
     }
 
-    if (isSuccess || user) {
-      // Navigate to home screen
-    }
-
     dispatch(reset());
   }, [user, isError, isSuccess, message, dispatch]);
 

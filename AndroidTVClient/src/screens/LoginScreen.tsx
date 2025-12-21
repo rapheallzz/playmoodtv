@@ -54,10 +54,6 @@ const LoginScreen = () => {
       // Handle error, maybe show a toast
     }
 
-    if (isSuccess || user) {
-      // Navigate to home screen
-    }
-
     dispatch(reset());
   }, [user, isError, isSuccess, message, dispatch]);
 
