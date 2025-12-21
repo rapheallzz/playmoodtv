@@ -10,7 +10,7 @@ import FocusableTouchableOpacity from '../components/FocusableTouchableOpacity';
 import { Video } from 'expo-av';
 
 // --- Styled Components ---
-const Container = styled.View`
+const Container = styled.ScrollView`
   flex: 1;
   background-color: #000;
 `;
@@ -22,7 +22,8 @@ const LoaderContainer = styled.View`
 `;
 
 const VideoContainer = styled.View`
-  flex: 1;
+  width: 100%;
+  aspect-ratio: 16 / 9;
 `;
 
 const StyledVideo = styled(Video)`
@@ -30,21 +31,20 @@ const StyledVideo = styled(Video)`
   height: 100%;
 `;
 
-const Overlay = styled.View`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  justify-content: flex-end;
-  padding: 40px;
-  background-color: rgba(0, 0, 0, 0.2);
+const DetailsContainer = styled.View`
+  padding: 20px;
 `;
 
 const Title = styled.Text`
-  font-size: 36px;
+  font-size: 28px;
   color: #fff;
   font-weight: bold;
+`;
+
+const Description = styled.Text`
+  font-size: 16px;
+  color: #ccc;
+  margin-top: 10px;
 `;
 
 const ButtonContainer = styled.View`
@@ -140,26 +140,27 @@ const MovieScreen = ({ route }: { route: any }) => {
           resizeMode="cover"
           useNativeControls
         />
-        <Overlay>
-          <Title>{content.title}</Title>
-          <ButtonContainer>
-             <FocusableTouchableOpacity onPress={handleLike}>
-                <View style={{ padding: 15, backgroundColor: 'rgba(128, 128, 128, 0.5)', borderRadius: 5, marginRight: 15 }}>
-                  <ButtonText>
-                    {user?.like?.includes(content._id) ? 'UNLIKE' : 'LIKE'}
-                  </ButtonText>
-                </View>
-              </FocusableTouchableOpacity>
-              <FocusableTouchableOpacity onPress={handleWatchlist}>
-                 <View style={{ padding: 15, backgroundColor: 'rgba(128, 128, 128, 0.5)', borderRadius: 5 }}>
-                  <ButtonText>
-                    {user?.watchlist?.includes(content._id) ? 'REMOVE FROM WATCHLIST' : 'ADD TO WATCHLIST'}
-                  </ButtonText>
-                </View>
-              </FocusableTouchableOpacity>
-          </ButtonContainer>
-        </Overlay>
       </VideoContainer>
+      <DetailsContainer>
+        <Title>{content.title}</Title>
+        <Description>{content.description}</Description>
+        <ButtonContainer>
+           <FocusableTouchableOpacity onPress={handleLike}>
+              <View style={{ padding: 15, backgroundColor: 'rgba(128, 128, 128, 0.5)', borderRadius: 5, marginRight: 15 }}>
+                <ButtonText>
+                  {user?.like?.includes(content._id) ? 'UNLIKE' : 'LIKE'}
+                </ButtonText>
+              </View>
+            </FocusableTouchableOpacity>
+            <FocusableTouchableOpacity onPress={handleWatchlist}>
+               <View style={{ padding: 15, backgroundColor: 'rgba(128, 128, 128, 0.5)', borderRadius: 5 }}>
+                <ButtonText>
+                  {user?.watchlist?.includes(content._id) ? 'REMOVE FROM WATCHLIST' : 'ADD TO WATCHLIST'}
+                </ButtonText>
+              </View>
+            </FocusableTouchableOpacity>
+        </ButtonContainer>
+      </DetailsContainer>
     </Container>
   );
 };
