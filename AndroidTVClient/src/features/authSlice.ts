@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import authService from './authService';
 import contentService from './contentService';
-import AsyncStorage from '@react--native-async-storage/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const initialState = {
   user: null,
