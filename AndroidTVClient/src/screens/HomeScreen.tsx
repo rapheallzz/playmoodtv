@@ -20,6 +20,15 @@ const HomeScreen = ({ navigation }: any) => {
     dispatch(fetchContent());
   }, [dispatch]);
 
+  useEffect(() => {
+    if (content.length > 0) {
+      const interval = setInterval(() => {
+        setActiveSlide((prev) => (prev + 1) % Math.min(3, content.length));
+      }, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [content.length]);
+
   const handleLike = () => {
     if (user && currentContent) {
       const isLiked = user.like.includes(currentContent._id);

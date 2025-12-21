@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "orientation": "landscape",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "tv",
     "backgroundColor": "#000",
     "splash": {
       "image": "./assets/splash-icon.png",
