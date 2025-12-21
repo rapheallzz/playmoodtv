@@ -6,10 +6,10 @@ interface FocusableTouchableOpacityProps extends TouchableOpacityProps {
   children: React.ReactNode;
 }
 
-const StyledTouchableOpacity = styled(TouchableOpacity)<{ isFocused: boolean }>`
+const StyledTouchableOpacity = styled(TouchableOpacity)<{ $isFocused: boolean }>`
   border-width: 2px;
-  border-color: ${(props) => (props.isFocused ? '#FFFFFF' : 'transparent')};
-  transform: ${(props) => (props.isFocused ? 'scale(1.1)' : 'scale(1.0)')};
+  border-color: ${(props) => (props.$isFocused ? '#FFFFFF' : 'transparent')};
+  transform: ${(props) => (props.$isFocused ? 'scale(1.1)' : 'scale(1.0)')};
 `;
 
 const FocusableTouchableOpacity: React.FC<FocusableTouchableOpacityProps> = ({ children, ...props }) => {
@@ -35,7 +35,7 @@ const FocusableTouchableOpacity: React.FC<FocusableTouchableOpacityProps> = ({ c
   return (
     <StyledTouchableOpacity
       {...props}
-      isFocused={isFocused}
+      $isFocused={isFocused}
       onFocus={handleFocus}
       onBlur={handleBlur}
       activeOpacity={0.8}

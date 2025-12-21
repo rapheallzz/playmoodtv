@@ -34,7 +34,7 @@ const Title = styled.Text`
   margin-bottom: 20px;
 `;
 
-const StyledInput = styled.TextInput<{ hasFocus: boolean }>`
+const StyledInput = styled.TextInput<{ $hasFocus: boolean }>`
   height: 50px;
   background-color: #333;
   color: #fff;
@@ -43,7 +43,7 @@ const StyledInput = styled.TextInput<{ hasFocus: boolean }>`
   margin-bottom: 15px;
   font-size: 16px;
   border-width: 2px;
-  border-color: ${(props) => (props.hasFocus ? '#fff' : '#333')};
+  border-color: ${(props) => (props.$hasFocus ? '#fff' : '#333')};
 `;
 
 const ButtonText = styled.Text`
@@ -99,7 +99,7 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
           onChangeText={setEmail}
           onFocus={() => setEmailFocused(true)}
           onBlur={() => setEmailFocused(false)}
-          hasFocus={emailFocused}
+          $hasFocus={emailFocused}
           keyboardType="email-address"
           autoCapitalize="none"
         />
@@ -111,7 +111,7 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
           secureTextEntry
           onFocus={() => setPasswordFocused(true)}
           onBlur={() => setPasswordFocused(false)}
-          hasFocus={passwordFocused}
+          $hasFocus={passwordFocused}
         />
         <FocusableTouchableOpacity onPress={handleLogin} disabled={isLoading}>
           {isLoading ? (
