@@ -8,6 +8,7 @@ import { RootState, AppDispatch } from '../app/store';
 import { likeContent, unlikeContent, addToWatchlist, removeFromWatchlist } from '../features/authSlice';
 import FocusableTouchableOpacity from '../components/FocusableTouchableOpacity';
 import { Video } from 'expo-av';
+import ContentSlider from '../components/ContentSlider';
 
 // --- Styled Components ---
 const Container = styled.ScrollView`
@@ -97,7 +98,7 @@ const HomeScreen = ({ navigation }: { navigation: any }) => {
     const fetchContent = async () => {
       try {
         const [allRes, topTenRes] = await Promise.all([
-          axios.get(`${EXPO_PUBLIC_API_URL}/api/content`),
+          axios.get(`${EXPO_PUBLIC_API_URL}/api/content/`),
           axios.get(`${EXPO_PUBLIC_API_URL}/api/top-ten`)
         ]);
 
