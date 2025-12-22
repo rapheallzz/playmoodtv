@@ -183,13 +183,15 @@ export const authSlice = createSlice({
       // Like Content
       .addCase(likeContent.fulfilled, (state, action) => {
           if (state.user) {
-              state.user.like.push(action.payload);
+              const newLikes = [...state.user.like, action.payload];
+              state.user = { ...state.user, like: newLikes };
           }
       })
       // Unlike Content
       .addCase(unlikeContent.fulfilled, (state, action) => {
           if (state.user) {
-              state.user.like = state.user.like.filter(id => id !== action.payload);
+              const newLikes = state.user.like.filter(id => id !== action.payload);
+              state.user = { ...state.user, like: newLikes };
           }
       })
       // Add to Watchlist
