@@ -107,9 +107,9 @@ const HomeScreen = ({ navigation }: { navigation: any }) => {
         setFeaturedContent(all.slice(0, 5)); // First 5 for banner
         setNewContent(all.slice(0, 15)); // First 15 for 'New'
         setTopTen(topTenRes.data);
-        setRecommendedContent(all.filter(c => c.category === 'Recommended').slice(0, 10));
-        setFashionContent(all.filter(c => c.category === 'Fashion').slice(0, 10));
-        setDocumentariesContent(all.filter(c => c.category === 'Documentaries').slice(0, 10));
+        setRecommendedContent(all.filter(c => c.category === 'Teen').slice(0, 10));
+        setFashionContent(all.filter(c => c.category === 'Fashion Show').slice(0, 10));
+        setDocumentariesContent(all.filter(c => c.category === 'Documentarie').slice(0, 10));
 
       } catch (error) {
         console.error('Failed to fetch content:', error);
