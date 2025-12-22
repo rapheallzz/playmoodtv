@@ -86,6 +86,12 @@ const HomeScreen = ({ navigation }: { navigation: any }) => {
   const [recommendedContent, setRecommendedContent] = useState<Content[]>([]);
   const [fashionContent, setFashionContent] = useState<Content[]>([]);
   const [documentariesContent, setDocumentariesContent] = useState<Content[]>([]);
+  const [interviewsContent, setInterviewsContent] = useState<Content[]>([]);
+  const [socialContent, setSocialContent] = useState<Content[]>([]);
+  const [behindTheCamerasContent, setBehindTheCamerasContent] = useState<Content[]>([]);
+  const [soonContent, setSoonContent] = useState<Content[]>([]);
+  const [teensContent, setTeensContent] = useState<Content[]>([]);
+  const [onlyOnPlaymoodContent, setOnlyOnPlaymoodContent] = useState<Content[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
 
@@ -110,6 +116,12 @@ const HomeScreen = ({ navigation }: { navigation: any }) => {
         setRecommendedContent(all.filter(c => c.category === 'Teen').slice(0, 10));
         setFashionContent(all.filter(c => c.category === 'Fashion Show').slice(0, 10));
         setDocumentariesContent(all.filter(c => c.category === 'Documentarie').slice(0, 10));
+        setInterviewsContent(all.filter(c => c.category === 'Interview').slice(0, 10));
+        setSocialContent(all.filter(c => c.category === 'Social').slice(0, 10));
+        setBehindTheCamerasContent(all.filter(c => c.category === 'Behind the camera').slice(0, 10));
+        setSoonContent(all.filter(c => c.category === 'Soon').slice(0, 10));
+        setTeensContent(all.filter(c => c.category === 'Teen').slice(0, 10));
+        setOnlyOnPlaymoodContent(all.filter(c => c.category === 'Only on Playmood').slice(0, 10));
 
       } catch (error) {
         console.error('Failed to fetch content:', error);
@@ -198,8 +210,14 @@ const HomeScreen = ({ navigation }: { navigation: any }) => {
       <ContentSlider title="Top 10" data={topTen} onPressItem={handleWatchNow} />
       <ContentSlider title="New on Playmood" data={newContent} onPressItem={handleWatchNow} />
       <ContentSlider title="Recommended for you" data={recommendedContent} onPressItem={handleWatchNow} />
-      <ContentSlider title="Fashion" data={fashionContent} onPressItem={handleWatchNow} />
-      <ContentSlider title="Documentaries" data={documentariesContent} onPressItem={handleWatchNow} />
+      <ContentSlider title="Interviews" data={interviewsContent} onPressItem={handleWatchNow} />
+      <ContentSlider title="Fashion Shows" data={fashionContent} onPressItem={handleWatchNow} />
+      <ContentSlider title="Social" data={socialContent} onPressItem={handleWatchNow} />
+      <ContentSlider title="Documentaries and Reports" data={documentariesContent} onPressItem={handleWatchNow} />
+      <ContentSlider title="Behind the Cameras" data={behindTheCamerasContent} onPressItem={handleWatchNow} />
+      <ContentSlider title="Soon in Playmood" data={soonContent} onPressItem={handleWatchNow} />
+      <ContentSlider title="Teens" data={teensContent} onPressItem={handleWatchNow} />
+      <ContentSlider title="Only in Playmood" data={onlyOnPlaymoodContent} onPressItem={handleWatchNow} />
     </Container>
   );
 };
