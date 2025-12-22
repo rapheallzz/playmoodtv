@@ -96,28 +96,20 @@ const MovieScreen = ({ route }: { route: any }) => {
 
   const handleLike = () => {
       if (!content) return;
-      console.log('--- handleLike triggered ---');
       const isLiked = user?.like?.includes(content._id);
-      console.log(`Content is currently ${isLiked ? 'liked' : 'not liked'}.`);
       if (isLiked) {
-          console.log('Dispatching unlikeContent...');
           dispatch(unlikeContent({ contentId: content._id }));
       } else {
-          console.log('Dispatching likeContent...');
           dispatch(likeContent({ contentId: content._id }));
       }
   }
 
   const handleWatchlist = () => {
       if (!content) return;
-      console.log('--- handleWatchlist triggered ---');
       const isInWatchlist = user?.watchlist?.includes(content._id);
-      console.log(`Content is currently ${isInWatchlist ? 'in watchlist' : 'not in watchlist'}.`);
       if (isInWatchlist) {
-          console.log('Dispatching removeFromWatchlist...');
           dispatch(removeFromWatchlist({ contentId: content._id }));
       } else {
-          console.log('Dispatching addToWatchlist...');
           dispatch(addToWatchlist({ contentId: content._id }));
       }
   }

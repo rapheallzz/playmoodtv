@@ -52,17 +52,23 @@ const initialState: AuthState = {
 export const login = createAsyncThunk('auth/login', async (userData: any, thunkAPI) => {
   try {
     const response = await axios.post(`${EXPO_PUBLIC_API_URL}/api/users/login`, userData);
-    const decoded = decodeToken(response.data.token);
-    if (!decoded) {
-      throw new Error('Received invalid or expired token');
+    const token = response.data.token;
+    if (!token) {
+      throw new Error('Login failed: No token received');
     }
-    const userWithToken: User = {
-      ...response.data.user,
-      userId: decoded.id || response.data.user._id,
-      token: response.data.token,
+
+    // Now, fetch the full user profile with the token
+    const profileResponse = await axios.get(`${EXPO_PUBLIC_API_URL}/api/users/profile`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    const userProfile: User = {
+      ...profileResponse.data,
+      token: token,
     };
-    await AsyncStorage.setItem('user', JSON.stringify(userWithToken));
-    return userWithToken;
+
+    await AsyncStorage.setItem('user', JSON.stringify(userProfile));
+    return userProfile;
   } catch (error: any) {
     const message =
       error.response?.data?.message || error.message || 'Login failed';
@@ -77,88 +83,68 @@ export const logout = createAsyncThunk('auth/logout', async () => {
 
 // Like content
 export const likeContent = createAsyncThunk('content/like', async ({ contentId }: { contentId: string }, thunkAPI) => {
-    console.log('--- likeContent async thunk started ---');
     const state = thunkAPI.getState() as { auth: AuthState };
     const { user } = state.auth;
     if (!user || !user.token) {
-        console.error('likeContent: User not authenticated.');
         return thunkAPI.rejectWithValue('User not authenticated');
     }
     try {
-        console.log(`Sending PUT request to /api/content/${contentId}/like`);
-        const response = await axios.put(`${EXPO_PUBLIC_API_URL}/api/content/${contentId}/like`, {}, {
+        await axios.put(`${EXPO_PUBLIC_API_URL}/api/content/${contentId}/like`, {}, {
             headers: { Authorization: `Bearer ${user.token}` },
         });
-        console.log('likeContent: API response successful.', response.status);
         return contentId;
     } catch (error: any) {
-        console.error('likeContent: API request failed.', error.response?.data);
         return thunkAPI.rejectWithValue(error.response?.data?.message || 'Failed to like content');
     }
 });
 
 // Unlike content
 export const unlikeContent = createAsyncThunk('content/unlike', async ({ contentId }: { contentId: string }, thunkAPI) => {
-    console.log('--- unlikeContent async thunk started ---');
     const state = thunkAPI.getState() as { auth: AuthState };
     const { user } = state.auth;
     if (!user || !user.token) {
-        console.error('unlikeContent: User not authenticated.');
         return thunkAPI.rejectWithValue('User not authenticated');
     }
     try {
-        console.log(`Sending PUT request to /api/content/${contentId}/unlike`);
-        const response = await axios.put(`${EXPO_PUBLIC_API_URL}/api/content/${contentId}/unlike`, {}, {
+        await axios.put(`${EXPO_PUBLIC_API_URL}/api/content/${contentId}/unlike`, {}, {
             headers: { Authorization: `Bearer ${user.token}` },
         });
-        console.log('unlikeContent: API response successful.', response.status);
         return contentId;
     } catch (error: any) {
-        console.error('unlikeContent: API request failed.', error.response?.data);
         return thunkAPI.rejectWithValue(error.response?.data?.message || 'Failed to unlike content');
     }
 });
 
 // Add to watchlist
 export const addToWatchlist = createAsyncThunk('content/addToWatchlist', async ({ contentId }: { contentId: string }, thunkAPI) => {
-    console.log('--- addToWatchlist async thunk started ---');
     const state = thunkAPI.getState() as { auth: AuthState };
     const { user } = state.auth;
     if (!user || !user.token) {
-        console.error('addToWatchlist: User not authenticated.');
         return thunkAPI.rejectWithValue('User not authenticated');
     }
     try {
-        console.log(`Sending POST request to /api/content/watchlist/add`);
-        const response = await axios.post(`${EXPO_PUBLIC_API_URL}/api/content/watchlist/add`, { contentId }, {
+        await axios.post(`${EXPO_PUBLIC_API_URL}/api/content/watchlist/add`, { contentId }, {
             headers: { Authorization: `Bearer ${user.token}` },
         });
-        console.log('addToWatchlist: API response successful.', response.status);
         return contentId;
     } catch (error: any) {
-        console.error('addToWatchlist: API request failed.', error.response?.data);
         return thunkAPI.rejectWithValue(error.response?.data?.message || 'Failed to add to watchlist');
     }
 });
 
 // Remove from watchlist
 export const removeFromWatchlist = createAsyncThunk('content/removeFromWatchlist', async ({ contentId }: { contentId: string }, thunkAPI) => {
-    console.log('--- removeFromWatchlist async thunk started ---');
     const state = thunkAPI.getState() as { auth: AuthState };
     const { user } = state.auth;
     if (!user || !user.token) {
-        console.error('removeFromWatchlist: User not authenticated.');
         return thunkAPI.rejectWithValue('User not authenticated');
     }
     try {
-        console.log(`Sending POST request to /api/content/watchlist/remove`);
-        const response = await axios.post(`${EXPO_PUBLIC_API_URL}/api/content/watchlist/remove`, { contentId }, {
+        await axios.post(`${EXPO_PUBLIC_API_URL}/api/content/watchlist/remove`, { contentId }, {
             headers: { Authorization: `Bearer ${user.token}` },
         });
-        console.log('removeFromWatchlist: API response successful.', response.status);
         return contentId;
     } catch (error: any) {
-        console.error('removeFromWatchlist: API request failed.', error.response?.data);
         return thunkAPI.rejectWithValue(error.response?.data?.message || 'Failed to remove from watchlist');
     }
 });
@@ -202,42 +188,30 @@ export const authSlice = createSlice({
       })
       // Like Content
       .addCase(likeContent.fulfilled, (state, action) => {
-          console.log('--- likeContent.fulfilled reducer ---');
           if (state.user) {
-              console.log('Before like:', JSON.stringify(state.user.like));
               const newLikes = [...state.user.like, action.payload];
               state.user = { ...state.user, like: newLikes };
-              console.log('After like:', JSON.stringify(state.user.like));
           }
       })
       // Unlike Content
       .addCase(unlikeContent.fulfilled, (state, action) => {
-          console.log('--- unlikeContent.fulfilled reducer ---');
           if (state.user) {
-              console.log('Before unlike:', JSON.stringify(state.user.like));
               const newLikes = state.user.like.filter(id => id !== action.payload);
               state.user = { ...state.user, like: newLikes };
-              console.log('After unlike:', JSON.stringify(state.user.like));
           }
       })
       // Add to Watchlist
       .addCase(addToWatchlist.fulfilled, (state, action) => {
-          console.log('--- addToWatchlist.fulfilled reducer ---');
           if (state.user) {
-              console.log('Before add to watchlist:', JSON.stringify(state.user.watchlist));
               const newWatchlist = [...state.user.watchlist, action.payload];
               state.user = { ...state.user, watchlist: newWatchlist };
-              console.log('After add to watchlist:', JSON.stringify(state.user.watchlist));
           }
       })
       // Remove from Watchlist
       .addCase(removeFromWatchlist.fulfilled, (state, action) => {
-          console.log('--- removeFromWatchlist.fulfilled reducer ---');
           if (state.user) {
-              console.log('Before remove from watchlist:', JSON.stringify(state.user.watchlist));
               const newWatchlist = state.user.watchlist.filter(id => id !== action.payload);
               state.user = { ...state.user, watchlist: newWatchlist };
-              console.log('After remove from watchlist:', JSON.stringify(state.user.watchlist));
           }
       });
   },
