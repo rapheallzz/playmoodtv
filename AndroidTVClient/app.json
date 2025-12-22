@@ -26,7 +26,8 @@
             "LEANBACK_LAUNCHER"
           ]
         }
-      ]
+      ],
+      "package": "com.rightsort.AndroidTVClient"
     },
     "web": {
       "favicon": "./assets/favicon.png"
