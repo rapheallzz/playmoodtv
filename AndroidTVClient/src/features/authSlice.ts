@@ -12,7 +12,7 @@ interface User {
   email: string;
   role: string;
   token: string;
-  like: string[];
+  likes: string[];
   watchlist: string[];
 }
 
@@ -189,15 +189,15 @@ export const authSlice = createSlice({
       // Like Content
       .addCase(likeContent.fulfilled, (state, action) => {
           if (state.user) {
-              const newLikes = [...state.user.like, action.payload];
-              state.user = { ...state.user, like: newLikes };
+              const newLikes = [...state.user.likes, action.payload];
+              state.user = { ...state.user, likes: newLikes };
           }
       })
       // Unlike Content
       .addCase(unlikeContent.fulfilled, (state, action) => {
           if (state.user) {
-              const newLikes = state.user.like.filter(id => id !== action.payload);
-              state.user = { ...state.user, like: newLikes };
+              const newLikes = state.user.likes.filter(id => id !== action.payload);
+              state.user = { ...state.user, likes: newLikes };
           }
       })
       // Add to Watchlist

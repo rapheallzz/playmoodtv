@@ -96,7 +96,7 @@ const MovieScreen = ({ route }: { route: any }) => {
 
   const handleLike = () => {
       if (!content) return;
-      const isLiked = user?.like?.includes(content._id);
+      const isLiked = user?.likes?.includes(content._id);
       if (isLiked) {
           dispatch(unlikeContent({ contentId: content._id }));
       } else {
@@ -130,7 +130,7 @@ const MovieScreen = ({ route }: { route: any }) => {
     );
   }
 
-  const isLiked = user?.like?.includes(content._id);
+  const isLiked = user?.likes?.includes(content._id);
   const isInWatchlist = user?.watchlist?.includes(content._id);
 
   return (

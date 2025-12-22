@@ -103,30 +103,12 @@ const HomeScreen = ({ navigation }: { navigation: any }) => {
   const videoRef = useRef<Video>(null);
 
   useEffect(() => {
-    const fetchContent = async () => {
+    const fetchPublicContent = async () => {
       try {
-        const promises = [
+        const [allRes, topTenRes] = await Promise.all([
           axios.get(`${EXPO_PUBLIC_API_URL}/api/content/`),
           axios.get(`${EXPO_PUBLIC_API_URL}/api/content/top-ten`)
-        ];
-
-        if (user?.token) {
-          promises.push(axios.get(`${EXPO_PUBLIC_API_URL}/api/users/likes`, {
-            headers: { Authorization: `Bearer ${user.token}` }
-          }));
-          promises.push(axios.get(`${EXPO_PUBLIC_API_URL}/api/content/watchlist/all`, {
-            headers: { Authorization: `Bearer ${user.token}` }
-          }));
-        }
-
-        const [allRes, topTenRes, likedRes, watchlistRes] = await Promise.all(promises);
-
-        if (likedRes) {
-          setLikedContent(likedRes.data);
-        }
-        if (watchlistRes) {
-          setWatchlistContent(watchlistRes.data);
-        }
+        ]);
 
         const all: Content[] = allRes.data;
 
@@ -144,14 +126,42 @@ const HomeScreen = ({ navigation }: { navigation: any }) => {
         setOnlyOnPlaymoodContent(all.filter(c => c.category === 'Only on Playmood').slice(0, 10));
 
       } catch (error) {
-        console.error('Failed to fetch content:', error);
+        console.error('Failed to fetch public content:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchContent();
+    fetchPublicContent();
   }, []);
+
+  useEffect(() => {
+    const fetchUserContent = async () => {
+      if (user?.token) {
+        try {
+          const [likedRes, watchlistRes] = await Promise.all([
+            axios.get(`${EXPO_PUBLIC_API_URL}/api/users/likes`, {
+              headers: { Authorization: `Bearer ${user.token}` }
+            }),
+            axios.get(`${EXPO_PUBLIC_API_URL}/api/content/watchlist/all`, {
+              headers: { Authorization: `Bearer ${user.token}` }
+            })
+          ]);
+          setLikedContent(likedRes.data);
+          setWatchlistContent(watchlistRes.data);
+        } catch (error) {
+          console.error('Failed to fetch user-specific content:', error);
+          setLikedContent([]);
+          setWatchlistContent([]);
+        }
+      } else {
+        setLikedContent([]);
+        setWatchlistContent([]);
+      }
+    };
+
+    fetchUserContent();
+  }, [user]);
 
   useEffect(() => {
     if (featuredContent.length > 0) {
@@ -167,7 +177,7 @@ const HomeScreen = ({ navigation }: { navigation: any }) => {
   };
 
   const handleLike = (contentId: string) => {
-      const isLiked = user?.like?.includes(contentId);
+      const isLiked = user?.likes?.includes(contentId);
       if (isLiked) {
           dispatch(unlikeContent({ contentId }));
       } else {
@@ -227,14 +237,14 @@ const HomeScreen = ({ navigation }: { navigation: any }) => {
         </BannerContainer>
       )}
 
-      {user && likedContent.length > 0 && (
-        <ContentSlider title="My Likes" data={likedContent} onPressItem={handleWatchNow} />
-      )}
-      {user && watchlistContent.length > 0 && (
-        <ContentSlider title="My Watchlist" data={watchlistContent} onPressItem={handleWatchNow} />
-      )}
       <ContentSlider title="Top 10" data={topTen} onPressItem={handleWatchNow} />
       <ContentSlider title="New on Playmood" data={newContent} onPressItem={handleWatchNow} />
+      {user && (
+        <ContentSlider title="My Likes" data={likedContent} onPressItem={handleWatchNow} />
+      )}
+      {user && (
+        <ContentSlider title="My Watchlist" data={watchlistContent} onPressItem={handleWatchNow} />
+      )}
       <ContentSlider title="Recommended for you" data={recommendedContent} onPressItem={handleWatchNow} />
       <ContentSlider title="Interviews" data={interviewsContent} onPressItem={handleWatchNow} />
       <ContentSlider title="Fashion Shows" data={fashionContent} onPressItem={handleWatchNow} />
