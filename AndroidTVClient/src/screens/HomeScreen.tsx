@@ -93,6 +93,7 @@ const HomeScreen = ({ navigation }: { navigation: any }) => {
   const [teensContent, setTeensContent] = useState<Content[]>([]);
   const [onlyOnPlaymoodContent, setOnlyOnPlaymoodContent] = useState<Content[]>([]);
   const [likedContent, setLikedContent] = useState<Content[]>([]);
+  const [watchlistContent, setWatchlistContent] = useState<Content[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
 
@@ -113,12 +114,18 @@ const HomeScreen = ({ navigation }: { navigation: any }) => {
           promises.push(axios.get(`${EXPO_PUBLIC_API_URL}/api/users/likes`, {
             headers: { Authorization: `Bearer ${user.token}` }
           }));
+          promises.push(axios.get(`${EXPO_PUBLIC_API_URL}/api/content/watchlist/all`, {
+            headers: { Authorization: `Bearer ${user.token}` }
+          }));
         }
 
-        const [allRes, topTenRes, likedRes] = await Promise.all(promises);
+        const [allRes, topTenRes, likedRes, watchlistRes] = await Promise.all(promises);
 
         if (likedRes) {
           setLikedContent(likedRes.data);
+        }
+        if (watchlistRes) {
+          setWatchlistContent(watchlistRes.data);
         }
 
         const all: Content[] = allRes.data;
@@ -222,6 +229,9 @@ const HomeScreen = ({ navigation }: { navigation: any }) => {
 
       {user && likedContent.length > 0 && (
         <ContentSlider title="My Likes" data={likedContent} onPressItem={handleWatchNow} />
+      )}
+      {user && watchlistContent.length > 0 && (
+        <ContentSlider title="My Watchlist" data={watchlistContent} onPressItem={handleWatchNow} />
       )}
       <ContentSlider title="Top 10" data={topTen} onPressItem={handleWatchNow} />
       <ContentSlider title="New on Playmood" data={newContent} onPressItem={handleWatchNow} />

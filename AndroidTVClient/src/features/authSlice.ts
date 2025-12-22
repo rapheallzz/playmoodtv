@@ -197,13 +197,15 @@ export const authSlice = createSlice({
       // Add to Watchlist
       .addCase(addToWatchlist.fulfilled, (state, action) => {
           if (state.user) {
-              state.user.watchlist.push(action.payload);
+              const newWatchlist = [...state.user.watchlist, action.payload];
+              state.user = { ...state.user, watchlist: newWatchlist };
           }
       })
       // Remove from Watchlist
       .addCase(removeFromWatchlist.fulfilled, (state, action) => {
           if (state.user) {
-              state.user.watchlist = state.user.watchlist.filter(id => id !== action.payload);
+              const newWatchlist = state.user.watchlist.filter(id => id !== action.payload);
+              state.user = { ...state.user, watchlist: newWatchlist };
           }
       });
   },
