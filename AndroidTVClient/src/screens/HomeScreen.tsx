@@ -92,6 +92,7 @@ const HomeScreen = ({ navigation }: { navigation: any }) => {
   const [soonContent, setSoonContent] = useState<Content[]>([]);
   const [teensContent, setTeensContent] = useState<Content[]>([]);
   const [onlyOnPlaymoodContent, setOnlyOnPlaymoodContent] = useState<Content[]>([]);
+  const [likedContent, setLikedContent] = useState<Content[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
 
@@ -103,10 +104,22 @@ const HomeScreen = ({ navigation }: { navigation: any }) => {
   useEffect(() => {
     const fetchContent = async () => {
       try {
-        const [allRes, topTenRes] = await Promise.all([
+        const promises = [
           axios.get(`${EXPO_PUBLIC_API_URL}/api/content/`),
           axios.get(`${EXPO_PUBLIC_API_URL}/api/content/top-ten`)
-        ]);
+        ];
+
+        if (user?.token) {
+          promises.push(axios.get(`${EXPO_PUBLIC_API_URL}/api/users/likes`, {
+            headers: { Authorization: `Bearer ${user.token}` }
+          }));
+        }
+
+        const [allRes, topTenRes, likedRes] = await Promise.all(promises);
+
+        if (likedRes) {
+          setLikedContent(likedRes.data);
+        }
 
         const all: Content[] = allRes.data;
 
@@ -207,6 +220,9 @@ const HomeScreen = ({ navigation }: { navigation: any }) => {
         </BannerContainer>
       )}
 
+      {user && likedContent.length > 0 && (
+        <ContentSlider title="My Likes" data={likedContent} onPressItem={handleWatchNow} />
+      )}
       <ContentSlider title="Top 10" data={topTen} onPressItem={handleWatchNow} />
       <ContentSlider title="New on Playmood" data={newContent} onPressItem={handleWatchNow} />
       <ContentSlider title="Recommended for you" data={recommendedContent} onPressItem={handleWatchNow} />
