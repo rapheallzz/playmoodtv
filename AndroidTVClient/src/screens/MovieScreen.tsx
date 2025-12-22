@@ -130,6 +130,9 @@ const MovieScreen = ({ route }: { route: any }) => {
     );
   }
 
+  const isLiked = user?.like?.includes(content._id);
+  const isInWatchlist = user?.watchlist?.includes(content._id);
+
   return (
     <Container>
       <VideoContainer>
@@ -148,14 +151,14 @@ const MovieScreen = ({ route }: { route: any }) => {
            <FocusableTouchableOpacity onPress={handleLike}>
               <View style={{ padding: 15, backgroundColor: 'rgba(128, 128, 128, 0.5)', borderRadius: 5, marginRight: 15 }}>
                 <ButtonText>
-                  {user?.like?.includes(content._id) ? 'UNLIKE' : 'LIKE'}
+                  {isLiked ? 'UNLIKE' : 'LIKE'}
                 </ButtonText>
               </View>
             </FocusableTouchableOpacity>
             <FocusableTouchableOpacity onPress={handleWatchlist}>
                <View style={{ padding: 15, backgroundColor: 'rgba(128, 128, 128, 0.5)', borderRadius: 5 }}>
                 <ButtonText>
-                  {user?.watchlist?.includes(content._id) ? 'REMOVE FROM WATCHLIST' : 'ADD TO WATCHLIST'}
+                  {isInWatchlist ? 'REMOVE FROM WATCHLIST' : 'ADD TO WATCHLIST'}
                 </ButtonText>
               </View>
             </FocusableTouchableOpacity>
