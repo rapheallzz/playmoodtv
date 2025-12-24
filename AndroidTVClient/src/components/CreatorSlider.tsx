@@ -4,16 +4,16 @@ import styled from 'styled-components/native';
 import FocusableTouchableOpacity from './FocusableTouchableOpacity';
 
 // --- Interfaces ---
-interface Content {
+interface Creator {
   _id: string;
-  title: string;
-  thumbnail: string;
+  name: string;
+  profileImage: string;
 }
 
-interface ContentSliderProps {
+interface CreatorSliderProps {
   title: string;
-  data: Content[];
-  onPressItem: (content: Content) => void;
+  data: Creator[];
+  onPressItem: (creator: Creator) => void;
 }
 
 // --- Styled Components ---
@@ -29,33 +29,34 @@ const SliderTitle = styled.Text`
   margin-bottom: 15px;
 `;
 
-const ContentItemContainer = styled.View`
+const CreatorItemContainer = styled.View`
   margin-left: 20px;
 `;
 
-const ContentImage = styled.Image`
-  width: 250px;
-  height: 140px;
-  border-radius: 5px;
+const CreatorImage = styled.Image`
+  width: 150px;
+  height: 150px;
+  border-radius: 75px; /* Makes the image circular */
   border-width: 2px;
   border-color: transparent;
 `;
 
-const ContentTitle = styled.Text`
+const CreatorName = styled.Text`
   color: #fff;
   font-size: 16px;
   text-align: center;
   margin-top: 8px;
 `;
 
+
 // --- Component ---
-const ContentSlider: React.FC<ContentSliderProps> = ({ title, data, onPressItem }) => {
-  const renderItem = ({ item }: { item: Content }) => (
+const CreatorSlider: React.FC<CreatorSliderProps> = ({ title, data, onPressItem }) => {
+  const renderItem = ({ item }: { item: Creator }) => (
     <FocusableTouchableOpacity onPress={() => onPressItem(item)}>
-      <ContentItemContainer>
-        <ContentImage source={{ uri: item.thumbnail }} />
-        <ContentTitle>{item.title}</ContentTitle>
-      </ContentItemContainer>
+      <CreatorItemContainer>
+        <CreatorImage source={{ uri: item.profileImage }} />
+        <CreatorName>{item.name}</CreatorName>
+      </CreatorItemContainer>
     </FocusableTouchableOpacity>
   );
 
@@ -73,4 +74,4 @@ const ContentSlider: React.FC<ContentSliderProps> = ({ title, data, onPressItem 
   );
 };
 
-export default ContentSlider;
+export default CreatorSlider;

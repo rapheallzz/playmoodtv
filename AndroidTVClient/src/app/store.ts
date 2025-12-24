@@ -5,10 +5,6 @@ export const store = configureStore({
   reducer: {
     auth: authReducer,
   },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: false, // Disabling for React Native AsyncStorage
-    }),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
