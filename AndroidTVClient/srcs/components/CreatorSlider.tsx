@@ -31,12 +31,13 @@ const SliderTitle = styled.Text`
 
 const CreatorItemContainer = styled.View`
   margin-left: 20px;
+  align-items: center; /* Center content vertically */
 `;
 
 const CreatorImage = styled.Image`
   width: 150px;
   height: 150px;
-  border-radius: 75px; /* Makes the image circular */
+  border-radius: 75px; /* Make it a circle */
   border-width: 2px;
   border-color: transparent;
 `;
@@ -47,7 +48,6 @@ const CreatorName = styled.Text`
   text-align: center;
   margin-top: 8px;
 `;
-
 
 // --- Component ---
 const CreatorSlider: React.FC<CreatorSliderProps> = ({ title, data, onPressItem }) => {
