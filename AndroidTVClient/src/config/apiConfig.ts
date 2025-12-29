@@ -1,1 +1,3 @@
-export const EXPO_PUBLIC_API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:5000';
+const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:5000/api';
+
+export { API_URL };

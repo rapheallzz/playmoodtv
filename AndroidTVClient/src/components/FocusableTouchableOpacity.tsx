@@ -1,30 +1,47 @@
-import React, { useState } from 'react';
-import { TouchableOpacity, TouchableOpacityProps } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { TouchableOpacity, TouchableOpacityProps, Animated } from 'react-native';
 import styled from 'styled-components/native';
 
-interface FocusableTouchableOpacityProps extends TouchableOpacityProps {
-  children: React.ReactNode;
-}
-
-const StyledTouchableOpacity = styled.TouchableOpacity<{ isFocused: boolean }>`
+// --- Styled Components ---
+const StyledTouchableOpacity = styled(Animated.createAnimatedComponent(TouchableOpacity))`
   border-width: 2px;
-  border-color: ${(props) => (props.isFocused ? '#E50914' : 'transparent')};
-  transform: ${(props) => (props.isFocused ? 'scale(1.1)' : 'scale(1)')};
-  border-radius: 5px;
+  border-color: transparent;
+  transform: scale(1);
 `;
 
-const FocusableTouchableOpacity: React.FC<FocusableTouchableOpacityProps> = ({ children, ...props }) => {
+// --- Component ---
+const FocusableTouchableOpacity: React.FC<TouchableOpacityProps> = (props) => {
   const [isFocused, setIsFocused] = useState(false);
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+
+  const handleFocus = () => {
+    setIsFocused(true);
+    Animated.timing(scaleAnim, {
+      toValue: 1.1,
+      duration: 200,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const handleBlur = () => {
+    setIsFocused(false);
+    Animated.timing(scaleAnim, {
+      toValue: 1,
+      duration: 200,
+      useNativeDriver: true,
+    }).start();
+  };
 
   return (
     <StyledTouchableOpacity
-      isFocused={isFocused}
-      onFocus={() => setIsFocused(true)}
-      onBlur={() => setIsFocused(false)}
       {...props}
-    >
-      {children}
-    </StyledTouchableOpacity>
+      onFocus={handleFocus}
+      onBlur={handleBlur}
+      style={{
+        borderColor: isFocused ? '#007bff' : 'transparent',
+        transform: [{ scale: scaleAnim }],
+      }}
+    />
   );
 };
 
