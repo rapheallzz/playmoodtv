@@ -9,6 +9,7 @@ import { likeContent, unlikeContent, addToWatchlist, removeFromWatchlist } from 
 import FocusableTouchableOpacity from '../components/FocusableTouchableOpacity';
 import { Video } from 'expo-av';
 import ContentSlider from '../components/ContentSlider';
+import ChannelSlider from '../components/ChannelSlider';
 
 // --- Styled Components ---
 const Container = styled.ScrollView`
@@ -237,6 +238,7 @@ const HomeScreen = ({ navigation }: { navigation: any }) => {
         </BannerContainer>
       )}
 
+      <ChannelSlider />
       <ContentSlider title="Top 10" data={topTen} onPressItem={handleWatchNow} />
       <ContentSlider title="New on Playmood" data={newContent} onPressItem={handleWatchNow} />
       {user && (
