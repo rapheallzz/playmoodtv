@@ -6,6 +6,12 @@ import { RouteProp, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
 import { EXPO_PUBLIC_API_URL } from '../config/apiConfig';
+import HighlightsSection from '../components/HighlightsSection';
+import FeedGrid from '../components/FeedGrid';
+import FeedPostViewerModal from '../components/FeedPostViewerModal';
+import PlaylistsSection from '../components/PlaylistsSection';
+import CommunitySection from '../components/CommunitySection';
+import AboutSection from '../components/AboutSection';
 
 type ChannelScreenRouteProp = RouteProp<RootStackParamList, 'Channel'>;
 
@@ -16,6 +22,7 @@ interface Creator {
   bannerImage: string;
   subscribers: number;
   content: any[];
+  about: string;
 }
 
 const Container = styled.View`
@@ -55,6 +62,31 @@ const SubscriberCount = styled.Text`
   font-size: 16px;
 `;
 
+const TabsContainer = styled.View`
+  flex-direction: row;
+  justify-content: space-around;
+  padding: 10px 20px;
+  border-bottom-width: 1px;
+  border-bottom-color: #333;
+`;
+
+const TabButton = styled.TouchableOpacity<{ isFocused: boolean; isActive: boolean }>`
+  padding: 10px;
+  border-bottom-width: 2px;
+  border-bottom-color: ${(props) => (props.isActive ? '#fff' : 'transparent')};
+  background-color: ${(props) => (props.isFocused ? '#555' : 'transparent')};
+`;
+
+const TabText = styled.Text`
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+`;
+
+const ContentContainer = styled.View`
+  flex: 1;
+`;
+
 const VideosContainer = styled.View`
   padding: 20px;
 `;
@@ -85,11 +117,17 @@ const VideoTitle = styled.Text`
 
 type ChannelScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Channel'>;
 
+const TABS = ['VIDEOS', 'FEEDS', 'PLAYLISTS', 'COMMUNITY', 'ABOUT'];
+
 const ChannelScreen = ({ route }: { route: ChannelScreenRouteProp }) => {
   const { creatorId } = route.params;
   const [creator, setCreator] = useState<Creator | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [focusedVideoIndex, setFocusedVideoIndex] = useState(-1);
+  const [activeTab, setActiveTab] = useState('VIDEOS');
+  const [focusedTab, setFocusedTab] = useState('');
+  const [selectedFeedPost, setSelectedFeedPost] = useState(null);
+  const [isFeedModalVisible, setIsFeedModalVisible] = useState(false);
   const navigation = useNavigation<ChannelScreenNavigationProp>();
 
   useEffect(() => {
@@ -122,6 +160,53 @@ const ChannelScreen = ({ route }: { route: ChannelScreenRouteProp }) => {
     );
   }
 
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'VIDEOS':
+        return (
+          <VideosContainer>
+            <SectionTitle>Videos</SectionTitle>
+            <FlatList
+              data={creator?.content}
+              horizontal
+              keyExtractor={(item) => item._id}
+              renderItem={({ item, index }) => (
+                <TouchableOpacity
+                  onFocus={() => setFocusedVideoIndex(index)}
+                  onBlur={() => setFocusedVideoIndex(-1)}
+                  onPress={() => navigation.navigate('Movie', { movieId: item._id })}
+                  hasTVPreferredFocus={index === 0}
+                >
+                  <VideoCard isFocused={focusedVideoIndex === index}>
+                    <VideoThumbnail source={{ uri: item.thumbnail }} />
+                    <VideoTitle>{item.title}</VideoTitle>
+                  </VideoCard>
+                </TouchableOpacity>
+              )}
+            />
+          </VideosContainer>
+        );
+      case 'FEEDS':
+        return (
+          <FeedGrid
+            creatorId={creatorId}
+            onPostClick={(post) => {
+              setSelectedFeedPost(post);
+              setIsFeedModalVisible(true);
+            }}
+          />
+        );
+      case 'PLAYLISTS':
+        return <PlaylistsSection creatorId={creatorId} />;
+      case 'COMMUNITY':
+        return <CommunitySection creatorId={creatorId} />;
+      case 'ABOUT':
+        return <AboutSection about={creator?.about || ''} />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <Container>
       <Banner source={{ uri: creator.bannerImage }} />
@@ -132,27 +217,27 @@ const ChannelScreen = ({ route }: { route: ChannelScreenRouteProp }) => {
           <SubscriberCount>{creator.subscribers} subscribers</SubscriberCount>
         </ProfileInfo>
       </ProfileContainer>
-      <VideosContainer>
-        <SectionTitle>Videos</SectionTitle>
-        <FlatList
-          data={creator.content}
-          horizontal
-          keyExtractor={(item) => item._id}
-          renderItem={({ item, index }) => (
-            <TouchableOpacity
-              onFocus={() => setFocusedVideoIndex(index)}
-              onBlur={() => setFocusedVideoIndex(-1)}
-              onPress={() => navigation.navigate('Movie', { movieId: item._id })}
-              hasTVPreferredFocus={index === 0}
-            >
-              <VideoCard isFocused={focusedVideoIndex === index}>
-                <VideoThumbnail source={{ uri: item.thumbnail }} />
-                <VideoTitle>{item.title}</VideoTitle>
-              </VideoCard>
-            </TouchableOpacity>
-          )}
-        />
-      </VideosContainer>
+      <HighlightsSection creatorId={creatorId} />
+      <TabsContainer>
+        {TABS.map((tab) => (
+          <TabButton
+            key={tab}
+            onPress={() => setActiveTab(tab)}
+            onFocus={() => setFocusedTab(tab)}
+            onBlur={() => setFocusedTab('')}
+            isActive={activeTab === tab}
+            isFocused={focusedTab === tab}
+          >
+            <TabText>{tab}</TabText>
+          </TabButton>
+        ))}
+      </TabsContainer>
+      <ContentContainer>{renderContent()}</ContentContainer>
+      <FeedPostViewerModal
+        post={selectedFeedPost}
+        visible={isFeedModalVisible}
+        onClose={() => setIsFeedModalVisible(false)}
+      />
     </Container>
   );
 };
