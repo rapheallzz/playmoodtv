@@ -5,7 +5,7 @@ import axios from 'axios';
 import { RouteProp, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
-import { BASE_URL } from '../config/apiConfig';
+import { EXPO_PUBLIC_API_URL } from '../config/apiConfig';
 
 type ChannelScreenRouteProp = RouteProp<RootStackParamList, 'Channel'>;
 
@@ -95,7 +95,7 @@ const ChannelScreen = ({ route }: { route: ChannelScreenRouteProp }) => {
   useEffect(() => {
     const fetchCreator = async () => {
       try {
-        const response = await axios.get(`${BASE_URL}/api/channel/${creatorId}`);
+        const response = await axios.get(`${EXPO_PUBLIC_API_URL}/api/channel/${creatorId}`);
         setCreator(response.data);
       } catch (err) {
         setError('Failed to load creator data. Please try again later.');
@@ -143,6 +143,7 @@ const ChannelScreen = ({ route }: { route: ChannelScreenRouteProp }) => {
               onFocus={() => setFocusedVideoIndex(index)}
               onBlur={() => setFocusedVideoIndex(-1)}
               onPress={() => navigation.navigate('Movie', { movieId: item._id })}
+              hasTVPreferredFocus={index === 0}
             >
               <VideoCard isFocused={focusedVideoIndex === index}>
                 <VideoThumbnail source={{ uri: item.thumbnail }} />

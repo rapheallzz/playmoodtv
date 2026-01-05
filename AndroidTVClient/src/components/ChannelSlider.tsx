@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { FlatList, TouchableOpacity } from 'react-native';
+import { FlatList, TouchableOpacity, Text } from 'react-native';
 import styled from 'styled-components/native';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
-import { BASE_URL } from '../config/apiConfig';
+import { EXPO_PUBLIC_API_URL } from '../config/apiConfig';
 
 interface Creator {
   _id: string;
@@ -24,7 +24,7 @@ const SectionTitle = styled.Text`
   margin-bottom: 10px;
 `;
 
-const CreatorItemContainer = styled.View<{ hasTVPreferredFocus: boolean; isFocused: boolean }>`
+const CreatorItemContainer = styled.View<{ isFocused: boolean }>`
   border-radius: 50px;
   border-width: 2px;
   border-color: ${(props) => (props.isFocused ? '#fff' : 'transparent')};
@@ -42,21 +42,32 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
 const ChannelSlider = () => {
   const [creators, setCreators] = useState<Creator[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const [focusedIndex, setFocusedIndex] = useState(-1);
   const navigation = useNavigation<NavigationProp>();
 
   useEffect(() => {
     const fetchCreators = async () => {
       try {
-        const response = await axios.get(`${BASE_URL}/api/users/creators`);
+        const response = await axios.get(`${EXPO_PUBLIC_API_URL}/api/users/creators`);
         setCreators(response.data);
-      } catch (error) {
-        console.error('Error fetching creators:', error);
+      } catch (err) {
+        setError('Failed to load channels. Please try again later.');
+        console.error('Error fetching creators:', err);
       }
     };
 
     fetchCreators();
   }, []);
+
+  if (error) {
+    return (
+      <SliderContainer>
+        <SectionTitle>Channels</SectionTitle>
+        <Text style={{ color: 'red' }}>{error}</Text>
+      </SliderContainer>
+    );
+  }
 
   const renderItem = ({ item, index }: { item: Creator; index: number }) => (
     <TouchableOpacity
@@ -64,8 +75,9 @@ const ChannelSlider = () => {
       onBlur={() => setFocusedIndex(-1)}
       onPress={() => navigation.navigate('Channel', { creatorId: item._id })}
       activeOpacity={0.8}
+      hasTVPreferredFocus={index === 0}
     >
-      <CreatorItemContainer hasTVPreferredFocus={index === 0} isFocused={focusedIndex === index}>
+      <CreatorItemContainer isFocused={focusedIndex === index}>
         <CreatorImage source={{ uri: item.profileImage }} />
       </CreatorItemContainer>
     </TouchableOpacity>
