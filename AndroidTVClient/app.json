@@ -4,20 +4,14 @@
     "slug": "AndroidTVClient",
     "version": "1.0.0",
     "orientation": "landscape",
-    "icon": "./assets/icon.png",
     "userInterfaceStyle": "tv",
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "ios": {
-      "supportsTablet": true
-    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#FFFFFF"
       },
       "intentFilters": [
         {
@@ -26,16 +20,10 @@
             "LEANBACK_LAUNCHER"
           ]
         }
-      ],
-      "package": "com.rightsort.AndroidTVClient"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    },
-    "extra": {
-      "eas": {
-        "projectId": "46f1303f-acac-44dc-bbee-6f29cbd1096a"
-      }
     }
   }
 }
