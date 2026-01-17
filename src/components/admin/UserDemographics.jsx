@@ -26,29 +26,30 @@ const UserDemographics = () => {
 
   if (loading) {
     return (
-      <div className="bg-[#1a1a1a] p-6 rounded-xl border border-[#541011]/30 animate-pulse">
-        <div className="h-8 bg-gray-800 rounded w-3/4 mb-6"></div>
-        <div className="h-64 bg-gray-800 rounded"></div>
+      <div className="bg-white p-8 rounded-2xl border border-gray-100 animate-pulse shadow-sm">
+        <div className="h-6 bg-slate-100 rounded w-1/2 mb-8"></div>
+        <div className="h-64 bg-slate-50 rounded"></div>
       </div>
     );
   }
 
   return (
-    <div className="bg-[#1a1a1a] p-6 rounded-xl border border-[#541011]/30 shadow-2xl">
-      <h3 className="text-xl font-bold mb-6 text-white border-l-4 border-[#541011] pl-3 uppercase tracking-wider">
-        User Demographics by Country
+    <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm transition-all duration-300 hover:shadow-xl">
+      <h3 className="text-xl font-black mb-8 text-slate-800 border-l-4 border-[#541011] pl-4 uppercase tracking-tighter">
+        User Demographics
       </h3>
       <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={data} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-          <XAxis dataKey="country" stroke="#999" fontSize={12} tickLine={false} axisLine={false} />
-          <YAxis stroke="#999" fontSize={12} tickLine={false} axisLine={false} />
+        <BarChart data={data} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+          <XAxis dataKey="country" stroke="#94a3b8" fontSize={11} fontWeight={600} tickLine={false} axisLine={false} dy={10} />
+          <YAxis stroke="#94a3b8" fontSize={11} fontWeight={600} tickLine={false} axisLine={false} />
           <Tooltip
-            contentStyle={{ backgroundColor: '#111', borderColor: '#541011', borderRadius: '8px' }}
-            itemStyle={{ color: '#fff' }}
+            contentStyle={{ backgroundColor: '#fff', border: 'none', borderRadius: '12px', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+            itemStyle={{ color: '#1e293b', fontWeight: 700 }}
+            cursor={{ fill: '#f8fafc' }}
           />
-          <Legend verticalAlign="top" height={36}/>
-          <Bar dataKey="userCount" fill="#8b1d1d" name="Number of Users" radius={[4, 4, 0, 0]} />
+          <Legend verticalAlign="top" align="right" iconType="circle" wrapperStyle={{ paddingBottom: '20px', fontSize: '12px', fontWeight: 600 }} />
+          <Bar dataKey="userCount" fill="#541011" name="Number of Users" radius={[6, 6, 0, 0]} barSize={40} />
         </BarChart>
       </ResponsiveContainer>
     </div>

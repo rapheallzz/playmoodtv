@@ -116,18 +116,18 @@ const VideoManagement = () => {
   );
 
   return (
-    <div className="bg-[#1a1a1a] p-6 rounded-xl border border-[#541011]/30 shadow-2xl">
-      <h2 className="text-2xl font-bold mb-6 text-white uppercase tracking-wider">Video Management</h2>
+    <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm transition-all duration-300 hover:shadow-xl">
+      <h2 className="text-2xl font-black mb-8 text-slate-800 uppercase tracking-tighter border-l-4 border-[#541011] pl-4">Video Management</h2>
       <div className="flex flex-wrap items-center gap-4 mb-8">
         <input
           type="text"
           placeholder="Search by title..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="p-2 bg-[#111] border border-gray-800 rounded-md text-white focus:border-[#541011] outline-none"
+          className="p-3 bg-slate-50 border border-slate-100 rounded-xl text-slate-800 focus:border-[#541011] outline-none shadow-inner"
         />
         <select
-          className="p-2 bg-[#111] border border-gray-800 rounded-md text-white focus:border-[#541011] outline-none"
+          className="p-3 bg-slate-50 border border-slate-100 rounded-xl text-slate-800 focus:border-[#541011] outline-none shadow-inner font-medium"
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
         >
@@ -138,35 +138,35 @@ const VideoManagement = () => {
           <option value="documentaries">Documentaries</option>
           <option value="interviews">Interviews</option>
         </select>
-        <button className="px-4 py-2 bg-[#541011] text-white rounded-md hover:bg-red-800 transition-colors font-medium" onClick={handleAddVideo}>
+        <button className="px-6 py-3 bg-[#541011] text-white rounded-xl hover:bg-red-900 transition-all font-bold shadow-lg shadow-[#541011]/20" onClick={handleAddVideo}>
           Add New Video
         </button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="bg-[#111] p-4 rounded-xl border border-gray-800">
-          <h3 className="text-xl font-semibold mb-4 text-gray-300 border-b border-gray-800 pb-2">All Videos</h3>
+        <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+          <h3 className="text-lg font-black mb-6 text-slate-700 border-b border-slate-200 pb-3 uppercase tracking-wider">All Videos</h3>
           <div className="max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-            {loading ? <p className="text-gray-500">Loading...</p> : (
-            <ul className="space-y-3">
+            {loading ? <p className="text-slate-400 font-medium italic py-4">Loading content...</p> : (
+            <ul className="space-y-4">
               {filteredContents.map((content) => (
-                <li key={content._id} className="bg-[#1a1a1a] p-4 rounded-lg border border-gray-800 flex justify-between items-center transition-all hover:border-gray-700">
+                <li key={content._id} className="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center transition-all hover:shadow-md hover:border-[#541011]/20">
                   <div>
-                    <p className="font-semibold text-white">{content.title}</p>
-                    <p className="text-sm text-gray-500 uppercase tracking-tighter">{content.category}</p>
+                    <p className="font-bold text-slate-800">{content.title}</p>
+                    <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mt-1">{content.category}</p>
                   </div>
                   <div className="flex gap-2">
                     <button
-                      className="px-3 py-1.5 bg-yellow-600/20 text-yellow-500 border border-yellow-600/30 rounded-md text-sm hover:bg-yellow-600 hover:text-white transition-all"
+                      className="px-4 py-2 bg-yellow-50 text-yellow-600 font-bold border border-yellow-100 rounded-xl text-xs hover:bg-yellow-600 hover:text-white transition-all"
                       onClick={() => handleUpdateContent(content._id)}
                     >
-                      Edit
+                      EDIT
                     </button>
                     <button
-                      className="px-3 py-1.5 bg-red-600/20 text-red-500 border border-red-600/30 rounded-md text-sm hover:bg-red-600 hover:text-white transition-all"
+                      className="px-4 py-2 bg-red-50 text-red-600 font-bold border border-red-100 rounded-xl text-xs hover:bg-red-600 hover:text-white transition-all"
                       onClick={() => deleteContents(content._id)}
                     >
-                      Delete
+                      DELETE
                     </button>
                   </div>
                 </li>
@@ -175,39 +175,39 @@ const VideoManagement = () => {
             )}
           </div>
         </div>
-        <div className="bg-[#111] p-4 rounded-xl border border-gray-800">
-          <h3 className="text-xl font-semibold mb-4 text-gray-300 border-b border-gray-800 pb-2">Pending Approval</h3>
+        <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+          <h3 className="text-lg font-black mb-6 text-slate-700 border-b border-slate-200 pb-3 uppercase tracking-wider">Review Queue</h3>
           <div className="max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-            <ul className="space-y-3">
+            <ul className="space-y-4">
               {unapprovedContents.map((content) => (
-                <li key={content._id} className="bg-[#1a1a1a] p-4 rounded-lg border border-gray-800 flex justify-between items-center transition-all hover:border-gray-700">
+                <li key={content._id} className="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center transition-all hover:shadow-md hover:border-[#541011]/20">
                   <div>
-                    <p className="font-semibold text-white">{content.title}</p>
-                    <p className="text-sm text-gray-500 uppercase tracking-tighter">{content.category}</p>
+                    <p className="font-bold text-slate-800">{content.title}</p>
+                    <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mt-1">{content.category}</p>
                   </div>
                   <div className="flex gap-2">
                     <button
-                      className="px-3 py-1.5 bg-gray-700 text-white rounded-md text-sm hover:bg-gray-600 transition-all"
+                      className="px-4 py-2 bg-slate-100 text-slate-600 font-bold rounded-xl text-xs hover:bg-slate-800 hover:text-white transition-all"
                       onClick={() => handleViewVideo(content.video)}
                     >
-                      View
+                      VIEW
                     </button>
                     <button
-                      className="px-3 py-1.5 bg-green-600/20 text-green-500 border border-green-600/30 rounded-md text-sm hover:bg-green-600 hover:text-white transition-all"
+                      className="px-4 py-2 bg-green-50 text-green-600 font-bold border border-green-100 rounded-xl text-xs hover:bg-green-600 hover:text-white transition-all"
                       onClick={() => approveVideo(content._id)}
                     >
-                      Approve
+                      APPROVE
                     </button>
                     <button
-                      className="px-3 py-1.5 bg-red-600/20 text-red-500 border border-red-600/30 rounded-md text-sm hover:bg-red-600 hover:text-white transition-all"
+                      className="px-4 py-2 bg-red-50 text-red-600 font-bold border border-red-100 rounded-xl text-xs hover:bg-red-600 hover:text-white transition-all"
                       onClick={() => declineVideo(content._id)}
                     >
-                      Decline
+                      DECLINE
                     </button>
                   </div>
                 </li>
               ))}
-              {unapprovedContents.length === 0 && <p className="text-gray-500 text-center py-4">No pending approvals</p>}
+              {unapprovedContents.length === 0 && <p className="text-slate-400 text-center py-10 font-medium italic">Your queue is empty!</p>}
             </ul>
           </div>
         </div>

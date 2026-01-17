@@ -47,54 +47,60 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="flex h-screen bg-[#191818]">
+    <div className="flex h-screen bg-[#f4f7fe]">
       <ToastContainer />
-      <div className="w-64 bg-[#0a0a0a] text-white flex flex-col border-r border-[#541011]/30">
-        <div className="p-4 border-b border-[#541011]/30">
-          <h2 className="text-2xl font-bold text-[#541011]">Admin Panel</h2>
+      <div className="w-64 bg-[#0a0a0a] text-white flex flex-col">
+        <div className="p-6">
+          <h2 className="text-2xl font-black text-[#541011] tracking-tighter">PLAYMOOD</h2>
+          <p className="text-[10px] text-gray-500 font-bold tracking-[0.2em] mt-1">ADMIN PORTAL</p>
         </div>
-        <nav className="flex-1 px-2 py-4 space-y-2">
+        <nav className="flex-1 px-4 py-4 space-y-4">
           <button
             onClick={() => setSelectedSection('dashboard')}
-            className={`w-full text-left flex items-center px-4 py-2 text-gray-300 hover:bg-[#541011] hover:text-white rounded-md transition-colors ${selectedSection === 'dashboard' ? 'bg-[#541011] text-white' : ''}`}
+            className={`w-full text-left flex items-center px-4 py-3 rounded-xl transition-all duration-300 font-medium ${selectedSection === 'dashboard' ? 'bg-[#541011] text-white shadow-lg shadow-[#541011]/30' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
           >
             Dashboard
           </button>
           <button
             onClick={() => setSelectedSection('creator-analytics')}
-            className={`w-full text-left flex items-center px-4 py-2 text-gray-300 hover:bg-[#541011] hover:text-white rounded-md transition-colors ${selectedSection === 'creator-analytics' ? 'bg-[#541011] text-white' : ''}`}
+            className={`w-full text-left flex items-center px-4 py-3 rounded-xl transition-all duration-300 font-medium ${selectedSection === 'creator-analytics' ? 'bg-[#541011] text-white shadow-lg shadow-[#541011]/30' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
           >
             Creator Analytics
           </button>
           <button
             onClick={() => setSelectedSection('videos')}
-            className={`w-full text-left flex items-center px-4 py-2 text-gray-300 hover:bg-[#541011] hover:text-white rounded-md transition-colors ${selectedSection === 'videos' ? 'bg-[#541011] text-white' : ''}`}
+            className={`w-full text-left flex items-center px-4 py-3 rounded-xl transition-all duration-300 font-medium ${selectedSection === 'videos' ? 'bg-[#541011] text-white shadow-lg shadow-[#541011]/30' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
           >
             Video Management
           </button>
           <button
             onClick={() => setSelectedSection('users')}
-            className={`w-full text-left flex items-center px-4 py-2 text-gray-300 hover:bg-[#541011] hover:text-white rounded-md transition-colors ${selectedSection === 'users' ? 'bg-[#541011] text-white' : ''}`}
+            className={`w-full text-left flex items-center px-4 py-3 rounded-xl transition-all duration-300 font-medium ${selectedSection === 'users' ? 'bg-[#541011] text-white shadow-lg shadow-[#541011]/30' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
           >
             User Management
           </button>
         </nav>
-        <div className="p-4 border-t border-[#541011]/30">
+        <div className="p-6">
           <button
             onClick={onLogout}
-            className="w-full bg-[#541011] hover:bg-red-800 text-white font-bold py-2 px-4 rounded transition-colors"
+            className="w-full bg-[#541011] hover:bg-red-900 text-white font-bold py-3 px-4 rounded-xl transition-all shadow-lg shadow-[#541011]/20"
           >
             Logout
           </button>
         </div>
       </div>
-      <main className="flex-1 p-6 overflow-y-auto bg-[#191818]">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-white">
-            Welcome, {user?.name || 'Admin'}
-          </h1>
+      <main className="flex-1 p-8 overflow-y-auto">
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-3xl font-black text-[#1e293b] tracking-tight">
+              Welcome back, {user?.name || 'Admin'}
+            </h1>
+            <p className="text-gray-500 font-medium">Here's what's happening on your platform today.</p>
+          </div>
         </div>
-        {renderSection()}
+        <div className="max-w-7xl mx-auto">
+          {renderSection()}
+        </div>
       </main>
     </div>
   );
