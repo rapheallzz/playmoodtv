@@ -8,6 +8,7 @@ import ModerationStats from '../components/admin/ModerationStats';
 import CreatorAnalytics from '../components/admin/CreatorAnalytics';
 import VideoManagement from '../components/admin/VideoManagement';
 import UserManagement from '../components/admin/UserManagement';
+import TVScheduleManagement from '../components/admin/TVScheduleManagement';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -41,6 +42,8 @@ const AdminDashboard = () => {
         return <VideoManagement />;
       case 'users':
         return <UserManagement />;
+      case 'tv-schedule':
+        return <TVScheduleManagement />;
       default:
         return <div>Dashboard Content</div>;
     }
@@ -78,6 +81,12 @@ const AdminDashboard = () => {
             className={`w-full text-left flex items-center px-4 py-3 rounded-xl transition-all duration-300 font-medium ${selectedSection === 'users' ? 'bg-[#541011] text-white shadow-lg shadow-[#541011]/30' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
           >
             User Management
+          </button>
+          <button
+            onClick={() => setSelectedSection('tv-schedule')}
+            className={`w-full text-left flex items-center px-4 py-3 rounded-xl transition-all duration-300 font-medium ${selectedSection === 'tv-schedule' ? 'bg-[#541011] text-white shadow-lg shadow-[#541011]/30' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+          >
+            TV Schedule
           </button>
         </nav>
         <div className="p-6">
