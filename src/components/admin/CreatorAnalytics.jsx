@@ -148,15 +148,15 @@ const CreatorAnalytics = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div className="bg-slate-50 p-8 rounded-2xl border border-slate-100 text-center transition-all hover:shadow-lg hover:-translate-y-1">
                   <p className="text-slate-400 text-[10px] uppercase tracking-[0.2em] mb-3 font-bold">Total Views</p>
-                  <p className="text-5xl font-black text-slate-800 tracking-tighter">{dashboardData.performance.totalViews.toLocaleString()}</p>
+                  <p className="text-5xl font-black text-slate-800 tracking-tighter">{(dashboardData.performance?.totalViews || 0).toLocaleString()}</p>
                 </div>
                 <div className="bg-slate-50 p-8 rounded-2xl border border-slate-100 text-center transition-all hover:shadow-lg hover:-translate-y-1">
                   <p className="text-slate-400 text-[10px] uppercase tracking-[0.2em] mb-3 font-bold">Total Likes</p>
-                  <p className="text-5xl font-black text-slate-800 tracking-tighter">{dashboardData.performance.totalLikes.toLocaleString()}</p>
+                  <p className="text-5xl font-black text-slate-800 tracking-tighter">{(dashboardData.performance?.totalLikes || 0).toLocaleString()}</p>
                 </div>
                 <div className="bg-slate-50 p-8 rounded-2xl border border-slate-100 text-center transition-all hover:shadow-lg hover:-translate-y-1">
                   <p className="text-slate-400 text-[10px] uppercase tracking-[0.2em] mb-3 font-bold">Subscribers</p>
-                  <p className="text-5xl font-black text-slate-800 tracking-tighter">{dashboardData.audience.totalSubscribers.toLocaleString()}</p>
+                  <p className="text-5xl font-black text-slate-800 tracking-tighter">{(dashboardData.audience?.totalSubscribers || 0).toLocaleString()}</p>
                 </div>
             </div>
           )}
@@ -213,8 +213,8 @@ const CreatorAnalytics = () => {
                         <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
                           <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-2">Global Avg Views / Cat</p>
                           <p className="text-3xl font-black text-slate-800 tracking-tighter">
-                            {engagementData.performanceByCategory.length > 0
-                              ? Math.round(engagementData.performanceByCategory.reduce((acc, curr) => acc + curr.totalViews, 0) / engagementData.performanceByCategory.length).toLocaleString()
+                            {engagementData.performanceByCategory && engagementData.performanceByCategory.length > 0
+                              ? Math.round(engagementData.performanceByCategory.reduce((acc, curr) => acc + (curr.totalViews || 0), 0) / engagementData.performanceByCategory.length).toLocaleString()
                               : '0'}
                           </p>
                         </div>

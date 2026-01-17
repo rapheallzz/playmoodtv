@@ -10,7 +10,7 @@ const StatCard = ({ title, value, icon }) => (
     </div>
     <div>
       <p className="text-slate-400 text-xs font-bold mb-1 uppercase tracking-widest">{title}</p>
-      <p className="text-3xl font-black text-slate-800 tracking-tight">{value.toLocaleString()}</p>
+      <p className="text-3xl font-black text-slate-800 tracking-tight">{(value || 0).toLocaleString()}</p>
     </div>
   </div>
 );

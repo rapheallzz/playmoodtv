@@ -58,7 +58,7 @@ const WatchTimeAnalyticsModal = ({ videoId, onClose }) => {
               </div>
               <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100 shadow-inner">
                 <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-2">Audience Grip</p>
-                <h3 className="text-3xl font-black text-[#541011] tracking-tighter">{data.averageViewDuration} <span className="text-sm font-bold text-slate-400 uppercase tracking-widest ml-1">Secs Avg</span></h3>
+                <h3 className="text-3xl font-black text-[#541011] tracking-tighter">{data.averageViewDuration || 0} <span className="text-sm font-bold text-slate-400 uppercase tracking-widest ml-1">Secs Avg</span></h3>
               </div>
             </div>
 
