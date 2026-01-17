@@ -26,24 +26,29 @@ const UserDemographics = () => {
 
   if (loading) {
     return (
-      <div className="bg-white p-6 rounded-lg shadow-md animate-pulse">
-        <div className="h-8 bg-gray-200 rounded w-3/4 mb-4"></div>
-        <div className="h-64 bg-gray-200 rounded"></div>
+      <div className="bg-[#1a1a1a] p-6 rounded-xl border border-[#541011]/30 animate-pulse">
+        <div className="h-8 bg-gray-800 rounded w-3/4 mb-6"></div>
+        <div className="h-64 bg-gray-800 rounded"></div>
       </div>
     );
   }
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
-      <h3 className="text-xl font-bold mb-4">User Demographics by Country</h3>
+    <div className="bg-[#1a1a1a] p-6 rounded-xl border border-[#541011]/30 shadow-2xl">
+      <h3 className="text-xl font-bold mb-6 text-white border-l-4 border-[#541011] pl-3 uppercase tracking-wider">
+        User Demographics by Country
+      </h3>
       <ResponsiveContainer width="100%" height={300}>
         <BarChart data={data} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="country" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Bar dataKey="userCount" fill="#8884d8" name="Number of Users" />
+          <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+          <XAxis dataKey="country" stroke="#999" fontSize={12} tickLine={false} axisLine={false} />
+          <YAxis stroke="#999" fontSize={12} tickLine={false} axisLine={false} />
+          <Tooltip
+            contentStyle={{ backgroundColor: '#111', borderColor: '#541011', borderRadius: '8px' }}
+            itemStyle={{ color: '#fff' }}
+          />
+          <Legend verticalAlign="top" height={36}/>
+          <Bar dataKey="userCount" fill="#8b1d1d" name="Number of Users" radius={[4, 4, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>

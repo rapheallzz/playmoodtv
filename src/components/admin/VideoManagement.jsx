@@ -116,18 +116,18 @@ const VideoManagement = () => {
   );
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-4">Video Management</h2>
-      <div className="flex items-center gap-4 mb-4">
+    <div className="bg-[#1a1a1a] p-6 rounded-xl border border-[#541011]/30 shadow-2xl">
+      <h2 className="text-2xl font-bold mb-6 text-white uppercase tracking-wider">Video Management</h2>
+      <div className="flex flex-wrap items-center gap-4 mb-8">
         <input
           type="text"
           placeholder="Search by title..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="p-2 border border-gray-300 rounded-md"
+          className="p-2 bg-[#111] border border-gray-800 rounded-md text-white focus:border-[#541011] outline-none"
         />
         <select
-          className="p-2 border border-gray-300 rounded-md"
+          className="p-2 bg-[#111] border border-gray-800 rounded-md text-white focus:border-[#541011] outline-none"
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
         >
@@ -138,32 +138,32 @@ const VideoManagement = () => {
           <option value="documentaries">Documentaries</option>
           <option value="interviews">Interviews</option>
         </select>
-        <button className="p-2 bg-blue-600 text-white rounded-md" onClick={handleAddVideo}>
+        <button className="px-4 py-2 bg-[#541011] text-white rounded-md hover:bg-red-800 transition-colors font-medium" onClick={handleAddVideo}>
           Add New Video
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <h3 className="text-xl font-semibold mb-2">All Videos</h3>
-          <div className="max-h-[500px] overflow-y-auto">
-            {loading ? <p>Loading...</p> : (
-            <ul>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="bg-[#111] p-4 rounded-xl border border-gray-800">
+          <h3 className="text-xl font-semibold mb-4 text-gray-300 border-b border-gray-800 pb-2">All Videos</h3>
+          <div className="max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+            {loading ? <p className="text-gray-500">Loading...</p> : (
+            <ul className="space-y-3">
               {filteredContents.map((content) => (
-                <li key={content._id} className="bg-gray-50 p-3 rounded-md mb-2 flex justify-between items-center">
+                <li key={content._id} className="bg-[#1a1a1a] p-4 rounded-lg border border-gray-800 flex justify-between items-center transition-all hover:border-gray-700">
                   <div>
-                    <p className="font-semibold">{content.title}</p>
-                    <p className="text-sm text-gray-500">{content.category}</p>
+                    <p className="font-semibold text-white">{content.title}</p>
+                    <p className="text-sm text-gray-500 uppercase tracking-tighter">{content.category}</p>
                   </div>
                   <div className="flex gap-2">
                     <button
-                      className="p-2 bg-yellow-500 text-white rounded-md"
+                      className="px-3 py-1.5 bg-yellow-600/20 text-yellow-500 border border-yellow-600/30 rounded-md text-sm hover:bg-yellow-600 hover:text-white transition-all"
                       onClick={() => handleUpdateContent(content._id)}
                     >
-                      Update
+                      Edit
                     </button>
                     <button
-                      className="p-2 bg-red-600 text-white rounded-md"
+                      className="px-3 py-1.5 bg-red-600/20 text-red-500 border border-red-600/30 rounded-md text-sm hover:bg-red-600 hover:text-white transition-all"
                       onClick={() => deleteContents(content._id)}
                     >
                       Delete
@@ -175,31 +175,31 @@ const VideoManagement = () => {
             )}
           </div>
         </div>
-        <div>
-          <h3 className="text-xl font-semibold mb-2">Unapproved Videos</h3>
-          <div className="max-h-[500px] overflow-y-auto">
-            <ul>
+        <div className="bg-[#111] p-4 rounded-xl border border-gray-800">
+          <h3 className="text-xl font-semibold mb-4 text-gray-300 border-b border-gray-800 pb-2">Pending Approval</h3>
+          <div className="max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+            <ul className="space-y-3">
               {unapprovedContents.map((content) => (
-                <li key={content._id} className="bg-gray-50 p-3 rounded-md mb-2 flex justify-between items-center">
+                <li key={content._id} className="bg-[#1a1a1a] p-4 rounded-lg border border-gray-800 flex justify-between items-center transition-all hover:border-gray-700">
                   <div>
-                    <p className="font-semibold">{content.title}</p>
-                    <p className="text-sm text-gray-500">{content.category}</p>
+                    <p className="font-semibold text-white">{content.title}</p>
+                    <p className="text-sm text-gray-500 uppercase tracking-tighter">{content.category}</p>
                   </div>
                   <div className="flex gap-2">
                     <button
-                      className="p-2 bg-gray-500 text-white rounded-md"
+                      className="px-3 py-1.5 bg-gray-700 text-white rounded-md text-sm hover:bg-gray-600 transition-all"
                       onClick={() => handleViewVideo(content.video)}
                     >
                       View
                     </button>
                     <button
-                      className="p-2 bg-green-500 text-white rounded-md"
+                      className="px-3 py-1.5 bg-green-600/20 text-green-500 border border-green-600/30 rounded-md text-sm hover:bg-green-600 hover:text-white transition-all"
                       onClick={() => approveVideo(content._id)}
                     >
                       Approve
                     </button>
                     <button
-                      className="p-2 bg-red-600 text-white rounded-md"
+                      className="px-3 py-1.5 bg-red-600/20 text-red-500 border border-red-600/30 rounded-md text-sm hover:bg-red-600 hover:text-white transition-all"
                       onClick={() => declineVideo(content._id)}
                     >
                       Decline
@@ -207,6 +207,7 @@ const VideoManagement = () => {
                   </div>
                 </li>
               ))}
+              {unapprovedContents.length === 0 && <p className="text-gray-500 text-center py-4">No pending approvals</p>}
             </ul>
           </div>
         </div>

@@ -47,50 +47,50 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-[#191818]">
       <ToastContainer />
-      <div className="w-64 bg-gray-800 text-white flex flex-col">
-        <div className="p-4 border-b border-gray-700">
-          <h2 className="text-2xl font-bold">Admin Panel</h2>
+      <div className="w-64 bg-[#0a0a0a] text-white flex flex-col border-r border-[#541011]/30">
+        <div className="p-4 border-b border-[#541011]/30">
+          <h2 className="text-2xl font-bold text-[#541011]">Admin Panel</h2>
         </div>
         <nav className="flex-1 px-2 py-4 space-y-2">
           <button
             onClick={() => setSelectedSection('dashboard')}
-            className={`w-full text-left flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md ${selectedSection === 'dashboard' ? 'bg-gray-900' : ''}`}
+            className={`w-full text-left flex items-center px-4 py-2 text-gray-300 hover:bg-[#541011] hover:text-white rounded-md transition-colors ${selectedSection === 'dashboard' ? 'bg-[#541011] text-white' : ''}`}
           >
             Dashboard
           </button>
           <button
             onClick={() => setSelectedSection('creator-analytics')}
-            className={`w-full text-left flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md ${selectedSection === 'creator-analytics' ? 'bg-gray-900' : ''}`}
+            className={`w-full text-left flex items-center px-4 py-2 text-gray-300 hover:bg-[#541011] hover:text-white rounded-md transition-colors ${selectedSection === 'creator-analytics' ? 'bg-[#541011] text-white' : ''}`}
           >
             Creator Analytics
           </button>
           <button
             onClick={() => setSelectedSection('videos')}
-            className={`w-full text-left flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md ${selectedSection === 'videos' ? 'bg-gray-900' : ''}`}
+            className={`w-full text-left flex items-center px-4 py-2 text-gray-300 hover:bg-[#541011] hover:text-white rounded-md transition-colors ${selectedSection === 'videos' ? 'bg-[#541011] text-white' : ''}`}
           >
             Video Management
           </button>
           <button
             onClick={() => setSelectedSection('users')}
-            className={`w-full text-left flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md ${selectedSection === 'users' ? 'bg-gray-900' : ''}`}
+            className={`w-full text-left flex items-center px-4 py-2 text-gray-300 hover:bg-[#541011] hover:text-white rounded-md transition-colors ${selectedSection === 'users' ? 'bg-[#541011] text-white' : ''}`}
           >
             User Management
           </button>
         </nav>
-        <div className="p-4 border-t border-gray-700">
+        <div className="p-4 border-t border-[#541011]/30">
           <button
             onClick={onLogout}
-            className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+            className="w-full bg-[#541011] hover:bg-red-800 text-white font-bold py-2 px-4 rounded transition-colors"
           >
             Logout
           </button>
         </div>
       </div>
-      <main className="flex-1 p-6 overflow-y-auto">
+      <main className="flex-1 p-6 overflow-y-auto bg-[#191818]">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-800">
+          <h1 className="text-3xl font-bold text-white">
             Welcome, {user?.name || 'Admin'}
           </h1>
         </div>

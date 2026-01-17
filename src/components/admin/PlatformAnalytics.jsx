@@ -4,11 +4,13 @@ import { getPlatformAnalytics } from '../../services/analyticsService';
 import { toast } from 'react-toastify';
 
 const StatCard = ({ title, value, icon }) => (
-  <div className="bg-white p-6 rounded-lg shadow-md flex items-center">
-    <div className="bg-blue-500 text-white p-3 rounded-full mr-4">{icon}</div>
+  <div className="bg-[#1a1a1a] p-6 rounded-xl border border-[#541011]/30 flex items-center shadow-xl transition-all hover:border-[#541011]/60">
+    <div className="bg-[#541011]/20 text-[#541011] p-4 rounded-xl mr-5 border border-[#541011]/20">
+      <span className="text-2xl">{icon}</span>
+    </div>
     <div>
-      <p className="text-gray-500 text-sm">{title}</p>
-      <p className="text-2xl font-bold">{value}</p>
+      <p className="text-gray-400 text-sm font-medium mb-1 uppercase tracking-wider">{title}</p>
+      <p className="text-3xl font-bold text-white">{value}</p>
     </div>
   </div>
 );
@@ -41,9 +43,9 @@ const PlatformAnalytics = () => {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {[...Array(4)].map((_, i) => (
-          <div key={i} className="bg-white p-6 rounded-lg shadow-md animate-pulse">
-            <div className="h-8 bg-gray-200 rounded w-3/4 mb-2"></div>
-            <div className="h-12 bg-gray-200 rounded w-1/2"></div>
+          <div key={i} className="bg-[#1a1a1a] p-6 rounded-xl border border-[#541011]/10 animate-pulse">
+            <div className="h-4 bg-gray-800 rounded w-3/4 mb-4"></div>
+            <div className="h-8 bg-gray-800 rounded w-1/2"></div>
           </div>
         ))}
       </div>
@@ -51,7 +53,7 @@ const PlatformAnalytics = () => {
   }
 
   if (!stats) {
-    return <p>No platform analytics data available.</p>;
+    return <p className="text-gray-400">No platform analytics data available.</p>;
   }
 
   return (
