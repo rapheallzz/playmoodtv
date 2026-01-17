@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { getPlatformAnalytics } from '../../services/analyticsService';
 import { toast } from 'react-toastify';
 
-const StatCard = ({ title, value, icon }) => (
+const StatCard = ({ title, value, icon, trend }) => (
   <div className="bg-white p-8 rounded-2xl border border-gray-100 flex items-center shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
     <div className="bg-[#541011]/5 text-[#541011] p-4 rounded-2xl mr-6 border border-[#541011]/10">
       <span className="text-3xl">{icon}</span>
@@ -11,6 +11,11 @@ const StatCard = ({ title, value, icon }) => (
     <div>
       <p className="text-slate-400 text-xs font-bold mb-1 uppercase tracking-widest">{title}</p>
       <p className="text-3xl font-black text-slate-800 tracking-tight">{(value || 0).toLocaleString()}</p>
+      {trend !== undefined && (
+        <p className="text-[10px] font-bold text-green-500 mt-1 uppercase tracking-tighter">
+          +{trend} New Today
+        </p>
+      )}
     </div>
   </div>
 );
@@ -58,10 +63,28 @@ const PlatformAnalytics = () => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      <StatCard title="Total Users" value={stats.totalUsers} icon="👥" />
-      <StatCard title="Total Creators" value={stats.totalCreators} icon="🎨" />
-      <StatCard title="Total Videos" value={stats.totalVideos} icon="🎬" />
-      <StatCard title="Total Likes" value={stats.totalLikes} icon="❤️" />
+      <StatCard
+        title="Total Users"
+        value={stats.users?.total ?? stats.totalUsers}
+        icon="👥"
+        trend={stats.users?.newSignupsToday}
+      />
+      <StatCard
+        title="Total Creators"
+        value={stats.creators?.total ?? stats.totalCreators}
+        icon="🎨"
+      />
+      <StatCard
+        title="Total Videos"
+        value={stats.content?.total ?? stats.totalVideos}
+        icon="🎬"
+        trend={stats.content?.newUploadsToday}
+      />
+      <StatCard
+        title="Total Likes"
+        value={stats.likes?.total ?? stats.totalLikes}
+        icon="❤️"
+      />
     </div>
   );
 };
