@@ -27,7 +27,6 @@ export default function Schedule() {
       if (data.liveProgram) {
         setLiveEdge(data.liveProgram.currentPlaybackTime);
 
-        // Calculate when to refresh (when current program ends)
         const duration = data.liveProgram.contentId?.duration || 0;
         const remaining = duration - data.liveProgram.currentPlaybackTime;
 
@@ -50,7 +49,6 @@ export default function Schedule() {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener('resize', handleResize);
 
-    // Increment live edge every second
     const interval = setInterval(() => {
         setLiveEdge(prev => prev + 1);
     }, 1000);
@@ -90,12 +88,17 @@ export default function Schedule() {
   }, [schedule.liveProgram]);
 
   const handleProgramClick = (program) => {
-    // For upcoming programs, maybe just show a preview or navigate to movie page?
-    // User said "play the gotten live content video", which I am doing in the hero.
-    // Clicking upcoming could just show info or do nothing if it's not live yet.
-    if (program.contentId?._id) {
-        const titleSlug = program.contentId.title.replace(/\s+/g, '-');
-        navigate(`/movie/${titleSlug}-${program.contentId._id}`);
+    const content = program.contentId;
+    if (content?._id) {
+        const titleSlug = content.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        navigate(`/movie/${titleSlug}-${content._id}`, {
+          state: {
+            movie: content.video,
+            title: content.title || '',
+            desc: content.description || '',
+            credits: content.credit || '',
+          },
+        });
     }
   };
 
@@ -114,67 +117,79 @@ export default function Schedule() {
       )}
 
       <MainContent>
-        {/* Hero Section: Live Player */}
-        <HeroSection>
-          {schedule.liveProgram ? (
-            <PlayerContainer>
-              <div className="live-badge">
-                <span className="dot"></span> LIVE NOW
-              </div>
-              <video
-                ref={videoRef}
-                src={schedule.liveProgram.contentId?.video}
-                autoPlay
-                muted
-                controls
-                onTimeUpdate={handleTimeUpdate}
-                controlsList="noseek" // Non-standard but some browsers respect
-              />
-              <ProgramOverlay>
-                <h2>{schedule.liveProgram.contentId?.title}</h2>
-                <p>{schedule.liveProgram.contentId?.description}</p>
-                <div className="time-info">
-                    <FiClock /> {schedule.liveProgram.startTime} - {schedule.liveProgram.endTime}
+        <LayoutContainer>
+          {/* Left Column: Player */}
+          <PlayerColumn>
+            {schedule.liveProgram ? (
+              <PlayerWrapper>
+                <div className="live-badge">
+                  <span className="dot"></span> LIVE NOW
                 </div>
-              </ProgramOverlay>
-            </PlayerContainer>
-          ) : (
-            <StayTunedContainer>
-                <div className="content">
-                    <FiAlertCircle size={64} color="#541011" />
-                    <h1>STAY TUNED</h1>
-                    <p>No program is currently on air. Check the schedule below for upcoming content.</p>
-                </div>
-            </StayTunedContainer>
-          )}
-        </HeroSection>
-
-        {/* Upcoming Section */}
-        <UpcomingSection>
-          <SectionTitle>Upcoming Programs</SectionTitle>
-          <HorizontalScroll>
-            {schedule.upcomingPrograms.length > 0 ? (
-              schedule.upcomingPrograms.map((program) => (
-                <ProgramCard key={program._id} onClick={() => handleProgramClick(program)}>
-                  <div className="thumbnail">
-                    {program.contentId?.thumbnail ? (
-                        <img src={program.contentId.thumbnail} alt={program.contentId.title} />
-                    ) : (
-                        <div className="placeholder"><FiPlay size={32} /></div>
-                    )}
-                    <div className="time-tag">{program.startTime}</div>
-                  </div>
-                  <div className="info">
-                    <h3>{program.contentId?.title}</h3>
-                    <p className="category">{program.contentId?.category}</p>
-                  </div>
-                </ProgramCard>
-              ))
+                <video
+                  ref={videoRef}
+                  src={schedule.liveProgram.contentId?.video}
+                  autoPlay
+                  muted
+                  controls
+                  onTimeUpdate={handleTimeUpdate}
+                  controlsList="noseek"
+                />
+                <ProgramDetails>
+                  <h1>{schedule.liveProgram.contentId?.title}</h1>
+                  <p>{schedule.liveProgram.contentId?.description}</p>
+                </ProgramDetails>
+              </PlayerWrapper>
             ) : (
-              <p className="no-upcoming">No more programs scheduled for today.</p>
+              <StayTunedContainer>
+                  <div className="content">
+                      <FiAlertCircle size={64} color="#541011" />
+                      <h1>STAY TUNED</h1>
+                      <p>No program is currently on air. Check the guide for upcoming content.</p>
+                  </div>
+              </StayTunedContainer>
             )}
-          </HorizontalScroll>
-        </UpcomingSection>
+          </PlayerColumn>
+
+          {/* Right Column: Vertical Schedule Guide */}
+          <ScheduleColumn>
+            <GuideHeader>
+                <SectionTitle>TV Guide</SectionTitle>
+                <p className="today-label">Today's Schedule</p>
+            </GuideHeader>
+            <VerticalList>
+              {/* Currently Live Item in Guide */}
+              {schedule.liveProgram && (
+                <GuideItem active={true} onClick={() => {}}>
+                  <div className="time-col">
+                    <span className="time">{schedule.liveProgram.startTime}</span>
+                    <span className="status">ON AIR</span>
+                  </div>
+                  <div className="content-col">
+                    <h3 className="title">{schedule.liveProgram.contentId?.title}</h3>
+                    <p className="category">{schedule.liveProgram.contentId?.category}</p>
+                  </div>
+                </GuideItem>
+              )}
+
+              {/* Upcoming Items */}
+              {schedule.upcomingPrograms.length > 0 ? (
+                schedule.upcomingPrograms.map((program) => (
+                  <GuideItem key={program._id} active={false} onClick={() => handleProgramClick(program)}>
+                    <div className="time-col">
+                      <span className="time">{program.startTime}</span>
+                    </div>
+                    <div className="content-col">
+                      <h3 className="title">{program.contentId?.title}</h3>
+                      <p className="category">{program.contentId?.category}</p>
+                    </div>
+                  </GuideItem>
+                ))
+              ) : !schedule.liveProgram ? (
+                <p className="no-guide">No programs scheduled for today.</p>
+              ) : null}
+            </VerticalList>
+          </ScheduleColumn>
+        </LayoutContainer>
       </MainContent>
 
       <Footer />
@@ -193,28 +208,56 @@ const PageWrapper = styled.div`
 const MainContent = styled.main`
   flex: 1;
   padding-top: 80px;
-`;
-
-const HeroSection = styled.section`
+  max-width: 1600px;
   width: 100%;
-  max-width: 1400px;
   margin: 0 auto;
-  padding: 20px;
 `;
 
-const PlayerContainer = styled.div`
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 9;
+const LayoutContainer = styled.div`
+  display: flex;
+  gap: 30px;
+  padding: 20px;
+
+  @media (max-width: 1024px) {
+    flex-direction: column;
+  }
+`;
+
+const PlayerColumn = styled.div`
+  flex: 2;
+  min-width: 0;
+`;
+
+const ScheduleColumn = styled.div`
+  flex: 1;
   background: #111;
   border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  padding: 30px;
+  height: fit-content;
+  max-height: 800px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #333 #111;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 10px;
+  }
+`;
+
+const PlayerWrapper = styled.div`
+  position: relative;
 
   video {
     width: 100%;
-    height: 100%;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    border-radius: 20px;
     object-fit: cover;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
   }
 
   .live-badge {
@@ -222,16 +265,14 @@ const PlayerContainer = styled.div`
     top: 20px;
     right: 20px;
     background: #541011;
-    color: #fff;
     padding: 6px 12px;
     border-radius: 50px;
     font-weight: 800;
-    font-size: 12px;
+    font-size: 11px;
     display: flex;
     align-items: center;
     gap: 8px;
     z-index: 10;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 
     .dot {
       width: 8px;
@@ -243,56 +284,27 @@ const PlayerContainer = styled.div`
   }
 
   @keyframes pulse {
-    0% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.5; transform: scale(1.2); }
-    100% { opacity: 1; transform: scale(1); }
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
   }
 `;
 
-const ProgramOverlay = styled.div`
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 60px 40px 40px;
-  background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-  pointer-events: none;
+const ProgramDetails = styled.div`
+  margin-top: 25px;
+  padding: 0 10px;
 
-  h2 {
-    font-size: 2.5rem;
+  h1 {
+    font-size: 2rem;
     font-weight: 900;
-    margin-bottom: 10px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    margin-bottom: 12px;
   }
 
   p {
+    color: #888;
+    line-height: 1.6;
     font-size: 1.1rem;
-    color: #ccc;
-    max-width: 600px;
-    margin-bottom: 15px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .time-info {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-weight: 700;
-    color: #541011;
-    background: #fff;
-    width: fit-content;
-    padding: 4px 12px;
-    border-radius: 4px;
-    font-size: 14px;
-  }
-
-  @media (max-width: 768px) {
-    padding: 30px 20px 20px;
-    h2 { font-size: 1.5rem; }
-    p { font-size: 0.9rem; }
+    max-width: 800px;
   }
 `;
 
@@ -305,114 +317,98 @@ const StayTunedContainer = styled.div`
   align-items: center;
   justify-content: center;
   text-align: center;
-  border: 2px dashed #333;
 
   .content {
-    max-width: 400px;
     h1 {
         font-size: 3rem;
         font-weight: 900;
-        letter-spacing: -2px;
         margin: 20px 0 10px;
     }
-    p {
-        color: #666;
-        font-weight: 500;
-    }
+    p { color: #666; }
   }
 `;
 
-const UpcomingSection = styled.section`
-  padding: 40px 20px 80px;
-  max-width: 1400px;
-  margin: 0 auto;
+const GuideHeader = styled.div`
+  margin-bottom: 30px;
+  .today-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 5px;
+  }
 `;
 
 const SectionTitle = styled.h2`
   font-size: 1.5rem;
-  font-weight: 800;
-  margin-bottom: 25px;
+  font-weight: 900;
   text-transform: uppercase;
-  letter-spacing: 2px;
-  border-left: 4px solid #541011;
-  padding-left: 15px;
+  color: #fff;
 `;
 
-const HorizontalScroll = styled.div`
+const VerticalList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+
+  .no-guide {
+    color: #555;
+    font-style: italic;
+    text-align: center;
+    padding: 40px 0;
+  }
+`;
+
+const GuideItem = styled.div`
   display: flex;
   gap: 20px;
-  overflow-x: auto;
-  padding-bottom: 20px;
-  scrollbar-width: none;
-  &::-webkit-scrollbar { display: none; }
-
-  .no-upcoming {
-    color: #666;
-    font-style: italic;
-  }
-`;
-
-const ProgramCard = styled.div`
-  min-width: 300px;
-  flex-shrink: 0;
+  padding: 15px;
+  background: ${props => props.active ? 'rgba(84, 16, 17, 0.1)' : '#1a1a1a'};
+  border: 1px solid ${props => props.active ? '#541011' : 'transparent'};
+  border-radius: 12px;
   cursor: pointer;
-  transition: transform 0.3s;
+  transition: all 0.2s;
 
   &:hover {
-    transform: translateY(-10px);
-    .thumbnail img { transform: scale(1.1); }
+    background: ${props => props.active ? 'rgba(84, 16, 17, 0.15)' : '#222'};
+    transform: translateX(5px);
   }
 
-  .thumbnail {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    border-radius: 12px;
-    overflow: hidden;
-    background: #222;
+  .time-col {
+    display: flex;
+    flex-direction: column;
+    min-width: 60px;
 
-    img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.5s;
+    .time {
+        font-weight: 800;
+        font-size: 14px;
+        color: ${props => props.active ? '#541011' : '#fff'};
     }
-
-    .placeholder {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #444;
-    }
-
-    .time-tag {
-        position: absolute;
-        bottom: 10px;
-        left: 10px;
-        background: rgba(0,0,0,0.8);
-        padding: 4px 8px;
-        border-radius: 4px;
-        font-size: 12px;
-        font-weight: 700;
-    }
-  }
-
-  .info {
-    margin-top: 12px;
-    h3 {
-        font-size: 1rem;
-        font-weight: 700;
-        margin-bottom: 4px;
-        line-height: 1.2;
-    }
-    .category {
-        font-size: 11px;
+    .status {
+        font-size: 9px;
         font-weight: 900;
         color: #541011;
+        margin-top: 2px;
+    }
+  }
+
+  .content-col {
+    .title {
+        font-size: 14px;
+        font-weight: 700;
+        margin-bottom: 4px;
+        color: ${props => props.active ? '#fff' : '#ccc'};
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .category {
+        font-size: 10px;
+        font-weight: 900;
+        color: ${props => props.active ? '#541011' : '#555'};
         text-transform: uppercase;
-        letter-spacing: 1px;
     }
   }
 `;
