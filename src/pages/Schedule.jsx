@@ -221,7 +221,7 @@ const BrandHeader = styled.div`
   font-weight: 900;
   letter-spacing: -2px;
 
-  .playmood { color: #541011; }
+  .playmood { color: #b51315; }
   .tv { color: #fff; }
 
   @media (max-width: 768px) {
