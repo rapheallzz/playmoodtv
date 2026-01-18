@@ -90,8 +90,7 @@ export default function Schedule() {
   const handleProgramClick = (program) => {
     const content = program.contentId;
     if (content?._id) {
-        const titleSlug = content.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-        navigate(`/movie/${titleSlug}-${content._id}`, {
+        navigate(`/movie/${content._id}`, {
           state: {
             movie: content.video,
             title: content.title || '',
@@ -117,6 +116,9 @@ export default function Schedule() {
       )}
 
       <MainContent>
+        <BrandHeader>
+          <span className="playmood">PLAYMOOD</span><span className="tv">TV</span>
+        </BrandHeader>
         <LayoutContainer>
           {/* Left Column: Player */}
           <PlayerColumn>
@@ -211,6 +213,22 @@ const MainContent = styled.main`
   max-width: 1600px;
   width: 100%;
   margin: 0 auto;
+`;
+
+const BrandHeader = styled.div`
+  padding: 20px 20px 0;
+  font-size: 2.5rem;
+  font-weight: 900;
+  letter-spacing: -2px;
+
+  .playmood { color: #541011; }
+  .tv { color: #fff; }
+
+  @media (max-width: 768px) {
+    font-size: 1.8rem;
+    text-align: center;
+    padding-top: 40px;
+  }
 `;
 
 const LayoutContainer = styled.div`
