@@ -34,38 +34,59 @@ export const uploadFile = createAsyncThunk(
     );
 
     try {
+      // Step 1A: Get Permission (Presigned URL) for Video
+      const videoSignatureFormData = new FormData();
+      videoSignatureFormData.append('provider', 'r2');
+      videoSignatureFormData.append('fileName', videoFile.name);
+      videoSignatureFormData.append('contentType', videoFile.type);
+
       const videoSignatureResponse = await axios.post(
         'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/signature',
-        { type: 'videos' },
+        videoSignatureFormData,
         { headers: { Authorization: `Bearer ${userToken}` } }
       );
-      const videoSignatureData = videoSignatureResponse.data;
+      const { uploadUrl: videoUploadUrl, key: videoKey } = videoSignatureResponse.data;
 
-      const videoUploadResponse = await uploadService.uploadToCloudinary(
+      // Step 2A: Perform the Actual Upload for Video
+      await uploadService.uploadToR2(
         videoFile,
-        videoSignatureData,
-        'video',
+        videoUploadUrl,
+        videoFile.type,
         (progress) => {
           thunkAPI.dispatch(updateUploadProgress({ id: uploadId, progress }));
         }
       );
 
-      let thumbnailUploadResponse = null;
+      let thumbnailData = null;
       if (thumbnailFile) {
+        // Step 1B: Get Permission (Presigned URL) for Thumbnail
+        const thumbSignatureFormData = new FormData();
+        thumbSignatureFormData.append('provider', 'r2');
+        thumbSignatureFormData.append('fileName', thumbnailFile.name);
+        thumbSignatureFormData.append('contentType', thumbnailFile.type);
+
         const thumbSignatureResponse = await axios.post(
           'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/signature',
-          { type: 'images' },
+          thumbSignatureFormData,
           { headers: { Authorization: `Bearer ${userToken}` } }
         );
-        const thumbSignatureData = thumbSignatureResponse.data;
-        thumbnailUploadResponse = await uploadService.uploadToCloudinary(
+        const { uploadUrl: thumbUploadUrl, key: thumbKey } = thumbSignatureResponse.data;
+
+        // Step 2B: Perform the Actual Upload for Thumbnail
+        await uploadService.uploadToR2(
           thumbnailFile,
-          thumbSignatureData,
-          'image',
+          thumbUploadUrl,
+          thumbnailFile.type,
           () => {} // Not tracking thumbnail progress
         );
+
+        thumbnailData = {
+          url: thumbUploadUrl,
+          key: thumbKey,
+        };
       }
 
+      // Step 3: Create the Record
       const finalPayload = {
         ...videoMetadata,
         userId: user.userId,
@@ -73,15 +94,10 @@ export const uploadFile = createAsyncThunk(
         previewEnd,
         languageCode: 'en-US',
         video: {
-          public_id: videoUploadResponse.public_id,
-          url: videoUploadResponse.secure_url,
+          url: videoUploadUrl,
+          key: videoKey,
         },
-        thumbnail: thumbnailUploadResponse
-          ? {
-              public_id: thumbnailUploadResponse.public_id,
-              url: thumbnailUploadResponse.secure_url,
-            }
-          : undefined,
+        thumbnail: thumbnailData || undefined,
       };
 
       await axios.post(
