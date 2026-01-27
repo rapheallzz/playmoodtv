@@ -80,7 +80,7 @@ const UpdateContentModal = ({ onClose, contentId }) => {
           videoSignatureFormData,
           { headers: { Authorization: `Bearer ${userToken}` } }
         );
-        const { uploadUrl: videoUploadUrl, key: videoKey } = videoSigResponse.data;
+        const { uploadUrl: videoUploadUrl, key: videoKey, publicUrl: videoPublicUrl } = videoSigResponse.data;
 
         await uploadService.uploadToR2(
           formData.video,
@@ -92,7 +92,7 @@ const UpdateContentModal = ({ onClose, contentId }) => {
         );
 
         currentVideo = {
-          url: videoUploadUrl,
+          url: videoPublicUrl || videoUploadUrl,
           key: videoKey,
         };
       }
@@ -109,7 +109,7 @@ const UpdateContentModal = ({ onClose, contentId }) => {
           thumbSignatureFormData,
           { headers: { Authorization: `Bearer ${userToken}` } }
         );
-        const { uploadUrl: thumbUploadUrl, key: thumbKey } = thumbSigResponse.data;
+        const { uploadUrl: thumbUploadUrl, key: thumbKey, publicUrl: thumbPublicUrl } = thumbSigResponse.data;
 
         await uploadService.uploadToR2(
           formData.thumbnail,
@@ -121,7 +121,7 @@ const UpdateContentModal = ({ onClose, contentId }) => {
         );
 
         currentThumbnail = {
-          url: thumbUploadUrl,
+          url: thumbPublicUrl || thumbUploadUrl,
           key: thumbKey,
         };
       }

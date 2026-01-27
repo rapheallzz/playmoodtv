@@ -28,7 +28,7 @@ import { io } from 'socket.io-client';
 import ChangePassword from '../components/ChangePassword';
 import ImageCropModal from '../components/modals/ImageCropModal';
 
-const defaultProfileIcon = '/icon-profile.png';
+const defaultProfileIcon = null;
 
 function Dashboardpage() {
   const [edit, show_edit] = useState(false);
@@ -603,18 +603,20 @@ function Dashboardpage() {
           {!edit ? (
             <>
               <div
-                className="w-36 h-36 rounded-full bg-white flex items-center justify-center font-semibold"
+                className="w-36 h-36 rounded-full bg-white flex items-center justify-center font-semibold cursor-pointer overflow-hidden relative"
                 onClick={() => document.getElementById('profileImage').click()}
               >
-                <img
-                  src={profileImagePreview || authUser?.profileImage || defaultProfileIcon}
-                  alt="Profile"
-                  className="w-32 h-32 rounded-full object-cover"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = defaultProfileIcon;
-                  }}
-                />
+                <AiOutlineUser size={64} color="#541011" style={{ position: 'absolute' }} />
+                { (profileImagePreview || authUser?.profileImage) && (
+                  <img
+                    src={profileImagePreview || authUser?.profileImage}
+                    alt="Profile"
+                    className="w-32 h-32 rounded-full object-cover relative z-10"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                )}
               </div>
               <input
                 type="file"
@@ -817,12 +819,16 @@ function Dashboardpage() {
             <h2 className="text-white text-3xl font-semibold mb-6">Edit Profile</h2>
             <form className="flex flex-col gap-6">
               <div className="flex flex-col items-center">
-                <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-white">
-                  <img
-                    src={profileImagePreview || defaultProfileIcon}
-                    alt="Profile Preview"
-                    className="w-full h-full object-cover"
-                  />
+                <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-white flex items-center justify-center bg-white relative">
+                  <AiOutlineUser size={48} color="#541011" style={{ position: 'absolute' }} />
+                  { (profileImagePreview) && (
+                    <img
+                      src={profileImagePreview}
+                      alt="Profile Preview"
+                      className="w-full h-full object-cover relative z-10"
+                      onError={(e) => { e.target.style.display = 'none'; }}
+                    />
+                  )}
                 </div>
                 <label className="mt-2 text-white text-sm cursor-pointer hover:text-[#541011]">
                   Change Profile Picture

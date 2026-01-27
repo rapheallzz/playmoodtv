@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
 import uploadService from './uploadService';
+import BASE_API_URL from '../apiConfig';
 
 const initialState = {
   uploads: [],
@@ -41,11 +42,11 @@ export const uploadFile = createAsyncThunk(
       videoSignatureFormData.append('contentType', videoFile.type);
 
       const videoSignatureResponse = await axios.post(
-        'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/signature',
+        `${BASE_API_URL}/api/content/signature`,
         videoSignatureFormData,
         { headers: { Authorization: `Bearer ${userToken}` } }
       );
-      const { uploadUrl: videoUploadUrl, key: videoKey } = videoSignatureResponse.data;
+      const { uploadUrl: videoUploadUrl, key: videoKey, publicUrl: videoPublicUrl } = videoSignatureResponse.data;
 
       // Step 2A: Perform the Actual Upload for Video
       await uploadService.uploadToR2(
@@ -66,11 +67,11 @@ export const uploadFile = createAsyncThunk(
         thumbSignatureFormData.append('contentType', thumbnailFile.type);
 
         const thumbSignatureResponse = await axios.post(
-          'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/signature',
+          `${BASE_API_URL}/api/content/signature`,
           thumbSignatureFormData,
           { headers: { Authorization: `Bearer ${userToken}` } }
         );
-        const { uploadUrl: thumbUploadUrl, key: thumbKey } = thumbSignatureResponse.data;
+        const { uploadUrl: thumbUploadUrl, key: thumbKey, publicUrl: thumbPublicUrl } = thumbSignatureResponse.data;
 
         // Step 2B: Perform the Actual Upload for Thumbnail
         await uploadService.uploadToR2(
@@ -81,7 +82,7 @@ export const uploadFile = createAsyncThunk(
         );
 
         thumbnailData = {
-          url: thumbUploadUrl,
+          url: thumbPublicUrl || thumbUploadUrl,
           key: thumbKey,
         };
       }
@@ -94,14 +95,14 @@ export const uploadFile = createAsyncThunk(
         previewEnd,
         languageCode: 'en-US',
         video: {
-          url: videoUploadUrl,
+          url: videoPublicUrl || videoUploadUrl,
           key: videoKey,
         },
         thumbnail: thumbnailData || undefined,
       };
 
       await axios.post(
-        'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content',
+        `${BASE_API_URL}/api/content`,
         finalPayload,
         {
           headers: {

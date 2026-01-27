@@ -24,7 +24,7 @@ const UploadProgressIndicator = () => {
       {uploads.map((upload) => (
         <UploadItem key={upload.id}>
           <FileName>{upload.title || upload.fileName}</FileName>
-          <Status status={upload.status}>
+          <Status $status={upload.status}>
             {upload.status === 'uploading' && `Uploading: ${upload.progress}%`}
             {upload.status === 'completed' && 'Upload successful'}
             {upload.status === 'failed' && `Failed: ${upload.error}`}
@@ -105,8 +105,8 @@ const FileName = styled.div`
 
 const Status = styled.div`
   font-size: 12px;
-  color: ${({ status }) => {
-    switch (status) {
+  color: ${({ $status }) => {
+    switch ($status) {
       case 'completed':
         return '#28a745';
       case 'failed':
