@@ -11,6 +11,7 @@ import { FaEdit } from 'react-icons/fa';
 import SliderLiked from '../components/sliders/SlideLiked';
 import UserWatchlist from '../components/sliders/UserSliderWatchlist';
 import BASE_API_URL from '../apiConfig';
+import uploadService from '../features/uploadService';
 import UserFavourite from '../components/sliders/UserSliderFavourite';
 import UserRecommended from '../components/miscSlider/UserSliderRecommended';
 import TermsModal from '../components/Terms';
