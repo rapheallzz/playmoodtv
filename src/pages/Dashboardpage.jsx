@@ -28,7 +28,7 @@ import { io } from 'socket.io-client';
 import ChangePassword from '../components/ChangePassword';
 import ImageCropModal from '../components/modals/ImageCropModal';
 
-const defaultProfileIcon = '/default-profile.png';
+const defaultProfileIcon = '/icon-profile.png';
 
 function Dashboardpage() {
   const [edit, show_edit] = useState(false);
@@ -610,7 +610,10 @@ function Dashboardpage() {
                   src={profileImagePreview || authUser?.profileImage || defaultProfileIcon}
                   alt="Profile"
                   className="w-32 h-32 rounded-full object-cover"
-                  onError={(e) => (e.target.src = defaultProfileIcon)}
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = defaultProfileIcon;
+                  }}
                 />
               </div>
               <input
