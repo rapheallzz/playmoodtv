@@ -348,10 +348,9 @@ function Dashboardpage() {
       const response = await axios.put(
         `${BASE_API_URL}/api/users/${userId}`,
         {
-          profileImage: {
-            url: publicUrl || uploadUrl,
-            key: key
-          }
+          profileImage: publicUrl || uploadUrl,
+          profileImageKey: key,
+          profileImageProvider: 'r2'
         },
         {
           headers: {

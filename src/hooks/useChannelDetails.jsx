@@ -88,7 +88,9 @@ const useChannelDetails = (user) => {
       if (fileToUpload) {
         const r2Response = await uploadBannerToR2(fileToUpload, user.token);
         bannerData = {
-          bannerImage: r2Response, // Pass the whole object {url, key}
+          bannerImage: r2Response.url,
+          bannerImageKey: r2Response.key,
+          bannerImageProvider: 'r2'
         };
       }
 
