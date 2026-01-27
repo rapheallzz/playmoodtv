@@ -325,24 +325,43 @@ function Dashboardpage() {
       return;
     }
     try {
-      const formData = new FormData();
-      // Convert blob to file
       const file = new File([imageBlob], "profile.jpg", { type: "image/jpeg" });
-      formData.append('profileImage', file);
 
+      // Step 1: Get Signature
+      const signatureFormData = new FormData();
+      signatureFormData.append('provider', 'r2');
+      signatureFormData.append('fileName', file.name);
+      signatureFormData.append('contentType', file.type);
+
+      const sigResponse = await axios.post(
+        `${BASE_API_URL}/api/content/signature`,
+        signatureFormData,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      const { uploadUrl, key, publicUrl } = sigResponse.data;
+
+      // Step 2: Upload to R2
+      await uploadService.uploadToR2(file, uploadUrl, file.type);
+
+      // Step 3: Update Record
       const response = await axios.put(
         `${BASE_API_URL}/api/users/${userId}`,
-        formData,
+        {
+          profileImage: {
+            url: publicUrl || uploadUrl,
+            key: key
+          }
+        },
         {
           headers: {
-            'Content-Type': 'multipart/form-data',
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
         }
       );
       const updatedUser = response.data.user;
-      const imageUrl = updatedUser.profileImage
-        ? `${updatedUser.profileImage}?t=${new Date().getTime()}`
+      const imageUrl = (updatedUser.profileImage?.url || updatedUser.profileImage)
+        ? `${updatedUser.profileImage.url || updatedUser.profileImage}?t=${new Date().getTime()}`
         : defaultProfileIcon;
       const userWithToken = { ...updatedUser, userId: updatedUser._id || userId, token };
       dispatch(updateAuthUserReducer(userWithToken));
@@ -409,20 +428,30 @@ function Dashboardpage() {
       if (profileImage) {
         updatedProfileImage = await updateProfileImage(userId, profileImage, authUser.token);
       }
+
+      const payload = {
+        name: personalData.name,
+        email: personalData.email,
+        phone: personalData.phone,
+        dateOfBirth: personalData.dateOfBirth,
+        city: personalData.city,
+        age: personalData.age,
+        address: personalData.address,
+      };
+
+      // Only include profileImage if it's been updated and returned as an object/string
+      if (updatedProfileImage) {
+        payload.profileImage = updatedProfileImage;
+      }
+
       const response = await axios.put(
         `${BASE_API_URL}/api/users/${userId}`,
+        payload,
         {
-          name: personalData.name,
-          email: personalData.email,
-          phone: personalData.phone,
-          dateOfBirth: personalData.dateOfBirth,
-          city: personalData.city,
-          age: personalData.age,
-          address: personalData.address,
-          profileImage: updatedProfileImage,
-        },
-        {
-          headers: { Authorization: `Bearer ${authUser.token}` },
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${authUser.token}`
+          },
         }
       );
       const updatedUser = response.data.user;
@@ -607,9 +636,9 @@ function Dashboardpage() {
                 onClick={() => document.getElementById('profileImage').click()}
               >
                 <AiOutlineUser size={64} color="#541011" style={{ position: 'absolute' }} />
-                { (profileImagePreview || authUser?.profileImage) && (
+                { (profileImagePreview || (authUser?.profileImage?.url || authUser?.profileImage)) && (
                   <img
-                    src={profileImagePreview || authUser?.profileImage}
+                    src={profileImagePreview || (authUser?.profileImage?.url || authUser?.profileImage)}
                     alt="Profile"
                     className="w-32 h-32 rounded-full object-cover relative z-10"
                     onError={(e) => {

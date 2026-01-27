@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import BASE_API_URL, { CLOUDINARY_CLOUD_NAME } from '../apiConfig';
+import uploadService from '../features/uploadService';
 
 const useFeeds = (user, creatorId = null) => {
   const [feeds, setFeeds] = useState([]);
@@ -34,25 +35,23 @@ const useFeeds = (user, creatorId = null) => {
   const createFeedPost = async (caption, mediaFiles) => {
     if (!user) return;
     try {
-      // 1. Get signature from backend
-      const sigResponse = await api.post('/api/content/signature', { type: 'images' });
-      const { signature, timestamp, api_key: cloudinaryApiKey, folder } = sigResponse.data;
-
-      // 2. Upload files to Cloudinary
+      // Step 1 & 2: Get signatures and upload each file to R2
       const uploadPromises = Array.from(mediaFiles).map(async (file) => {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('api_key', cloudinaryApiKey);
-        formData.append('timestamp', timestamp);
-        formData.append('signature', signature);
+        const signatureFormData = new FormData();
+        signatureFormData.append('provider', 'r2');
+        signatureFormData.append('fileName', file.name);
+        signatureFormData.append('contentType', file.type);
 
-        const cloudinaryResponse = await axios.post(
-          `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
-          formData
-        );
+        const sigResponse = await api.post('/api/content/signature', signatureFormData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        const { uploadUrl, key, publicUrl } = sigResponse.data;
+
+        await uploadService.uploadToR2(file, uploadUrl, file.type);
+
         return {
-          url: cloudinaryResponse.data.secure_url,
-          public_id: cloudinaryResponse.data.public_id,
+          url: publicUrl || uploadUrl,
+          key: key,
         };
       });
 

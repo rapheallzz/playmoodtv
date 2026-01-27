@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import BASE_API_URL, { CLOUDINARY_CLOUD_NAME } from '../apiConfig';
+import uploadService from '../features/uploadService';
 
 const useChannelDetails = (user) => {
   const [bannerImage, setBannerImage] = useState('');
@@ -55,27 +56,26 @@ const useChannelDetails = (user) => {
     }
   }, [user]);
 
-  const uploadBannerAndGetUrl = async (file, token) => {
+  const uploadBannerToR2 = async (file, token) => {
     // 1. Get signature from the backend
-    const { data } = await axios.post(
+    const signatureFormData = new FormData();
+    signatureFormData.append('provider', 'r2');
+    signatureFormData.append('fileName', file.name);
+    signatureFormData.append('contentType', file.type);
+
+    const { data: sigData } = await axios.post(
       `${BASE_API_URL}/api/content/signature`,
-      {},
+      signatureFormData,
       { headers: { Authorization: `Bearer ${token}` } }
     );
-    const sigData = typeof data === 'string' ? JSON.parse(data) : data;
 
-    // 2. Upload the file directly to Cloudinary
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('api_key', sigData.api_key);
-    formData.append('timestamp', sigData.timestamp);
-    formData.append('signature', sigData.signature);
+    // 2. Upload the file directly to R2
+    await uploadService.uploadToR2(file, sigData.uploadUrl, file.type);
 
-    const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
-    const { data: cloudinaryData } = await axios.post(cloudinaryUrl, formData);
-
-    // Return the full response to get URL and public_id
-    return cloudinaryData;
+    return {
+      url: sigData.publicUrl || sigData.uploadUrl,
+      key: sigData.key
+    };
   };
 
   const handleUpdateChannelInfo = async (file = null) => {
@@ -86,10 +86,9 @@ const useChannelDetails = (user) => {
 
       // Step 1: Upload banner if a new file is present and get its data
       if (fileToUpload) {
-        const cloudinaryResponse = await uploadBannerAndGetUrl(fileToUpload, user.token);
+        const r2Response = await uploadBannerToR2(fileToUpload, user.token);
         bannerData = {
-          bannerImage: cloudinaryResponse.secure_url,
-          bannerImagePublicId: cloudinaryResponse.public_id,
+          bannerImage: r2Response, // Pass the whole object {url, key}
         };
       }
 
@@ -117,8 +116,8 @@ const useChannelDetails = (user) => {
       );
 
       // Update state with the response from the server
-      setBannerImage(response.data.bannerImage || bannerImage);
-      setProfileImage(response.data.profileImage || '');
+      setBannerImage(response.data.bannerImage?.url || response.data.bannerImage || bannerImage);
+      setProfileImage(response.data.profileImage?.url || response.data.profileImage || '');
       setCreatorName(response.data.name || '');
       setAbout(response.data.about || '');
       setInstagram(response.data.instagram || '');
