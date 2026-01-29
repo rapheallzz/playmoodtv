@@ -22,7 +22,6 @@ const useHighlights = (user, creatorId) => {
       setHighlights(response.data);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to fetch highlights.');
-      console.error(err);
     } finally {
       setIsLoading(false);
     }
@@ -60,7 +59,6 @@ const useHighlights = (user, creatorId) => {
     } catch (err) {
       const errorMessage = err.response?.data?.message || 'Failed to create highlight.';
       setError(errorMessage);
-      console.error(err);
       setIsLoading(false);
       return { success: false, error: errorMessage };
     }

@@ -55,19 +55,15 @@ export default function MoviePage() {
   // Save video progress (only for signed-in users)
   const saveProgress = async (currentTime) => {
     if (!user || !user.token || !contentId) {
-      console.warn('Cannot save progress: Missing user, token, or contentId', { user, contentId, currentTime });
       return;
     }
     try {
-      console.log('Saving progress for contentId:', contentId, 'time:', currentTime);
       const response = await axios.post(
         `${BASE_API_URL}/api/content/progress/${contentId}`,
         { progress: currentTime },
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
-      console.log('Progress saved successfully:', response.data);
     } catch (error) {
-      console.error('Error saving video progress:', error.response?.data || error.message);
     }
   };
 
@@ -119,7 +115,6 @@ export default function MoviePage() {
           });
           setSubscribedCreators(response.data);
         } catch (error) {
-          console.error('Error fetching subscribed creators:', error);
         }
       }
     };
@@ -153,7 +148,6 @@ export default function MoviePage() {
   useEffect(() => {
     const fetchMovieData = async () => {
       if (!contentId) {
-        console.error('Invalid contentId:', contentId, 'Slug:', slug);
         setError('Invalid movie ID.');
         setLoading(false);
         return;
@@ -206,14 +200,11 @@ export default function MoviePage() {
             }
           }).catch(error => {
             if (error.response && error.response.status === 404) {
-              console.log('No progress found for this content.');
             } else {
-              console.error('Error fetching video progress:', error);
             }
           });
         }
       } catch (error) {
-        console.error('Error fetching movie:', error.response?.data || error.message);
         setError('Failed to load movie data.');
       } finally {
         setLoading(false);
@@ -240,7 +231,6 @@ export default function MoviePage() {
       setPage(nextPage);
       setHasMore(response.data.comments.length === COMMENTS_PER_PAGE);
     } catch (error) {
-      console.error('Error fetching more comments:', error.response?.data || error.message);
       setCommentError('Failed to load more comments. Please try again.');
     } finally {
       setCommentLoading(false);
@@ -260,7 +250,6 @@ export default function MoviePage() {
     }
     if (!contentId || typeof contentId !== 'string' || contentId.trim() === '') {
       setCommentError('Invalid content ID. Please try again.');
-      console.error('Invalid contentId:', contentId);
       return;
     }
 
@@ -270,12 +259,6 @@ export default function MoviePage() {
         contentId: contentId,
         text: commentText
       };
-      console.log('Submitting comment:', {
-        url: commentUrl,
-        payload,
-        contentId,
-        token: user.token.substring(0, 10) + '...',
-      });
       const response = await axios.post(
         commentUrl,
         payload,
@@ -286,18 +269,12 @@ export default function MoviePage() {
           },
         }
       );
-      console.log('Comment response:', response.data);
       setComments([response.data.comment, ...comments]);
       setCommentText('');
       setCommentError('');
       setPage(1);
       setHasMore(true);
     } catch (error) {
-      console.error('Error adding comment:', {
-        response: error.response?.data,
-        status: error.response?.status,
-        message: error.message,
-      });
       const errorMessage = error.response?.data?.error || 'Failed to add comment. Please try again.';
       setCommentError(errorMessage);
     }
@@ -320,7 +297,6 @@ export default function MoviePage() {
         toast.success('Subscribed successfully');
       }
     } catch (error) {
-      console.error('Error subscribing:', error);
     }
   };
 
@@ -341,7 +317,6 @@ export default function MoviePage() {
         toast.success('Unsubscribed successfully');
       }
     } catch (error) {
-      console.error('Error unsubscribing:', error);
     }
   };
 
@@ -390,7 +365,7 @@ export default function MoviePage() {
     const pageUrl = window.location.href;
     navigator.clipboard.writeText(pageUrl)
       .then(() => alert('URL copied to clipboard!'))
-      .catch((err) => console.error('Failed to copy: ', err));
+      .catch((err) => {});
   };
 
   const handleHeartClick = async () => {
@@ -419,7 +394,6 @@ export default function MoviePage() {
       });
       setIsLiked(!isLiked);
     } catch (error) {
-      console.error('Failed to like/unlike content:', error);
     }
   };
 
@@ -444,7 +418,6 @@ export default function MoviePage() {
         toast.info('No more videos in this category.');
       }
     } catch (error) {
-      console.error('Error fetching next video:', error);
       toast.error('Could not load the next video.');
     }
   };
@@ -455,7 +428,6 @@ export default function MoviePage() {
       const creatorSlug = `${movieUser.name.replace(/\s+/g, '-')}-${encodedId}`;
       navigate(`/creator/${creatorSlug}`);
     } else {
-      console.warn('Creator ID not available for navigation.');
       // Optionally, show a message to the user
       alert('Creator information is not available.');
     }

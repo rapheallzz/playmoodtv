@@ -29,7 +29,6 @@ const usePlaylists = (user) => {
       setPlaylists(playlistsData);
       setErrorMessage('');
     } catch (error) {
-      console.error('Error fetching playlists:', error.response?.data || error.message);
       setErrorMessage('Failed to load playlists.');
       setPlaylists([]);
     } finally {
@@ -56,7 +55,6 @@ const usePlaylists = (user) => {
       setSelectedPlaylistId(playlistId);
       setErrorMessage('');
     } catch (error) {
-      console.error('Error fetching playlist by ID:', error.response?.data || error.message);
       setErrorMessage('Failed to load playlist videos.');
       setSelectedPlaylistVideos([]);
     } finally {
@@ -73,7 +71,6 @@ const usePlaylists = (user) => {
       );
       setAvailableVideos(response.data.content.filter(video => video.isApproved) || []);
     } catch (error) {
-      console.error('Error fetching available videos:', error.response?.data || error.message);
       setErrorMessage('Failed to load available videos.');
     }
   }, [user]);
@@ -123,7 +120,6 @@ const usePlaylists = (user) => {
       setErrorMessage('');
       return { success: true };
     } catch (error) {
-      console.error('Error creating/updating playlist:', error.response?.data || error.message);
       setPlaylists(originalPlaylists); // Revert on error
       const errorMsg = error.response?.data?.error || 'Failed to save playlist.';
       setErrorMessage(errorMsg);
@@ -149,7 +145,6 @@ const usePlaylists = (user) => {
       );
       return { success: true };
     } catch (error) {
-      console.error('Error deleting playlist:', error.response?.data || error.message);
       setPlaylists(originalPlaylists); // Revert on error
       const errorMsg = error.response?.data?.error || 'Failed to delete playlist.';
       setErrorMessage(errorMsg);
@@ -185,7 +180,6 @@ const usePlaylists = (user) => {
       fetchPlaylistById(playlistId);
       return { success: true };
     } catch (error) {
-      console.error('Error adding video to playlist:', error.response?.data || error.message);
       setPlaylists(originalPlaylists); // Revert on error
       setSelectedPlaylistVideos(originalSelectedVideos); // Revert on error
       const errorMsg = error.response?.data?.error || 'Failed to add video.';
@@ -213,7 +207,6 @@ const usePlaylists = (user) => {
       );
       return { success: true };
     } catch (error) {
-      console.error('Error removing video from playlist:', error.response?.data || error.message);
       setPlaylists(originalPlaylists); // Revert on error
       setSelectedPlaylistVideos(originalSelectedVideos); // Revert on error
       const errorMsg = error.response?.data?.error || 'Failed to remove video.';

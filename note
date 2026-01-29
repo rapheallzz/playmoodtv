@@ -180,7 +180,6 @@ function Dashboardpage() {
             });
             setProfileImagePreview(fetchedUser.profile || defaultProfileIcon);
         } catch (error) {
-            console.error('Failed to process user data:', error);
         }
     };
 
@@ -199,7 +198,6 @@ function Dashboardpage() {
                 );
                 setHasPendingRequest(!!pendingRequest);
             } catch (error) {
-                console.error('Error fetching creator request status:', error);
             }
         }
     };
@@ -227,7 +225,6 @@ function Dashboardpage() {
 
             return response.data.user.profileImage;
         } catch (error) {
-            console.error('Error updating profile image:', error.response?.data || error.message);
             toast.error('Failed to update profile image.');
             throw error;
         }
@@ -311,7 +308,6 @@ function Dashboardpage() {
             handleClose();
             toast.success('Profile updated successfully!');
         } catch (error) {
-            console.error('Error updating profile:', error.response?.data || error.message);
             toast.error('Failed to update profile.');
         }
     };
@@ -345,7 +341,6 @@ function Dashboardpage() {
             toast.success('Billing information updated successfully!');
             set_billing(false);
         } catch (error) {
-            console.error('Error updating billing info:', error.response?.data || error.message);
             toast.error('Failed to update billing information.');
         }
     };
@@ -374,7 +369,6 @@ function Dashboardpage() {
                 setMessage('There was an issue submitting your request. Please try again.');
             }
         } catch (error) {
-            console.error('Error applying as creator:', error);
             setMessage('There was an issue submitting your request. Please try again.');
         }
         setShowMessageModal(true);
@@ -400,7 +394,6 @@ function Dashboardpage() {
 
     const handleSubscriptionSubmit = (event) => {
         event.preventDefault();
-        console.log('Email submitted');
         setShowDonationModal(false);
     };
 

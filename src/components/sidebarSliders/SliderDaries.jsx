@@ -187,11 +187,9 @@ export default function SliderDairies() {
           // Set initialSlide to the index of the last creator
           setInitialSlide(response.data.length > 0 ? response.data.length - 1 : 0);
         } else {
-          console.error('Response data is not an array:', response.data);
           setError('Unexpected data format.');
         }
       } catch (error) {
-        console.error('Error fetching creators:', error);
         setError('Error fetching creators.');
       }
     };

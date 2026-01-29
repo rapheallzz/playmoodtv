@@ -70,7 +70,6 @@ export default function Channels() {
   useEffect(() => {
     async function fetchCreators() {
       try {
-        console.log('Requesting creators from API');
         const response = await axios.get(`${BASE_API_URL}/api/users/creators`, {
           headers: {
             'Cache-Control': 'no-cache',
@@ -78,15 +77,12 @@ export default function Channels() {
             'Expires': '0',
           },
         });
-        console.log('Creators API response:', response);
         if (Array.isArray(response.data)) {
           setCreatorData(response.data);
         } else {
-          console.error('Unexpected creators data format:', response.data);
           setCreatorError('Unexpected creators data format.');
         }
       } catch (error) {
-        console.error('Error fetching creators:', error);
         setCreatorError('Error fetching creators.');
       }
     }

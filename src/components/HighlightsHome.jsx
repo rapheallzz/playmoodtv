@@ -45,7 +45,6 @@ const HighlightsHome = () => {
         setCreators(creatorsMap);
 
       } catch (error) {
-        console.error('Error fetching data:', error);
       } finally {
         setIsLoading(false);
       }
@@ -84,7 +83,6 @@ const HighlightsHome = () => {
             creator: creatorInfo
           };
         } catch (e) {
-          console.error(`Failed to fetch content or enrich highlight ${h._id}:`, e);
           // Return a default structure on error to avoid crashing the viewer
           return {
             ...h,

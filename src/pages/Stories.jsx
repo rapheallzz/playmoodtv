@@ -32,7 +32,6 @@ export default function Stories() {
         const response = await axios.get(`${BASE_API_URL}/api/content/`);
         setData(response.data);
       } catch (error) {
-        console.error('Error fetching data:', error);
       }
     };
 
@@ -48,7 +47,6 @@ export default function Stories() {
 
   const handleNavigateToMovie = (content) => {
     const slug = createSlug(content.title, content._id); 
-    console.log('Navigating to movie with slug:', slug);
     navigate(`/movie/${slug}`);
   };
 

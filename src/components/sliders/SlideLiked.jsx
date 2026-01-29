@@ -57,7 +57,6 @@ export default function SliderLiked() {
   useEffect(() => {
     const fetchData = async () => {
       if (!user || !userToken) {
-        console.warn('User or userToken is undefined, skipping fetch');
         setData([]);
         navigate('/login');
         return;
@@ -74,13 +73,11 @@ export default function SliderLiked() {
         // Validate token expiration
         const currentTime = Date.now() / 1000;
         if (decoded.exp < currentTime) {
-          console.warn('Token expired, redirecting to login');
           setData([]);
           navigate('/login');
           return;
         }
       } catch (error) {
-        console.error('Error decoding token:', error);
         setError('Session invalid. Please log in again.');
         setData([]);
         navigate('/login');
@@ -96,15 +93,11 @@ export default function SliderLiked() {
             },
           }
         );
-        console.log('API Response:', response.data);
-        console.log('Token:', userToken);
         setData(response.data.likedContents || []);
       } catch (error) {
-        console.error('Error fetching data:', error);
        
         setData([]);
         if (error.response?.status === 401) {
-          console.warn('Unauthorized, redirecting to login');
           navigate('/login');
         }
       }
@@ -130,7 +123,6 @@ export default function SliderLiked() {
 
   const handleNavigateToMovie = (content) => {
     const slug = createSlug(content.title, content._id);
-    console.log('Navigating to movie with slug:', slug);
     navigate(`/movie/${slug}`);
   };
 

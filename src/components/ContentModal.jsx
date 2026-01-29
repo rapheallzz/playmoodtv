@@ -55,7 +55,6 @@ const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
           );
           setComments(response.data.comments || []);
         } catch (error) {
-          console.error('Failed to fetch comments:', error);
           setCommentError('Failed to load comments.');
         }
       }
@@ -70,7 +69,6 @@ const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
         const decoded = jwtDecode(userToken);
         return decoded.id || user?._id;
       } catch (error) {
-        console.error('Error decoding token:', error);
       }
     }
     return null;
@@ -88,7 +86,6 @@ const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
     }
     if (!content?._id || typeof content._id !== 'string' || content._id.trim() === '') {
       setCommentError('Invalid content ID. Please try again.');
-      console.error('Invalid content._id:', content?._id);
       return;
     }
 

@@ -200,7 +200,6 @@ export default function CreatorChannel() {
       const encodedId = creatorSlug.split('-').pop();
       return atob(encodedId);
     } catch (e) {
-      console.error("Failed to decode creatorId from slug:", creatorSlug, e);
       return null;
     }
   })() : state?.creatorId;
@@ -244,7 +243,6 @@ export default function CreatorChannel() {
           );
           return { ...h, content: { ...h.content, video: res.data.video } };
         } catch (e) {
-          console.error(`Failed to fetch content for ${h.content._id}:`, e);
           return h; // Return original on error
         }
       })
@@ -290,7 +288,6 @@ export default function CreatorChannel() {
           setSubscribed(isSubscribed);
         }
       } catch (error) {
-        console.error('Error fetching creator data:', error);
         setError('Failed to load creator data.');
         setShowErrorPopup(true);
       } finally {
@@ -352,7 +349,6 @@ export default function CreatorChannel() {
         }));
       }
     } catch (err) {
-      console.error('Subscription error:', err.response?.data || err.message);
       setError(
         err.response?.data?.message ||
           (subscribed ? 'Failed to unsubscribe.' : 'Failed to subscribe.')
@@ -401,7 +397,6 @@ const fetchCommunityPosts = async () => {
    
     setCommunityPosts(Array.isArray(response.data) ? response.data : []);
   } catch (err) {
-    console.error('Error fetching community posts:', err.response?.data || err.message);
    
     if (
       err.response?.status === 404 ||
@@ -437,7 +432,6 @@ const fetchPlaylists = async () => {
     );
     setPlaylists(response.data.playlists || []);
   } catch (err) {
-    console.error('Error fetching playlists:', err.response?.data || err.message);
     setError(err.response?.data?.message || 'Failed to load playlists.');
     setShowErrorPopup(true);
     setPlaylists([]);
@@ -477,7 +471,6 @@ const fetchPlaylists = async () => {
         )
       );
     } catch (err) {
-      console.error('Error liking/unliking post:', err);
       setError('Failed to update like status.');
       setShowErrorPopup(true);
     }
@@ -523,7 +516,6 @@ const fetchPlaylists = async () => {
       );
       setNewComment((prev) => ({ ...prev, [postId]: '' }));
     } catch (err) {
-      console.error('Error adding comment:', err);
       setError('Failed to add comment.');
       setShowErrorPopup(true);
     }

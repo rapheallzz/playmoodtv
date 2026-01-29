@@ -31,7 +31,6 @@ const Slidercontent = React.memo(function Slidercontent({ img, title, movie, id,
     try {
       // Check if the user is logged in
       if (!user || !user.id) {
-        console.log('User not logged in');
         return;
       }
 
@@ -41,7 +40,6 @@ const Slidercontent = React.memo(function Slidercontent({ img, title, movie, id,
       // Dispatch the likeVideo action
       await dispatch(likeVideo({ userId, videoId: contentId }));
     } catch (error) {
-      console.error('Error liking content:', error);
     }
   };
 

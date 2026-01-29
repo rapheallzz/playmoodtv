@@ -68,7 +68,6 @@ const PlaylistModal = ({
 
   useEffect(() => {
     if (editingPlaylist && editingPlaylist._id && !hasFetched.current) {
-      console.log('Fetching playlist videos for:', editingPlaylist._id);
       hasFetched.current = true;
       fetchPlaylistById(editingPlaylist._id);
     }
@@ -79,14 +78,12 @@ const PlaylistModal = ({
 
   const handleAddVideo = () => {
     if (editingPlaylist && editingPlaylist._id) {
-      console.log('Opening AddVideoModal for playlist:', editingPlaylist._id);
       setSelectedPlaylistId(editingPlaylist._id);
       setShowAddVideoModal(true);
       onClose(); // Close PlaylistModal before opening AddVideoModal
     }
   };
 
-  console.log('Rendering PlaylistModal, mode:', editingPlaylist ? 'Edit' : 'Create', 'videos:', selectedPlaylistVideos);
 
   return (
     <Modal>
@@ -148,7 +145,6 @@ const PlaylistModal = ({
                     </VideoInfo>
                     <RemoveButton
                       onClick={() => {
-                        console.log('Removing video:', video._id, 'from playlist:', editingPlaylist._id);
                         handleRemoveVideoFromPlaylist(editingPlaylist._id, video._id);
                       }}
                       aria-label={`Remove ${video.title} from Playlist`}
@@ -176,12 +172,9 @@ const PlaylistModal = ({
           </ModalButtonCancel>
           <ModalButtonSubmit
             onClick={() => {
-              console.log('Submitting playlist, mode:', editingPlaylist ? 'Edit' : 'Create');
               handleCreateOrUpdatePlaylist().then(() => {
-                console.log('Playlist update/create successful, closing modal');
                 onClose();
               }).catch((error) => {
-                console.error('Playlist update/create failed:', error);
               });
             }}
             disabled={!newPlaylist.name.trim() || isLoadingPlaylists}

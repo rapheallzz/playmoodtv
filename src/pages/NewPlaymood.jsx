@@ -75,11 +75,9 @@ export default function NewPlaymood() {
         if (response.data && Array.isArray(response.data)) {
           setData(response.data);
         } else {
-          console.error('Unexpected data format:', response.data);
           setError('Unexpected data format.');
         }
       } catch (error) {
-        console.error('Error fetching data:', error);
         setError('Error fetching data.');
       }
     }

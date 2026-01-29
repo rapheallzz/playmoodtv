@@ -171,7 +171,6 @@ export default function CreatorPage() {
           );
           return { ...h, content: { ...h.content, video: res.data.video } };
         } catch (e) {
-          console.error(`Failed to fetch content for ${h.content._id}:`, e);
           return h; // Return original on error
         }
       })

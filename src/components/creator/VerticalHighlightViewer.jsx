@@ -189,7 +189,7 @@ const VerticalHighlightViewer = ({
     const handleTimeUpdate = () => {
       if (video.currentTime >= endTime) {
         video.currentTime = startTime;
-        video.play().catch(e => console.error("Loop failed", e));
+        video.play().catch(e => {});
       }
     };
     video.addEventListener('timeupdate', handleTimeUpdate);
@@ -208,7 +208,6 @@ const VerticalHighlightViewer = ({
                 if (e.name === 'NotAllowedError' && !playerState.isMuted) {
                     updatePlayerState(currentIndex, { isMuted: true });
                 } else if (e.name !== 'AbortError') {
-                    console.error('Video play failed:', e);
                 }
             });
         }
@@ -303,7 +302,6 @@ const VerticalHighlightViewer = ({
     if (video) {
       if (!document.fullscreenElement) {
         video.requestFullscreen().catch(err => {
-          console.error(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
         });
       } else {
         document.exitFullscreen();
@@ -342,7 +340,6 @@ const VerticalHighlightViewer = ({
     try {
       await dispatch(action({ contentId: highlightId })).unwrap();
     } catch (error) {
-      console.error('Failed to like/unlike content:', error);
       toast.error(`Failed to ${newIsLiked ? 'like' : 'unlike'} content. Please try again.`);
       // Revert the UI change on error
       setIsLiked(!newIsLiked);
@@ -385,7 +382,6 @@ const VerticalHighlightViewer = ({
           setComments(response.comments || []);
           setTotalComments(response.totalComments || 0);
         } catch (error) {
-          console.error('Failed to fetch comments:', error);
           setComments([]);
           setTotalComments(0);
         } finally {
@@ -429,7 +425,6 @@ const VerticalHighlightViewer = ({
         prevComments.map((c) => (c._id === tempId ? response.comment : c))
       );
     } catch (error) {
-      console.error('Failed to submit comment:', error);
       toast.error('Failed to post comment. Please try again.');
       // Revert the UI change on error
       setComments((prevComments) => prevComments.filter((c) => c._id !== tempId));
@@ -445,7 +440,6 @@ const VerticalHighlightViewer = ({
       onClose();
       navigate(`/creator/${creatorSlug}`);
     } else {
-      console.error("Could not find creator details for ID:", creatorId);
     }
   };
 

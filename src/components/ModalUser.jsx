@@ -24,7 +24,6 @@ const UserModal = ({ onClose }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Add logic for user creation (API call, dispatch action, etc.)
-    console.log('Submitting user data:', userData);
     onClose();
   };
 

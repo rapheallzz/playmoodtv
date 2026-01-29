@@ -217,7 +217,6 @@ export default function DesktopHeader({ }) {
 
   const handleSubscriptionSubmit = (event) => {
     event.preventDefault();
-    console.log('Email submitted');
     setShowDonationModal(false);
   };
 

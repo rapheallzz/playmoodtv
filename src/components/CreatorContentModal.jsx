@@ -43,7 +43,6 @@ const CreatorContentModal = ({ isOpen, creator, onClose }) => {
           setError('Unexpected data format.');
         }
       } catch (err) {
-        console.error('Error fetching recent content:', err);
         setError('Failed to load recent content.');
       } finally {
         setLoading(false);
@@ -103,7 +102,6 @@ const CreatorContentModal = ({ isOpen, creator, onClose }) => {
 
   const createSlug = (title, _id) => {
     if (!title) {
-      console.error('Missing title for content:', _id);
       return _id;
     }
     return `${title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${_id}`;
@@ -125,7 +123,6 @@ const CreatorContentModal = ({ isOpen, creator, onClose }) => {
         setShowWelcomePopup(true);
       }
     } catch (error) {
-      console.error('Error liking/unliking content:', error);
     }
   };
 
@@ -142,7 +139,6 @@ const CreatorContentModal = ({ isOpen, creator, onClose }) => {
         setShowWelcomePopup(true);
       }
     } catch (error) {
-      console.error('Error adding/removing from watchlist:', error);
     }
   };
 

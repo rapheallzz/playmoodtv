@@ -256,7 +256,6 @@ export default function MobileBurger() {
 
   const handleSubscriptionSubmit = (event) => {
     event.preventDefault();
-    console.log('Email submitted');
     setShowDonationModal(false);
   };
 
@@ -358,7 +357,6 @@ export default function MobileBurger() {
         const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
         setData(response.data);
       } catch (error) {
-        console.error('Error fetching data:', error);
       }
     };
 

@@ -15,7 +15,6 @@ try {
     if (user?.token) {
       const decoded = decodeToken(user.token);
       if (!decoded) {
-        console.log('authSlice: Token expired on init, clearing localStorage');
         localStorage.removeItem('user');
         user = null;
       } else {
@@ -26,7 +25,6 @@ try {
     }
   }
 } catch (error) {
-  console.error('Error parsing user from localStorage:', error);
   localStorage.removeItem('user');
 }
 
@@ -79,7 +77,6 @@ export const login = createAsyncThunk('auth/login', async (userData, thunkAPI) =
     } else {
       // This is a regular email/password login
       const response = await authService.login(userData);
-      console.log('authSlice login response:', response);
       const decoded = decodeToken(response.token);
       if (!decoded) {
         throw new Error('Received expired token');
@@ -90,15 +87,9 @@ export const login = createAsyncThunk('auth/login', async (userData, thunkAPI) =
         token: response.token,
       };
       localStorage.setItem('user', JSON.stringify(userWithToken));
-      console.log('authSlice stored in localStorage:', userWithToken);
       return { user: userWithToken, token: response.token };
     }
   } catch (error) {
-    console.error('authSlice login error:', {
-      message: error.message,
-      response: error.response?.data,
-      status: error.response?.status,
-    });
     const message =
       error.response?.data?.error ||
       error.response?.data?.message ||
@@ -214,17 +205,14 @@ export const updateAuthUser = createAsyncThunk('auth/updateAuthUser', async (use
       throw new Error('Token expired');
     }
     const response = await authService.updateUser(userData, token);
-    console.log('authSlice updateAuthUser response:', response);
     const userWithToken = {
       ...response,
       userId: decoded.id || response._id,
       token,
     };
     localStorage.setItem('user', JSON.stringify(userWithToken));
-    console.log('authSlice updateAuthUser stored in localStorage:', userWithToken);
     return userWithToken;
   } catch (error) {
-    console.error('authSlice updateAuthUser error:', error);
     if (error.message === 'Token expired') {
       localStorage.removeItem('user');
       return thunkAPI.rejectWithValue('Token expired, please log in again');

@@ -34,7 +34,6 @@ const CreatorApplicationModal = ({ onClose }) => {
           onClose();
         }
       } catch (error) {
-        console.error('Error fetching creator application status:', error);
         setCreatorApplicationStatus(null);
       }
     }
@@ -62,7 +61,6 @@ const CreatorApplicationModal = ({ onClose }) => {
         setMessage('There was an issue submitting your request. Please try again.');
       }
     } catch (error) {
-      console.error('confirmApplyAsCreator error:', error);
       setMessage(error.response?.data?.message || 'There was an issue submitting your request. Please try again.');
     }
     setShowMessageModal(true);

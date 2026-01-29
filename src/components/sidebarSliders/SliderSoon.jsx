@@ -17,18 +17,14 @@ export default function SliderSoon() {
   useEffect(() => {
     async function fetchData() {
       try {
-        console.log('Requesting data from API');
         const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
-        console.log('API response:', response);
         if (response.data && Array.isArray(response.data)) {
           const filteredData = response.data.filter(content => content.category === 'Documentarie');
           setData(filteredData);
         } else {
-          console.error('Unexpected data format:', response.data);
           setError('Unexpected data format.');
         }
       } catch (error) {
-        console.error('Error fetching data:', error);
         setError('Error fetching data.');
       }
     }
@@ -53,7 +49,6 @@ export default function SliderSoon() {
 
   const handleNavigateToMovie = (content) => {
     const slug = createSlug(content.title, content._id);
-    console.log('Navigating to movie with slug:', slug);
     navigate(`/movie/${slug}`);
   };
 

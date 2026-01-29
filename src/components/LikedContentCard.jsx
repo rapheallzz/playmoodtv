@@ -20,19 +20,7 @@ const LikedContentCard = ({ likedContent, homePageData, contentIndex, isVisibleO
   const currentContent = contentArray[contentIndex % contentArray.length] || {};
 
   // Debugging logs
-  useEffect(() => {
-    console.log('LikedContentCard props:', {
-      likedContent,
-      homePageData,
-      contentIndex,
-      isVisibleOnMobile,
-      currentContent,
-      contentArrayLength: contentArray.length,
-    });
-  }, [likedContent, homePageData, contentIndex, isVisibleOnMobile, currentContent, contentArray]);
-
   if (!isVisibleOnMobile || !currentContent._id) {
-    console.log('Not rendering LikedContentCard: isVisibleOnMobile or currentContent._id missing');
     return null;
   }
 
@@ -70,7 +58,6 @@ const LikedContentCard = ({ likedContent, homePageData, contentIndex, isVisibleO
         await dispatch(likeContent({ userId: user._id, contentId }));
       }
     } catch (error) {
-      console.error('Error liking/unliking content:', error);
     }
   };
 
@@ -88,7 +75,6 @@ const LikedContentCard = ({ likedContent, homePageData, contentIndex, isVisibleO
         await dispatch(addToWatchlist({ userId: user._id, contentId }));
       }
     } catch (error) {
-      console.error('Error adding/removing from watchlist:', error);
     }
   };
 

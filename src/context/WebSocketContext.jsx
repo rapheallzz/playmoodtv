@@ -18,11 +18,9 @@ export const WebSocketProvider = ({ children, url }) => {
     setSocket(socketConnection);
 
     socketConnection.on('connect', () => {
-      console.log('WebSocket connected');
     });
 
     socketConnection.on('disconnect', () => {
-      console.log('WebSocket disconnected');
     });
 
     return () => {

@@ -43,7 +43,6 @@ const SideBarSlidercont = React.memo(function SideBarSlidercont({
         const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
         setSliderContentData(response.data);
       } catch (error) {
-        console.error('Error fetching data:', error);
       }
     };
 
@@ -149,7 +148,6 @@ const SideBarSlidercont = React.memo(function SideBarSlidercont({
         setShowWelcomePopup(true);
       }
     } catch (error) {
-      console.error('Error liking/unliking content:', error);
     }
   };
 
@@ -167,7 +165,6 @@ const SideBarSlidercont = React.memo(function SideBarSlidercont({
         setShowWelcomePopup(true);
       }
     } catch (error) {
-      console.error('Error adding/removing from watchlist:', error);
     }
   };
 
@@ -181,7 +178,7 @@ const SideBarSlidercont = React.memo(function SideBarSlidercont({
     const pageUrl = window.location.href;
     navigator.clipboard.writeText(pageUrl)
       .then(() => alert('URL copied to clipboard!'))
-      .catch((err) => console.error('Failed to copy: ', err));
+      .catch((err) => {});
   };
 
   const titleSpliced = title?.slice(0, 30) + '...';

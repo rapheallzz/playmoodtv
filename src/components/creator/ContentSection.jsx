@@ -160,7 +160,6 @@ const ContentSection = ({
                         shortPreview={content.shortPreview}
                         customStyle={{}}
                         onVideoClick={() => {
-                          console.log('Uploads (Pending) slider clicked:', content);
                           handleOpenContentModal(content);
                         }}
                       />
@@ -179,7 +178,6 @@ const ContentSection = ({
                         shortPreview={content.shortPreview}
                         customStyle={{}}
                         onVideoClick={() => {
-                          console.log('Uploads (Pending) slider clicked:', content);
                           handleOpenContentModal(content);
                         }}
                       />

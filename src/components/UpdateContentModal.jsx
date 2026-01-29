@@ -35,10 +35,8 @@ const UpdateContentModal = ({ onClose, contentId }) => {
         if (response.status === 200) {
           setFormData(response.data || {});
         } else {
-          console.error('Failed to fetch content details:', response.data.error);
         }
       } catch (error) {
-        console.error('Error fetching content details:', error);
       }
     };
 
@@ -87,7 +85,6 @@ const UpdateContentModal = ({ onClose, contentId }) => {
           videoUploadUrl,
           formData.video.type,
           (progress) => {
-            console.log(`Video upload progress: ${progress}%`);
           }
         );
 
@@ -116,7 +113,6 @@ const UpdateContentModal = ({ onClose, contentId }) => {
           thumbUploadUrl,
           formData.thumbnail.type,
           (progress) => {
-            console.log(`Thumbnail upload progress: ${progress}%`);
           }
         );
 
@@ -149,12 +145,10 @@ const UpdateContentModal = ({ onClose, contentId }) => {
 
       if (response.status === 200) {
         setSuccess(true);
-        console.log('Content updated successfully');
       } else {
         setError(response.data.error || 'Failed to update content');
       }
     } catch (err) {
-      console.error('Error updating content:', err);
       setError(err.response?.data?.message || err.message || 'Error updating content');
     } finally {
       setLoading(false);

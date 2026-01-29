@@ -61,7 +61,6 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
         await contentService.unlikeFeedPost({ feedId: post._id, token: user.token });
       }
     } catch  (error) {
-      console.error('Failed to update like status:', error);
       // Revert the state on error
       setIsLiked(originalIsLiked);
       setLikesCount(originalLikesCount);
@@ -81,7 +80,6 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
       setComments(updatedPost.comments || []);
       setNewComment('');
     } catch (error) {
-      console.error('Failed to add comment:', error);
     }
   };
 

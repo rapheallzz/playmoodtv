@@ -39,7 +39,6 @@ export default function Schedule() {
       }
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching schedule:', error);
       setLoading(false);
     }
   };

@@ -63,7 +63,6 @@ export default function MobileHeader({ channels, set_channels }) {
   
   const handleSubscriptionSubmit = (event) => {
     event.preventDefault();
-    console.log('Email submitted');
     setShowDonationModal(false); 
   };
 

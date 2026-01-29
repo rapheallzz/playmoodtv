@@ -54,7 +54,6 @@ export default function UserFavourite() {
   useEffect(() => {
     const fetchData = async () => {
       if (!user || !user._id) {
-        console.warn('User or user._id is undefined, skipping fetch');
         setData([]);
         return;
       }
@@ -68,10 +67,8 @@ export default function UserFavourite() {
             },
           }
         );
-        console.log('API Response:', response.data);
         setData(response.data.watchList || []);
       } catch (error) {
-        console.error('Error fetching data:', error);
         setError('Failed to load favourite content. Please try again later.');
         setData([]);
       }
@@ -97,7 +94,6 @@ export default function UserFavourite() {
 
   const handleNavigateToMovie = (content) => {
     const slug = createSlug(content.title, content._id);
-    console.log('Navigating to movie with slug:', slug);
     navigate(`/movie/${slug}`);
   };
 

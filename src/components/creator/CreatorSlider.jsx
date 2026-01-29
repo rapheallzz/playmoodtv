@@ -31,13 +31,11 @@ const CreatorSlider = React.memo(function CreatorSlider({ img, title, movie, id,
     e.stopPropagation(); // Prevent modal from opening
     try {
       if (!user || !user.id) {
-        console.log('User not logged in');
         return;
       }
       const contentId = movie._id;
       await dispatch(likeContent({ contentId }));
     } catch (error) {
-      console.error('Error liking content:', error);
     }
   };
 

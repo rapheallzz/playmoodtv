@@ -17,7 +17,6 @@ export default function Slidertopsidebar() {
         const response = await axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/${params}`);
         setData(response.data);
       } catch (error) {
-        console.error('Error fetching data:', error);
       }
     };
 

@@ -43,7 +43,6 @@ const useChannelDetails = (user) => {
         setData(uniqueContent);
         setErrorMessage('');
       } catch (error) {
-        console.error('Error fetching channel details:', error);
         setErrorMessage('Failed to load channel details. Please try again later.');
       } finally {
         isFetchingRef.current = false;
@@ -130,7 +129,6 @@ const useChannelDetails = (user) => {
       setErrorMessage('');
       return { success: true };
     } catch (error) {
-      console.error('Error updating channel info:', error);
       setErrorMessage(
         error.response?.data?.message ||
         'Failed to update channel. Please check your inputs or try again later.'

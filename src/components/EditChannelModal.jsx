@@ -82,7 +82,6 @@ const EditChannelModal = ({
     return new Promise((resolve) => {
       canvas.toBlob((blob) => {
         if (!blob) {
-          console.error('Canvas is empty');
           return;
         }
         blob.name = fileName;

@@ -44,7 +44,7 @@ const Slidercontent = memo(({ img, title, movie, views, desc, customStyle, progr
   useEffect(() => {
     const video = videoRef.current;
     if (video && isVideoPlaying) {
-      video.play().catch((err) => console.error('Video play error:', err));
+      video.play().catch((err) => {});
     } else if (video) {
       video.pause();
     }

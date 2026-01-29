@@ -520,7 +520,6 @@ function HomeContent({
         const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
         setHomePageData(response.data);
       } catch (error) {
-        console.error('Error fetching data:', error);
       }
     };
 
@@ -573,7 +572,6 @@ function HomeContent({
         setShowWelcomePopup(true);
       }
     } catch (error) {
-      console.error('Error liking/unliking content:', error);
     }
   };
 
@@ -594,7 +592,6 @@ function HomeContent({
         setShowWelcomePopup(true);
       }
     } catch (error) {
-      console.error('Error adding/removing from watchlist:', error);
     }
   };
 
@@ -717,7 +714,6 @@ function HomeContent({
                       autoPlay
                       playsInline
                       onError={(e) => {
-                        console.error('Banner video error:', e);
                         e.target.src = FALLBACK_VIDEO_URL;
                       }}
                     >

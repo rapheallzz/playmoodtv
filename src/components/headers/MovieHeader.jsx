@@ -69,7 +69,6 @@ export default function MovieHeader({ }) {
         const response = await axios.get(`${BASE_API_URL}/api/content/`);
         setData(response.data);
       } catch (error) {
-        console.error('Error fetching data:', error);
       }
     };
 

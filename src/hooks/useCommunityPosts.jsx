@@ -32,7 +32,6 @@ const useCommunityPosts = (user, activeTab, socket, apiUrl) => {
         setCommunityPosts(posts);
         setErrorMessage('');
       } catch (error) {
-        console.error('Error fetching community posts:', error);
         setErrorMessage('Failed to load community posts. Please try again later.');
       } finally {
         setIsLoadingPosts(false);
@@ -100,7 +99,6 @@ const useCommunityPosts = (user, activeTab, socket, apiUrl) => {
       setNewPostContent('');
       setErrorMessage('');
     } catch (error) {
-      console.error('Error creating community post:', error);
       setErrorMessage('Failed to create post. Please try again later.');
     }
   };
@@ -128,7 +126,6 @@ const useCommunityPosts = (user, activeTab, socket, apiUrl) => {
       setEditingPostId(null);
       setErrorMessage('');
     } catch (error) {
-      console.error('Error updating post:', error);
       setErrorMessage('Failed to update post. Please try again later.');
     }
   };
@@ -143,7 +140,6 @@ const useCommunityPosts = (user, activeTab, socket, apiUrl) => {
       setCommunityPosts(communityPosts.filter(post => post._id !== postId));
       setErrorMessage('');
     } catch (error) {
-      console.error('Error deleting post:', error);
       setErrorMessage('Failed to delete post. Please try again later.');
     }
   };
@@ -182,7 +178,6 @@ const useCommunityPosts = (user, activeTab, socket, apiUrl) => {
       setNewComment((prev) => ({ ...prev, [postId]: '' }));
       setErrorMessage('');
     } catch (error) {
-      console.error('Error adding comment:', error);
       setErrorMessage('Failed to add comment. Please try again later.');
     }
   };
@@ -203,7 +198,6 @@ const useCommunityPosts = (user, activeTab, socket, apiUrl) => {
       );
       setErrorMessage('');
     } catch (error) {
-      console.error('Error deleting comment:', error);
       setErrorMessage('Failed to delete comment. Please try again later.');
     }
   };
@@ -227,7 +221,6 @@ const useCommunityPosts = (user, activeTab, socket, apiUrl) => {
       );
       setErrorMessage('');
     } catch (error) {
-      console.error('Error liking/unliking post:', error);
       setErrorMessage('Failed to like/unlike post. Please try again later.');
     }
   };

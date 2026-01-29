@@ -93,7 +93,6 @@ function Dashboardpage() {
       const decoded = jwtDecode(userToken);
       userId = decoded.id;
     } catch (error) {
-      console.error('Error decoding token for userId:', error);
     }
   }
 
@@ -105,7 +104,6 @@ function Dashboardpage() {
   const handleAddVideo = () => setShowVideoModal(true);
   const handleSubscriptionSubmit = (event) => {
     event.preventDefault();
-    console.log('Email submitted');
     setShowDonationModal(false);
   };
 
@@ -146,10 +144,8 @@ function Dashboardpage() {
 
   const fetchUserData = async () => {
     if (!authUser || !authUser.token) {
-      console.log('fetchUserData: No authUser or token, checking localStorage');
       const cachedUser = JSON.parse(localStorage.getItem('user'));
       if (cachedUser && cachedUser.token) {
-        console.log('fetchUserData: Found cached user with token, dispatching updateAuthUser');
         const decoded = jwtDecode(cachedUser.token);
         const updatedUser = {
           ...cachedUser,
@@ -187,7 +183,6 @@ function Dashboardpage() {
       if (fetchedUser) {
         setUserProfile(fetchedUser);
         // Do not call handleUserUpdate here to prevent infinite loop
-        console.log('fetchUserData populating forms with:', fetchedUser);
         setPersonalData({
           name: fetchedUser.name || '',
           email: fetchedUser.email || '',
@@ -204,7 +199,6 @@ function Dashboardpage() {
       }
       setIsLoadingUser(false);
     } catch (error) {
-      console.error('fetchUserData error:', error.response?.data || error.message);
       toast.error('Failed to fetch user data. Using cached data.');
       const cachedUser = JSON.parse(localStorage.getItem('user'));
       if (cachedUser && cachedUser.token) {
@@ -221,7 +215,6 @@ function Dashboardpage() {
         dispatch(updateAuthUserReducer(updatedUser));
         setUserProfile(cachedUser);
         localStorage.setItem('user', JSON.stringify(updatedUser));
-        console.log('fetchUserData stored cached user in localStorage:', updatedUser);
         setPersonalData({
           name: cachedUser.name || '',
           email: cachedUser.email || '',
@@ -259,7 +252,6 @@ function Dashboardpage() {
           localStorage.setItem('user', JSON.stringify(updatedUser));
         }
       } catch (error) {
-        console.error('Error fetching creator application status:', error);
         setCreatorApplicationStatus(null);
       }
     }
@@ -268,16 +260,13 @@ function Dashboardpage() {
   useEffect(() => {
     if (hasFetched) return;
 
-    console.log('Dashboard useEffect:', { authUser, userToken, userId });
     if (!authUser || !userToken) {
       const cachedUser = JSON.parse(localStorage.getItem('user'));
       if (cachedUser && cachedUser.token) {
-        console.log('Restoring user from localStorage:', cachedUser);
         try {
           const decoded = jwtDecode(cachedUser.token);
           const currentTime = Date.now() / 1000;
           if (decoded.exp < currentTime) {
-            console.log('useEffect: Token expired, clearing localStorage');
             localStorage.removeItem('user');
             dispatch(logout());
             navigate('/login');
@@ -290,7 +279,6 @@ function Dashboardpage() {
           dispatch(updateAuthUserReducer(updatedUser));
           localStorage.setItem('user', JSON.stringify(updatedUser));
         } catch (error) {
-          console.error('useEffect: Error decoding token:', error);
           localStorage.removeItem('user');
           dispatch(logout());
           navigate('/login');
@@ -312,14 +300,12 @@ function Dashboardpage() {
 
   const updateProfileImage = async (userId, imageBlob, token) => {
     if (!userId) {
-      console.error('updateProfileImage: userId is undefined');
       toast.error('User ID is missing. Please try logging in again.');
       dispatch(logout());
       navigate('/login');
       return;
     }
     if (!token) {
-      console.error('updateProfileImage: token is missing');
       toast.error('Authentication token is missing. Please log in again.');
       dispatch(logout());
       navigate('/login');
@@ -366,13 +352,11 @@ function Dashboardpage() {
       const userWithToken = { ...updatedUser, userId: updatedUser._id || userId, token };
       dispatch(updateAuthUserReducer(userWithToken));
       localStorage.setItem('user', JSON.stringify(userWithToken));
-      console.log('updateProfileImage stored in localStorage:', userWithToken);
       setProfileImagePreview(imageUrl);
       setProfileImage(null);
       toast.success('Profile image updated successfully!');
       return imageUrl;
     } catch (error) {
-      console.error('updateProfileImage error:', error.response?.data || error.message);
       if (error.response?.status === 401) {
         toast.error('Session expired. Please log in again.');
         dispatch(logout());
@@ -410,14 +394,12 @@ function Dashboardpage() {
   const updateProfile = async () => {
     if (!validatePersonalData()) return;
     if (!userId) {
-      console.error('updateProfile: userId is undefined');
       toast.error('User ID is missing. Please try logging in again.');
       dispatch(logout());
       navigate('/login');
       return;
     }
     if (!authUser.token) {
-      console.error('updateProfile: token is missing');
       toast.error('Authentication token is missing. Please log in again.');
       dispatch(logout());
       navigate('/login');
@@ -461,12 +443,10 @@ function Dashboardpage() {
       const userWithToken = { ...updatedUser, userId: updatedUser._id || userId, token: authUser.token };
       dispatch(updateAuthUserReducer(userWithToken));
       localStorage.setItem('user', JSON.stringify(userWithToken));
-      console.log('updateProfile stored in localStorage:', userWithToken);
       setProfileImagePreview(imageUrl);
       handleClose();
       toast.success('Profile updated successfully!');
     } catch (error) {
-      console.error('updateProfile error:', error.response?.data || error.message);
       if (error.response?.status === 401) {
         toast.error('Session expired. Please log in again.');
         dispatch(logout());
@@ -499,7 +479,6 @@ function Dashboardpage() {
         setMessage('There was an issue submitting your request. Please try again.');
       }
     } catch (error) {
-      console.error('confirmApplyAsCreator error:', error);
       setMessage('There was an issue submitting your request. Please try again.');
     }
     setShowCreatorConfirmPopup(false);
@@ -512,14 +491,12 @@ function Dashboardpage() {
       return;
     }
     if (!userId) {
-      console.error('handleProfileImageClick: userId is undefined');
       toast.error('User ID is missing. Please try logging in again.');
       dispatch(logout());
       navigate('/login');
       return;
     }
     if (!authUser.token) {
-      console.error('handleProfileImageClick: token is missing');
       toast.error('Authentication token is missing. Please log in again.');
       dispatch(logout());
       navigate('/login');
@@ -546,14 +523,12 @@ function Dashboardpage() {
       });
 
       socket.on('connect', () => {
-        console.log('Connected to WebSocket server');
         if (userId) {
           socket.emit('join', { userId });
         }
       });
 
       socket.on('role-approved', (data) => {
-        console.log('Role approved event received:', data);
         if (data.user) {
           toast.success('Congratulations! You are now a creator.');
           handleUserUpdate(data.user);
@@ -561,11 +536,9 @@ function Dashboardpage() {
       });
 
       socket.on('connect_error', (err) => {
-        console.error('WebSocket connection error:', err);
       });
 
       return () => {
-        console.log('Disconnecting from WebSocket server');
         socket.disconnect();
       };
     }

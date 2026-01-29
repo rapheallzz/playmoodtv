@@ -35,7 +35,7 @@ const HighlightViewer = ({ highlight, onClose, onNext, onPrevious, isFirst, isLa
       };
 
       video.currentTime = startTime;
-      video.play().catch((error) => console.error("Video play failed:", error));
+      video.play().catch((error) => {});
       video.addEventListener('timeupdate', handleTimeUpdate);
 
       return () => {

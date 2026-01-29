@@ -68,7 +68,6 @@ const Slidercirclecontent = React.memo(function Slidercirclecontent({
       const contentId = movie?._id;
       if (!contentId) {
         setLocalError('Content ID is missing. Please try again.');
-        console.error('Content ID not found in movie object:', movie);
         return;
       }
       if (isLiked) {
@@ -77,7 +76,6 @@ const Slidercirclecontent = React.memo(function Slidercirclecontent({
         await dispatch(likeContent({ contentId })).unwrap();
       }
     } catch (error) {
-      console.error('Like error:', error);
       setLocalError('Failed to like/unlike content. Please try again.');
     }
   };
@@ -107,7 +105,6 @@ const Slidercirclecontent = React.memo(function Slidercirclecontent({
         await dispatch(addToWatchlist({ userId, contentId })).unwrap();
       }
     } catch (error) {
-      console.error('Watchlist error:', error);
       setLocalError('Failed to update watchlist. Please try again.');
     }
   };
@@ -128,7 +125,6 @@ const Slidercirclecontent = React.memo(function Slidercirclecontent({
         setTimeout(() => setCopyModal({ show: false, message: '', isError: false }), 3000);
       })
       .catch((err) => {
-        console.error('Failed to copy: ', err);
         setCopyModal({ show: true, message: 'Failed to copy link. Please try again.', isError: true });
         setTimeout(() => setCopyModal({ show: false, message: '', isError: false }), 3000);
       });

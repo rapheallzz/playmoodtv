@@ -55,19 +55,14 @@ export default function SliderTeens() {
   useEffect(() => {
     async function fetchData() {
       try {
-        console.log('Requesting data from API');
         const response = await axios.get(`${BASE_API_URL}/api/content/`);
-        console.log('API response:', response);
         if (response.data && Array.isArray(response.data)) {
           const filteredData = response.data.filter((content) => content.category === 'Teen');
-          console.log('Filtered Documentaries data:', filteredData);
           setData(filteredData);
         } else {
-          console.error('Unexpected data format:', response.data);
           setError('Unexpected data format.');
         }
       } catch (error) {
-        console.error('Error fetching data:', error);
         setError('Error fetching data.');
       }
     }
@@ -92,7 +87,6 @@ export default function SliderTeens() {
 
   const handleNavigateToMovie = (content) => {
     const slug = createSlug(content.title, content._id);
-    console.log('Navigating to movie with slug:', slug);
     navigate(`/movie/${slug}`);
   };
 

@@ -57,11 +57,9 @@ export default function SliderNew() {
         if (response.data && Array.isArray(response.data)) {
           setData(response.data); // Set all data without filtering
         } else {
-          console.error('Unexpected data format:', response.data);
           setError('Unexpected data format.');
         }
       } catch (error) {
-        console.error('Error fetching data:', error);
         setError('Error fetching data.');
       }
     }

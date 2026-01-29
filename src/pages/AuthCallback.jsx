@@ -24,11 +24,9 @@ const AuthCallback = () => {
         dispatch(login(user));
         navigate('/dashboard');
       } else {
-        console.error('Authentication failed: Invalid token');
         navigate('/login');
       }
     } else {
-      console.error('Authentication failed: No token provided.');
       navigate('/login');
     }
   }, [location, navigate, dispatch]);

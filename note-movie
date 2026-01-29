@@ -58,7 +58,6 @@ export default function MoviePage(props) {
   };
 
 
-  console.log(location);
 
   const videoRef = useRef(null);
   const iconOverlayRef = useRef(null);

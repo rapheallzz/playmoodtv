@@ -602,7 +602,6 @@ function HomeContent({
         });
         setHomePageData(response.data);
       } catch (error) {
-        console.error('Error fetching data:', error);
       }
     };
 
@@ -656,7 +655,6 @@ function HomeContent({
         setShowWelcomePopup(true);
       }
     } catch (error) {
-      console.error('Error liking/unliking content:', error);
       // Optionally, revert the UI change if the API call fails
       // setIsLiked(isLiked);
     }
@@ -679,7 +677,6 @@ function HomeContent({
         await dispatch(addToWatchlist({ userId: user._id, contentId }));
       }
     } catch (error) {
-      console.error('Error updating watchlist:', error);
     }
   };
 
@@ -812,7 +809,6 @@ function HomeContent({
                       autoPlay
                       playsInline
                       onError={(e) => {
-                        console.error('Banner video error:', e);
                         e.target.src = FALLBACK_VIDEO_URL;
                       }}
                     >
@@ -988,7 +984,6 @@ export default function Home() {
           setHighlightData(response.data);
         })
         .catch(error => {
-          console.error('Error fetching highlight data:', error);
         });
     }
   }, [encodedContentId]);

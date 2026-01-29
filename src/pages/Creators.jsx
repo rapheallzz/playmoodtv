@@ -45,7 +45,6 @@ export default function Creator() {
           setPlaylists(playlistResponse.data.playlists || []);
 
         } catch (err) {
-          console.error('Error fetching creator data:', err);
           setError('Failed to load creator data.');
         }
       }

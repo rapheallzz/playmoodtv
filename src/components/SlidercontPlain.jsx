@@ -53,7 +53,6 @@ const Slidercontent = React.memo(function Slidercontent({
       };
 
       video.onerror = () => {
-        console.error('Error loading video metadata for:', movie);
         setPreviewTimestamps({ start: 0, end: 10 });
         setLocalError('Failed to load video preview.');
         video.remove();
@@ -76,7 +75,6 @@ const Slidercontent = React.memo(function Slidercontent({
   // Handle hover for video playback
   const handleHover = () => {
     if (!movie) {
-      console.error('No video URL provided for preview.');
       setLocalError('No video available for preview.');
       return;
     }
@@ -85,7 +83,6 @@ const Slidercontent = React.memo(function Slidercontent({
     if (videoRef.current) {
       videoRef.current.currentTime = previewTimestamps.start;
       videoRef.current.play().catch((error) => {
-        console.error('Error playing video on hover:', error);
         setIsVideoPlaying(false);
         setLocalError('Failed to play video preview.');
       });
@@ -110,7 +107,6 @@ const Slidercontent = React.memo(function Slidercontent({
         if (videoRef.current) {
           videoRef.current.currentTime = previewTimestamps.start;
           videoRef.current.play().catch((error) => {
-            console.error('Error playing video on click:', error);
             setIsVideoPlaying(false);
             setLocalError('Failed to play video preview.');
           });
@@ -143,7 +139,6 @@ const Slidercontent = React.memo(function Slidercontent({
       }
       if (!id) {
         setLocalError('Content ID is missing. Please try again.');
-        console.error('Content ID not found:', { movie, id });
         return;
       }
       if (isLiked) {
@@ -152,7 +147,6 @@ const Slidercontent = React.memo(function Slidercontent({
         await dispatch(likeContent({ contentId: id })).unwrap();
       }
     } catch (error) {
-      console.error('Like error:', error);
       setLocalError('Failed to like/unlike content. Please try again.');
     }
   };
@@ -181,7 +175,6 @@ const Slidercontent = React.memo(function Slidercontent({
         await dispatch(addToWatchlist({ userId, contentId: id })).unwrap();
       }
     } catch (error) {
-      console.error('Watchlist error:', error);
       setLocalError('Failed to update watchlist. Please try again.');
     }
   };
@@ -196,7 +189,6 @@ const Slidercontent = React.memo(function Slidercontent({
         setTimeout(() => setCopyModal({ show: false, message: '', isError: false }), 3000);
       })
       .catch((err) => {
-        console.error('Failed to copy: ', err);
         setCopyModal({ show: true, message: 'Failed to copy link. Please try again.', isError: true });
         setTimeout(() => setCopyModal({ show: false, message: '', isError: false }), 3000);
       });
