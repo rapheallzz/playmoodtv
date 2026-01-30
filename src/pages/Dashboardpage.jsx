@@ -181,7 +181,16 @@ function Dashboardpage() {
       });
       const fetchedUser = response.data;
       if (fetchedUser) {
-        setUserProfile(fetchedUser);
+        const imageUrl = (fetchedUser.profileImage?.url || fetchedUser.profileImage)
+          ? `${fetchedUser.profileImage.url || fetchedUser.profileImage}?t=${new Date().getTime()}`
+          : defaultProfileIcon;
+
+        const userWithFixedImage = {
+          ...fetchedUser,
+          profileImage: imageUrl,
+        };
+
+        setUserProfile(userWithFixedImage);
         // Do not call handleUserUpdate here to prevent infinite loop
         setPersonalData({
           name: fetchedUser.name || '',
@@ -192,7 +201,7 @@ function Dashboardpage() {
           age: fetchedUser.age || '',
           address: fetchedUser.address || '',
         });
-        setProfileImagePreview(fetchedUser.profileImage ? `${fetchedUser.profileImage}?t=${new Date().getTime()}` : defaultProfileIcon);
+        setProfileImagePreview(imageUrl);
         if (!fetchedUser.isEmailVerified) {
           setShowEmailVerificationModal(true);
         }
@@ -349,7 +358,12 @@ function Dashboardpage() {
       const imageUrl = (updatedUser.profileImage?.url || updatedUser.profileImage)
         ? `${updatedUser.profileImage.url || updatedUser.profileImage}?t=${new Date().getTime()}`
         : defaultProfileIcon;
-      const userWithToken = { ...updatedUser, userId: updatedUser._id || userId, token };
+      const userWithToken = {
+        ...updatedUser,
+        profileImage: imageUrl,
+        userId: updatedUser._id || userId,
+        token
+      };
       dispatch(updateAuthUserReducer(userWithToken));
       localStorage.setItem('user', JSON.stringify(userWithToken));
       setProfileImagePreview(imageUrl);
@@ -437,10 +451,15 @@ function Dashboardpage() {
         }
       );
       const updatedUser = response.data.user;
-      const imageUrl = updatedUser.profileImage
-        ? `${updatedUser.profileImage}?t=${new Date().getTime()}`
+      const imageUrl = (updatedUser.profileImage?.url || updatedUser.profileImage)
+        ? `${updatedUser.profileImage.url || updatedUser.profileImage}?t=${new Date().getTime()}`
         : defaultProfileIcon;
-      const userWithToken = { ...updatedUser, userId: updatedUser._id || userId, token: authUser.token };
+      const userWithToken = {
+        ...updatedUser,
+        profileImage: imageUrl,
+        userId: updatedUser._id || userId,
+        token: authUser.token
+      };
       dispatch(updateAuthUserReducer(userWithToken));
       localStorage.setItem('user', JSON.stringify(userWithToken));
       setProfileImagePreview(imageUrl);

@@ -34,6 +34,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { logout, reset } from '.././../features/authSlice';
 import DonationModal from '../DonationModal';
 import { FaPlus } from 'react-icons/fa';
+import { AiOutlineUser } from 'react-icons/ai';
 import { VideoModal } from '../ModalVU';
 import CreatorApplicationModal from '../modals/CreatorApplicationModal';
 
@@ -335,14 +336,22 @@ export default function DesktopHeader({ }) {
                     </ul>
                   </div>
                   {user && (
-                    <img
-                      src={`${user.profileImage}?${new Date().getTime()}`}
-                      alt="Profile"
-                      className="w-32 h-32 rounded-full cursor-pointer"
-                      onClick={() => {
-                        navigate('/dashboard');
-                      }}
-                    />
+                    <div
+                      className="w-32 h-32 rounded-full bg-white flex items-center justify-center font-semibold cursor-pointer overflow-hidden relative"
+                      onClick={() => navigate('/dashboard')}
+                    >
+                      <AiOutlineUser size={64} color="#541011" style={{ position: 'absolute' }} />
+                      {(user.profileImage?.url || user.profileImage) && (
+                        <img
+                          src={user.profileImage?.url || user.profileImage}
+                          alt="Profile"
+                          className="w-full h-full object-cover relative z-10"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                          }}
+                        />
+                      )}
+                    </div>
                   )}
                 </div>
               )}
