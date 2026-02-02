@@ -632,7 +632,7 @@ function Dashboardpage() {
                   <img
                     src={profileImagePreview || (authUser?.profileImage?.url || authUser?.profileImage)}
                     alt="Profile"
-                    className="w-32 h-32 rounded-full object-cover relative z-10"
+                    className="w-full h-full rounded-full object-cover relative z-10"
                     onError={(e) => {
                       e.target.style.display = 'none';
                     }}

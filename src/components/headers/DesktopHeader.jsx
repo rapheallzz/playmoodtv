@@ -337,10 +337,10 @@ export default function DesktopHeader({ }) {
                   </div>
                   {user && (
                     <div
-                      className="w-32 h-32 rounded-full bg-white flex items-center justify-center font-semibold cursor-pointer overflow-hidden relative"
+                      className="w-10 h-10 rounded-full bg-white flex items-center justify-center font-semibold cursor-pointer overflow-hidden relative"
                       onClick={() => navigate('/dashboard')}
                     >
-                      <AiOutlineUser size={64} color="#541011" style={{ position: 'absolute' }} />
+                      <AiOutlineUser size={24} color="#541011" style={{ position: 'absolute' }} />
                       {(user.profileImage?.url || user.profileImage) && (
                         <img
                           src={user.profileImage?.url || user.profileImage}

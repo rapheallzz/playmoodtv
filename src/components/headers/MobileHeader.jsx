@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import playmood from '/PLAYMOOD_DEF.png';
 import { GiHamburgerMenu } from 'react-icons/gi';
+import { AiOutlineUser } from 'react-icons/ai';
 import { useNavigate } from 'react-router-dom';
 import profile from '/icon-profile.png';
 import settings from '/settings-icon.png';
@@ -392,7 +393,24 @@ export default function MobileHeader({ channels, set_channels }) {
                </ul>
                </div>
                   {/* Conditionally render the user profile image */}
-                  {user && <img src={`${user.profile}?${new Date().getTime()}`} alt="Profile" className="w-32 h-32 rounded-full" onClick={() => { navigate('/dashboard') }}  />}
+                  {user && (
+                    <div
+                      className="w-16 h-16 rounded-full bg-white flex items-center justify-center font-semibold cursor-pointer overflow-hidden relative"
+                      onClick={() => navigate('/dashboard')}
+                    >
+                      <AiOutlineUser size={32} color="#541011" style={{ position: 'absolute' }} />
+                      {(user.profileImage?.url || user.profileImage) && (
+                        <img
+                          src={`${user.profileImage?.url || user.profileImage}?${new Date().getTime()}`}
+                          alt="Profile"
+                          className="w-full h-full object-cover relative z-10"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                          }}
+                        />
+                      )}
+                    </div>
+                  )}
                      </div>
                        )}
 
@@ -647,8 +665,8 @@ gap: 18px;
         justify-content: space-between;
         align-items: center;
         img{
-            width: 40px;
-            height: 40px;
+            width: 64px;
+            height: 64px;
         }
         .head_section{
             h1{

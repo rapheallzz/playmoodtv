@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom';
 import { GiHamburgerMenu } from 'react-icons/gi';
+import { AiOutlineUser } from 'react-icons/ai';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout, reset } from '../../features/authSlice';
 import axios from 'axios';
@@ -462,7 +463,22 @@ export default function MobileBurger() {
               {user && (
                 <div>
                   <div className="flex gap-5 align-middle my-4">
-                    <img className="w-8 h-8" src={profile} onClick={() => navigate('/dashboard')} />
+                    <div
+                      className="w-12 h-12 rounded-full bg-white flex items-center justify-center font-semibold cursor-pointer overflow-hidden relative"
+                      onClick={() => navigate('/dashboard')}
+                    >
+                      <AiOutlineUser size={24} color="#541011" style={{ position: 'absolute' }} />
+                      {(user.profileImage?.url || user.profileImage) && (
+                        <img
+                          src={user.profileImage?.url || user.profileImage}
+                          alt="Profile"
+                          className="w-full h-full object-cover relative z-10"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                          }}
+                        />
+                      )}
+                    </div>
                     <h1 className="text-sm self-center">{user.name}</h1>
                   </div>
                 </div>

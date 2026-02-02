@@ -6,7 +6,7 @@ import axios from 'axios';
 import SideBarSlidercont from '../SideBarSlidercont';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components'; 
-import ContentModal from './ContentModal';
+import ContentModal from '../ContentModal';
 
 
 export default function SidebarSliderc() {
