@@ -16,6 +16,7 @@ const UpdateContentModal = ({ onClose, contentId }) => {
     category: '',
     thumbnail: null,
     video: null,
+    duration: 0,
   });
 
   const [loading, setLoading] = useState(false);
@@ -33,7 +34,10 @@ const UpdateContentModal = ({ onClose, contentId }) => {
         );
 
         if (response.status === 200) {
-          setFormData(response.data || {});
+          setFormData({
+            ...response.data,
+            duration: response.data.duration || 0,
+          });
         } else {
         }
       } catch (error) {
@@ -44,17 +48,35 @@ const UpdateContentModal = ({ onClose, contentId }) => {
   }, [contentId]);
 
   const handleInputChange = (e) => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: name === 'duration' ? (value === '' ? 0 : parseFloat(value)) : value,
     });
   };
 
   const handleFileChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.files[0],
-    });
+    const file = e.target.files[0];
+    if (e.target.name === 'video' && file && file.type.startsWith('video/')) {
+      const videoURL = URL.createObjectURL(file);
+      const video = document.createElement('video');
+      video.src = videoURL;
+      video.preload = 'metadata';
+      video.onloadedmetadata = () => {
+        setFormData((prev) => ({
+          ...prev,
+          video: file,
+          duration: video.duration,
+        }));
+        URL.revokeObjectURL(videoURL);
+        video.remove();
+      };
+    } else {
+      setFormData({
+        ...formData,
+        [e.target.name]: file,
+      });
+    }
   };
 
   const handleSubmit = async () => {
@@ -128,6 +150,7 @@ const UpdateContentModal = ({ onClose, contentId }) => {
         description: formData.description,
         credit: formData.credit,
         category: formData.category,
+        duration: formData.duration,
         video: currentVideo,
         thumbnail: currentThumbnail,
       };
@@ -211,6 +234,14 @@ const UpdateContentModal = ({ onClose, contentId }) => {
               accept="image/*"
               name="thumbnail"
               onChange={handleFileChange}
+            />
+
+            <label>Duration (seconds)</label>
+            <Input
+              type="number"
+              name="duration"
+              value={formData.duration || ''}
+              onChange={handleInputChange}
             />
 
             <label>Upload Video</label>

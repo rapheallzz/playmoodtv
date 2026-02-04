@@ -18,6 +18,7 @@ export const uploadFile = createAsyncThunk(
       videoMetadata,
       previewStart,
       previewEnd,
+      duration,
     } = uploadData;
 
     const { user, userToken } = thunkAPI.getState().auth;
@@ -93,6 +94,7 @@ export const uploadFile = createAsyncThunk(
         userId: user.userId,
         previewStart,
         previewEnd,
+        duration,
         languageCode: 'en-US',
         video: {
           url: videoPublicUrl || videoUploadUrl,
