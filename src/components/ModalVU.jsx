@@ -153,6 +153,7 @@ const VideoModal = ({ onClose }) => {
         videoMetadata: videoData,
         previewStart,
         previewEnd,
+        duration: videoDuration,
       })
     );
 
