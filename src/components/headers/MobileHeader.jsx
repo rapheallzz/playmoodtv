@@ -324,7 +324,7 @@ export default function MobileHeader({ channels, set_channels }) {
   <Link onClick={handleDonationClick} className="text-white  text-xs hover:text-[#541011]">
    CHANNELS
   </Link>
-  <Link onClick={handleDonationClick} className="text-white  text-xs hover:text-[#541011]" >
+  <Link to="/schedule" className="text-white  text-xs hover:text-[#541011]" >
     SCHEDULE
   </Link>
   <Link onClick={handleDonationClick} className="text-white  text-xs hover:text-[#541011]">
@@ -440,7 +440,7 @@ export default function MobileHeader({ channels, set_channels }) {
                     {location_hover ? <img src={location} onMouseEnter={handle_location_hover} /> : <img src={location_red} onMouseOut={handle_location_hover_out} />}
                     <p>Spaces</p>
                   </div>
-                  <div className="schedule_tab" onClick={handleDonationClick}>
+                  <div className="schedule_tab" onClick={() => { navigate('/schedule') }}>
                     {schedule_hover ? <img src={schedule_white} onMouseEnter={handle_schedule_hover} /> : <img src={schedule_red} onMouseOut={handle_schedule_hover_out} />}
                     <p>Schedule</p>
                   </div>

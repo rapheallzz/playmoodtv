@@ -407,7 +407,7 @@ export default function MobileBurger() {
           <Link to="/channels" className="text-white text-[0.5rem] hover:text-red-600">
             CHANNELS
           </Link>
-          <Link onClick={handleDonationClick} className="text-white text-[0.5rem] hover:text-red-600">
+          <Link to="/schedule" className="text-white text-[0.5rem] hover:text-red-600">
             SCHEDULE
           </Link>
           <Link onClick={handleDonationClick} className="text-white text-[0.5rem] hover:text-red-600">
@@ -559,7 +559,7 @@ export default function MobileBurger() {
                     )}
                     <p>Spaces</p>
                   </div>
-                  <div className="schedule_tab" onClick={handleDonationClick}>
+                  <div className="schedule_tab" onClick={() => navigate('/schedule')}>
                     {schedule_hover ? (
                       <img src={schedule_white} onMouseEnter={handle_schedule_hover} />
                     ) : (
