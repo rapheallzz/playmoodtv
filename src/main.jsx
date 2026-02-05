@@ -11,6 +11,14 @@ import { WebSocketProvider } from './context/WebSocketContext';
 import './index.css'
 import 'sweetalert2/dist/sweetalert2.min.css'
 
+if (import.meta.env.PROD) {
+  console.log = () => {};
+  console.info = () => {};
+  console.debug = () => {};
+  console.warn = () => {};
+  // Keep console.error for critical errors but maybe filter it if needed
+}
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 const apiUrl = 'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com';
 root.render(
