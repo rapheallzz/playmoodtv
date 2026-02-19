@@ -30,7 +30,7 @@ const Navigation = ({ isMobile, isDropdownOpen, toggleDropdown }) => {
   return (
     <>
       {/* Desktop Sidebar */}
-      <SidebarContainer className="hidden md:block fixed left-0 w-[300px] mt-[8%] pl-[0.5rem]">
+      <SidebarContainer className="hidden md:block fixed left-0 w-[260px] mt-[8%] pl-[0.5rem]">
         <div className="flex flex-col gap-1 text-sm md:text-base font-medium text-white">
           {navLinks.map((link) => (
             <StyledLink
@@ -47,12 +47,13 @@ const Navigation = ({ isMobile, isDropdownOpen, toggleDropdown }) => {
       {/* Mobile Dropdown Trigger and Menu */}
       {isMobile && (
         <NavContainer>
-          <div className="flex items-center pl-4 pb-2 mt-10">
+          <div className="flex items-center justify-between px-6">
             {/* Dynamic title based on current route */}
-            <h3 className="text-white text-[1.5rem] font-bold">{currentLabel}</h3>
+            <h3 className="text-white text-lg font-bold tracking-wide">{currentLabel}</h3>
             <button
               onClick={toggleDropdown}
-              className="ml-4 text-white text-2xl focus:outline-none"
+              className="text-white text-xl focus:outline-none transition-transform duration-300"
+              style={{ transform: isDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
               aria-expanded={isDropdownOpen}
               aria-label="Toggle navigation menu"
             >
@@ -61,12 +62,12 @@ const Navigation = ({ isMobile, isDropdownOpen, toggleDropdown }) => {
           </div>
           {isDropdownOpen && (
             <DropdownMenu>
-              <div className="flex flex-col gap-2 text-sm font-medium text-white bg-black bg-opacity-80 p-4 rounded-lg">
+              <div className="flex flex-col py-2">
                 {navLinks.map((link) => (
                   <StyledLink
                     key={link.to}
                     to={link.to}
-                    className={location.pathname === link.to ? 'active' : ''}
+                    className={`px-6 py-3 border-b border-white border-opacity-5 ${location.pathname === link.to ? 'active' : ''}`}
                     onClick={toggleDropdown}
                   >
                     {link.label}
@@ -87,23 +88,25 @@ const SidebarContainer = styled.div`
 
 const NavContainer = styled.div`
   position: fixed;
-  top: 60px; /* Below MobileBurger (top: 20px + 40px height) */
+  top: 80px; /* Directly below MobileHead (h-20 = 80px) */
   left: 0;
   width: 100%;
   z-index: 1000;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.85);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 10px 0;
 `;
 
 const DropdownMenu = styled.div`
   position: absolute;
-  top: 90%;
-  left: 16px;
+  top: 100%;
+  left: 0;
   z-index: 1001;
-  width: 90%;
-  max-width: 300px;
-  max-height: 50vh;
+  width: 100%;
+  max-height: 70vh;
   overflow-y: auto;
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: rgba(0, 0, 0, 0.95);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 `;
 
 const StyledLink = styled(Link)`

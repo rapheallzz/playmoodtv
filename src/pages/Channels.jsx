@@ -218,7 +218,7 @@ const Homecontent = styled.div`
    @media (max-width: 768px) {
 
    height: auto;
-  
+
   }
 `;
 
@@ -237,13 +237,13 @@ const MainContainer = styled.div`
 const ContentWrapper = styled.div`
   width: 100%;
   padding: 0 20px;
-  margin-top: ${(props) => (props.isMobile ? '240px' : '8%')};
+  margin-top: ${(props) => (props.isMobile ? '140px' : '8%')};
   margin-bottom: 0; /* No gap before footer */
   flex-grow: 1;
 
   @media (min-width: 768px) {
-    width: calc(100% - 170px);
-    margin-left: 170px;
+    width: calc(100% - 260px);
+    margin-left: 260px;
     padding: 0 30px;
   }
 `;
@@ -397,5 +397,3 @@ const Hamburger = styled.div`
     }
   }
 `;
-
-export { Homecontent };
