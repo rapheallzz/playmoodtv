@@ -254,35 +254,24 @@ const Slidercontent = React.memo(function Slidercontent({
             className="w-full h-[30%] p-2 flex flex-col gap-2"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <div className="flex px-1 py-0.5 rounded-sm bg-white justify-center items-center">
-                  <h6 className="text-black text-[0.5rem] md:text-xs text-center">
-                    By: {movieUser?.name || 'Anonymous'}
-                  </h6>
-                </div>
-                <div className="flex items-center gap-1 text-white text-xs">
-                  <FaEye className="text-white" />
+            <MetaContainer>
+              <InfoGroup>
+                <CreatorBadge>
+                  <h6>By: {movieUser?.name || 'Anonymous'}</h6>
+                </CreatorBadge>
+                <ViewStats>
+                  <FaEye />
                   <span>{views || 0}</span>
-                </div>
-              </div>
-              <div className="flex justify-end gap-2 items-center text-sm md:text-base">
-                <FaHeart
-                  className={`cursor-pointer ${isLiked ? 'text-red-600 fill-current' : 'text-gray-400'}`}
-                  onClick={handleLike}
-                />
-                <span
-                  className={`cursor-pointer ${isInWatchlist ? 'text-green-600' : 'text-gray-400'}`}
-                  onClick={handleWatchlist}
-                >
+                </ViewStats>
+              </InfoGroup>
+              <ActionButtons $isLiked={isLiked} $isInWatchlist={isInWatchlist}>
+                <FaHeart className="like-icon" onClick={handleLike} />
+                <span className="watchlist-icon" onClick={handleWatchlist}>
                   {isInWatchlist ? <FaCheck /> : <FaPlus />}
                 </span>
-                <FaPaperPlane
-                  className="text-white cursor-pointer"
-                  onClick={handleCopyLink}
-                />
-              </div>
-            </div>
+                <FaPaperPlane className="share-icon" onClick={handleCopyLink} />
+              </ActionButtons>
+            </MetaContainer>
             <h4 className="text-white text-sm md:text-base font-semibold" style={customStyle || {}}>
               {titleSpliced}
             </h4>
@@ -361,6 +350,83 @@ const CopyModal = styled.div`
     border-radius: 4px;
     cursor: pointer;
     font-size: 12px;
+  }
+`;
+
+const MetaContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const InfoGroup = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+const CreatorBadge = styled.div`
+  background: white;
+  padding: 2px 4px;
+  border-radius: 2px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  h6 {
+    color: black;
+    font-size: 0.5rem;
+    text-align: center;
+    margin: 0;
+
+    @media (min-width: 768px) {
+      font-size: 0.75rem;
+    }
+  }
+`;
+
+const ViewStats = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: white;
+  font-size: 0.75rem;
+`;
+
+const ActionButtons = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+
+  @media (min-width: 768px) {
+    font-size: 1rem;
+    gap: 12px;
+  }
+
+  svg, span {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+
+  .like-icon {
+    color: ${props => props.$isLiked ? '#dc2626' : '#9ca3af'};
+    fill: ${props => props.$isLiked ? 'currentColor' : 'none'};
+  }
+
+  .watchlist-icon {
+    color: ${props => props.$isInWatchlist ? '#16a34a' : '#9ca3af'};
+    display: flex;
+    align-items: center;
+  }
+
+  .share-icon {
+    color: white;
   }
 `;
 
