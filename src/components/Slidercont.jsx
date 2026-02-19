@@ -218,10 +218,12 @@ const Slidercontent = React.memo(function Slidercontent({
           </div>
           <div className="absolute bottom-0 w-full bg-black bg-opacity-50 flex justify-between p-2 md:p-3 gap-2.5">
             <h3
-              className="text-white text-xs md:text-base font-normal w-[80%] whitespace-nowrap overflow-hidden text-overflow-ellipsis"
+              className="text-white text-xs md:text-base font-normal w-[80%]"
               style={customStyle || {}}
               title={title}
             >
+              {/* ?<div className="absolute bottom-0 w-full bg-black bg-opacity-50 flex justify-between p-2 md:p-3 gap-2.5">
+            <h3 className="text-white text-xs md:text-base font-normal w-[80%]" style={customStyle || {}}> */}
               {title}
             </h3>
             {isMobile && !hover && !isVideoPlaying && (
