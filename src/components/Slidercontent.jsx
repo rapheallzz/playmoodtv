@@ -63,7 +63,7 @@ const Slidercontent = React.memo(function Slidercontent({ img, title, movie, id,
         <div className="flex flex-col justify-between w-full h-full bg-black">
           <div className="w-full h-[20%] bg-black"></div>
           <video playsInline loop autoPlay muted className="w-full h-[45%] object-cover">
-            <source src={movie} />
+            <source src={movie?.shortPreviewUrl || movie?.video || movie} />
           </video>
           <div className="flex flex-col w-full h-[35%] bg-black p-5">
             <div className="flex justify-end items-center">

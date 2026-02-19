@@ -259,7 +259,13 @@ const Slidercontent = React.memo(function Slidercontent({
             onClick={handleVideoClick}
           >
             <source
-              src={movie ? `${movie}#t=${previewTimestamps.start},${previewTimestamps.end}` : ''}
+              src={
+                movie?.shortPreviewUrl
+                  ? movie.shortPreviewUrl
+                  : movie
+                    ? (typeof movie === 'string' ? `${movie}#t=${previewTimestamps.start},${previewTimestamps.end}` : `${movie.video}#t=${previewTimestamps.start},${previewTimestamps.end}`)
+                    : ''
+              }
               type="video/mp4"
             />
           </video>
