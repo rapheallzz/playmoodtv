@@ -258,16 +258,16 @@ const Slidercontent = React.memo(function Slidercontent({
           >
             <MetaContainer>
               <InfoGroup>
-                <ViewStats>
-                  <FaEye />
-                  <span>{views || 0}</span>
-                </ViewStats>
                 <CreatorBadge>
                   <h6 title={movieUser?.username || movieUser?.name || movie?.username || 'Anonymous'}>
                     <span className="by-prefix">By: </span>
                     {movieUser?.username || movieUser?.name || movie?.username || 'Anonymous'}
                   </h6>
                 </CreatorBadge>
+                <ViewStats>
+                  <FaEye />
+                  <span>{views || 0}</span>
+                </ViewStats>
               </InfoGroup>
               <ActionButtons $isLiked={isLiked} $isInWatchlist={isInWatchlist}>
                 <FaHeart className="like-icon" onClick={handleLike} title={isLiked ? "Unlike" : "Like"} />
