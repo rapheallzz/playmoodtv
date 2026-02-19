@@ -452,20 +452,20 @@ const VideoCategoryResponsive = styled(VideoCategory)`
 `;
 
 const VideoCategoryHighlights = styled(VideoCategory)`
-  height: 320px;
+  height: 450px;
   min-height: 220px;
-  padding-top: 10px;
+  padding-top: 20px;
   padding-bottom: 40px;
 
   @media screen and (max-width: 768px) {
-    height: 180px;
+    height: 220px;
     min-height: 180px;
   }
 
   @media screen and (max-width: 495px) {
-    height: 180px;
+    height: 200px;
     min-height: 150px;
-    padding-top: 10px;
+    padding-top: 20px;
     width: 100%;
     margin: 0;
     padding: 0 10px;
@@ -478,10 +478,11 @@ const VideoCategoryCircle = styled.div`
   margin: 20px;
   display: flex;
   flex-direction: column;
-  height:300px;
+  height:350px;
   min-height: 220px;
   box-sizing: border-box;
   z-index: 210;
+  padding-top: 20px;
 
   @media screen and (max-width: 768px) {
     min-height: 180px;

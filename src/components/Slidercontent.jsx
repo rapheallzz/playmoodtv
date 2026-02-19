@@ -34,8 +34,8 @@ const Slidercontent = React.memo(function Slidercontent({ img, title, movie, id,
         return;
       }
 
-      const userId = user.id; 
-      const contentId = id; 
+      const userId = user.id;
+      const contentId = id;
 
       // Dispatch the likeVideo action
       await dispatch(likeVideo({ userId, videoId: contentId }));
@@ -45,7 +45,8 @@ const Slidercontent = React.memo(function Slidercontent({ img, title, movie, id,
 
   return (
     <div
-      className="relative flex flex-col justify-between w-full h-full cursor-pointer"
+      data-testid="slider-content-item"
+      className="relative flex flex-col overflow-hidden justify-between w-full h-full cursor-pointer"
       onMouseEnter={handleHover}
       onMouseLeave={handleHoverOut}
     >
@@ -59,12 +60,12 @@ const Slidercontent = React.memo(function Slidercontent({ img, title, movie, id,
         </div>
       )}
       {hover ? (
-        <div className="flex flex-col justify-between w-full h-full">
-          <div className="w-full h-20 bg-black"></div>
-          <video playsInline loop autoPlay muted className="w-full h-36 object-cover">
+        <div className="flex flex-col justify-between w-full h-full bg-black">
+          <div className="w-full h-[20%] bg-black"></div>
+          <video playsInline loop autoPlay muted className="w-full h-[45%] object-cover">
             <source src={movie} />
           </video>
-          <div className="flex flex-col  w-full h-44 bg-black p-5">
+          <div className="flex flex-col w-full h-[35%] bg-black p-5">
             <div className="flex justify-end items-center">
               <img src={whiteheart} alt="like" className="w-5 h-5" onClick={handleLikeClick} />
               <div className="w-2"></div>
@@ -79,7 +80,7 @@ const Slidercontent = React.memo(function Slidercontent({ img, title, movie, id,
       )}
     </div>
   );
-  
+
 });
 
 export default Slidercontent;

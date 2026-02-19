@@ -192,6 +192,7 @@ const Slidercontent = React.memo(function Slidercontent({
 
   return (
     <div
+      data-testid="slider-item"
       className="relative overflow-hidden w-full h-full md:mr-0.5"
       onMouseEnter={handleHover}
       onMouseLeave={handleHoverOut}
@@ -237,7 +238,7 @@ const Slidercontent = React.memo(function Slidercontent({
             loop
             autoPlay={isVideoPlaying}
             muted
-            className="w-full h-auto object-cover cursor-pointer"
+            className="w-full h-[70%] object-cover cursor-pointer"
           >
             <source
               src={
@@ -248,7 +249,7 @@ const Slidercontent = React.memo(function Slidercontent({
             />
           </video>
           <div
-            className="w-full p-2 flex flex-col gap-2"
+            className="w-full h-[30%] p-2 flex flex-col gap-2"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-center">

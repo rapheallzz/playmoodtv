@@ -203,7 +203,7 @@ const Slidercontent = memo(({ img, title, movie, views, desc, customStyle, progr
             playsInline
             loop
             muted
-            className="w-full object-cover h-36 cursor-pointer"
+            className="w-full object-cover h-[70%] cursor-pointer"
             src={movie?.video ? `${movie.video}#t=${previewTimestamps.start},${previewTimestamps.end}` : ''}
             onClick={onVideoClick}
             aria-label={`Preview for ${title}`}

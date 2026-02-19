@@ -7,6 +7,12 @@ const pulse = keyframes`
   100% { transform: translateY(-50%) scale(1); }
 `;
 
+const breathe = keyframes`
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+`;
+
 export const Homecontent = styled.div`
   min-height: 100vh;
   width: 100%;
@@ -1446,6 +1452,11 @@ export const HighlightCircle = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    animation: ${breathe} 1.5s infinite;
+  }
 
   img {
     width: 56px;
@@ -1853,6 +1864,7 @@ export const ActionsContainer = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 15px;
+  width: 80px;
 `;
 
 export const ViewerActionButton = styled.button`
@@ -1894,13 +1906,13 @@ export const NavigationArrow = styled.button`
   z-index: 10;
 
   &.up-arrow {
-    bottom: 350px;
-    right: 20px;
+    bottom: 360px;
+    right: 40px;
   }
 
   &.down-arrow {
     bottom: 300px;
-    right: 20px;
+    right: 40px;
   }
 
   svg {
