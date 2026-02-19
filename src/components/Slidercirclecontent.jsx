@@ -4,7 +4,13 @@ import { FaPaperPlane, FaHeart, FaPlus, FaCheck } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import WelcomePopup from '../components/Welcomepop';
 import { likeContent, unlikeContent, addToWatchlist, removeFromWatchlist } from '../features/authSlice';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
+
+const breathe = keyframes`
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+`;
 
 const Slidercirclecontent = React.memo(function Slidercirclecontent({
   img,
@@ -214,6 +220,12 @@ const CircleContainer = styled.div`
   }
   margin: 0 auto;
   position: relative;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    animation: ${breathe} 1.5s infinite;
+    z-index: 10;
+  }
 `;
 
 const CopyModal = styled.div`

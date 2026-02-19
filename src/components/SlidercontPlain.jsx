@@ -248,15 +248,14 @@ const Slidercontent = React.memo(function Slidercontent({
           </div>
         </>
       ) : (
-        <div className="flex flex-col justify-between h-full w-full">
-          <div className="h-20 w-full bg-black"></div>
+        <div className="flex flex-col justify-between h-full w-full bg-black">
           <video
             ref={videoRef}
             playsInline
             loop
             autoPlay={isVideoPlaying}
             muted
-            className="w-full object-cover h-36 cursor-pointer"
+            className="w-full object-cover h-[70%] cursor-pointer"
             onClick={handleVideoClick}
           >
             <source
@@ -265,7 +264,7 @@ const Slidercontent = React.memo(function Slidercontent({
             />
           </video>
           <div
-            className="h-52 w-full bg-black p-2 flex flex-col gap-2 mb-8"
+            className="h-[30%] w-full bg-black p-2 flex flex-col gap-2"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between align-middle">
