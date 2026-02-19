@@ -182,8 +182,6 @@ const Slidercontent = React.memo(function Slidercontent({
     setCopyModal({ show: false, message: '', isError: false });
   };
 
-  const titleSpliced = title?.slice(0, 30) + '...';
-  const description = desc?.slice(0, 100) + '...';
   const isLiked = user?.like?.includes(movie?._id) || false;
   const isInWatchlist = user?.watchlist?.includes(movie?._id) || false;
   const movieUser = movie?.user;
@@ -219,8 +217,12 @@ const Slidercontent = React.memo(function Slidercontent({
             />
           </div>
           <div className="absolute bottom-0 w-full bg-black bg-opacity-50 flex justify-between p-2 md:p-3 gap-2.5">
-            <h3 className="text-white text-xs md:text-base font-normal w-[80%]" style={customStyle || {}}>
-              {titleSpliced}
+            <h3
+              className="text-white text-xs md:text-base font-normal w-[80%] whitespace-nowrap overflow-hidden text-overflow-ellipsis"
+              style={customStyle || {}}
+              title={title}
+            >
+              {title}
             </h3>
             {isMobile && !hover && !isVideoPlaying && (
               <HiDotsVertical
@@ -238,7 +240,7 @@ const Slidercontent = React.memo(function Slidercontent({
             loop
             autoPlay={isVideoPlaying}
             muted
-            className="w-full h-[70%] object-cover cursor-pointer"
+            className="w-full h-[65%] object-cover cursor-pointer"
           >
             <source
               src={
@@ -251,31 +253,32 @@ const Slidercontent = React.memo(function Slidercontent({
             />
           </video>
           <div
-            className="w-full h-[30%] p-2 flex flex-col gap-2"
+            className="w-full h-[35%] p-2 flex flex-col gap-1.5"
             onClick={(e) => e.stopPropagation()}
           >
             <MetaContainer>
               <InfoGroup>
-                <CreatorBadge>
-                  <h6>By: {movieUser?.name || 'Anonymous'}</h6>
-                </CreatorBadge>
                 <ViewStats>
                   <FaEye />
                   <span>{views || 0}</span>
                 </ViewStats>
+                <CreatorBadge>
+                  <h6 title={movieUser?.username || movieUser?.name || movie?.username || 'Anonymous'}>
+                    <span className="by-prefix">By: </span>
+                    {movieUser?.username || movieUser?.name || movie?.username || 'Anonymous'}
+                  </h6>
+                </CreatorBadge>
               </InfoGroup>
               <ActionButtons $isLiked={isLiked} $isInWatchlist={isInWatchlist}>
-                <FaHeart className="like-icon" onClick={handleLike} />
+                <FaHeart className="like-icon" onClick={handleLike} title={isLiked ? "Unlike" : "Like"} />
                 <span className="watchlist-icon" onClick={handleWatchlist}>
                   {isInWatchlist ? <FaCheck /> : <FaPlus />}
                 </span>
                 <FaPaperPlane className="share-icon" onClick={handleCopyLink} />
               </ActionButtons>
             </MetaContainer>
-            <h4 className="text-white text-sm md:text-base font-semibold" style={customStyle || {}}>
-              {titleSpliced}
-            </h4>
-            <p className="text-white text-xs md:text-sm font-light">{description}</p>
+            <Title style={customStyle || {}}>{title}</Title>
+            <Description>{desc}</Description>
             {progress > 0 && (
               <div className="w-full bg-gray-700 rounded-full h-2">
                 <div
@@ -357,30 +360,41 @@ const MetaContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
+  overflow: hidden;
+  gap: 4px;
 `;
 
 const InfoGroup = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
 `;
 
 const CreatorBadge = styled.div`
-  background: white;
-  padding: 2px 4px;
-  border-radius: 2px;
   display: flex;
-  justify-content: center;
   align-items: center;
+  min-width: 0;
+  flex: 1;
 
   h6 {
-    color: black;
-    font-size: 0.5rem;
-    text-align: center;
+    color: #ccc;
+    font-size: 0.6rem;
     margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 
     @media (min-width: 768px) {
       font-size: 0.75rem;
+    }
+
+    .by-prefix {
+      @media (max-width: 480px) {
+        display: none;
+      }
     }
   }
 `;
@@ -388,21 +402,40 @@ const CreatorBadge = styled.div`
 const ViewStats = styled.div`
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
   color: white;
-  font-size: 0.75rem;
+  font-size: 0.6rem;
+  flex-shrink: 0;
+
+  svg {
+    font-size: 0.65rem;
+    @media (min-width: 768px) {
+      font-size: 0.8rem;
+    }
+  }
+
+  @media (min-width: 768px) {
+    font-size: 0.75rem;
+    gap: 4px;
+  }
 `;
 
 const ActionButtons = styled.div`
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  gap: 8px;
-  font-size: 0.875rem;
+  gap: 4px;
+  flex-shrink: 0;
+
+  svg, span {
+    font-size: 0.7rem;
+    @media (min-width: 768px) {
+      font-size: 0.85rem;
+    }
+  }
 
   @media (min-width: 768px) {
-    font-size: 1rem;
-    gap: 12px;
+    gap: 10px;
   }
 
   svg, span {
@@ -416,7 +449,7 @@ const ActionButtons = styled.div`
 
   .like-icon {
     color: ${props => props.$isLiked ? '#dc2626' : '#9ca3af'};
-    fill: ${props => props.$isLiked ? 'currentColor' : 'none'};
+    fill: currentColor;
   }
 
   .watchlist-icon {
@@ -427,6 +460,36 @@ const ActionButtons = styled.div`
 
   .share-icon {
     color: white;
+  }
+`;
+
+const Title = styled.h4`
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  @media (min-width: 768px) {
+    font-size: 1rem;
+  }
+`;
+
+const Description = styled.p`
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 300;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.2;
+
+  @media (min-width: 768px) {
+    font-size: 0.8rem;
   }
 `;
 

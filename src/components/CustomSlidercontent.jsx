@@ -152,8 +152,6 @@ const Slidercontent = memo(({ img, title, movie, views, desc, customStyle, progr
     setTimeout(() => setCopyModal({ show: false, message: '', isError: false }), 3000);
   };
 
-  const titleSpliced = title?.slice(0, 30) + (title?.length > 30 ? '...' : '');
-  const description = desc?.slice(0, 100) + (desc?.length > 100 ? '...' : '');
   const isLiked = user?.like?.includes(movie?._id) || false;
   const isInWatchlist = user?.watchlist?.includes(movie?._id) || false;
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
@@ -186,7 +184,7 @@ const Slidercontent = memo(({ img, title, movie, views, desc, customStyle, progr
             placeholderSrc="/placeholder.jpg"
           />
           <Overlay>
-            <Title style={customStyle}>{titleSpliced}</Title>
+            <Title style={customStyle} title={title}>{title}</Title>
             {isMobile && (
               <HiDotsVertical
                 className="text-white w-1/5 h-10 cursor-pointer"
@@ -242,8 +240,8 @@ const Slidercontent = memo(({ img, title, movie, views, desc, customStyle, progr
                 aria-label="Share link"
               />
             </Actions>
-            <Title style={customStyle}>{titleSpliced}</Title>
-            <Description>{description}</Description>
+            <Title style={customStyle} title={title}>{title}</Title>
+            <Description>{desc}</Description>
             {progress > 0 && (
               <ProgressBar>
                 <Progress style={{ width: `${(progress / 300) * 100}%` }} />
@@ -362,12 +360,19 @@ const Title = styled.h4`
   font-size: 1rem;
   font-weight: 600;
   margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
 const Description = styled.p`
   color: #fff;
   font-size: 0.8rem;
   margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 `;
 
 const ProgressBar = styled.div`

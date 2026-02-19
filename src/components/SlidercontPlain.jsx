@@ -199,8 +199,6 @@ const Slidercontent = React.memo(function Slidercontent({
     setShowPopup(!showPopup);
   };
 
-  const titleSpliced = title?.slice(0, 30) + (title?.length > 30 ? '...' : '');
-  const description = desc?.slice(0, 100) + (desc?.length > 100 ? '...' : '');
   const isLiked = user?.like?.includes(id) || false;
   const isInWatchlist = user?.watchlist?.includes(id) || false;
   const movieUser = movie?.user || { name: 'Anonymous' };
@@ -236,8 +234,12 @@ const Slidercontent = React.memo(function Slidercontent({
             />
           </div>
           <div className="absolute bottom-0 w-full bg-black bg-opacity-50 flex justify-between p-3 gap-2.5">
-            <h3 className="text-white text-base font-normal leading-6 w-[80%]" style={customStyle || {}}>
-              {titleSpliced}
+            <h3
+              className="text-white text-base font-normal leading-6 w-[80%] truncate"
+              style={customStyle || {}}
+              title={title}
+            >
+              {title}
             </h3>
             {isMobile && (
               <HiDotsVertical
@@ -302,10 +304,23 @@ const Slidercontent = React.memo(function Slidercontent({
                 />
               </div>
             </div>
-            <h4 className="text-white text-sm font-semibold" style={customStyle || {}}>
-              {titleSpliced}
+            <h4
+              className="text-white text-sm font-semibold truncate"
+              style={customStyle || {}}
+              title={title}
+            >
+              {title}
             </h4>
-            <p className="text-white text-xs font-light">{description}</p>
+            <p
+              className="text-white text-xs font-light overflow-hidden"
+              style={{
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical'
+              }}
+            >
+              {desc}
+            </p>
             {progress > 0 && (
               <div className="w-full bg-gray-700 rounded-full h-2">
                 <div
