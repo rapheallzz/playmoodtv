@@ -188,6 +188,11 @@ const Slidercontent = React.memo(function Slidercontent({
 
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
 
+  const truncateTitle = (str, maxLength = 20) => {
+    if (!str) return '';
+    return str.length > maxLength ? str.substring(0, maxLength) + '...' : str;
+  };
+
   return (
     <div
       data-testid="slider-item"
@@ -222,9 +227,7 @@ const Slidercontent = React.memo(function Slidercontent({
               style={customStyle || {}}
               title={title}
             >
-              {/* ?<div className="absolute bottom-0 w-full bg-black bg-opacity-50 flex justify-between p-2 md:p-3 gap-2.5">
-            <h3 className="text-white text-xs md:text-base font-normal w-[80%]" style={customStyle || {}}> */}
-              {title}
+              {truncateTitle(title, isMobile ? 15 : 20)}
             </h3>
             {isMobile && !hover && !isVideoPlaying && (
               <HiDotsVertical
@@ -470,9 +473,7 @@ const Title = styled.h4`
   font-size: 0.8rem;
   font-weight: 600;
   margin: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  word-break: break-word;
 
   @media (min-width: 768px) {
     font-size: 1rem;
