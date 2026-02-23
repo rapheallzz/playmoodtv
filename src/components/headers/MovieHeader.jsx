@@ -35,12 +35,14 @@ import { useSelector, useDispatch } from 'react-redux'
 import { logout, reset } from '.././../features/authSlice'
 import axios from 'axios';
 import BASE_API_URL from '../../apiConfig';
+import WelcomePopup from '../Welcomepop';
 
 export default function MovieHeader({ }) {
   const [dropbar, set_drop_bar] = useState(false);
   const navigate = useNavigate();
   const [top, set_top] = useState(false);
   const [settings_hover, set_settings_hovered] = useState(true);
+  const [showWelcomePopup, setShowWelcomePopup] = useState(false);
 
   const dispatch = useDispatch()
   const { user } = useSelector((state) => state.auth)
@@ -316,6 +318,11 @@ export default function MovieHeader({ }) {
 
           </div>
 
+      <WelcomePopup
+        showPopup={showWelcomePopup}
+        onClose={() => setShowWelcomePopup(false)}
+      />
+
          <Side>
 
  
@@ -394,7 +401,13 @@ export default function MovieHeader({ }) {
                     {home_hover ? <img src={home} onMouseEnter={handle_home_hover} /> : <img src={home_red} onMouseOut={handle_home_hover_out} />}
                     <p>Home</p>
                   </div>
-                  <div className="recommended_tab" onClick={() => { navigate('/recommended') }}>
+                  <div className="recommended_tab" onClick={() => {
+                    if (user) {
+                      navigate('/recommended');
+                    } else {
+                      setShowWelcomePopup(true);
+                    }
+                  }}>
                     {thumbs_hover ? <img src={thumbs} onMouseEnter={handle_thumbs_hover} /> : <img src={thumbs_red} onMouseOut={handle_thumbs_hover_out} />}
                     <p>Recommended</p>
                   </div>
@@ -436,8 +449,14 @@ export default function MovieHeader({ }) {
                 {diariesToggled && <SidebarSlider />}
                 <h3 onClick={handleSpacesToggle}>Spaces</h3>
                 {spacesToggled && <SidebarSlider />}
-                <h3 onClick={handleRecommendationsToggle}>Recommendations for you</h3>
-                {recommendationsToggled && <SidebarSlider />}
+                <h3 onClick={() => {
+                  if (user) {
+                    handleRecommendationsToggle();
+                  } else {
+                    setShowWelcomePopup(true);
+                  }
+                }}>Recommendations for you</h3>
+                {user && recommendationsToggled && <SidebarSlider />}
                 <h3 onClick={handleInterviewsToggle}>Interviews</h3>
                 {interviewsToggled && <SidebarSlider />}
                 <h3 onClick={handleFashionShowsToggle}>Fashion Shows Stories</h3>

@@ -21,6 +21,7 @@ import SliderCamera from '../sidebarSliders/SliderCameras';
 import SliderSoon from '../sidebarSliders/SliderSoon';
 import SliderTeens from '../sidebarSliders/SliderTeens';
 import SliderOnly from '../sidebarSliders/SliderOnly';
+import WelcomePopup from '../Welcomepop';
 
 // Import your images
 import playmood from '/PLAYMOOD_DEF.png';
@@ -61,6 +62,7 @@ export default function MobileBurger() {
   const [data, setData] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mountcategory, set_mountcategory] = useState(false);
+  const [showWelcomePopup, setShowWelcomePopup] = useState(false);
 
   // State for category toggles
   const [top10Toggled, setTop10Toggled] = useState(false);
@@ -427,6 +429,10 @@ export default function MobileBurger() {
         onClose={handleDonationClose}
         onSubmit={handleSubscriptionSubmit}
       />
+      <WelcomePopup
+        showPopup={showWelcomePopup}
+        onClose={() => setShowWelcomePopup(false)}
+      />
 
       <Side>
         {sidebarOpen ? (
@@ -527,7 +533,13 @@ export default function MobileBurger() {
                     )}
                     <p>Home</p>
                   </div>
-                  <div className="recommended_tab" onClick={() => navigate('/recommended')}>
+                  <div className="recommended_tab" onClick={() => {
+                    if (user) {
+                      navigate('/recommended');
+                    } else {
+                      setShowWelcomePopup(true);
+                    }
+                  }}>
                     {thumbs_hover ? (
                       <img src={thumbs} onMouseEnter={handle_thumbs_hover} />
                     ) : (
@@ -597,8 +609,14 @@ export default function MobileBurger() {
                   {diariesToggled && <SliderDairies />}
                   <h3 onClick={handleSpacesToggle}>Spaces</h3>
                   {spacesToggled && <SliderSpace />}
-                  <h3 onClick={handleRecommendationsToggle}>Recommendations for you</h3>
-                  {recommendationsToggled && <SliderRecommended />}
+                  <h3 onClick={() => {
+                    if (user) {
+                      handleRecommendationsToggle();
+                    } else {
+                      setShowWelcomePopup(true);
+                    }
+                  }}>Recommendations for you</h3>
+                  {user && recommendationsToggled && <SliderRecommended />}
                   <h3 onClick={handleInterviewsToggle}>Interviews</h3>
                   {interviewsToggled && <SliderInterview />}
                   <h3 onClick={handleFashionShowsToggle}>Fashion Shows Stories</h3>

@@ -43,6 +43,7 @@ const PopupContainer = styled.div`
 
 const PopupContent = styled.div`
   text-align: center;
+  color: black;
 `;
 
 const CloseButton = styled.span`

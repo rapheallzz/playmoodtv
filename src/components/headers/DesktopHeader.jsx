@@ -37,6 +37,7 @@ import { FaPlus } from 'react-icons/fa';
 import { AiOutlineUser } from 'react-icons/ai';
 import { VideoModal } from '../ModalVU';
 import CreatorApplicationModal from '../modals/CreatorApplicationModal';
+import WelcomePopup from '../Welcomepop';
 
 // sliders
 
@@ -63,6 +64,7 @@ export default function DesktopHeader({ }) {
   const [showDonationModal, setShowDonationModal] = useState(false);
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [showCreatorApplicationModal, setShowCreatorApplicationModal] = useState(false);
+  const [showWelcomePopup, setShowWelcomePopup] = useState(false);
 
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
@@ -294,6 +296,10 @@ export default function DesktopHeader({ }) {
           />
           {showVideoModal && <VideoModal onClose={() => setShowVideoModal(false)} />}
           {showCreatorApplicationModal && <CreatorApplicationModal onClose={() => setShowCreatorApplicationModal(false)} />}
+          <WelcomePopup
+            showPopup={showWelcomePopup}
+            onClose={() => setShowWelcomePopup(false)}
+          />
         </nav>
         <Side>
           {sidebar ? (
@@ -372,7 +378,13 @@ export default function DesktopHeader({ }) {
                     {home_hover ? <img src={home} onMouseEnter={handle_home_hover} /> : <img src={home_red} onMouseOut={handle_home_hover_out} />}
                     <p>Home</p>
                   </div>
-                  <div className="recommended_tab" onClick={() => { navigate('/recommended'); }}>
+                  <div className="recommended_tab" onClick={() => {
+                    if (user) {
+                      navigate('/recommended');
+                    } else {
+                      setShowWelcomePopup(true);
+                    }
+                  }}>
                     {thumbs_hover ? <img src={thumbs} onMouseEnter={handle_thumbs_hover} /> : <img src={thumbs_red} onMouseOut={handle_thumbs_hover_out} />}
                     <p>Recommended</p>
                   </div>
@@ -414,8 +426,14 @@ export default function DesktopHeader({ }) {
                   {openCategory === 'diaries' && <SliderDairies />}
                   <h3 onClick={() => handleToggle('spaces')}>Spaces</h3>
                   {openCategory === 'spaces' && <SliderSpace />}
-                  <h3 onClick={() => handleToggle('recommendations')}>Recommendations for you</h3>
-                  {openCategory === 'recommendations' && <SliderRecommended />}
+                  <h3 onClick={() => {
+                    if (user) {
+                      handleToggle('recommendations');
+                    } else {
+                      setShowWelcomePopup(true);
+                    }
+                  }}>Recommendations for you</h3>
+                  {user && openCategory === 'recommendations' && <SliderRecommended />}
                   <h3 onClick={() => handleToggle('interviews')}>Interviews</h3>
                   {openCategory === 'interviews' && <SliderInterview />}
                   <h3 onClick={() => handleToggle('fashionShows')}>Fashion Shows Stories</h3>

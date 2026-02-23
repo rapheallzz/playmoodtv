@@ -39,6 +39,7 @@ import Slidertop10 from '../sidebarSliders/SliderTop10';
 import SliderNew from '../sidebarSliders/SliderNew';
 import SliderChannel from '../sidebarSliders/SliderChannels';
 import SliderDairies from '../sidebarSliders/SliderDaries';
+import WelcomePopup from '../Welcomepop';
 
 export default function MobileHeader({ channels, set_channels }) {
   const [dropbar, set_drop_bar] = useState(false);
@@ -46,6 +47,7 @@ export default function MobileHeader({ channels, set_channels }) {
   const [top, set_top] = useState(false);
   const [settings_hover, set_settings_hovered] = useState(true);
   const [showDonationModal, setShowDonationModal] = useState(false);
+  const [showWelcomePopup, setShowWelcomePopup] = useState(false);
 
   const dispatch = useDispatch()
   const { user } = useSelector((state) => state.auth)
@@ -60,11 +62,11 @@ export default function MobileHeader({ channels, set_channels }) {
     setShowDonationModal(false);
   };
 
-  
-  
+
+
   const handleSubscriptionSubmit = (event) => {
     event.preventDefault();
-    setShowDonationModal(false); 
+    setShowDonationModal(false);
   };
 
 
@@ -231,59 +233,59 @@ export default function MobileHeader({ channels, set_channels }) {
   const handleTop10Toggle = () => {
     setTop10Toggled(!top10Toggled);
   };
-  
+
   const handleNewPlaymoodToggle = () => {
     setNewPlaymoodToggled(!newPlaymoodToggled);
   };
-  
+
   const handleDiariesToggle = () => {
     setDiariesToggled(!diariesToggled);
   };
-  
+
   const handleChannelsToggle = () => {
     setChannelsToggled(!channelsToggled);
   };
-  
+
   const handleSpacesToggle = () => {
     setSpacesToggled(!spacesToggled);
   };
-  
+
   const handleRecommendationsToggle = () => {
     setRecommendationsToggled(!recommendationsToggled);
   };
-  
+
   const handleInterviewsToggle = () => {
     setInterviewsToggled(!interviewsToggled);
   };
-  
+
   const handleFashionShowsToggle = () => {
     setFashionShowsToggled(!fashionShowsToggled);
   };
-  
+
   const handleDocumentariesToggle = () => {
     setDocumentariesToggled(!documentariesToggled);
   };
-  
+
   const handleBehindTheCamerasToggle = () => {
     setBehindTheCamerasToggled(!behindTheCamerasToggled);
   };
-  
+
   const handleSoonInPlaymoodToggle = () => {
     setSoonInPlaymoodToggled(!soonInPlaymoodToggled);
   };
-  
+
   const handleTeenToggle = () => {
     setTeenToggled(!teenToggled);
   };
-  
+
   const handleBestInFashionToggle = () => {
     setBestInFashionToggled(!bestInFashionToggled);
   };
-  
+
   const handleOnlyInPlaymoodToggle = () => {
     setOnlyInPlaymoodToggled(!onlyInPlaymoodToggled);
   };
-  
+
   const handleWatchlistToggle = () => {
     setWatchlistToggled(!watchlistToggled);
   };
@@ -313,7 +315,7 @@ export default function MobileHeader({ channels, set_channels }) {
   >
     <img src={profile} alt="Profile Icon" className="w-6 h-6" />
   </div>
-      
+
 </div>
 
 
@@ -340,18 +342,22 @@ export default function MobileHeader({ channels, set_channels }) {
 
 
 </div>
-     
-             <DonationModal 
-             isOpen={showDonationModal} 
-             onClose={handleDonationClose} 
-             onSubmit={handleSubscriptionSubmit} 
+
+             <DonationModal
+             isOpen={showDonationModal}
+             onClose={handleDonationClose}
+             onSubmit={handleSubscriptionSubmit}
            />
+           <WelcomePopup
+            showPopup={showWelcomePopup}
+            onClose={() => setShowWelcomePopup(false)}
+          />
 
         <Side>
 
           {sidebarOpen ? (
             <SettingsAndDropdown>
-              
+
                 {window.innerWidth <= 768 ? (
                   <GiHamburgerMenu size={30} color="white" onClick={toggleSidebar}/>
                 ) : (
@@ -383,7 +389,7 @@ export default function MobileHeader({ channels, set_channels }) {
          <div className="user_and_settings" >
             <div className="head_section">
               <h1>{user.name}</h1>
-             
+
                <ul>
                 <li>
                  <button className='lgt_btn' onClick={onLogout}>
@@ -424,7 +430,13 @@ export default function MobileHeader({ channels, set_channels }) {
                     {home_hover ? <img src={home} onMouseEnter={handle_home_hover} /> : <img src={home_red} onMouseOut={handle_home_hover_out} />}
                     <p>Home</p>
                   </div>
-                  <div className="recommended_tab" onClick={() => { navigate('/recommended') }}>
+                  <div className="recommended_tab" onClick={() => {
+                    if (user) {
+                      navigate('/recommended');
+                    } else {
+                      setShowWelcomePopup(true);
+                    }
+                  }}>
                     {thumbs_hover ? <img src={thumbs} onMouseEnter={handle_thumbs_hover} /> : <img src={thumbs_red} onMouseOut={handle_thumbs_hover_out} />}
                     <p>Recommended</p>
                   </div>
@@ -466,8 +478,14 @@ export default function MobileHeader({ channels, set_channels }) {
                 {diariesToggled && < SliderDairies />}
                 <h3 onClick={handleSpacesToggle}>Spaces</h3>
                 {spacesToggled && < SliderSpace />}
-                <h3 onClick={handleRecommendationsToggle}>Recommendations for you</h3>
-                {recommendationsToggled && <SidebarSliderc />}
+                <h3 onClick={() => {
+                  if (user) {
+                    handleRecommendationsToggle();
+                  } else {
+                    setShowWelcomePopup(true);
+                  }
+                }}>Recommendations for you</h3>
+                {user && recommendationsToggled && <SidebarSliderc />}
                 <h3 onClick={handleInterviewsToggle}>Interviews</h3>
                 {interviewsToggled && <SidebarSliderc />}
                 <h3 onClick={handleFashionShowsToggle}>Fashion Shows Stories</h3>
@@ -489,7 +507,7 @@ export default function MobileHeader({ channels, set_channels }) {
                 <h3 onClick={handleWatchlistToggle}>Watchlist</h3>
                 {watchlistToggled && <SidebarSliderc />}
               </div>
-               
+
               )}
             </SidebarClicked>
           )}
@@ -507,10 +525,10 @@ const MobileHead = styled.div`
     color: white;
     position: fixed;
     top: 0px;
-    left: 0px; 
+    left: 0px;
     z-index: 1001;
 `
-const MobileNav = styled.div` 
+const MobileNav = styled.div`
     width:100%;
     height: fit-content;
     justify-content: center;
@@ -518,7 +536,7 @@ const MobileNav = styled.div`
     align-items: center;
     padding:5px 5px 5px 60px;
 
-   
+
 `
 
 const MobileNavi = styled.div`h
@@ -551,7 +569,7 @@ const Logo = styled.div`
     display: flex;
     align-items: center;
     justify-content: Space-between;
-    gap: 10px; 
+    gap: 10px;
     .profile-container{
       width: 40px;
       background-color:rgb(140,7,52);
@@ -561,13 +579,13 @@ const Logo = styled.div`
         align-items: center;
         border-radius:100%;
         cursor: pointer;
-       
+
         img{
             width: 80%;
             height: 80%;
-            
-          
-           
+
+
+
         }
     }
     .main-logo{
@@ -579,7 +597,7 @@ const Logo = styled.div`
 `
 
 const SettingsAndDropdown = styled.div`
-    width: 60px; 
+    width: 60px;
     height: 100vh;
     background-color: black;
     display: flex;
@@ -628,7 +646,7 @@ const Side = styled.div`
     height: 10%;
     align-items: center;
     gap: 30px;
-    position: relative; 
+    position: relative;
     top: -65px;
     // left: -90px;
     // z-index: 1000;
