@@ -3,6 +3,72 @@ import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { uploadFile } from '../features/uploadSlice';
+import { HiCloudUpload, HiVideoCamera, HiPhotograph } from 'react-icons/hi';
+import { FaTimes } from 'react-icons/fa';
+
+const FileUploadZone = ({ accept, onChange, file, icon: Icon, label, maxSizeLabel }) => {
+  const fileInputRef = useRef(null);
+  const [isDragOver, setIsDragOver] = useState(false);
+
+  const handleDivClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragOver(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    const droppedFile = e.dataTransfer.files[0];
+    if (droppedFile) {
+      const event = { target: { files: [droppedFile] } };
+      onChange(event);
+    }
+  };
+
+  return (
+    <UploadZoneContainer
+      $isDragOver={isDragOver}
+      onClick={handleDivClick}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+    >
+      <input
+        type="file"
+        accept={accept}
+        onChange={onChange}
+        ref={fileInputRef}
+        style={{ display: 'none' }}
+      />
+      {file ? (
+        <FileDetails>
+          <Icon size={30} color="#541011" />
+          <FileInfo>
+            <FileName>{file.name}</FileName>
+            <FileSize>{(file.size / (1024 * 1024)).toFixed(2)} MB</FileSize>
+          </FileInfo>
+          <ChangeButton type="button">Change</ChangeButton>
+        </FileDetails>
+      ) : (
+        <>
+          <HiCloudUpload size={40} color="#666" />
+          <UploadText>
+            <strong>Click to upload</strong> or drag and drop
+          </UploadText>
+          <UploadSubtext>{label} {maxSizeLabel && `(${maxSizeLabel})`}</UploadSubtext>
+        </>
+      )}
+    </UploadZoneContainer>
+  );
+};
 
 const VideoModal = ({ onClose }) => {
   const navigate = useNavigate();
@@ -163,7 +229,9 @@ const VideoModal = ({ onClose }) => {
     <>
       <Overlay onClick={onClose} />
       <ModalContainer>
-        <CloseButton onClick={onClose}>×</CloseButton>
+        <CloseButton onClick={onClose}>
+          <FaTimes />
+        </CloseButton>
         <h2>Submit Video</h2>
         {error && <ErrorMessage>{error}</ErrorMessage>}
         <Form onSubmit={handleSubmit}>
@@ -207,18 +275,23 @@ const VideoModal = ({ onClose }) => {
           </Select>
 
           <Label>Upload Video</Label>
-          <Input
-            type="file"
+          <FileUploadZone
             accept="video/*"
             onChange={handleVideoChange}
-            required
+            file={videoFile}
+            icon={HiVideoCamera}
+            label="MP4, WebM or Ogg"
+            maxSizeLabel="max. 2GB"
           />
 
           <Label>Upload Thumbnail</Label>
-          <Input
-            type="file"
+          <FileUploadZone
             accept="image/*"
             onChange={handleThumbnailChange}
+            file={thumbnailFile}
+            icon={HiPhotograph}
+            label="PNG, JPG or JPEG"
+            maxSizeLabel="max. 10MB"
           />
 
           {videoFile && (
@@ -319,10 +392,19 @@ const Overlay = styled.div`
 
 const CloseButton = styled.span`
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 15px;
+  right: 15px;
   cursor: pointer;
-  font-size: 20px;
+  font-size: 24px;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+
+  &:hover {
+    color: #000;
+  }
 `;
 
 const Form = styled.form`
@@ -412,6 +494,84 @@ const PreviewInfo = styled.p`
   font-size: 12px;
   color: #333;
   margin-top: 5px;
+`;
+
+const UploadZoneContainer = styled.div`
+  border: 2px dashed ${(props) => (props.$isDragOver ? '#541011' : '#ccc')};
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  background-color: ${(props) => (props.$isDragOver ? '#fff5f5' : '#fafafa')};
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+
+  &:hover {
+    border-color: #541011;
+    background-color: #fff5f5;
+  }
+`;
+
+const UploadText = styled.p`
+  margin: 0;
+  font-size: 14px;
+  color: #333;
+
+  strong {
+    color: #541011;
+  }
+`;
+
+const UploadSubtext = styled.p`
+  margin: 0;
+  font-size: 12px;
+  color: #666;
+`;
+
+const FileDetails = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+`;
+
+const FileInfo = styled.div`
+  flex: 1;
+  min-width: 0;
+`;
+
+const FileName = styled.p`
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
+const FileSize = styled.p`
+  margin: 0;
+  font-size: 12px;
+  color: #666;
+`;
+
+const ChangeButton = styled.button`
+  background: none;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 12px;
+  cursor: pointer;
+  color: #333;
+
+  &:hover {
+    background-color: #eee;
+  }
 `;
 
 export { VideoModal };

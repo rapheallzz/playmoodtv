@@ -25,12 +25,13 @@ export const uploadFile = createAsyncThunk(
       return thunkAPI.rejectWithValue('User not authenticated.');
     }
 
-    const uploadId = uuidv4();
+    const uploadId = uploadData.id || uuidv4();
     thunkAPI.dispatch(
       addUpload({
         id: uploadId,
         fileName: videoFile.name,
         title: videoMetadata.title,
+        originalData: { ...uploadData, id: uploadId },
       })
     );
 
@@ -128,14 +129,22 @@ const uploadSlice = createSlice({
   initialState,
   reducers: {
     addUpload: (state, action) => {
-      state.uploads.push({
+      const existingIndex = state.uploads.findIndex((u) => u.id === action.payload.id);
+      const newUpload = {
         id: action.payload.id,
         fileName: action.payload.fileName,
         title: action.payload.title,
         status: 'pending',
         progress: 0,
         error: null,
-      });
+        originalData: action.payload.originalData,
+      };
+
+      if (existingIndex !== -1) {
+        state.uploads[existingIndex] = newUpload;
+      } else {
+        state.uploads.push(newUpload);
+      }
     },
     updateUploadProgress: (state, action) => {
       const upload = state.uploads.find((u) => u.id === action.payload.id);

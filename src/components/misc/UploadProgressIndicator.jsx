@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { clearCompletedUploads } from '../../features/uploadSlice';
+import { clearCompletedUploads, uploadFile } from '../../features/uploadSlice';
 
 const UploadProgressIndicator = () => {
   const dispatch = useDispatch();
@@ -13,6 +13,12 @@ const UploadProgressIndicator = () => {
 
   const handleClearCompleted = () => {
     dispatch(clearCompletedUploads());
+  };
+
+  const handleRetry = (upload) => {
+    if (upload.originalData) {
+      dispatch(uploadFile(upload.originalData));
+    }
   };
 
   return (
@@ -27,7 +33,12 @@ const UploadProgressIndicator = () => {
           <Status $status={upload.status}>
             {upload.status === 'uploading' && `Uploading: ${upload.progress}%`}
             {upload.status === 'completed' && 'Upload successful'}
-            {upload.status === 'failed' && `Failed: ${upload.error}`}
+            {upload.status === 'failed' && (
+              <ErrorContainer>
+                <span>Failed: {upload.error}</span>
+                <RetryButton onClick={() => handleRetry(upload)}>Retry</RetryButton>
+              </ErrorContainer>
+            )}
             {upload.status === 'pending' && 'Waiting...'}
           </Status>
           {upload.status === 'uploading' && (
@@ -135,6 +146,27 @@ const SuccessMessage = styled.p`
   font-size: 12px;
   color: #6c757d;
   margin-top: 4px;
+`;
+
+const ErrorContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+`;
+
+const RetryButton = styled.button`
+  background-color: #541011;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 2px 8px;
+  cursor: pointer;
+  font-size: 11px;
+
+  &:hover {
+    background-color: #3d0c0d;
+  }
 `;
 
 export default UploadProgressIndicator;
