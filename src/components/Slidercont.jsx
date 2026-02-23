@@ -368,6 +368,7 @@ const MetaContainer = styled.div`
   width: 100%;
   overflow: hidden;
   gap: 4px;
+  flex-shrink: 0;
 `;
 
 const InfoGroup = styled.div`
@@ -473,7 +474,10 @@ const Title = styled.h4`
   font-size: 0.8rem;
   font-weight: 600;
   margin: 0;
-  word-break: break-word;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
 
   @media (min-width: 768px) {
     font-size: 1rem;
