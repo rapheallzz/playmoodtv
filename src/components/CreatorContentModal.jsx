@@ -165,7 +165,7 @@ const CreatorContentModal = ({ isOpen, creator, onClose }) => {
               autoPlay
               controls
               preload="metadata"
-              className="w-full h-full object-cover rounded-t-lg"
+              className="w-full h-full rounded-t-lg"
             ></video>
           )}
         </VideoContainer>
@@ -309,13 +309,14 @@ const ModalOverlay = styled.div`
 const ModalContainer = styled.div`
   position: relative;
   background: white;
-  border-radius: 8px;
+  border-radius: 12px;
   width: 100%;
   max-width: 95vw;
   max-height: 90vh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 
   @media (min-width: 640px) { max-width: 600px; }
   @media (min-width: 768px) { max-width: 800px; }
@@ -324,15 +325,19 @@ const ModalContainer = styled.div`
 const VideoContainer = styled.div`
   width: 100%;
   aspect-ratio: 16 / 9;
-  max-height: 40vh;
-  min-height: 200px;
+  max-height: 50vh;
+  min-height: 250px;
   overflow: hidden;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   video {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    border-radius: 8px 8px 0 0;
+    object-fit: contain;
+    border-radius: 12px 12px 0 0;
   }
 `;
 

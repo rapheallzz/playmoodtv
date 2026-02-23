@@ -80,11 +80,12 @@ const Slidercontent = React.memo(function Slidercontent({
         Math.pow(clientY - touchStart.current.y, 2)
       );
 
-      // Check if the tap target is the image or its container, not the dots icon
+      // Check if the tap target is the image or its container, not the dots icon or metadata area
       const target = e.target;
+      const isMetadataArea = target.closest('.metadata-area');
       const isDotsIcon = target.closest('svg')?.classList.contains('text-white') || false;
 
-      if (distance < 10 && !isDotsIcon) {
+      if (distance < 10 && !isDotsIcon && !isMetadataArea) {
         e.preventDefault();
         e.stopPropagation();
         if (isMobile) {
@@ -221,7 +222,7 @@ const Slidercontent = React.memo(function Slidercontent({
               alt={title}
             />
           </div>
-          <div className="absolute bottom-0 w-full bg-black bg-opacity-50 flex justify-between p-2 md:p-3 gap-2.5">
+          <div className="metadata-area absolute bottom-0 w-full bg-black bg-opacity-50 flex justify-between p-2 md:p-3 gap-2.5">
             <h3
               className="text-white text-xs md:text-base font-normal w-[80%]"
               style={customStyle || {}}
@@ -258,7 +259,7 @@ const Slidercontent = React.memo(function Slidercontent({
             />
           </video>
           <div
-            className="w-full h-[35%] p-2 flex flex-col gap-1.5"
+            className="metadata-area w-full h-[35%] p-2 flex flex-col gap-1.5"
             onClick={(e) => e.stopPropagation()}
           >
             <MetaContainer>

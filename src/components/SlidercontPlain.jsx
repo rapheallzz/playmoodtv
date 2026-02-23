@@ -100,6 +100,10 @@ const Slidercontent = React.memo(function Slidercontent({
 
   const handleClick = (e) => {
     e.preventDefault();
+    const target = e.target;
+    const isMetadataArea = target.closest('.metadata-area');
+    if (isMetadataArea) return;
+
     if (isMobile) {
       if (!isVideoPlaying) {
         setHover(true);
@@ -119,6 +123,10 @@ const Slidercontent = React.memo(function Slidercontent({
 
   const handleVideoClick = (e) => {
     e.stopPropagation();
+    const target = e.target;
+    const isMetadataArea = target.closest('.metadata-area');
+    if (isMetadataArea) return;
+
     if (isVideoPlaying) {
       onVideoClick();
       setHover(false);
@@ -233,7 +241,7 @@ const Slidercontent = React.memo(function Slidercontent({
               onClick={handleClick}
             />
           </div>
-          <div className="absolute bottom-0 w-full bg-black bg-opacity-50 flex justify-between p-3 gap-2.5">
+          <div className="metadata-area absolute bottom-0 w-full bg-black bg-opacity-50 flex justify-between p-3 gap-2.5">
             <h3
               className="text-white text-base font-normal leading-6 w-[80%] truncate"
               style={customStyle || {}}
@@ -272,7 +280,7 @@ const Slidercontent = React.memo(function Slidercontent({
             />
           </video>
           <div
-            className="h-[30%] w-full bg-black p-2 flex flex-col gap-2"
+            className="metadata-area h-[30%] w-full bg-black p-2 flex flex-col gap-2"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between align-middle">

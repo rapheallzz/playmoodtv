@@ -80,7 +80,10 @@ const Slidercontent = memo(({ img, title, movie, views, desc, customStyle, progr
         Math.pow(clientY - touchStart.current.y, 2)
       );
 
-      if (distance < 10) {
+      const target = e.target;
+      const isMetadataArea = target.closest('.metadata-area');
+
+      if (distance < 10 && !isMetadataArea) {
         e.preventDefault();
         e.stopPropagation();
         if (isMobile) {
@@ -183,7 +186,7 @@ const Slidercontent = memo(({ img, title, movie, views, desc, customStyle, progr
             className="w-full h-full object-cover cursor-pointer"
             placeholderSrc="/placeholder.jpg"
           />
-          <Overlay>
+          <Overlay className="metadata-area">
             <Title style={customStyle} title={title}>{title}</Title>
             {isMobile && (
               <HiDotsVertical
@@ -212,7 +215,7 @@ const Slidercontent = memo(({ img, title, movie, views, desc, customStyle, progr
             onClick={onVideoClick}
             aria-label={`Preview for ${title}`}
           />
-          <DetailsWrapper onClick={(e) => e.stopPropagation()}>
+          <DetailsWrapper className="metadata-area" onClick={(e) => e.stopPropagation()}>
             <MetaData>
               <UserInfo>
                 By: {movie?.user?.name || 'Anonymous'}
