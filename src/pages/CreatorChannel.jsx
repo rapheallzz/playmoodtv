@@ -674,8 +674,8 @@ const fetchPlaylists = async () => {
 
       {/* Profile Section */}
       <div className="w-full flex justify-between py-6 px-10">
-        <div className="flex gap-5">
-          <div className="md:w-24 md:h-24 w-20 h-20 rounded-full border-[3px] border-white flex items-center justify-center font-semibold overflow-hidden">
+        <div className="flex gap-5 items-center">
+          <div className="md:w-32 md:h-32 w-28 h-28 rounded-full border-[3px] border-white flex items-center justify-center font-semibold overflow-hidden">
             <ProfileImage
               src={creatorData?.profileImage || 'https://via.placeholder.com/80'}
               alt="profile"
