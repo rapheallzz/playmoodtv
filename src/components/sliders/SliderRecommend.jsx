@@ -64,7 +64,7 @@ export default function SliderRecommended({ contentId: propContentId, title, cla
 
       try {
         setLoading(true);
-        const response = await axios.get(`${BASE_API_URL}/api/recommended/${id}`);
+        const response = await axios.get(`${BASE_API_URL}/api/content/recommended/${id}`);
         if (response.data && Array.isArray(response.data)) {
           setData(response.data);
         } else {
