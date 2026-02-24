@@ -28,12 +28,12 @@ export default function Sliderfriends() {
 
   const settings = {
     dots: false,
-    infinite: true,
+    infinite: filteredData.length > 5,
     speed: 500,
     slidesToShow: 5,
     slidesToScroll: 1,
     initialSlide: 0,
-    autoplay: true,
+    autoplay: filteredData.length > 5,
     autoplaySpeed: 2000,
     cssEase: "linear",
     arrows: false,
@@ -43,7 +43,7 @@ export default function Sliderfriends() {
         settings: {
           slidesToShow: 3,
           slidesToScroll: 1,
-          infinite: true,
+          infinite: filteredData.length > 3,
           dots: true
         }
       },
@@ -52,14 +52,16 @@ export default function Sliderfriends() {
         settings: {
           slidesToShow: 2,
           slidesToScroll: 1,
-          initialSlide: 2
+          initialSlide: 2,
+          infinite: filteredData.length > 2,
         }
       },
       {
         breakpoint: 480,
         settings: {
           slidesToShow: 1,
-          slidesToScroll: 1
+          slidesToScroll: 1,
+          infinite: filteredData.length > 1,
         }
       }
     ]

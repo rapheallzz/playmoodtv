@@ -50,7 +50,7 @@ export default function SliderSocial() {
 
   const settings = {
     dots: false,
-    infinite: true,
+    infinite: data.length > 5,
     speed: 500,
     slidesToShow: 5,
     slidesToScroll: 1,
@@ -65,7 +65,7 @@ export default function SliderSocial() {
         settings: {
           slidesToShow: 3,
           slidesToScroll: 1,
-          infinite: true,
+          infinite: data.length > 5,
           dots: true
         }
       },

@@ -106,7 +106,7 @@ export default function Channels() {
 
   const creatorSliderSettings = {
     dots: false,
-    infinite: true,
+    infinite: creatorData.length > 4,
     speed: 300,
     slidesToShow: 4,
     slidesToScroll: 1,
@@ -121,7 +121,7 @@ export default function Channels() {
         settings: {
           slidesToShow: 3,
           slidesToScroll: 1,
-          infinite: true,
+          infinite: creatorData.length > 3,
           dots: true,
           arrows: true,
         },

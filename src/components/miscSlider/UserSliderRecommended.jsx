@@ -102,7 +102,7 @@ export default function UserRecommended() {
 
   const settings = {
     dots: false,
-    infinite: true,
+    infinite: data.length > 4,
     speed: 300,
     slidesToShow: 4,
     slidesToScroll: 1,
@@ -117,7 +117,7 @@ export default function UserRecommended() {
         settings: {
           slidesToShow: 3,
           slidesToScroll: 1,
-          infinite: true,
+          infinite: data.length > 3,
           dots: true,
           arrows: true,
         },
@@ -128,6 +128,7 @@ export default function UserRecommended() {
           slidesToShow: 2,
           slidesToScroll: 1,
           initialSlide: 2,
+          infinite: data.length > 2,
           arrows: true,
         },
       },
@@ -136,6 +137,7 @@ export default function UserRecommended() {
         settings: {
           slidesToShow: 1.5,
           slidesToScroll: 1,
+          infinite: data.length > 1.5,
           arrows: false,
           centerMode: true,
           centerPadding: '20px',

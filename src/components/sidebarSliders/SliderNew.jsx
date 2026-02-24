@@ -55,7 +55,7 @@ export default function SliderNew() {
 
   const settings = {
     dots: false,
-    infinite: true,
+    infinite: data.length > 3,
     speed: 500,
     slidesToShow: 3, // Show 3 slides for sidebar
     slidesToScroll: 1,
@@ -72,7 +72,7 @@ export default function SliderNew() {
         settings: {
           slidesToShow: 3,
           slidesToScroll: 1,
-          infinite: true,
+          infinite: data.length > 3,
           dots: true,
           arrows: true,
         },

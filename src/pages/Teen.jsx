@@ -112,7 +112,7 @@ export default function Teens() {
 
   const settings = {
     dots: false,
-    infinite: true,
+    infinite: data.length > 4,
     speed: 300,
     slidesToShow: 4,
     slidesToScroll: 1,
@@ -127,7 +127,7 @@ export default function Teens() {
         settings: {
           slidesToShow: 3,
           slidesToScroll: 1,
-          infinite: true,
+          infinite: data.length > 4,
           dots: true,
           arrows: true,
         },

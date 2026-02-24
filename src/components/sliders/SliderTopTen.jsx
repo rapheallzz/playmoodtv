@@ -89,7 +89,7 @@ export default function SliderTopTen() {
 
   const settings = {
     dots: false,
-    infinite: true,
+    infinite: data.length > 5,
     speed: 300,
     slidesToShow: 5,
     slidesToScroll: 1,
@@ -104,7 +104,7 @@ export default function SliderTopTen() {
         settings: {
           slidesToShow: 3,
           slidesToScroll: 1,
-          infinite: true,
+          infinite: data.length > 3,
           dots: true,
           arrows: true,
         },
@@ -115,7 +115,7 @@ export default function SliderTopTen() {
           slidesToShow: 2,
           slidesToScroll: 1,
           initialSlide: 2, 
-          infinite: true,
+          infinite: data.length > 2,
           arrows: true,
         },
       },
@@ -124,7 +124,7 @@ export default function SliderTopTen() {
         settings: {
           slidesToShow: 2,
           slidesToScroll: 1,
-          infinite: true,
+          infinite: data.length > 2,
           arrows: false,
           centerMode: true,
         centerPadding: '0px',
