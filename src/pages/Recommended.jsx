@@ -68,13 +68,19 @@ export default function Recommended() {
     };
   }, []);
 
-    useEffect(() => {
+  useEffect(() => {
     async function fetchData() {
+      const id = localStorage.getItem('lastWatchedContentId');
+
+      if (!id) {
+        setData([]);
+        return;
+      }
+
       try {
-        const response = await axios.get(`${BASE_API_URL}/api/content/`);
+        const response = await axios.get(`${BASE_API_URL}/api/recommended/${id}`);
         if (response.data && Array.isArray(response.data)) {
-          const filteredData = response.data.filter((content) => content.category === 'Teen');
-          setData(filteredData);
+          setData(response.data);
         } else {
           setError('Unexpected data format.');
         }
@@ -183,6 +189,8 @@ export default function Recommended() {
           <SliderContainer>
             {error ? (
               <div className="error-message">{error}</div>
+            ) : data.length === 0 ? (
+              <div className="text-white text-center py-10">No recommendations available. Try watching some videos first!</div>
             ) : (
               <Slider {...settings} ref={sliderRef}>
                 {Array.isArray(data) &&

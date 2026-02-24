@@ -45,23 +45,34 @@ export default function UserRecommended() {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [modalContent, setModalContent] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const sliderRef = useRef(null);
 
   useEffect(() => {
     async function fetchData() {
+      const id = localStorage.getItem('lastWatchedContentId');
+
+      if (!id) {
+        setData([]);
+        setLoading(false);
+        return;
+      }
+
       try {
-        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
+        setLoading(true);
+        const response = await axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/recommended/${id}`);
         if (response.data && Array.isArray(response.data)) {
-          const filteredData = response.data.filter((content) => content.category === 'Teen');
-          setData(filteredData);
+          setData(response.data);
         } else {
           setError('Unexpected data format.');
         }
       } catch (error) {
         setError('Error fetching data.');
         setData([]);
+      } finally {
+        setLoading(false);
       }
     }
 
@@ -132,6 +143,10 @@ export default function UserRecommended() {
     ],
   };
 
+  if (!loading && data.length === 0) {
+    return null;
+  }
+
   return (
     <SliderContainer>
       {error ? (
@@ -148,7 +163,7 @@ export default function UserRecommended() {
                 desc={content.description}
                 shortPreview={content.shortPreview}
                 customStyle={{}}
-                onVideoClick={() => handleOpenModal(content)} // Updated to open modal
+                onVideoClick={() => handleOpenModal(content)}
               />
             </div>
           ))}

@@ -54,6 +54,12 @@ export default function MoviePage() {
   const videoRef = useRef(null);
   const lastSavedSecond = useRef(0);
 
+  useEffect(() => {
+    if (contentId) {
+      localStorage.setItem('lastWatchedContentId', contentId);
+    }
+  }, [contentId]);
+
   // Save video progress (only for signed-in users)
   const saveProgress = async (currentTime) => {
     if (!user || !user.token || !contentId) {
@@ -654,15 +660,11 @@ export default function MoviePage() {
         </div>
         {/* Slider Section */}
         <div className="md:my-32">
-          <div
-            id="interviews"
+          <SliderRecommended
+            contentId={contentId}
+            title="Recommended for you"
             className="video-category-four h-[390px] w-[90%] mx-[30px] mb-[40px] flex flex-col md:mx-[20px] md:my-[20px] md:mb-[50px]"
-          >
-            <h3 className="video-category-title text-white pb-[20px] font-semibold text-[1.5rem] md:text-[1.3rem] lg:text-[1.5rem]">
-              Recommended for you
-            </h3>
-            <SliderRecommended/>
-          </div>
+          />
           {user && (
             <div
               id="interviews"

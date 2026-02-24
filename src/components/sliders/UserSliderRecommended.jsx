@@ -12,24 +12,31 @@ export default function UserRecommended() {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchData() {
+      const id = localStorage.getItem('lastWatchedContentId');
+
+      if (!id) {
+        setData([]);
+        setLoading(false);
+        return;
+      }
+
       try {
+        setLoading(true);
+        const response = await axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/recommended/${id}`);
 
-        // Fetch all data
-        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
-        
-
-        // Filter data by category 'Documentaries'
         if (response.data && Array.isArray(response.data)) {
-          const filteredData = response.data.filter(content => content.category === 'Teen');
-          setData(filteredData);
+          setData(response.data);
         } else {
           setError('Unexpected data format.');
         }
       } catch (error) {
         setError('Error fetching data.');
+      } finally {
+        setLoading(false);
       }
     }
 
@@ -98,41 +105,35 @@ export default function UserRecommended() {
 
 
   const handleSlideClick = (event, content) => {
-    const clickedElement = event.target;
-  
-    // Check if the clicked element is a video
-    if (clickedElement.tagName.toLowerCase() === 'video') {
-      const cardElement = clickedElement.closest('.dashslide');
-  
-      if (cardElement) {
-        navigate(`/movie/{_id}`, {
-          state: {
-            movie: content.video,
-            title: content.title || '',
-            desc: content.description || '',
-            credits: content.credit || '',
-          },
-        });
-      }
+    const target = event.target;
+    const isMetadataArea = target.closest('.metadata-area');
+
+    if (!isMetadataArea) {
+      const formattedTitle = content.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      const slug = `${formattedTitle}-${content._id}`;
+      navigate(`/movie/${slug}`);
     }
   };
 
+  if (!loading && data.length === 0) {
+    return null;
+  }
+
   return (
     <Slider {...settings}>
-      {data.map((content, index) => (
+      {data.map((content) => (
         <div
-          key={content.id}
+          key={content._id}
           className="dashslide"
           onClick={(e) => handleSlideClick(e, content)}
         >
-  
           <Slidercontent
             img={content.thumbnail}
             title={content.title}
-             movie={content.video} 
-             id={content.id} 
-             desc={content.description}
-            customStyle={{ }}
+            movie={content}
+            id={content._id}
+            desc={content.description}
+            customStyle={{}}
           />
         </div>
       ))}

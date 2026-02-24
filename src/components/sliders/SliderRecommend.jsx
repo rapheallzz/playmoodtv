@@ -43,31 +43,42 @@ const CustomNextArrow = (props) => {
   );
 };
 
-export default function SliderRecommended() {
+export default function SliderRecommended({ contentId: propContentId, title, className }) {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [modalContent, setModalContent] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const sliderRef = useRef(null);
 
   useEffect(() => {
     async function fetchData() {
+      const id = propContentId || localStorage.getItem('lastWatchedContentId');
+
+      if (!id) {
+        setData([]);
+        setLoading(false);
+        return;
+      }
+
       try {
-        const response = await axios.get(`${BASE_API_URL}/api/content/`);
+        setLoading(true);
+        const response = await axios.get(`${BASE_API_URL}/api/recommended/${id}`);
         if (response.data && Array.isArray(response.data)) {
-          const filteredData = response.data.filter((content) => content.category === 'Teen');
-          setData(filteredData);
+          setData(response.data);
         } else {
           setError('Unexpected data format.');
         }
       } catch (error) {
         setError('Error fetching data.');
+      } finally {
+        setLoading(false);
       }
     }
 
     fetchData();
-  }, []);
+  }, [propContentId]);
 
   const handleOpenModal = (content) => {
     setModalContent(content);
@@ -137,43 +148,56 @@ export default function SliderRecommended() {
     ],
   };
 
-  return (
-    <SliderContainer>
-      {error ? (
-        <div className="error-message">{error}</div>
-      ) : (
-        <Slider {...settings} ref={sliderRef}>
-          {Array.isArray(data) &&
-            data.slice(0, 10).map((content) => ( // Limit to 10 slides
-              <div key={content._id} className="slides">
-                <Slidercontent
-                  img={content.thumbnail}
-                  title={content.title}
-                  movie={content}
-                  views={content.views}
-                  desc={content.description}
-                  customStyle={{}}
-                  onVideoClick={() => handleOpenModal(content)}
-                />
-              </div>
-            ))}
-          {data.length > 0 && ( // Only show View More if there is at least one item
-            <div className="slides view-more-slide">
-              <ViewMoreSlide>
-                <ViewMoreButton onClick={handleViewMore}>View More</ViewMoreButton>
-              </ViewMoreSlide>
-            </div>
-          )}
-        </Slider>
-      )}
+  if (!loading && data.length === 0) {
+    return null;
+  }
 
-      <ContentModal
-        isOpen={isModalOpen}
-        content={modalContent}
-        onClose={handleCloseModal}
-        handleNavigateToMovie={handleNavigateToMovie}
-      />
-    </SliderContainer>
+  return (
+    <div className={className}>
+      {title && (
+        <h3 className="video-category-title text-white pb-[20px] font-semibold text-[1.5rem] md:text-[1.3rem] lg:text-[1.5rem]">
+          {title}
+        </h3>
+      )}
+      <SliderContainer>
+        {error ? (
+          <div className="error-message">{error}</div>
+        ) : (
+          <Slider {...settings} ref={sliderRef}>
+            {Array.isArray(data) &&
+              data.slice(0, 10).map((content) => (
+                // Limit to 10 slides
+                <div key={content._id} className="slides">
+                  <Slidercontent
+                    img={content.thumbnail}
+                    title={content.title}
+                    movie={content}
+                    views={content.views}
+                    desc={content.description}
+                    customStyle={{}}
+                    onVideoClick={() => handleOpenModal(content)}
+                  />
+                </div>
+              ))}
+            {data.length > 0 && (
+              // Only show View More if there is at least one item
+              <div className="slides view-more-slide">
+                <ViewMoreSlide>
+                  <ViewMoreButton onClick={handleViewMore}>View More</ViewMoreButton>
+                </ViewMoreSlide>
+              </div>
+            )}
+          </Slider>
+        )}
+
+        <ContentModal
+          isOpen={isModalOpen}
+          content={modalContent}
+          onClose={handleCloseModal}
+          handleNavigateToMovie={handleNavigateToMovie}
+        />
+      </SliderContainer>
+    </div>
   );
 }
 

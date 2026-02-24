@@ -898,12 +898,10 @@ function HomeContent({
             <Videocategorytitle>Spaces</Videocategorytitle>
             <SliderSpace />
           </VideoCategoryCircle>
-          {user && (
-            <VideoCategory>
-              <Videocategorytitle>Recommended for you</Videocategorytitle>
-              <SlideRecommended />
-            </VideoCategory>
-          )}
+          <SlideRecommended
+            title="Recommended for you"
+            className="w-[92%] mx-[20px] flex flex-col h-[380px] min-h-[220px] box-sizing-border-box z-[210] md:mx-[10px] md:my-[20px] md:pb-[20px] sm:h-auto sm:mb-[30px]"
+          />
           <VideoCategory >
             <Videocategorytitle>Interviews</Videocategorytitle>
             <SliderInterview />
