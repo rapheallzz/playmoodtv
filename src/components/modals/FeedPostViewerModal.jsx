@@ -90,13 +90,12 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
     }
   };
 
-  if (!post || !post.media || post.media.length === 0) return null;
+  if (!post) return null;
 
-  if (currentIndex >= post.media.length) {
-    return null;
-  }
+  const isHighlight = post.feedType === 'highlight' || (!post.media?.length && post.highlightUrl);
+  const currentMediaUrl = isHighlight ? post.highlightUrl : post.media?.[currentIndex]?.url;
 
-  const currentMedia = post.media[currentIndex];
+  if (!currentMediaUrl) return null;
 
   return (
     <ModalOverlay onClick={onClose} data-testid="feed-post-viewer-modal">
@@ -105,12 +104,12 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
       </CloseButton>
       <ModalCard onClick={(e) => e.stopPropagation()}>
         <ModalCardMedia>
-          {currentMedia.url.endsWith('.mp4') ? (
-            <video src={currentMedia.url} controls autoPlay loop />
+          {isHighlight || currentMediaUrl.endsWith('.mp4') ? (
+            <video src={currentMediaUrl} controls autoPlay loop />
           ) : (
-            <img src={currentMedia.url} alt={post.caption} />
+            <img src={currentMediaUrl} alt={post.caption || post.title} />
           )}
-          {(post.media?.length || 0) > 1 && (
+          {!isHighlight && (post.media?.length || 0) > 1 && (
             <DotsContainer>
               {post.media.map((_, index) => (
                 <Dot key={index} isActive={index === currentIndex} onClick={() => setCurrentIndex(index)} />
@@ -129,7 +128,7 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
             <ProfileImage src={post.user?.profileImage} alt={post.user?.name} style={{ width: '40px', height: '40px' }} />
             <CreatorName>{post.user?.name}</CreatorName>
           </ModalCardHeader>
-          <ModalCardCaption>{post.caption}</ModalCardCaption>
+          <ModalCardCaption>{post.caption || post.title}</ModalCardCaption>
           {isCommentsOpen && (
             <>
               <ModalCardComments>

@@ -56,19 +56,20 @@ const FeedSection = ({ feeds, isLoadingFeeds, onPostClick }) => {
   }
 
   const renderFeedPost = (feed, index) => {
-    if (!feed.media || feed.media.length === 0) {
+    const imageUrl = feed.media?.[0]?.url || feed.content?.thumbnail || feed.thumbnail;
+    if (!imageUrl) {
       return null;
     }
     return (
       <FeedPostCardContainer key={feed._id} onClick={() => onPostClick(feed, index)}>
         <FeedItem>
-          <FeedImage src={feed.media[0].url} alt={feed.caption} />
+          <FeedImage src={imageUrl} alt={feed.caption || feed.title} />
           <MediaHoverOverlay className="media-hover-overlay">
             <HoverIcon>
-              <FaHeart /> {feed.likes.length}
+              <FaHeart /> {feed.likes?.length || feed.content?.likesCount || 0}
             </HoverIcon>
             <HoverIcon>
-              <FaComment /> {feed.comments.length}
+              <FaComment /> {feed.comments?.length || feed.content?.commentsCount || 0}
             </HoverIcon>
           </MediaHoverOverlay>
         </FeedItem>
