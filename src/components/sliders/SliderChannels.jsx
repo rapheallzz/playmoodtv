@@ -198,7 +198,7 @@ export default function SliderChannel() {
 
   const settings = {
     dots: false,
-    infinite: true,
+    infinite: data.length > 4,
     speed: 300,
     slidesToShow: 4,
     slidesToScroll: 1,
@@ -216,7 +216,7 @@ export default function SliderChannel() {
         settings: {
           slidesToShow: 3,
           slidesToScroll: 1,
-          infinite: true,
+          infinite: data.length > 3,
           dots: true,
           arrows: true,
         },
@@ -226,6 +226,7 @@ export default function SliderChannel() {
         settings: {
           slidesToShow: 2,
           slidesToScroll: 1,
+          infinite: data.length > 2,
           arrows: true,
           centerMode: true,
           centerPadding: '15px',
@@ -236,6 +237,7 @@ export default function SliderChannel() {
         settings: {
           slidesToShow: 2,
           slidesToScroll: 1,
+          infinite: data.length > 2,
           arrows: false,
           centerMode: true,
           centerPadding: '5px',
@@ -246,6 +248,7 @@ export default function SliderChannel() {
         settings: {
           slidesToShow: 2,
           slidesToScroll: 1,
+          infinite: data.length > 2,
           arrows: false,
           centerMode: true,
           centerPadding: '20px',

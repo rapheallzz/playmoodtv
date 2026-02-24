@@ -91,7 +91,7 @@ export default function Slidertop10() {
 
  const settings = {
   dots: false,
-  infinite: true,
+  infinite: data.length > 5,
   speed: 500,
   slidesToShow: 5,
   slidesToScroll: 1,
@@ -107,7 +107,7 @@ export default function Slidertop10() {
       settings: {
         slidesToShow: 3,
         slidesToScroll: 1,
-        infinite: true,
+        infinite: data.length > 3,
         dots: true,
         arrows: true,
       },
@@ -118,6 +118,7 @@ export default function Slidertop10() {
         slidesToShow: 2,
         slidesToScroll: 1,
         initialSlide: 2,
+        infinite: data.length > 2,
         arrows: true,
       },
     },
@@ -126,6 +127,7 @@ export default function Slidertop10() {
       settings: {
         slidesToShow: 2,
         slidesToScroll: 1,
+        infinite: data.length > 2,
         arrows: false,
         centerMode: true, // Center the slide
         centerPadding: '0px', // Add padding to prevent content from touching screen edges

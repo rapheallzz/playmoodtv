@@ -89,7 +89,7 @@ export default function SliderInterview() {
 
   const settings = {
     dots: false,
-    infinite: true,
+    infinite: data.length > 5,
     speed: 300,
     slidesToShow: 5,
     slidesToScroll: 1,
@@ -104,7 +104,7 @@ export default function SliderInterview() {
         settings: {
           slidesToShow: 3,
           slidesToScroll: 1,
-          infinite: true,
+          infinite: data.length > 5,
           dots: true,
           arrows: true,
         },

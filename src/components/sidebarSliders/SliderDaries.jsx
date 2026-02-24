@@ -216,7 +216,7 @@ export default function SliderDairies() {
 
    const settings = {
   dots: false,
-    infinite: true,
+    infinite: data.length > 3,
     speed: 500,
     slidesToShow: 2, // Show 3 slides for sidebar
     slidesToScroll: 1,
@@ -233,7 +233,7 @@ export default function SliderDairies() {
         settings: {
           slidesToShow: 2,
           slidesToScroll: 1,
-          infinite: true,
+          infinite: data.length > 3,
           dots: true,
           arrows: true,
         },

@@ -79,7 +79,7 @@ export default function SliderResume() {
 
   const settings = {
     dots: false,
-    infinite: true,
+    infinite: data.length > 3,
     speed: 500,
     slidesToShow: 5,
     slidesToScroll: 1,
@@ -95,7 +95,7 @@ export default function SliderResume() {
         settings: {
           slidesToShow: 3,
           slidesToScroll: 1,
-          infinite: true,
+          infinite: data.length > 3,
           dots: true,
         },
       },

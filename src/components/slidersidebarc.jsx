@@ -56,12 +56,12 @@ export default function SidebarSliderc() {
 
   const settings = {
     dots: false,
-    infinite: true,
+    infinite: data.length > 3,
     speed: 500,
     slidesToShow: 3, // Show 3 slides for sidebar
     slidesToScroll: 1,
     initialSlide: 0,
-    autoplay: true,
+    autoplay: data.length > 3,
     autoplaySpeed: 3000,
     cssEase: 'linear',
     arrows: false, 
@@ -73,7 +73,7 @@ export default function SidebarSliderc() {
         settings: {
           slidesToShow: 3,
           slidesToScroll: 1,
-          infinite: true,
+          infinite: data.length > 3,
           dots: true,
           arrows: true,
         },
@@ -84,6 +84,7 @@ export default function SidebarSliderc() {
           slidesToShow: 2,
           slidesToScroll: 1,
           initialSlide: 2,
+          infinite: data.length > 2,
           arrows: true,
         },
       },
@@ -92,6 +93,7 @@ export default function SidebarSliderc() {
         settings: {
           slidesToShow: 2,
           slidesToScroll: 1,
+          infinite: data.length > 2,
           arrows: false,
           centerMode: true,
         centerPadding: '20px',

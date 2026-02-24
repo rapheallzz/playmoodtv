@@ -99,7 +99,7 @@ export default function UserFavourite() {
 
   const settings = {
     dots: false,
-    infinite: true,
+    infinite: data.length > 5,
     speed: 300,
     slidesToShow: 5,
     slidesToScroll: 1,
@@ -114,7 +114,7 @@ export default function UserFavourite() {
         settings: {
           slidesToShow: 3,
           slidesToScroll: 1,
-          infinite: true,
+          infinite: data.length > 3,
           dots: true,
           arrows: true,
         },
@@ -125,6 +125,7 @@ export default function UserFavourite() {
           slidesToShow: 2,
           slidesToScroll: 1,
           initialSlide: 2,
+          infinite: data.length > 2,
           arrows: true,
         },
       },
@@ -133,6 +134,7 @@ export default function UserFavourite() {
         settings: {
           slidesToShow: 1.5,
           slidesToScroll: 1,
+          infinite: data.length > 1.5,
           arrows: false,
           centerMode: true,
           centerPadding: '20px',
