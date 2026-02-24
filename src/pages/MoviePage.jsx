@@ -57,6 +57,7 @@ export default function MoviePage() {
   useEffect(() => {
     if (contentId) {
       localStorage.setItem('lastWatchedContentId', contentId);
+      lastSavedSecond.current = 0;
     }
   }, [contentId]);
 
@@ -190,7 +191,7 @@ export default function MoviePage() {
         // Fetch user progress
         if (user && user.token) {
           axios.get(
-            `${BASE_API_URL}/api/content/progress/${contentId}`,
+            `${BASE_API_URL}/api/progress/${contentId}`,
             { headers: { Authorization: `Bearer ${user.token}` } }
           ).then(progressResponse => {
             if (progressResponse.data && progressResponse.data.progress && videoRef.current) {
@@ -412,6 +413,9 @@ export default function MoviePage() {
   const { title, description, credit, views, likes, user: movieUser } = movie;
 
   const handleNextVideo = async () => {
+    if (videoRef.current && videoRef.current.currentTime > 0) {
+      saveProgress(videoRef.current.currentTime);
+    }
     try {
       const response = await axios.get(`${BASE_API_URL}/api/content/`);
       const allContent = response.data;
