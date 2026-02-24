@@ -7,27 +7,25 @@ import SideBarSlidercont from '../SideBarSlidercont';
 import { useNavigate } from 'react-router-dom';
 import ContentModal from '../ContentModal';
 import { useSelector } from 'react-redux';
+import BASE_API_URL from '../../apiConfig';
 
 export default function SliderResume() {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
-  const [progressData, setProgressData] = useState({});
   const [error, setError] = useState(null);
   const [modalContent, setModalContent] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    async function fetchProgressAndContent() {
-      if (!user || !user.token || !user._id) {
-        setError('User not logged in or invalid user data.');
+    async function fetchContinueWatching() {
+      if (!user || !user.token) {
         return;
       }
 
       try {
-        // Step 1: Fetch content IDs with progress for the user
-        const userProgressResponse = await axios.get(
-          `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/progress/{contentId}${user._id}`,
+        const response = await axios.get(
+          `${BASE_API_URL}/api/content/continue-watching`,
           {
             headers: {
               Authorization: `Bearer ${user.token}`,
@@ -35,65 +33,12 @@ export default function SliderResume() {
           }
         );
 
-        // Extract content IDs
-        const contentIds = [];
-        if (userProgressResponse.data && Array.isArray(userProgressResponse.data)) {
-          userProgressResponse.data.forEach((item) => {
-            if (item.contentId && /^[0-9a-fA-F]{24}$/.test(item.contentId)) {
-              contentIds.push(item.contentId);
-            } else {
-            }
-          });
-        } else {
-          setData([]);
-          return;
-        }
-
-        if (contentIds.length === 0) {
-          setData([]);
-          return;
-        }
-
-        // Step 2: Fetch progress for each content ID
-        const progressMap = {};
-        const progressPromises = contentIds.map((contentId) =>
-          axios
-            .get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/progress/${contentId}`, {
-              headers: {
-                Authorization: `Bearer ${user.token}`,
-              },
-            })
-            .catch((err) => {
-              return null;
-            })
-        );
-        const progressResponses = await Promise.all(progressPromises);
-        progressResponses.forEach((res, index) => {
-          if (res && res.data && res.data.progress) {
-            progressMap[contentIds[index]] = res.data.progress;
-          }
-        });
-        setProgressData(progressMap);
-
-        // Step 3: Fetch content details for the contentIds
-        if (contentIds.length > 0) {
-          const contentPromises = contentIds.map((id) =>
-            axios
-              .get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api//continue-watching/${user._id}`)
-              .catch((err) => {
-                return null;
-              })
-          );
-          const contentResponses = await Promise.all(contentPromises);
-          const contentData = contentResponses
-            .filter((res) => res && res.data)
-            .map((res) => res.data);
-
-          if (Array.isArray(contentData) && contentData.length > 0) {
-            setData(contentData.filter((item) => item && item._id));
-          } else {
-            setError('No content available for the progress data.');
-          }
+        if (response.data && response.data.continueWatching) {
+          const formattedData = response.data.continueWatching.map(item => ({
+            ...item,
+            _id: item.contentId || item._id
+          }));
+          setData(formattedData);
         } else {
           setData([]);
         }
@@ -102,14 +47,13 @@ export default function SliderResume() {
       }
     }
 
-    fetchProgressAndContent();
+    fetchContinueWatching();
   }, [user]);
 
   const handleOpenModal = (content) => {
     if (content && content._id) {
       setModalContent(content);
       setIsModalOpen(true);
-    } else {
     }
   };
 
@@ -130,7 +74,6 @@ export default function SliderResume() {
     if (content && content._id && content.title) {
       const slug = createSlug(content.title, content._id);
       navigate(`/movie/${slug}`);
-    } else {
     }
   };
 
@@ -185,14 +128,14 @@ export default function SliderResume() {
           {Array.isArray(data) &&
             data.map((content) => (
               <div key={content._id} className="slides" onClick={() => handleOpenModal(content)}>
-                <Slidercontent
+                <SideBarSlidercont
                   img={content.thumbnail}
                   title={content.title}
-                   movie={content}
+                  movie={content}
                   views={content.views}
                   desc={content.description}
                   customStyle={{}}
-                  progress={progressData[content._id] || 0}
+                  progress={content.progress || 0}
                 />
               </div>
             ))}
