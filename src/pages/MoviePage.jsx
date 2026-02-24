@@ -18,6 +18,8 @@ import Footer from '../components/footer/Footer';
 import HighlightShareModal from '../components/modals/HighlightShareModal';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import SliderRecommended from '../components/sliders/SliderRecommend';
+import SliderResume from '../components/sliders/SliderResume';
 
 export default function MoviePage() {
   const [info, setInfo] = useState(false);
@@ -659,7 +661,7 @@ export default function MoviePage() {
             <h3 className="video-category-title text-white pb-[20px] font-semibold text-[1.5rem] md:text-[1.3rem] lg:text-[1.5rem]">
               Recommended for you
             </h3>
-            <Sliderinterviews />
+            <SliderRecommended/>
           </div>
           {user && (
             <div
@@ -669,7 +671,7 @@ export default function MoviePage() {
               <h3 className="video-category-title text-white pb-[20px] font-semibold text-[1.5rem] md:text-[1.3rem] lg:text-[1.5rem]">
                 Continue Watching
               </h3>
-              <SliderDocumentaries />
+              <SliderResume/>
             </div>
           )}
           <WelcomePopup
