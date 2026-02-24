@@ -6,6 +6,7 @@ import axios from 'axios';
 import Slidercontent from '../Slidercont'; 
 import { useNavigate } from 'react-router-dom';
 import ContentModal from '../ContentModal'; 
+import BASE_API_URL from '../../apiConfig';
 import styled, { keyframes } from 'styled-components';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
@@ -62,7 +63,7 @@ export default function UserRecommended() {
 
       try {
         setLoading(true);
-        const response = await axios.get(`https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/recommended/${id}`);
+        const response = await axios.get(`${BASE_API_URL}/api/recommended/${id}`);
         if (response.data && Array.isArray(response.data)) {
           setData(response.data);
         } else {

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -62,22 +62,22 @@ export default function MoviePage() {
   }, [contentId]);
 
   // Save video progress (only for signed-in users)
-  const saveProgress = async (currentTime) => {
+  const saveProgress = useCallback(async (currentTime) => {
     if (!user || !user.token || !contentId) {
       return;
     }
     try {
-      const response = await axios.post(
+      await axios.post(
         `${BASE_API_URL}/api/content/progress/${contentId}`,
         { progress: currentTime },
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
     } catch (error) {
     }
-  };
+  }, [user, contentId]);
 
   // Handle video time updates
-  const handleTimeUpdate = () => {
+  const handleTimeUpdate = useCallback(() => {
     if (videoRef.current && user) {
       const currentTime = videoRef.current.currentTime;
       const currentSecond = Math.floor(currentTime);
@@ -88,26 +88,21 @@ export default function MoviePage() {
         lastSavedSecond.current = currentSecond;
       }
     }
-  };
+  }, [user, saveProgress]);
+
+  const handlePause = useCallback(() => {
+    if (videoRef.current && user && videoRef.current.currentTime > 0) {
+      saveProgress(videoRef.current.currentTime);
+    }
+  }, [user, saveProgress]);
 
   useEffect(() => {
-    const video = videoRef.current;
-    if (video && user) {
-      video.addEventListener('timeupdate', handleTimeUpdate);
-      video.addEventListener('pause', () => {
-        if (video.currentTime > 0) {
-          saveProgress(video.currentTime);
-        }
-      });
-    }
     return () => {
-      if (video && user && video.currentTime > 0) {
-        video.removeEventListener('timeupdate', handleTimeUpdate);
-        video.removeEventListener('pause', () => saveProgress(video.currentTime));
-        saveProgress(video.currentTime);
+      if (videoRef.current && user && videoRef.current.currentTime > 0) {
+        saveProgress(videoRef.current.currentTime);
       }
     };
-  }, [contentId, user]);
+  }, [contentId, user, saveProgress]);
 
   useEffect(() => {
     if (user && movie) {
@@ -459,6 +454,8 @@ export default function MoviePage() {
             autoPlay
             controls
             ref={videoRef}
+            onTimeUpdate={handleTimeUpdate}
+            onPause={handlePause}
             controlsList="nodownload"
             className={`object-cover z-1 ${isMinimized ? 'bottom-0 right-0 w-52' : 'w-full h-[550px] static'} md:${
               isMinimized ? 'h-auto' : 'h-[900px]'
