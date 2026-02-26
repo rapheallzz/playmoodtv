@@ -38,8 +38,8 @@ const CreatePlaylistModal = ({
   };
 
   return (
-    <Modal>
-      <StyledPlaylistModal>
+    <Modal onClick={closeAllModals}>
+      <StyledPlaylistModal onClick={(e) => e.stopPropagation()}>
         <ModalTitle>Create Playlist</ModalTitle>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           <label>

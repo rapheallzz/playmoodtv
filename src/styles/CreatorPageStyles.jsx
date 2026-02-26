@@ -562,6 +562,84 @@ export const PostContent = styled.p`
   }
 `;
 
+export const UploadZoneContainer = styled.div`
+  border: 2px dashed ${(props) => (props.$isDragOver ? '#541011' : '#ccc')};
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  background-color: ${(props) => (props.$isDragOver ? '#fff5f5' : '#1a1a1a')};
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+
+  &:hover {
+    border-color: #541011;
+    background-color: #262626;
+  }
+`;
+
+export const UploadText = styled.p`
+  margin: 0;
+  font-size: 14px;
+  color: #fff;
+
+  strong {
+    color: #541011;
+  }
+`;
+
+export const UploadSubtext = styled.p`
+  margin: 0;
+  font-size: 12px;
+  color: #999;
+`;
+
+export const MediaPreviewGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+`;
+
+export const PreviewItem = styled.div`
+  position: relative;
+  width: 80px;
+  height: 80px;
+  border-radius: 4px;
+  overflow: hidden;
+
+  img, video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+`;
+
+export const RemovePreviewButton = styled.button`
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 12px;
+
+  &:hover {
+    background: #541011;
+  }
+`;
+
 export const CreatorSlider = styled.div`
   position: relative;
   display: flex;
@@ -593,7 +671,7 @@ export const Dot = styled.button`
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: ${(props) => (props.isActive ? 'white' : 'rgba(255, 255, 255, 0.5)')};
+  background-color: ${(props) => (props.$isActive ? 'white' : 'rgba(255, 255, 255, 0.5)')};
   border: none;
   padding: 0;
   cursor: pointer;
@@ -1922,6 +2000,44 @@ export const NavigationArrow = styled.button`
 
   &.next-arrow {
     right: 10px;
+  }
+`;
+
+export const MediaNavigationArrow = styled.button`
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.3);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 11;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.6);
+  }
+
+  ${(props) =>
+    props.direction === 'left' &&
+    `
+    left: 10px;
+  `}
+
+  ${(props) =>
+    props.direction === 'right' &&
+    `
+    right: 10px;
+  `}
+
+  svg {
+    font-size: 1rem;
   }
 `;
 

@@ -2,8 +2,8 @@ import React from 'react';
 import { Modal, ModalContent, ModalTitle, ModalTextarea, ModalButtons, ModalButtonCancel, ModalButtonSubmit } from '../../styles/CreatorPageStyles';
 
 const EditPostModal = ({ editPostContent, setEditPostContent, handleUpdatePost, onClose }) => (
-  <Modal>
-    <ModalContent>
+  <Modal onClick={onClose}>
+    <ModalContent onClick={(e) => e.stopPropagation()}>
       <ModalTitle>Edit Community Post</ModalTitle>
       <ModalTextarea
         value={editPostContent}

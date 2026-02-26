@@ -19,6 +19,7 @@ import {
   CreatorName,
   CloseButton,
   NavigationArrow,
+  MediaNavigationArrow,
   DotsContainer,
   Dot,
   LikesContainer,
@@ -97,6 +98,20 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
 
   if (!currentMediaUrl) return null;
 
+  const handleNextMedia = (e) => {
+    e.stopPropagation();
+    if (currentIndex < (post.media?.length || 0) - 1) {
+      setCurrentIndex(currentIndex + 1);
+    }
+  };
+
+  const handlePrevMedia = (e) => {
+    e.stopPropagation();
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
+    }
+  };
+
   return (
     <ModalOverlay onClick={onClose} data-testid="feed-post-viewer-modal">
       <CloseButton onClick={onClose} style={{ top: '20px', right: '20px', fontSize: '1.5rem' }}>
@@ -109,12 +124,32 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
           ) : (
             <img src={currentMediaUrl} alt={post.caption || post.title} />
           )}
+
           {!isHighlight && (post.media?.length || 0) > 1 && (
-            <DotsContainer>
-              {post.media.map((_, index) => (
-                <Dot key={index} isActive={index === currentIndex} onClick={() => setCurrentIndex(index)} />
-              ))}
-            </DotsContainer>
+            <>
+              {currentIndex > 0 && (
+                <MediaNavigationArrow direction="left" onClick={handlePrevMedia} aria-label="Previous Media">
+                  <FaChevronLeft />
+                </MediaNavigationArrow>
+              )}
+              {currentIndex < post.media.length - 1 && (
+                <MediaNavigationArrow direction="right" onClick={handleNextMedia} aria-label="Next Media">
+                  <FaChevronRight />
+                </MediaNavigationArrow>
+              )}
+              <DotsContainer>
+                {post.media.map((_, index) => (
+                  <Dot
+                    key={index}
+                    $isActive={index === currentIndex}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCurrentIndex(index);
+                    }}
+                  />
+                ))}
+              </DotsContainer>
+            </>
           )}
         </ModalCardMedia>
         <NavigationArrow className="prev-arrow" onClick={onPrev}>
