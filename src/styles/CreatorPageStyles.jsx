@@ -1755,6 +1755,7 @@ export const VerticalScrollViewer = styled.div`
   background-color: rgba(0, 0, 0, 0.85);
   overflow-y: scroll;
   scroll-snap-type: y mandatory;
+  overscroll-behavior: contain;
   z-index: 10002;
 
   /* Hide scrollbar for Chrome, Safari and Opera */

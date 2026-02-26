@@ -268,16 +268,20 @@ const VerticalHighlightViewer = ({
   };
 
   const handleScroll = (direction) => {
-    const newIndex = currentIndex + direction;
-    if (newIndex >= 0 && newIndex < highlights.length) {
-      isProgrammaticScroll.current = true;
-      setCurrentIndex(newIndex);
-      // Reset the flag after the scroll animation is likely to have finished.
-      clearTimeout(scrollTimeout.current);
-      scrollTimeout.current = setTimeout(() => {
-        isProgrammaticScroll.current = false;
-      }, 1000); // 1 second delay
+    let newIndex = currentIndex + direction;
+    if (newIndex < 0) {
+      newIndex = highlights.length - 1;
+    } else if (newIndex >= highlights.length) {
+      newIndex = 0;
     }
+
+    isProgrammaticScroll.current = true;
+    setCurrentIndex(newIndex);
+    // Reset the flag after the scroll animation is likely to have finished.
+    clearTimeout(scrollTimeout.current);
+    scrollTimeout.current = setTimeout(() => {
+      isProgrammaticScroll.current = false;
+    }, 1000); // 1 second delay
   };
 
   const onScroll = () => {
@@ -462,12 +466,12 @@ const VerticalHighlightViewer = ({
             data-testid={`video-container-${index}`}
             className={isCommentSectionOpen && selectedHighlight?.content._id === highlight.content._id ? 'shifted' : ''}
           >
-            {index === currentIndex && (
+            {index === currentIndex && highlights.length > 1 && (
               <>
-                <NavigationArrow className="up-arrow" onClick={() => handleScroll(-1)} disabled={currentIndex === 0}>
+                <NavigationArrow className="up-arrow" onClick={() => handleScroll(-1)}>
                   <FaChevronUp />
                 </NavigationArrow>
-                <NavigationArrow className="down-arrow" onClick={() => handleScroll(1)} disabled={currentIndex === highlights.length - 1}>
+                <NavigationArrow className="down-arrow" onClick={() => handleScroll(1)}>
                   <FaChevronDown />
                 </NavigationArrow>
               </>

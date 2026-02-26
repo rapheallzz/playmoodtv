@@ -95,16 +95,40 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
 
   const isHighlight = post.feedType === 'highlight' || (!post.media?.length && post.highlightUrl);
 
-  // Create a combined list of all media including content video
+  // Create a combined list of all media including content video, highlight, and thumbnails
   const allMedia = [];
+  const addedUrls = new Set();
+
+  const addMediaItem = (url, type) => {
+    if (url && !addedUrls.has(url)) {
+      allMedia.push({ url, type: type || (url.endsWith('.mp4') ? 'video' : 'image') });
+      addedUrls.add(url);
+    }
+  };
+
+  // 1. Highlight Video
+  if (post.highlightUrl) {
+    addMediaItem(post.highlightUrl, 'video');
+  }
+
+  // 2. Content Video
   if (post.content?.video) {
-    allMedia.push({ url: post.content.video, type: 'video' });
+    addMediaItem(post.content.video, 'video');
   }
+
+  // 3. Content Thumbnail
+  if (post.content?.thumbnail) {
+    addMediaItem(post.content.thumbnail, 'image');
+  }
+
+  // 4. Post Thumbnail
+  if (post.thumbnail) {
+    addMediaItem(post.thumbnail, 'image');
+  }
+
+  // 5. Additional Media Array
   if (post.media) {
-    post.media.forEach(m => allMedia.push({ ...m, type: m.url.endsWith('.mp4') ? 'video' : 'image' }));
-  }
-  if (isHighlight && post.highlightUrl) {
-    allMedia.push({ url: post.highlightUrl, type: 'video' });
+    post.media.forEach((m) => addMediaItem(m.url));
   }
 
   const currentMedia = allMedia[currentIndex];
