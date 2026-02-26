@@ -450,8 +450,14 @@ export default function DesktopHeader({ }) {
                   {openCategory === 'bestInFashion' && <SliderFashion />}
                   <h3 onClick={() => handleToggle('onlyInPlaymood')}>Only in Playmood</h3>
                   {openCategory === 'onlyInPlaymood' && <SliderOnly />}
-                  <h3 onClick={() => handleToggle('watchlist')}>Watchlist</h3>
-                  {openCategory === 'watchlist' && <SidebarSlider />}
+                  <h3 onClick={() => {
+                    if (user) {
+                      handleToggle('watchlist');
+                    } else {
+                      setShowWelcomePopup(true);
+                    }
+                  }}>Watchlist</h3>
+                  {user && openCategory === 'watchlist' && <SidebarSlider />}
                 </div>
               )}
             </SidebarClicked>

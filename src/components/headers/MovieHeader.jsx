@@ -475,8 +475,14 @@ export default function MovieHeader({ }) {
                 {bestInFashionToggled && <SidebarSlider />}
                 <h3 onClick={handleOnlyInPlaymoodToggle}>Only in Playmood</h3>
                 {onlyInPlaymoodToggled && <SidebarSlider />}
-                <h3 onClick={handleWatchlistToggle}>Watchlist</h3>
-                {watchlistToggled && <SidebarSlider />}
+                <h3 onClick={() => {
+                  if (user) {
+                    handleWatchlistToggle();
+                  } else {
+                    setShowWelcomePopup(true);
+                  }
+                }}>Watchlist</h3>
+                {user && watchlistToggled && <SidebarSlider />}
               </div>
                
               )}

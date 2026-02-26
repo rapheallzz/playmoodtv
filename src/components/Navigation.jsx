@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { FaAngleDown } from 'react-icons/fa';
+import { useSelector } from 'react-redux';
 
 const navLinks = [
   { to: "/newplaymood", label: "New on Playmood" },
@@ -22,6 +23,15 @@ const navLinks = [
 
 const Navigation = ({ isMobile, isDropdownOpen, toggleDropdown }) => {
   const location = useLocation();
+  const { user } = useSelector((state) => state.auth);
+
+  // Filter links based on authentication
+  const filteredNavLinks = navLinks.filter((link) => {
+    if (link.to === "/watchlist" || link.to === "/recommended") {
+      return !!user;
+    }
+    return true;
+  });
   
   // Find the current route's label, default to "NEW ON PLAYMOOD" if not found
   const currentNav = navLinks.find((link) => link.to === location.pathname) || navLinks[0];
@@ -32,7 +42,7 @@ const Navigation = ({ isMobile, isDropdownOpen, toggleDropdown }) => {
       {/* Desktop Sidebar */}
       <SidebarContainer className="hidden md:block fixed left-0 w-[260px] mt-[8%] pl-[0.5rem]">
         <div className="flex flex-col gap-1 text-sm md:text-base font-medium text-white">
-          {navLinks.map((link) => (
+          {filteredNavLinks.map((link) => (
             <StyledLink
               key={link.to}
               to={link.to}
@@ -63,7 +73,7 @@ const Navigation = ({ isMobile, isDropdownOpen, toggleDropdown }) => {
           {isDropdownOpen && (
             <DropdownMenu>
               <div className="flex flex-col py-2">
-                {navLinks.map((link) => (
+                {filteredNavLinks.map((link) => (
                   <StyledLink
                     key={link.to}
                     to={link.to}
