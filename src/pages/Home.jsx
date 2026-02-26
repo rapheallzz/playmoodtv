@@ -930,10 +930,10 @@ function HomeContent({
             <Videocategorytitle>Teens</Videocategorytitle>
             <SliderTeens />
           </VideoCategory>
-          <VideoCategory>
+          {/* <VideoCategory>
             <Videocategorytitle>Best in Fashion</Videocategorytitle>
             <SliderFashion />
-          </VideoCategory>
+          </VideoCategory> */}
           <VideoCategory>
             <Videocategorytitle>Only in Playmood</Videocategorytitle>
             <SliderOnly />

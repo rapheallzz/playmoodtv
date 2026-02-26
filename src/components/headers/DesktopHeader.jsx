@@ -436,7 +436,7 @@ export default function DesktopHeader({ }) {
                   {user && openCategory === 'recommendations' && <SliderRecommended />}
                   <h3 onClick={() => handleToggle('interviews')}>Interviews</h3>
                   {openCategory === 'interviews' && <SliderInterview />}
-                  <h3 onClick={() => handleToggle('fashionShows')}>Fashion Shows Stories</h3>
+                  <h3 onClick={() => handleToggle('fashionShows')}>Fashion Shows</h3>
                   {openCategory === 'fashionShows' && <SliderFashion />}
                   <h3 onClick={() => handleToggle('documentaries')}>Documentaries and Reports</h3>
                   {openCategory === 'documentaries' && <SliderDocumentaries />}
