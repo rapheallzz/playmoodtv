@@ -20,6 +20,28 @@ const FeedSection = ({ feeds, isLoadingFeeds, onPostClick }) => {
     return <NoPostsMessage>No feed posts yet.</NoPostsMessage>;
   }
 
+  // Group feeds that belong to the same content
+  const processedFeeds = feeds.reduce((acc, feed) => {
+    const contentId = feed.content?._id || feed._id;
+    const existingIndex = acc.findIndex(item => (item.content?._id || item._id) === contentId);
+
+    if (existingIndex !== -1) {
+      // Group with existing post
+      const existing = acc[existingIndex];
+      if (feed.media && feed.media.length > 0) {
+        existing.media = existing.media ? [...existing.media, ...feed.media] : [...feed.media];
+      }
+      if (feed.content?.video && !existing.content?.video) {
+        existing.content = existing.content ? { ...existing.content, video: feed.content.video } : { video: feed.content.video };
+      }
+    } else {
+      // Create new grouped entry (deep copy to avoid modifying original prop)
+      acc.push(JSON.parse(JSON.stringify(feed)));
+    }
+
+    return acc;
+  }, []);
+
   const renderFeedPost = (feed, index) => {
     const imageUrl = feed.media?.[0]?.url || feed.content?.thumbnail || feed.thumbnail;
     if (!imageUrl) {
@@ -44,7 +66,7 @@ const FeedSection = ({ feeds, isLoadingFeeds, onPostClick }) => {
 
   return (
     <FeedContainer>
-      <FeedGrid>{feeds.map(renderFeedPost)}</FeedGrid>
+      <FeedGrid>{processedFeeds.map(renderFeedPost)}</FeedGrid>
     </FeedContainer>
   );
 };

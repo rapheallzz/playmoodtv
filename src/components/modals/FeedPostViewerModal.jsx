@@ -94,13 +94,25 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
   if (!post) return null;
 
   const isHighlight = post.feedType === 'highlight' || (!post.media?.length && post.highlightUrl);
-  const currentMediaUrl = isHighlight ? post.highlightUrl : post.media?.[currentIndex]?.url;
 
-  if (!currentMediaUrl) return null;
+  // Create a combined list of all media including content video
+  const allMedia = [];
+  if (post.content?.video) {
+    allMedia.push({ url: post.content.video, type: 'video' });
+  }
+  if (post.media) {
+    post.media.forEach(m => allMedia.push({ ...m, type: m.url.endsWith('.mp4') ? 'video' : 'image' }));
+  }
+  if (isHighlight && post.highlightUrl) {
+    allMedia.push({ url: post.highlightUrl, type: 'video' });
+  }
+
+  const currentMedia = allMedia[currentIndex];
+  if (!currentMedia) return null;
 
   const handleNextMedia = (e) => {
     e.stopPropagation();
-    if (currentIndex < (post.media?.length || 0) - 1) {
+    if (currentIndex < allMedia.length - 1) {
       setCurrentIndex(currentIndex + 1);
     }
   };
@@ -119,26 +131,26 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
       </CloseButton>
       <ModalCard onClick={(e) => e.stopPropagation()}>
         <ModalCardMedia>
-          {isHighlight || currentMediaUrl.endsWith('.mp4') ? (
-            <video src={currentMediaUrl} controls autoPlay loop />
+          {currentMedia.type === 'video' ? (
+            <video src={currentMedia.url} controls autoPlay loop />
           ) : (
-            <img src={currentMediaUrl} alt={post.caption || post.title} />
+            <img src={currentMedia.url} alt={post.caption || post.title} />
           )}
 
-          {!isHighlight && (post.media?.length || 0) > 1 && (
+          {allMedia.length > 1 && (
             <>
               {currentIndex > 0 && (
                 <MediaNavigationArrow direction="left" onClick={handlePrevMedia} aria-label="Previous Media">
                   <FaChevronLeft />
                 </MediaNavigationArrow>
               )}
-              {currentIndex < post.media.length - 1 && (
+              {currentIndex < allMedia.length - 1 && (
                 <MediaNavigationArrow direction="right" onClick={handleNextMedia} aria-label="Next Media">
                   <FaChevronRight />
                 </MediaNavigationArrow>
               )}
               <DotsContainer>
-                {post.media.map((_, index) => (
+                {allMedia.map((_, index) => (
                   <Dot
                     key={index}
                     $isActive={index === currentIndex}
