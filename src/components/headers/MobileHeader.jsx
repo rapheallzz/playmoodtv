@@ -38,7 +38,7 @@ import DonationModal from '../DonationModal';
 import Slidertop10 from '../sidebarSliders/SliderTop10';
 import SliderNew from '../sidebarSliders/SliderNew';
 import SliderChannel from '../sidebarSliders/SliderChannels';
-import SliderDairies from '../sidebarSliders/SliderDaries';
+import SliderDiaries from '../sidebarSliders/SliderDiaries';
 import WelcomePopup from '../Welcomepop';
 
 export default function MobileHeader({ channels, set_channels }) {
@@ -475,7 +475,7 @@ export default function MobileHeader({ channels, set_channels }) {
                 <h3 onClick={handleChannelsToggle}>Channels</h3>
                 {channelsToggled && <SliderChannel/>}
                 <h3 onClick={handleDiariesToggle}>Diaries</h3>
-                {diariesToggled && < SliderDairies />}
+                {diariesToggled && < SliderDiaries />}
                 <h3 onClick={handleSpacesToggle}>Spaces</h3>
                 {spacesToggled && < SliderSpace />}
                 <h3 onClick={() => {

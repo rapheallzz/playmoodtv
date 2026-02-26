@@ -45,7 +45,7 @@ const Modal = ({ onClose }) => {
                             <option value='Social'>Social</option>
                             <option value='Behind the camera'>Behind the camera</option>
                             <option value='Soon in Playmood'>Soon in Playmood</option>
-                            <option value='Daries'>Daries</option>
+                            <option value='Diaries'>Diaries</option>
                         {/* Add other category options */}
                     </Select>
 

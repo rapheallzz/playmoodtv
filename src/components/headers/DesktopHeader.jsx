@@ -44,7 +44,7 @@ import WelcomePopup from '../Welcomepop';
 import Slidertop10 from '../sidebarSliders/SliderTop10';
 import SliderNew from '../sidebarSliders/SliderNew';
 import SliderChannel from '../sidebarSliders/SliderChannels';
-import SliderDairies from '../sidebarSliders/SliderDaries';
+import SliderDiaries from '../sidebarSliders/SliderDiaries';
 import SliderSpace from '../sidebarSliders/SliderSpace';
 import SliderRecommended from '../sidebarSliders/SliderRecommend';
 import SliderInterview from '../sidebarSliders/SliderInterview';
@@ -423,7 +423,7 @@ export default function DesktopHeader({ }) {
                   <h3 onClick={() => handleToggle('channels')}>Channels</h3>
                   {openCategory === 'channels' && <SliderChannel />}
                   <h3 onClick={() => handleToggle('diaries')}>Diaries</h3>
-                  {openCategory === 'diaries' && <SliderDairies />}
+                  {openCategory === 'diaries' && <SliderDiaries />}
                   <h3 onClick={() => handleToggle('spaces')}>Spaces</h3>
                   {openCategory === 'spaces' && <SliderSpace />}
                   <h3 onClick={() => {

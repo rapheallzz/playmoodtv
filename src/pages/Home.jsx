@@ -8,7 +8,7 @@ import 'slick-carousel/slick/slick-theme.css';
 import Slidertop10 from '../components/sliders/SliderTop10';
 import SliderNew from '../components/sliders/SliderNew';
 import SliderChannel from '../components/sliders/SliderChannels';
-import SliderDiaries from '../components/sliders/SliderDaries';
+import SliderDiaries from '../components/sliders/SliderDiaries';
 import SliderSpace from '../components/sliders/SliderSpace';
 import SlideRecommended from '../components/sliders/SliderRecommend';
 import SliderInterview from '../components/sliders/SliderInterview';
@@ -420,7 +420,7 @@ const SliderContainer = styled.div`
 
 const VideoCategory = styled.div`
   width: 92%;
-  margin: 20px;
+  margin: 10px 20px;
   display: flex;
   flex-direction: column;
   height:380px;
@@ -455,7 +455,7 @@ const VideoCategoryHighlights = styled(VideoCategory)`
   height: 450px;
   min-height: 220px;
   padding-top: 20px;
-  padding-bottom: 40px;
+  padding-bottom: 20px;
 
   @media screen and (max-width: 768px) {
     height: 220px;
@@ -475,14 +475,14 @@ const VideoCategoryHighlights = styled(VideoCategory)`
 
 const VideoCategoryCircle = styled.div`
   width: 92%;
-  margin: 20px;
+  margin: 10px 20px;
   display: flex;
   flex-direction: column;
   height:350px;
   min-height: 220px;
   box-sizing: border-box;
   z-index: 210;
-  padding-top: 20px;
+  padding-top: 10px;
 
   @media screen and (max-width: 768px) {
     min-height: 180px;

@@ -5,9 +5,10 @@ import 'slick-carousel/slick/slick-theme.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
+import BASE_API_URL from '../../apiConfig';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import CreatorContentModal from '../CreatorContentModal';
-import Slidercirclecontent from '../SideSlidercirclecontent';
+import Slidercirclecontent from '../Slidercirclecontent';
 
 // Pulse animation for right arrow
 const pulse = keyframes`
@@ -45,8 +46,8 @@ const CustomNextArrow = (props) => {
 const SliderContainer = styled.div`
   position: relative;
   width: 100%;
-  // padding: 0 20px;
-  // margin: 0 auto;
+  padding: 0 20px;
+  margin: 0 auto;
 
   .slick-slider {
     position: relative;
@@ -57,66 +58,61 @@ const SliderContainer = styled.div`
   .slick-next {
     display: none !important;
   }
-     .slick-list,
-  .slick-track {
+
+  .custom-arrow {
+    display: none;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 50px;
+    height: 120px;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    z-index: 10;
+    cursor: pointer;
     display: flex;
     align-items: center;
+    justify-content: center;
+    transition: opacity 0.3s ease, background-color 0.3s ease;
+    opacity: 0;
+
+    &.prev-arrow {
+      left: -10px;
+    }
+
+    &.next-arrow {
+      right: -10px;
+      &:hover {
+        animation: ${pulse} 1s infinite;
+        background: rgba(0, 0, 0, 0.7);
+      }
+    }
+
+    .arrow-icon {
+      font-size: 24px;
+    }
   }
 
-  // .custom-arrow {
-  //   display: none;
-  //   position: absolute;
-  //   top: 50%;
-  //   transform: translateY(-50%);
-  //   width: 50px;
-  //   height: 120px;
-  //   background: rgba(0, 0, 0, 0.5);
-  //   color: white;
-  //   z-index: 10;
-  //   cursor: pointer;
-  //   display: flex;
-  //   align-items: center;
-  //   justify-content: center;
-  //   transition: opacity 0.3s ease, background-color 0.3s ease;
-  //   opacity: 0;
+  &:hover .custom-arrow {
+    display: flex;
+    opacity: 1;
+  }
 
-  //   &.prev-arrow {
-  //     left: -10px;
-  //   }
-
-  //   &.next-arrow {
-  //     right: -10px;
-  //     &:hover {
-  //       animation: ${pulse} 1s infinite;
-  //       background: rgba(0, 0, 0, 0.7);
-  //     }
-  //   }
-
-  //   .arrow-icon {
-  //     font-size: 24px;
-  //   }
-  // }
-
-  // &:hover .custom-arrow {
-  //   display: flex;
-  //   opacity: 1;
-  // }
-
-  // .slick-slide {
-  //   padding: 0 12px;
-  //   min-height: 160px;
-  //   @media (min-width: 768px) {
-  //     min-height: 200px;
-  //   }
-  //   @media (max-width: 480px) {
-  //     min-height: 40vw;
-  //     max-height: 140px;
-  //   }
-  //   @media (max-width: 360px) {
-  //     min-height: 35vw;
-  //     max-height: 120px;
-  //   }
-  // }
+  .slick-slide {
+    padding: 0 12px;
+    min-height: 160px;
+    @media (min-width: 768px) {
+      min-height: 200px;
+    }
+    @media (max-width: 480px) {
+      min-height: 40vw;
+      max-height: 140px;
+    }
+    @media (max-width: 360px) {
+      min-height: 35vw;
+      max-height: 120px;
+    }
+  }
 
   .slidescircle {
     position: relative;
@@ -126,25 +122,24 @@ const SliderContainer = styled.div`
     cursor: pointer;
     user-select: none;
     -webkit-touch-callout: none;
-    width: 80px;
-    height: 80px;
-    // @media (min-width: 768px) {
-    //   width: 100px;
-    //   height: 100px;
-    // }
-      
-    // @media (max-width: 480px) {
-    //   width: 40vw;
-    //   height: 40vw;
-    //   max-width: 140px;
-    //   max-height: 140px;
-    // }
-    // @media (max-width: 360px) {
-    //   width: 35vw;
-    //   height: 35vw;
-    //   max-width: 120px;
-    //   max-height: 120px;
-    // }
+    width: 160px;
+    height: 160px;
+    @media (min-width: 768px) {
+      width: 200px;
+      height: 200px;
+    }
+    @media (max-width: 480px) {
+      width: 40vw;
+      height: 40vw;
+      max-width: 140px;
+      max-height: 140px;
+    }
+    @media (max-width: 360px) {
+      width: 35vw;
+      height: 35vw;
+      max-width: 120px;
+      max-height: 120px;
+    }
   }
 
   @media (max-width: 1024px) {
@@ -163,8 +158,7 @@ const SliderContainer = styled.div`
   }
 `;
 
-
-export default function SliderDairies() {
+export default function SliderDiaries() {
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
   const [modalCreator, setModalCreator] = useState(null);
@@ -175,7 +169,7 @@ export default function SliderDairies() {
   useEffect(() => {
     const fetchCreators = async () => {
       try {
-        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/creators', {
+        const response = await axios.get(`${BASE_API_URL}/api/users/creators`, {
           headers: {
             'Cache-Control': 'no-cache',
             'Pragma': 'no-cache',
@@ -215,23 +209,24 @@ export default function SliderDairies() {
   };
 
    const settings = {
-  dots: false,
-    infinite: data.length > 3,
-    speed: 500,
-    slidesToShow: 2, // Show 3 slides for sidebar
+    dots: false,
+    infinite: data.length > 4,
+    speed: 300,
+    slidesToShow: 4,
     slidesToScroll: 1,
     initialSlide: 0,
-    autoplay: true,
     autoplaySpeed: 3000,
     cssEase: 'linear',
-    arrows: false, 
+    arrows: true,
+    prevArrow: <CustomPrevArrow />,
+    nextArrow: <CustomNextArrow />,
     swipeToSlide: true,
     lazyLoad: 'ondemand',
-     responsive: [
+    responsive: [
       {
         breakpoint: 1024,
         settings: {
-          slidesToShow: 2,
+          slidesToShow: 3,
           slidesToScroll: 1,
           infinite: data.length > 3,
           dots: true,
@@ -243,16 +238,18 @@ export default function SliderDairies() {
         settings: {
           slidesToShow: 2,
           slidesToScroll: 1,
+          infinite: data.length > 2,
           arrows: true,
           centerMode: true,
-          centerPadding: '10px',
+          centerPadding: '15px',
         },
       },
       {
         breakpoint: 480,
         settings: {
-          slidesToShow: 1.5,
+          slidesToShow: 2,
           slidesToScroll: 1,
+          infinite: data.length > 2,
           arrows: false,
           centerMode: true,
           centerPadding: '5px',
@@ -261,15 +258,17 @@ export default function SliderDairies() {
       {
         breakpoint: 360,
         settings: {
-          slidesToShow: 1.5,
+          slidesToShow: 2,
           slidesToScroll: 1,
+          infinite: data.length > 2,
           arrows: false,
           centerMode: true,
-          centerPadding: '5px',
+          centerPadding: '20px',
         },
       },
     ],
   };
+
   return (
     <SliderContainer>
       {error ? (

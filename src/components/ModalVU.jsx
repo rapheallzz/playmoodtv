@@ -268,10 +268,11 @@ const VideoModal = ({ onClose }) => {
           >
             <option value="Fashion Show">Fashion Show</option>
             <option value="Teen">Teens</option>
-            <option value="Documentarie">Documentaries</option>
+            <option value="Documentaries">Documentaries</option>
             <option value="Interview">Interviews</option>
             <option value="Social">Social</option>
             <option value="Behind the camera">Behind the camera</option>
+            <option value="Diaries">Diaries</option>
           </Select>
 
           <Label>Upload Video</Label>
