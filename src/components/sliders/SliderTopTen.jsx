@@ -115,7 +115,7 @@ export default function SliderTopTen() {
           slidesToShow: 1.5,
           slidesToScroll: 1,
           initialSlide: 0,
-          infinite: data.length > 2,
+          infinite: false,
           arrows: true,
         },
       },
@@ -124,7 +124,7 @@ export default function SliderTopTen() {
         settings: {
           slidesToShow: 1.5,
           slidesToScroll: 1,
-          infinite: data.length > 2,
+          infinite: false,
           initialSlide: 0,
           arrows: false,
           centerMode: false,

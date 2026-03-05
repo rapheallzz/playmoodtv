@@ -226,7 +226,7 @@ export default function SliderSpace() {
         settings: {
           slidesToShow: 2.2,
           slidesToScroll: 1,
-          infinite: data.length > 2,
+          infinite: false,
           arrows: true,
           centerMode: false,
         },
@@ -236,10 +236,9 @@ export default function SliderSpace() {
         settings: {
           slidesToShow: 2.2,
           slidesToScroll: 1,
-          infinite: data.length > 2,
+          infinite: false,
           arrows: false,
-          centerMode: true,
-          centerPadding: '0px',
+          centerMode: false,
         },
       },
       {
@@ -247,10 +246,9 @@ export default function SliderSpace() {
         settings: {
           slidesToShow: 2.2,
           slidesToScroll: 1,
-          infinite: data.length > 2,
+          infinite: false,
           arrows: false,
-          centerMode: true,
-          centerPadding: '20px',
+          centerMode: false,
         },
       },
     ],

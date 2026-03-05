@@ -226,10 +226,9 @@ export default function SliderChannel() {
         settings: {
           slidesToShow: 2.2,
           slidesToScroll: 1,
-          infinite: data.length > 2,
+          infinite: false,
           arrows: true,
-          centerMode: true,
-          centerPadding: '15px',
+          centerMode: false,
         },
       },
       {
@@ -237,10 +236,9 @@ export default function SliderChannel() {
         settings: {
           slidesToShow: 2.2,
           slidesToScroll: 1,
-          infinite: data.length > 2,
+          infinite: false,
           arrows: false,
-          centerMode: true,
-          centerPadding: '5px',
+          centerMode: false,
         },
       },
       {
@@ -248,10 +246,9 @@ export default function SliderChannel() {
         settings: {
           slidesToShow: 2.2,
           slidesToScroll: 1,
-          infinite: data.length > 2,
+          infinite: false,
           arrows: false,
-          centerMode: true,
-          centerPadding: '20px',
+          centerMode: false,
         },
       },
     ],

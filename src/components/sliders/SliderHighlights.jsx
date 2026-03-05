@@ -77,10 +77,9 @@ export default function SliderHighlights({ highlights, handleSelectHighlight, re
         settings: {
           slidesToShow: 3,
           slidesToScroll: 1,
-          infinite: highlights.length > 3,
+          infinite: false,
           arrows: false,
-          centerMode: true,
-          centerPadding: '0px',
+          centerMode: false,
         },
       },
     ],

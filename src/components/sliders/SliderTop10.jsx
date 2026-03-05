@@ -115,22 +115,21 @@ export default function Slidertop10() {
     {
       breakpoint: 600,
       settings: {
-        slidesToShow: 2.2,
+        slidesToShow: 1.5,
         slidesToScroll: 1,
         initialSlide: 0,
-        infinite: data.length > 2,
+        infinite: false,
         arrows: true,
       },
     },
     {
       breakpoint: 480,
       settings: {
-        slidesToShow: 2.2,
+        slidesToShow: 1.5,
         slidesToScroll: 1,
-        infinite: data.length > 2,
+        infinite: false,
         arrows: false,
-        centerMode: true, // Center the slide
-        centerPadding: '0px', // Add padding to prevent content from touching screen edges
+        centerMode: false,
           prevArrow: <CustomPrevArrow />,
   nextArrow: <CustomNextArrow />,
   touchThreshold: 10,

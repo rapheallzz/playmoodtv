@@ -163,7 +163,6 @@ export default function SliderDiaries() {
   const [error, setError] = useState(null);
   const [modalCreator, setModalCreator] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [initialSlide, setInitialSlide] = useState(0);
   const sliderRef = useRef(null);
 
   useEffect(() => {
@@ -178,8 +177,6 @@ export default function SliderDiaries() {
         });
         if (Array.isArray(response.data)) {
           setData(response.data);
-          // Set initialSlide to the index of the last creator
-          setInitialSlide(response.data.length > 0 ? response.data.length - 1 : 0);
         } else {
           setError('Unexpected data format.');
         }
@@ -190,13 +187,6 @@ export default function SliderDiaries() {
 
     fetchCreators();
   }, []);
-
-  // Update slider position when data changes
-  useEffect(() => {
-    if (sliderRef.current && data.length > 0) {
-      sliderRef.current.slickGoTo(data.length - 1);
-    }
-  }, [data]);
 
   const handleOpenModal = (creator) => {
     setModalCreator(creator);
@@ -238,10 +228,9 @@ export default function SliderDiaries() {
         settings: {
           slidesToShow: 2.2,
           slidesToScroll: 1,
-          infinite: data.length > 2,
+          infinite: false,
           arrows: true,
-          centerMode: true,
-          centerPadding: '15px',
+          centerMode: false,
         },
       },
       {
@@ -249,10 +238,9 @@ export default function SliderDiaries() {
         settings: {
           slidesToShow: 2.2,
           slidesToScroll: 1,
-          infinite: data.length > 2,
+          infinite: false,
           arrows: false,
-          centerMode: true,
-          centerPadding: '5px',
+          centerMode: false,
         },
       },
       {
@@ -260,10 +248,9 @@ export default function SliderDiaries() {
         settings: {
           slidesToShow: 2.2,
           slidesToScroll: 1,
-          infinite: data.length > 2,
+          infinite: false,
           arrows: false,
-          centerMode: true,
-          centerPadding: '20px',
+          centerMode: false,
         },
       },
     ],
