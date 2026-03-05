@@ -224,12 +224,11 @@ export default function SliderSpace() {
       {
         breakpoint: 600,
         settings: {
-          slidesToShow: 2.2.5,
+          slidesToShow: 2.2,
           slidesToScroll: 1,
-          infinite: data.length > 2.5,
+          infinite: data.length > 2,
           arrows: true,
-          centerMode: true,
-          centerPadding: '15px',
+          centerMode: false,
         },
       },
       {
