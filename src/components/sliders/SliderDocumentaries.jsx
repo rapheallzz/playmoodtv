@@ -103,7 +103,7 @@ export default function SliderDocumentaries() {
     prevArrow: <CustomPrevArrow />,
     nextArrow: <CustomNextArrow />,
     swipeToSlide: true,
-    lazyLoad: 'ondemand',
+    lazyLoad: false,
     responsive: [
       {
         breakpoint: 1024,

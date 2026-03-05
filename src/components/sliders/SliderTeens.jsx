@@ -105,7 +105,7 @@ export default function SliderTeens() {
     prevArrow: <CustomPrevArrow />,
     nextArrow: <CustomNextArrow />,
     swipeToSlide: true,
-    lazyLoad: 'ondemand',
+    lazyLoad: false,
     responsive: [
       {
         breakpoint: 1024,

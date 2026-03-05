@@ -114,7 +114,7 @@ export default function SliderRecommended({ contentId: propContentId, title, cla
     prevArrow: <CustomPrevArrow />,
     nextArrow: <CustomNextArrow />,
     swipeToSlide: true,
-    lazyLoad: 'ondemand',
+    lazyLoad: false,
     responsive: [
       {
         breakpoint: 1024,

@@ -185,7 +185,7 @@ export default function SliderSubscriptions({ subscriptions }) {
     prevArrow: <CustomPrevArrow />,
     nextArrow: <CustomNextArrow />,
     swipeToSlide: true,
-    lazyLoad: 'ondemand',
+    lazyLoad: false,
     responsive: [
       {
         breakpoint: 1024,

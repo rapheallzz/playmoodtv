@@ -97,7 +97,7 @@ export default function SliderTopTen() {
     prevArrow: <CustomPrevArrow />,
     nextArrow: <CustomNextArrow />,
     swipeToSlide: true,
-    lazyLoad: 'ondemand',
+    lazyLoad: false,
     responsive: [
       {
         breakpoint: 1024,
@@ -238,7 +238,8 @@ const SliderContainer = styled.div`
 
   .movie-ids {
     position: absolute;
-    top: 5px;
+    top: 35%;
+    transform: translateY(-50%);
     left: 5px;
     color: white;
     font-size: 44px;
@@ -256,14 +257,14 @@ const SliderContainer = styled.div`
   @media (max-width: 1024px) {
     .movie-ids {
       font-size: 36px;
-      top: 5px;
+      top: 35%;
     }
   }
 
   @media (max-width: 600px) {
     .movie-ids {
       font-size: 32px;
-      top: 5px;
+      top: 35%;
       left: 5px;
     }
   }
@@ -279,7 +280,7 @@ const SliderContainer = styled.div`
 
     .movie-ids {
       font-size: 28px;
-      top: 5px;
+      top: 35%;
       left: 8px;
     }
 

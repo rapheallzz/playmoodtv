@@ -100,7 +100,7 @@ export default function Slidertop10() {
   nextArrow: <CustomNextArrow />,
   touchThreshold: 10,
    swipeToSlide: true,
-    lazyLoad: 'ondemand',
+    lazyLoad: false,
   responsive: [
     {
       breakpoint: 1024,
@@ -243,59 +243,54 @@ const SliderContainer = styled.div`
 
   .movie-ids {
     position: absolute;
-    top: 40%;
+    top: 35%;
     transform: translateY(-50%);
-    left: -30px;
-    width: 40px;
-    height: 40px;
+    left: 5px;
     color: white;
-    font-size: 54px;
-    font-weight: bold;
+    font-size: 44px;
+    font-weight: 900;
     z-index: 5;
-    background: rgba(0, 0, 0, 0.7);
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 5px;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 1);
+    font-style: italic;
+    opacity: 0.9;
+    pointer-events: none;
   }
 
   @media (max-width: 1024px) {
     .movie-ids {
-      left: -30px;
-      width: 30px;
-      height: 30px;
-      font-size: 18px;
+      font-size: 36px;
+      top: 35%;
     }
   }
 
   @media (max-width: 600px) {
     .movie-ids {
-      left: -25px;
-      width: 25px;
-      height: 25px;
-      font-size: 16px;
+      font-size: 32px;
+      top: 35%;
+      left: 5px;
     }
   }
 
   @media (max-width: 480px) {
-    padding: 0 10px;
-    width: 100%; /* Reduce width for mobile */
-    margin: 0 auto;
+    padding: 0 5px;
+    width: 100%;
+    margin: 0;
 
     .custom-arrow {
       display: none !important;
     }
 
     .movie-ids {
-      left: -20px;
-      width: 20px;
-      height: 20px;
-      font-size: 24px;
+      font-size: 28px;
+      top: 35%;
+      left: 8px;
     }
 
     .slick-slide {
-      padding: 0 2px; /* Reduce padding between slides */
+      padding: 0 4px;
     }
   }
 `;
