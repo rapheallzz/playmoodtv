@@ -138,7 +138,7 @@ export default function SliderTopTen() {
       {error ? (
         <div className="error-message">{error}</div>
       ) : (
-        <Slider {...settings} ref={sliderRef}>
+        <Slider key={data.length} {...settings} ref={sliderRef}>
           {Array.isArray(data) &&
             data.map((content, index) => (
               <div key={content._id} className="slides">
@@ -169,7 +169,6 @@ export default function SliderTopTen() {
   );
 }
 
-// Styled Components
 // Styled Components
 const SliderContainer = styled.div`
   position: relative;
@@ -263,10 +262,6 @@ const SliderContainer = styled.div`
       font-size: 36px;
       top: 35%;
     }
-  }
-
-  @media (max-width: 768px) {
-    padding: 0;
   }
 
   @media (max-width: 600px) {

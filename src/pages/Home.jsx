@@ -430,6 +430,7 @@ const VideoCategory = styled.div`
 
   @media screen and (max-width: 768px) {
     width: 100%;
+    height: auto;
     min-height: 180px;
     margin: 10px 0 20px 0;
     padding-bottom: 20px;
@@ -460,7 +461,7 @@ const VideoCategoryHighlights = styled(VideoCategory)`
   padding-bottom: 20px;
 
   @media screen and (max-width: 768px) {
-    height: 220px;
+    height: auto;
     min-height: 180px;
   }
 
@@ -487,6 +488,7 @@ const VideoCategoryCircle = styled.div`
   padding-top: 10px;
 
   @media screen and (max-width: 768px) {
+    height: auto;
     min-height: 180px;
     margin: 10px auto 20px;
     padding-bottom: 20px;

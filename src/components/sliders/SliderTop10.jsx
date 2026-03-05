@@ -89,19 +89,19 @@ export default function Slidertop10() {
     navigate(`/movie/${slug}`);
   };
 
- const settings = {
-  dots: false,
-  infinite: data.length > 5,
-  speed: 500,
-  slidesToShow: 5,
-  slidesToScroll: 1,
-  initialSlide: 0,
-  prevArrow: <CustomPrevArrow />,
-  nextArrow: <CustomNextArrow />,
-  touchThreshold: 10,
-   swipeToSlide: true,
+  const settings = {
+    dots: false,
+    infinite: data.length > 5,
+    speed: 500,
+    slidesToShow: 5,
+    slidesToScroll: 1,
+    initialSlide: 0,
+    prevArrow: <CustomPrevArrow />,
+    nextArrow: <CustomNextArrow />,
+    touchThreshold: 10,
+    swipeToSlide: true,
     lazyLoad: false,
-  responsive: [
+    responsive: [
     {
       breakpoint: 1024,
       settings: {
@@ -143,7 +143,7 @@ export default function Slidertop10() {
       {error ? (
         <div className="error-message">{error}</div>
       ) : (
-        <Slider {...settings} ref={sliderRef}>
+        <Slider key={data.length} {...settings} ref={sliderRef}>
           {Array.isArray(data) &&
             data.map((content, index) => (
               <div key={content._id} className="slides">
@@ -180,6 +180,10 @@ const SliderContainer = styled.div`
   width: 100%;
   padding: 0 20px;
   margin: 0 auto;
+
+  @media (max-width: 768px) {
+    padding: 0;
+  }
 
   .slick-slider {
     position: relative;
@@ -274,7 +278,6 @@ const SliderContainer = styled.div`
   }
 
   @media (max-width: 480px) {
-    padding: 0 5px;
     width: 100%;
     margin: 0;
 

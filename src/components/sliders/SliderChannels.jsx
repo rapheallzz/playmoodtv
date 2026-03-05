@@ -260,7 +260,7 @@ export default function SliderChannel() {
         <div className="error-message">{error}</div>
       ) : (
         <>
-          <Slider {...settings}>
+          <Slider key={data.length} {...settings}>
             {Array.isArray(data) &&
               data.map((creator, index) => (
                 <div key={creator._id} className="slidescircle">

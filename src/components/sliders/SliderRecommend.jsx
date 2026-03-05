@@ -164,7 +164,7 @@ export default function SliderRecommended({ contentId: propContentId, title, cla
         {error ? (
           <div className="error-message">{error}</div>
         ) : (
-          <Slider {...settings} ref={sliderRef}>
+          <Slider key={data.length} {...settings} ref={sliderRef}>
             {Array.isArray(data) &&
               data.slice(0, 10).map((content) => (
                 // Limit to 10 slides

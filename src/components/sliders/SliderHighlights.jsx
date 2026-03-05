@@ -87,7 +87,7 @@ export default function SliderHighlights({ highlights, handleSelectHighlight, re
 
   return (
     <SliderContainer>
-      <Slider {...settings} ref={sliderRef}>
+      <Slider key={highlights.length} {...settings} ref={sliderRef}>
         {highlights.map((highlight, index) => (
           <div key={highlight._id} className="slides">
             <div

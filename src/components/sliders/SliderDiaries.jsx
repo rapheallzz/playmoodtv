@@ -262,7 +262,7 @@ export default function SliderDiaries() {
         <div className="error-message">{error}</div>
       ) : (
         <>
-          <Slider {...settings} ref={sliderRef}>
+          <Slider key={data.length} {...settings} ref={sliderRef}>
             {Array.isArray(data) &&
               data.map((creator, index) => (
                 <div key={creator._id} className="slidescircle">
