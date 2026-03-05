@@ -619,7 +619,7 @@ export default function MobileBurger() {
                   {user && recommendationsToggled && <SliderRecommended />}
                   <h3 onClick={handleInterviewsToggle}>Interviews</h3>
                   {interviewsToggled && <SliderInterview />}
-                  <h3 onClick={handleFashionShowsToggle}>Fashion Shows Stories</h3>
+                  <h3 onClick={handleFashionShowsToggle}>Fashion Shows</h3>
                   {fashionShowsToggled && <SliderFashion />}
                   <h3 onClick={handleDocumentariesToggle}>Documentaries and Reports</h3>
                   {documentariesToggled && <SliderDocumentaries />}
