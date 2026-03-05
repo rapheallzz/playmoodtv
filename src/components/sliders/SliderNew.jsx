@@ -116,16 +116,16 @@ export default function SliderNew() {
       {
         breakpoint: 600,
         settings: {
-          slidesToShow: 2,
+          slidesToShow: 2.2,
           slidesToScroll: 1,
-          initialSlide: 2,
+          initialSlide: 0,
           arrows: false,
         },
       },
       {
         breakpoint: 480,
         settings: {
-          slidesToShow: 2,
+          slidesToShow: 2.2,
           slidesToScroll: 1,
           arrows: false,
           centerMode: true,

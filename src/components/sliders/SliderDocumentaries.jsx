@@ -118,7 +118,7 @@ export default function SliderDocumentaries() {
       {
         breakpoint: 600,
         settings: {
-          slidesToShow: 2,
+          slidesToShow: 2.2,
           slidesToScroll: 1,
           initialSlide: 0,
           arrows: true,
@@ -127,7 +127,7 @@ export default function SliderDocumentaries() {
       {
         breakpoint: 480,
         settings: {
-          slidesToShow: 2,
+          slidesToShow: 2.2,
           slidesToScroll: 1,
           arrows: false,
           centerMode: true,

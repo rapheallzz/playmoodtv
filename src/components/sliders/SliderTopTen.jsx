@@ -112,7 +112,7 @@ export default function SliderTopTen() {
       {
         breakpoint: 600,
         settings: {
-          slidesToShow: 2,
+          slidesToShow: 2.2,
           slidesToScroll: 1,
           initialSlide: 0,
           infinite: data.length > 2,
@@ -122,12 +122,12 @@ export default function SliderTopTen() {
       {
         breakpoint: 480,
         settings: {
-          slidesToShow: 2,
+          slidesToShow: 2.2,
           slidesToScroll: 1,
           infinite: data.length > 2,
+          initialSlide: 0,
           arrows: false,
-          centerMode: true,
-        centerPadding: '0px',
+          centerMode: false,
         },
       },
     ],
@@ -238,31 +238,33 @@ const SliderContainer = styled.div`
 
   .movie-ids {
     position: absolute;
-    bottom: -10px;
-    left: 10px;
+    top: 5px;
+    left: 5px;
     color: white;
-    font-size: 80px;
+    font-size: 44px;
     font-weight: 900;
     z-index: 5;
     display: flex;
     align-items: center;
     justify-content: center;
-    text-shadow: 2px 2px 10px rgba(0, 0, 0, 1), -2px -2px 10px rgba(0, 0, 0, 1);
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 1);
     font-style: italic;
-    opacity: 0.8;
+    opacity: 0.9;
+    pointer-events: none;
   }
 
   @media (max-width: 1024px) {
     .movie-ids {
-      font-size: 60px;
-      bottom: -5px;
+      font-size: 36px;
+      top: 5px;
     }
   }
 
   @media (max-width: 600px) {
     .movie-ids {
-      font-size: 50px;
-      bottom: -5px;
+      font-size: 32px;
+      top: 5px;
+      left: 5px;
     }
   }
 
@@ -276,13 +278,13 @@ const SliderContainer = styled.div`
     }
 
     .movie-ids {
-      font-size: 50px;
-      bottom: 0px;
-      left: 5px;
+      font-size: 28px;
+      top: 5px;
+      left: 8px;
     }
 
     .slick-slide {
-      padding: 0 8px;
+      padding: 0 4px;
     }
   }
 `;

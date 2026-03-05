@@ -101,9 +101,9 @@ export default function SliderResume() {
       {
         breakpoint: 600,
         settings: {
-          slidesToShow: 2,
+          slidesToShow: 2.2,
           slidesToScroll: 1,
-          initialSlide: 2,
+          initialSlide: 0,
           infinite: data.length > 2,
         },
       },

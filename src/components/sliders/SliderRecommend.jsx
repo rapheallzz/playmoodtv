@@ -129,7 +129,7 @@ export default function SliderRecommended({ contentId: propContentId, title, cla
       {
         breakpoint: 600,
         settings: {
-          slidesToShow: 2,
+          slidesToShow: 2.2,
           slidesToScroll: 1,
           initialSlide: 0,
           arrows: true,
@@ -138,7 +138,7 @@ export default function SliderRecommended({ contentId: propContentId, title, cla
       {
         breakpoint: 480,
         settings: {
-          slidesToShow: 2,
+          slidesToShow: 2.2,
           slidesToScroll: 1,
           arrows: false,
           centerMode: true,

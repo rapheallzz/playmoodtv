@@ -68,7 +68,7 @@ export default function SliderHighlights({ highlights, handleSelectHighlight, re
         settings: {
           slidesToShow: 4,
           slidesToScroll: 1,
-          initialSlide: 2,
+          initialSlide: 0,
           infinite: highlights.length > 4,
         },
       },

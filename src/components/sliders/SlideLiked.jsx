@@ -151,9 +151,9 @@ export default function SliderLiked() {
       {
         breakpoint: 600,
         settings: {
-          slidesToShow: 2,
+          slidesToShow: 2.2,
           slidesToScroll: 1,
-          initialSlide: 2,
+          initialSlide: 0,
           arrows: true,
           infinite: data.length > 2,
         },
@@ -161,7 +161,7 @@ export default function SliderLiked() {
       {
         breakpoint: 480,
         settings: {
-          slidesToShow: 2,
+          slidesToShow: 2.2,
           slidesToScroll: 1,
           arrows: false,
           centerMode: true,

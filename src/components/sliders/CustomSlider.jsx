@@ -96,7 +96,7 @@ const CustomSlider = () => {
   const getSlidesToShow = () => {
     const width = window.innerWidth;
     if (width <= 480) return { slidesToShow: 1, slideWidth: window.innerWidth };
-    if (width <= 600) return { slidesToShow: 2, slideWidth: window.innerWidth / 2 };
+    if (width <= 600) return { slidesToShow: 2.2, slideWidth: window.innerWidth / 2 };
     if (width <= 1024) return { slidesToShow: 3, slideWidth: window.innerWidth / 3 };
     return { slidesToShow: 5, slideWidth: window.innerWidth / 5 };
   };

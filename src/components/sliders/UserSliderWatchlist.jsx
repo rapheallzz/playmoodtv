@@ -150,9 +150,9 @@ export default function UserWatchlist() {
       {
         breakpoint: 600,
         settings: {
-          slidesToShow: 2,
+          slidesToShow: 2.2,
           slidesToScroll: 1,
-          initialSlide: 2,
+          initialSlide: 0,
           arrows: true,
           infinite: data.length > 2,
         },

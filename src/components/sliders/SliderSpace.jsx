@@ -224,7 +224,7 @@ export default function SliderSpace() {
       {
         breakpoint: 600,
         settings: {
-          slidesToShow: 2.5,
+          slidesToShow: 2.2.5,
           slidesToScroll: 1,
           infinite: data.length > 2.5,
           arrows: true,
@@ -235,7 +235,7 @@ export default function SliderSpace() {
       {
         breakpoint: 480,
         settings: {
-          slidesToShow: 2,
+          slidesToShow: 2.2,
           slidesToScroll: 1,
           infinite: data.length > 2,
           arrows: false,
@@ -246,7 +246,7 @@ export default function SliderSpace() {
       {
         breakpoint: 360,
         settings: {
-          slidesToShow: 2,
+          slidesToShow: 2.2,
           slidesToScroll: 1,
           infinite: data.length > 2,
           arrows: false,

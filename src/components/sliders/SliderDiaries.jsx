@@ -236,7 +236,7 @@ export default function SliderDiaries() {
       {
         breakpoint: 600,
         settings: {
-          slidesToShow: 2,
+          slidesToShow: 2.2,
           slidesToScroll: 1,
           infinite: data.length > 2,
           arrows: true,
@@ -247,7 +247,7 @@ export default function SliderDiaries() {
       {
         breakpoint: 480,
         settings: {
-          slidesToShow: 2,
+          slidesToShow: 2.2,
           slidesToScroll: 1,
           infinite: data.length > 2,
           arrows: false,
@@ -258,7 +258,7 @@ export default function SliderDiaries() {
       {
         breakpoint: 360,
         settings: {
-          slidesToShow: 2,
+          slidesToShow: 2.2,
           slidesToScroll: 1,
           infinite: data.length > 2,
           arrows: false,

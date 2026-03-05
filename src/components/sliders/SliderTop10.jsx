@@ -115,9 +115,9 @@ export default function Slidertop10() {
     {
       breakpoint: 600,
       settings: {
-        slidesToShow: 2,
+        slidesToShow: 2.2,
         slidesToScroll: 1,
-        initialSlide: 2,
+        initialSlide: 0,
         infinite: data.length > 2,
         arrows: true,
       },
@@ -125,7 +125,7 @@ export default function Slidertop10() {
     {
       breakpoint: 480,
       settings: {
-        slidesToShow: 2,
+        slidesToShow: 2.2,
         slidesToScroll: 1,
         infinite: data.length > 2,
         arrows: false,

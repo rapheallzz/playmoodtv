@@ -408,19 +408,19 @@ const SliderContainer = styled.div`
   z-index: 200;
   box-sizing: border-box;
   margin: 20px 0;
-  padding: 0 10px;
+  padding: 0 20px;
 
   @media screen and (max-width: 495px) {
     margin: 10px 0 20px 0;
-    padding: 0 5px;
+    padding: 0;
     overflow-y: visible;
     touch-action: pan-y;
   }
 `;
 
 const VideoCategory = styled.div`
-  width: 92%;
-  margin: 10px 20px;
+  width: 95%;
+  margin: 10px auto;
   display: flex;
   flex-direction: column;
   height:380px;
@@ -430,15 +430,16 @@ const VideoCategory = styled.div`
 
   @media screen and (max-width: 768px) {
     min-height: 180px;
-    margin: 10px 10px 20px 10px;
+    margin: 10px auto 20px;
     padding-bottom: 20px;
     z-index: 210;
   }
 
   @media screen and (max-width: 495px) {
+    width: 100%;
     min-height: 180px;
     height: auto;
-    margin: 10px 10px 30px 10px;
+    margin: 10px 0 30px 0;
     padding-bottom: 20px;
     z-index: 210;
   }
@@ -474,8 +475,8 @@ const VideoCategoryHighlights = styled(VideoCategory)`
 `;
 
 const VideoCategoryCircle = styled.div`
-  width: 92%;
-  margin: 10px 20px;
+  width: 95%;
+  margin: 10px auto;
   display: flex;
   flex-direction: column;
   height:350px;
@@ -486,15 +487,16 @@ const VideoCategoryCircle = styled.div`
 
   @media screen and (max-width: 768px) {
     min-height: 180px;
-    margin: 10px 10px 20px 10px;
+    margin: 10px auto 20px;
     padding-bottom: 20px;
     z-index: 210;
   }
 
   @media screen and (max-width: 495px) {
+    width: 100%;
     min-height: 220px;
     height: auto;
-    margin: 10px 10px 30px 10px;
+    margin: 10px 0 30px 0;
     padding-bottom: 20px;
     z-index: 210;
   }
