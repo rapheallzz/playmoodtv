@@ -532,7 +532,10 @@ export default function MobileBurger() {
                             key={index}
                             className="px-3 py-2 text-xs text-white hover:bg-white/5 cursor-pointer border-b border-white/5 last:border-0"
                             onClick={() => {
-                              navigate(`/movie/${result.name.replace(/\s+/g, '-').toLowerCase()}-${result._id}`);
+                              const slug = result.name
+                                ? `${result.name.replace(/\s+/g, '-').toLowerCase()}-${result._id}`
+                                : result._id;
+                              navigate(`/movie/${slug}`);
                               toggleSidebar();
                             }}
                           >

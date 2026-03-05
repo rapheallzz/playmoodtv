@@ -31,7 +31,7 @@ import whiteheart from '/whiteheart.png';
 import redheart from '/redheart.png';
 import sendmessage from '/sendmessage.png';
 import { AiOutlineClose } from 'react-icons/ai';
-import LikedContentCard from '../components/LikedContentCard';
+import MobileBannerCard from '../components/MobileBannerCard';
 import axios from 'axios';
 import { likeContent, unlikeContent, addToWatchlist, removeFromWatchlist } from '../features/authSlice';
 import Footer from '../components/footer/Footer';
@@ -387,7 +387,7 @@ const Content = styled.div`
   }
 `;
 
-const LikedContentCardWrapper = styled.div`
+const MobileBannerWrapper = styled.div`
   width: 90%;
   max-width: 1200px;
   margin: 50px auto;
@@ -398,7 +398,7 @@ const LikedContentCardWrapper = styled.div`
   @media screen and (max-width: 768px) {
     padding: 10px;
     margin-top: 80px;
-    margin-bottom: 60px;
+    margin-bottom: 30px;
   }
 `;
 
@@ -543,16 +543,12 @@ function HomeContent({
   user,
   homePageData,
   setHomePageData,
-  contentIndex,
-  setContentIndex,
   shareModalOpen,
   setShareModalOpen,
   setShareUrl,
   shareUrl,
   showWelcomePopup,
   setShowWelcomePopup,
-  likedContent,
-  setLikedContent,
   sliderContainerRef,
   highlights,
   setHighlights,
@@ -608,15 +604,6 @@ function HomeContent({
 
     fetchData();
   }, [setHomePageData]);
-
-  useEffect(() => {
-    if (user && user.like && homePageData.length > 0) {
-      const liked = homePageData.filter((content) => user.like.includes(content._id));
-      setLikedContent(liked);
-    } else {
-      setLikedContent([]);
-    }
-  }, [user, homePageData, setLikedContent]);
 
   useEffect(() => {
     if (homePageData.length > 0) {
@@ -706,7 +693,9 @@ function HomeContent({
   const handleShare = () => {
     const currentContent = homePageData[activeSlide];
     if (currentContent) {
-      const slug = `${currentContent.title.replace(/\s+/g, '-')}-${currentContent._id}`;
+      const slug = currentContent.title
+        ? `${currentContent.title.replace(/\s+/g, '-')}-${currentContent._id}`
+        : currentContent._id;
       const url = `${window.location.origin}/movie/${slug}`;
       setShareUrl(url);
       setShareModalOpen(true);
@@ -783,18 +772,16 @@ function HomeContent({
       <Content>
         {isMobile ? (
           <>
-            <LikedContentCardWrapper>
+            <MobileBannerWrapper>
               {homePageData.length === 0 ? (
                 <p style={{ color: 'white', textAlign: 'center' }}>Loading content...</p>
               ) : (
-                <LikedContentCard
-                  likedContent={likedContent}
+                <MobileBannerCard
                   homePageData={homePageData}
-                  contentIndex={contentIndex}
                   isVisibleOnMobile={isMobile}
                 />
               )}
-            </LikedContentCardWrapper>
+            </MobileBannerWrapper>
           </>
         ) : (
           <Banner>
@@ -959,11 +946,9 @@ export default function Home() {
   const [showCookiesPopup, setShowCookiesPopup] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [homePageData, setHomePageData] = useState([]);
-  const [contentIndex, setContentIndex] = useState(0);
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [shareUrl, setShareUrl] = useState('');
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
-  const [likedContent, setLikedContent] = useState([]);
   const sliderContainerRef = useRef(null);
   const user = useSelector((state) => state.auth.user);
   const [highlights, setHighlights] = useState([]);
@@ -1015,16 +1000,12 @@ export default function Home() {
       user={user}
       homePageData={homePageData}
       setHomePageData={setHomePageData}
-      contentIndex={contentIndex}
-      setContentIndex={setContentIndex}
       shareModalOpen={shareModalOpen}
       setShareModalOpen={setShareModalOpen}
       shareUrl={shareUrl}
       setShareUrl={setShareUrl}
       showWelcomePopup={showWelcomePopup}
       setShowWelcomePopup={setShowWelcomePopup}
-      likedContent={likedContent}
-      setLikedContent={setLikedContent}
       sliderContainerRef={sliderContainerRef}
       highlights={highlights}
       setHighlights={setHighlights}
