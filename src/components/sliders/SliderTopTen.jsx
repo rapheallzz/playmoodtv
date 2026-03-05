@@ -114,7 +114,7 @@ export default function SliderTopTen() {
         settings: {
           slidesToShow: 2,
           slidesToScroll: 1,
-          initialSlide: 2, 
+          initialSlide: 0,
           infinite: data.length > 2,
           arrows: true,
         },
@@ -238,59 +238,51 @@ const SliderContainer = styled.div`
 
   .movie-ids {
     position: absolute;
-    top: 40%;
-    transform: translateY(-50%);
-    left: -30px;
-    width: 40px;
-    height: 40px;
+    bottom: -10px;
+    left: 10px;
     color: white;
-    font-size: 54px;
-    font-weight: bold;
+    font-size: 80px;
+    font-weight: 900;
     z-index: 5;
-    background: rgba(0, 0, 0, 0.7);
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 5px;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    text-shadow: 2px 2px 10px rgba(0, 0, 0, 1), -2px -2px 10px rgba(0, 0, 0, 1);
+    font-style: italic;
+    opacity: 0.8;
   }
 
   @media (max-width: 1024px) {
     .movie-ids {
-      left: -30px;
-      width: 30px;
-      height: 30px;
-      font-size: 18px;
+      font-size: 60px;
+      bottom: -5px;
     }
   }
 
   @media (max-width: 600px) {
     .movie-ids {
-      left: -25px;
-      width: 25px;
-      height: 25px;
-      font-size: 16px;
+      font-size: 50px;
+      bottom: -5px;
     }
   }
 
   @media (max-width: 480px) {
-    padding: 0 10px;
-    width: 100%; /* Reduce width for mobile */
-    margin: 0 auto;
+    padding: 0 5px;
+    width: 100%;
+    margin: 0;
 
     .custom-arrow {
       display: none !important;
     }
 
     .movie-ids {
-      left: -20px;
-      width: 20px;
-      height: 20px;
-      font-size: 24px;
+      font-size: 50px;
+      bottom: 0px;
+      left: 5px;
     }
 
     .slick-slide {
-      padding: 0 2px; /* Reduce padding between slides */
+      padding: 0 8px;
     }
   }
 `;

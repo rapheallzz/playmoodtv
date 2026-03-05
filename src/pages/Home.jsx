@@ -398,7 +398,7 @@ const MobileBannerWrapper = styled.div`
   @media screen and (max-width: 768px) {
     padding: 10px;
     margin-top: 80px;
-    margin-bottom: 30px;
+    margin-bottom: 10px;
   }
 `;
 
@@ -411,7 +411,7 @@ const SliderContainer = styled.div`
   padding: 0 10px;
 
   @media screen and (max-width: 495px) {
-    margin: 50px 0 20px 0;
+    margin: 10px 0 20px 0;
     padding: 0 5px;
     overflow-y: visible;
     touch-action: pan-y;
