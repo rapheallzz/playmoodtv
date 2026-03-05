@@ -117,7 +117,7 @@ export default function SliderInterview() {
       {
         breakpoint: 600,
         settings: {
-          slidesToShow: 2.2,
+          slidesToShow: 1.5,
           slidesToScroll: 1,
           initialSlide: 0,
           arrows: true,
@@ -126,7 +126,7 @@ export default function SliderInterview() {
       {
         breakpoint: 480,
         settings: {
-          slidesToShow: 2.2,
+          slidesToShow: 1.5,
           slidesToScroll: 1,
           arrows: false,
           centerMode: true,
@@ -182,6 +182,10 @@ const SliderContainer = styled.div`
   width: 100%;
   padding: 0 20px;
   margin: 0 auto;
+
+  @media (max-width: 768px) {
+    padding: 0;
+  }
 
   .slick-slider {
     position: relative;

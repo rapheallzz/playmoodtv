@@ -112,7 +112,7 @@ export default function SliderTopTen() {
       {
         breakpoint: 600,
         settings: {
-          slidesToShow: 2.2,
+          slidesToShow: 1.5,
           slidesToScroll: 1,
           initialSlide: 0,
           infinite: data.length > 2,
@@ -122,7 +122,7 @@ export default function SliderTopTen() {
       {
         breakpoint: 480,
         settings: {
-          slidesToShow: 2.2,
+          slidesToShow: 1.5,
           slidesToScroll: 1,
           infinite: data.length > 2,
           initialSlide: 0,
@@ -176,6 +176,10 @@ const SliderContainer = styled.div`
   width: 100%;
   padding: 0 20px;
   margin: 0 auto;
+
+  @media (max-width: 768px) {
+    padding: 0;
+  }
 
   .slick-slider {
     position: relative;
@@ -261,6 +265,10 @@ const SliderContainer = styled.div`
     }
   }
 
+  @media (max-width: 768px) {
+    padding: 0;
+  }
+
   @media (max-width: 600px) {
     .movie-ids {
       font-size: 32px;
@@ -270,7 +278,6 @@ const SliderContainer = styled.div`
   }
 
   @media (max-width: 480px) {
-    padding: 0 5px;
     width: 100%;
     margin: 0;
 
