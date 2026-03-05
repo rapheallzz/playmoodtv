@@ -51,9 +51,7 @@ import plus from '/plus.png';
 import favourite_red from '/star_red.png';
 
 export default function MobileBurger() {
-  const [dropbar, set_drop_bar] = useState(false);
   const navigate = useNavigate();
-  const [settings_hover, set_settings_hovered] = useState(true);
   const [showDonationModal, setShowDonationModal] = useState(false);
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
@@ -262,13 +260,6 @@ export default function MobileBurger() {
     setShowDonationModal(false);
   };
 
-  const handle_hovered_settings = () => {
-    set_settings_hovered(!settings_hover);
-  };
-
-  const handle_hovered_settings_out = () => {
-    set_settings_hovered(!settings_hover);
-  };
 
   const handle_search_hover = () => {
     set_search_hover(!search_hover);
@@ -382,47 +373,78 @@ export default function MobileBurger() {
 
   return (
     <MobileHead>
-      <div className="flex justify-between flex-col bg-black items-center py-2 px-8 h-20">
-        {/* Logo and Profile */}
-        <div className="flex w-full items-center justify-around gap-10">
-          <div className="w-32 cursor-pointer">
-            <img src={playmood} alt="Playmood Logo" onClick={() => navigate('/')} />
+      {sidebarOpen && (
+      <div className="flex flex-col bg-black items-center w-full">
+        {/* Top Row: Hamburger, Logo, Profile */}
+        <div className="flex items-center justify-between w-full px-5 h-16">
+          {/* Hamburger Menu Icon */}
+          <div className="flex-1 flex justify-start">
+            <GiHamburgerMenu
+              className="cursor-pointer"
+              size={28}
+              color="white"
+              onClick={toggleSidebar}
+            />
           </div>
-          <div
-            className="w-15 h-15 flex justify-center items-center rounded-full cursor-pointer"
-            onClick={() => {
-              if (user) {
-                navigate('/dashboard');
-              } else {
-                navigate('/login');
-              }
-            }}
-          >
-            <img src={profile} alt="Profile Icon" className="w-6 h-6" />
+
+          {/* Logo */}
+          <div className="flex-1 flex justify-center">
+            <img
+              src={playmood}
+              alt="Playmood Logo"
+              className="w-28 cursor-pointer"
+              onClick={() => navigate('/')}
+            />
+          </div>
+
+          {/* Profile Icon */}
+          <div className="flex-1 flex justify-end">
+            <div
+              className="w-8 h-8 flex justify-center items-center rounded-full cursor-pointer overflow-hidden border border-white/10"
+              onClick={() => {
+                if (user) {
+                  navigate('/dashboard');
+                } else {
+                  navigate('/login');
+                }
+              }}
+            >
+              {user && (user.profileImage?.url || user.profileImage) ? (
+                <img
+                  src={user.profileImage?.url || user.profileImage}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <img src={profile} alt="Profile Icon" className="w-5 h-5" />
+              )}
+            </div>
           </div>
         </div>
 
-        <div className="flex justify-between w-full gab-10">
-          <Link to="/" className="text-[0.5rem] text-white hover:text-red-600">
+        {/* Navigation Links Row */}
+        <NavLinks className="flex justify-between w-full px-5 pb-3 gap-4 overflow-x-auto">
+          <Link to="/" className="text-[0.6rem] font-medium text-white hover:text-red-600 whitespace-nowrap">
             HOME
           </Link>
-          <Link to="/channels" className="text-white text-[0.5rem] hover:text-red-600">
+          <Link to="/channels" className="text-white text-[0.6rem] font-medium hover:text-red-600 whitespace-nowrap">
             CHANNELS
           </Link>
-          <Link to="/schedule" className="text-white text-[0.5rem] hover:text-red-600">
+          <Link to="/schedule" className="text-white text-[0.6rem] font-medium hover:text-red-600 whitespace-nowrap">
             SCHEDULE
           </Link>
-          <Link onClick={handleDonationClick} className="text-white text-[0.5rem] hover:text-red-600">
+          <Link onClick={handleDonationClick} className="text-white text-[0.6rem] font-medium hover:text-red-600 whitespace-nowrap">
             SPACES
           </Link>
-          <Link to="/stories" className="text-white text-[0.5rem] hover:text-red-600">
+          <Link to="/stories" className="text-white text-[0.6rem] font-medium hover:text-red-600 whitespace-nowrap">
             STORIES
           </Link>
-          <Link to="/diaries" className="text-white text-[0.5rem] hover:text-red-600">
+          <Link to="/diaries" className="text-white text-[0.6rem] font-medium hover:text-red-600 whitespace-nowrap">
             DIARIES
           </Link>
-        </div>
+        </NavLinks>
       </div>
+      )}
 
       <DonationModal
         isOpen={showDonationModal}
@@ -435,97 +457,93 @@ export default function MobileBurger() {
       />
 
       <Side>
-        {sidebarOpen ? (
-          <SettingsAndDropdown>
-            {window.innerWidth <= 768 ? (
-              <GiHamburgerMenu className="mobile-hamburger" size={30} color="white" onClick={toggleSidebar} />
-            ) : (
-              <Settings>
-                {settings_hover ? (
-                  <img src={profile} onMouseEnter={handle_hovered_settings} />
-                ) : (
-                  <img src={profile} onMouseOut={handle_hovered_settings_out} />
-                )}
-              </Settings>
-            )}
-          </SettingsAndDropdown>
-        ) : (
+        {!sidebarOpen && (
+          <>
+          <div className="fixed inset-0 bg-black/60 z-[-1]" onClick={toggleSidebar} />
           <SidebarClicked onMouseLeave={toggleSidebar}>
-            <div className="flex align-middle justify-between">
-              {user && (
+            <div className="flex items-center justify-between mb-6">
+              {user ? (
                 <button
-                  className="bg-red-600 text-white px-3 rounded-md text-xs cursor-pointer transition-colors duration-300 ease-in-out"
+                  className="bg-red-600 text-white px-4 py-1.5 rounded-full text-xs font-semibold cursor-pointer transition-colors duration-300 hover:bg-red-700"
                   onClick={onLogout}
                 >
                   Logout
                 </button>
+              ) : (
+                <div onClick={() => navigate('/login')}>
+                  <button className="font-semibold text-xs px-4 py-1.5 bg-[#541011] text-white rounded-full transition-colors duration-300 hover:bg-red-900">
+                    Sign In / Register
+                  </button>
+                </div>
               )}
-              <button className="w-8 h-8 text-sm rounded-full text-white" onClick={toggleSidebar}>
-                X
+              <button className="w-8 h-8 flex items-center justify-center text-lg rounded-full text-white hover:bg-white/10" onClick={toggleSidebar}>
+                ✕
               </button>
             </div>
 
-            <div className="mt-33">
+            <div className="flex flex-col gap-1">
               {user && (
-                <div>
-                  <div className="flex gap-5 align-middle my-4">
-                    <div
-                      className="w-12 h-12 rounded-full bg-white flex items-center justify-center font-semibold cursor-pointer overflow-hidden relative"
-                      onClick={() => navigate('/dashboard')}
-                    >
-                      <AiOutlineUser size={24} color="#541011" style={{ position: 'absolute' }} />
-                      {(user.profileImage?.url || user.profileImage) && (
-                        <img
-                          src={user.profileImage?.url || user.profileImage}
-                          alt="Profile"
-                          className="w-full h-full object-cover relative z-10"
-                          onError={(e) => {
-                            e.target.style.display = 'none';
-                          }}
-                        />
-                      )}
-                    </div>
-                    <h1 className="text-sm self-center">{user.name}</h1>
+                <div className="flex gap-4 items-center py-3 mb-4 border-b border-white/10">
+                  <div
+                    className="w-10 h-10 rounded-full bg-white flex-shrink-0 flex items-center justify-center font-semibold cursor-pointer overflow-hidden relative border border-white/20"
+                    onClick={() => { navigate('/dashboard'); toggleSidebar(); }}
+                  >
+                    <AiOutlineUser size={20} color="#541011" />
+                    {(user.profileImage?.url || user.profileImage) && (
+                      <img
+                        src={user.profileImage?.url || user.profileImage}
+                        alt="Profile"
+                        className="w-full h-full object-cover absolute inset-0 z-10"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                        }}
+                      />
+                    )}
                   </div>
+                  <h1 className="text-sm font-semibold truncate text-white">{user.name}</h1>
                 </div>
               )}
 
               {!mountcategory && (
                 <>
-                  {!user && (
-                    <div onClick={() => navigate('/login')}>
-                      <button className="font-semibold text-[10px] w-28 h-10 bg-red-950 text-white rounded-md">
-                        Sign In / Register
-                      </button>
-                    </div>
-                  )}
-
-                  <div className="search_tab">
-                    <div className="flex items-center">
-                      {search_hover ? (
-                        <img src={search_icon} onMouseEnter={handle_search_hover} />
-                      ) : (
-                        <img src={search_red} onMouseOut={handle_search_hover_out} />
-                      )}
+                  <div className="py-2 mb-4">
+                    <div className="flex items-center gap-4 bg-white/5 rounded-lg px-4 py-2.5 border border-white/10 focus-within:border-red-600 transition-colors">
+                      <div className="w-5 flex justify-center">
+                        <img
+                          src={search_hover ? search_icon : search_red}
+                          alt="Search"
+                          className="w-5 h-5 object-contain"
+                          onMouseEnter={handle_search_hover}
+                          onMouseLeave={handle_search_hover_out}
+                        />
+                      </div>
                       <input
                         type="text"
                         placeholder="Search..."
                         value={searchQuery}
                         onChange={handleSearchInputChange}
-                        className="ml-2 p-1 bg-transparent border-b border-white text-red-200 text-sm focus:outline-none"
+                        className="bg-transparent text-white text-sm focus:outline-none w-full"
                       />
                     </div>
-                  </div>
-
-                  <div className="search_results">
-                    {searchResults.map((result, index) => (
-                      <div key={index} className="search_result_item">
-                        {result.name}
+                    {searchResults.length > 0 && searchQuery && (
+                      <div className="mt-2 max-h-40 overflow-y-auto bg-zinc-900 rounded-lg border border-white/10">
+                        {searchResults.map((result, index) => (
+                          <div
+                            key={index}
+                            className="px-3 py-2 text-xs text-white hover:bg-white/5 cursor-pointer border-b border-white/5 last:border-0"
+                            onClick={() => {
+                              navigate(`/movie/${result.name.replace(/\s+/g, '-').toLowerCase()}-${result._id}`);
+                              toggleSidebar();
+                            }}
+                          >
+                            {result.name}
+                          </div>
+                        ))}
                       </div>
-                    ))}
+                    )}
                   </div>
 
-                  <div className="home_tab" onClick={() => navigate('/')}>
+                  <div className="home_tab" onClick={() => { navigate('/'); toggleSidebar(); }}>
                     {home_hover ? (
                       <img src={home} onMouseEnter={handle_home_hover} />
                     ) : (
@@ -536,6 +554,7 @@ export default function MobileBurger() {
                   <div className="recommended_tab" onClick={() => {
                     if (user) {
                       navigate('/recommended');
+                      toggleSidebar();
                     } else {
                       setShowWelcomePopup(true);
                     }
@@ -547,7 +566,7 @@ export default function MobileBurger() {
                     )}
                     <p>Recommended</p>
                   </div>
-                  <div className="new_tab" onClick={() => navigate('/newplaymood')}>
+                  <div className="new_tab" onClick={() => { navigate('/newplaymood'); toggleSidebar(); }}>
                     {new_hover ? (
                       <img src={newp} onMouseEnter={handle_newp_hover} />
                     ) : (
@@ -555,7 +574,7 @@ export default function MobileBurger() {
                     )}
                     <p>New on playmood</p>
                   </div>
-                  <div className="channels_tab" onClick={() => navigate('/channels')}>
+                  <div className="channels_tab" onClick={() => { navigate('/channels'); toggleSidebar(); }}>
                     {snowflakes_hover ? (
                       <img src={snowflakes} onMouseEnter={handle_snowflakes_hover} />
                     ) : (
@@ -563,7 +582,7 @@ export default function MobileBurger() {
                     )}
                     <p>Channels</p>
                   </div>
-                  <div className="spaces_tab" onClick={handleDonationClick}>
+                  <div className="spaces_tab" onClick={() => { handleDonationClick(); toggleSidebar(); }}>
                     {location_hover ? (
                       <img src={location} onMouseEnter={handle_location_hover} />
                     ) : (
@@ -571,7 +590,7 @@ export default function MobileBurger() {
                     )}
                     <p>Spaces</p>
                   </div>
-                  <div className="schedule_tab" onClick={() => navigate('/schedule')}>
+                  <div className="schedule_tab" onClick={() => { navigate('/schedule'); toggleSidebar(); }}>
                     {schedule_hover ? (
                       <img src={schedule_white} onMouseEnter={handle_schedule_hover} />
                     ) : (
@@ -579,7 +598,7 @@ export default function MobileBurger() {
                     )}
                     <p>Schedule</p>
                   </div>
-                  <div className="favorites_tab" onClick={() => (user ? navigate('/dashboard') : navigate('/login'))}>
+                  <div className="favorites_tab" onClick={() => { (user ? navigate('/dashboard') : navigate('/login')); toggleSidebar(); }}>
                     {favourites_hover ? (
                       <img src={favourite} onMouseEnter={handle_favourites_hover} />
                     ) : (
@@ -595,7 +614,7 @@ export default function MobileBurger() {
                 ) : (
                   <img src={plus} onMouseOut={handle_category_hover_out} />
                 )}
-                <p>Categories</p>
+                <p>{mountcategory ? 'Close Categories' : 'Categories'}</p>
               </div>
               {mountcategory && (
                 <div className="categories_subsection">
@@ -645,6 +664,7 @@ export default function MobileBurger() {
               )}
             </div>
           </SidebarClicked>
+          </>
         )}
       </Side>
     </MobileHead>
@@ -652,99 +672,65 @@ export default function MobileBurger() {
 }
 
 // Styled components remain unchanged
+const NavLinks = styled.div`
+  /* Hide scrollbar */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+`;
+
 const MobileHead = styled.div`
-  height: 80px;
   width: 100%;
   color: white;
   position: fixed;
   top: 0px;
   left: 0px;
+  z-index: 50;
 `;
 
 const Side = styled.div`
-  display: flex;
-  height: 10%;
-  align-items: center;
-  gap: 30px;
-  position: relative;
-  top: 2px;
-  left: -10px;
-`;
-
-const SettingsAndDropdown = styled.div`
-  width: 60px;
-  height: 100vh;
-  background-color: transparent;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: absolute;
+  position: fixed;
   top: 0;
-  right: 0;
-  img {
-    height: 40px;
-    width: 40px;
-    cursor: pointer;
-  }
-
-  @media screen and (max-width: 768px) {
-    left: 0;
-    right: unset;
-  }
-`;
-
-const Settings = styled.div`
-  height: 80px;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-bottom: 0.5px solid rgba(255, 255, 255, 0.4);
+  left: 0;
+  z-index: 100;
 `;
 
 const SidebarClicked = styled.div`
-  width: 250px;
+  width: 280px;
   height: 100vh;
   background-color: black;
   top: 0;
   left: 0;
   position: fixed;
-  padding: 20px 10px 0px 10px;
+  padding: 24px 20px;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  overflow-y: auto;
+  box-shadow: 10px 0 30px rgba(0,0,0,0.5);
 
   .categories_subsection {
     display: flex;
     flex-direction: column;
     width: 100%;
     height: fit-content;
-    padding-left: 50px;
-    gap: 15px;
+    padding: 10px 0 20px 45px;
+    gap: 18px;
+    border-left: 1px solid rgba(255,255,255,0.1);
+    margin-left: 12px;
+    text-align: left;
     h3 {
-      color: white;
-      font-size: 0.7rem;
-      font-weight: 600;
+      color: rgba(255,255,255,0.7);
+      font-size: 0.75rem;
+      font-weight: 500;
       cursor: pointer;
-    }
-  }
-
-  .search_tab {
-    display: flex;
-    align-items: center;
-    gap: 30px;
-    padding: 8px 10px 8px 10px;
-    cursor: pointer;
-    &:hover {
-      background-color: grey;
-      border-right: 4px solid red;
-    }
-    img {
-      width: 25px;
-      height: 25px;
-    }
-    p {
-      font-size: 0.9rem;
+      transition: color 0.2s;
+      margin: 0;
+      display: block;
+      &:hover {
+        color: white;
+      }
     }
   }
 
@@ -758,24 +744,39 @@ const SidebarClicked = styled.div`
   .categories {
     display: flex;
     align-items: center;
-    gap: 30px;
-    padding: 8px 10px 8px 20px;
+    gap: 20px;
+    padding: 12px 14px;
+    margin: 0 -10px;
     cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s;
+    text-align: left;
+    justify-content: flex-start;
+
     &:hover {
-      background-color: grey;
-      border-right: 4px solid red;
+      background-color: rgba(255,255,255,0.1);
     }
+
     img {
-      width: 25px;
-      height: 25px;
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      object-fit: contain;
     }
     p {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: white;
+      margin: 0;
+      line-height: 1;
     }
   }
 
-  @media screen and (max-width: 768px) {
-    left: 0;
-    right: unset;
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  &::-webkit-scrollbar {
+    display: none;
   }
+  /* Hide scrollbar for IE, Edge and Firefox */
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 `;
