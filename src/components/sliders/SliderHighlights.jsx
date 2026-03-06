@@ -66,7 +66,7 @@ export default function SliderHighlights({ highlights, handleSelectHighlight, re
       {
         breakpoint: 600,
         settings: {
-          slidesToShow: 2.2,
+          slidesToShow: 3.5,
           slidesToScroll: 1,
           initialSlide: 0,
           infinite: false,
@@ -77,7 +77,7 @@ export default function SliderHighlights({ highlights, handleSelectHighlight, re
       {
         breakpoint: 480,
         settings: {
-          slidesToShow: 2.2,
+          slidesToShow: 3.2,
           slidesToScroll: 1,
           infinite: false,
           arrows: false,
@@ -193,7 +193,7 @@ const SliderContainer = styled.div`
     }
 
     .slick-slide {
-      padding: 0 8px; /* Increase padding between slides for more space */
+      padding: 0 4px; /* Reduced padding to tighten space between larger circles */
     }
   }
 `;

@@ -1710,25 +1710,25 @@ export const LargeHighlightCircle = styled(HighlightCircle)`
   }
 
   @media (max-width: 768px) {
-    width: 90px;
-    height: 90px;
+    width: 110px;
+    height: 110px;
     padding: 2px;
 
     img {
-      width: 86px;
-      height: 86px;
+      width: 106px;
+      height: 106px;
       border-width: 2px;
     }
   }
 
   @media (max-width: 480px) {
-    width: 80px;
-    height: 80px;
+    width: 100px;
+    height: 100px;
     padding: 2px;
 
     img {
-      width: 76px;
-      height: 76px;
+      width: 96px;
+      height: 96px;
       border-width: 2px;
     }
   }

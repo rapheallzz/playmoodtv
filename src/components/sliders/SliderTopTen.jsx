@@ -134,7 +134,7 @@ export default function SliderTopTen() {
   };
 
   return (
-     <SliderContainer>
+    <SliderContainer>
       {error ? (
         <div className="error-message">{error}</div>
       ) : (
