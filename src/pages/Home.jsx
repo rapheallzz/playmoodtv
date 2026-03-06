@@ -408,7 +408,7 @@ const SliderContainer = styled.div`
   z-index: 200;
   box-sizing: border-box;
   margin: 20px 0;
-  padding: 0 20px;
+  padding: 0;
 
   @media screen and (max-width: 768px) {
     margin: 10px 0 20px 0;
@@ -420,10 +420,10 @@ const SliderContainer = styled.div`
 
 const VideoCategory = styled.div`
   width: 95%;
-  margin: 10px auto;
+  margin: 20px auto;
   display: flex;
   flex-direction: column;
-  height:380px;
+  height: auto;
   min-height: 220px;
   box-sizing: border-box;
   z-index: 210;
@@ -455,10 +455,10 @@ const VideoCategoryResponsive = styled(VideoCategory)`
 `;
 
 const VideoCategoryHighlights = styled(VideoCategory)`
-  height: 450px;
+  height: auto;
   min-height: 220px;
-  padding-top: 20px;
-  padding-bottom: 20px;
+  padding-top: 0;
+  padding-bottom: 0;
 
   @media screen and (max-width: 768px) {
     height: auto;
@@ -478,14 +478,14 @@ const VideoCategoryHighlights = styled(VideoCategory)`
 
 const VideoCategoryCircle = styled.div`
   width: 95%;
-  margin: 10px auto;
+  margin: 20px auto;
   display: flex;
   flex-direction: column;
-  height:350px;
+  height: auto;
   min-height: 220px;
   box-sizing: border-box;
   z-index: 210;
-  padding-top: 10px;
+  padding-top: 0;
 
   @media screen and (max-width: 768px) {
     height: auto;
@@ -511,15 +511,11 @@ const Videocategorytitle = styled.h3`
   color: white;
   padding-bottom: 15px;
   font-weight: 600;
+  padding: 5px 5px 15px 5px;
 
-  @media only screen and (min-width: 300px) {
-    font-size: 1.5rem;
-    padding: 5px 5px 15px 25px;
-  }
-
-  @media only screen and (min-width: 800px) {
+  @media only screen and (min-width: 769px) {
     font-size: 1.8rem;
-    padding: 5px 5px 15px 60px;
+    padding: 5px 5px 15px 25px;
   }
 `;
 
@@ -890,10 +886,9 @@ function HomeContent({
             <Videocategorytitle>Spaces</Videocategorytitle>
             <SliderSpace />
           </VideoCategoryCircle>
-          <SlideRecommended
-            title="Recommended for you"
-            className="w-[92%] mx-[20px] flex flex-col h-[380px] min-h-[220px] box-sizing-border-box z-[210] md:w-full md:mx-0 md:my-[20px] md:pb-[20px] sm:h-auto sm:mb-[30px]"
-          />
+          <VideoCategory>
+            <SlideRecommended title="Recommended for you" />
+          </VideoCategory>
           <VideoCategory >
             <Videocategorytitle>Interviews</Videocategorytitle>
             <SliderInterview />

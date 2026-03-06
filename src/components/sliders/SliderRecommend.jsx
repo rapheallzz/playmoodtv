@@ -156,7 +156,7 @@ export default function SliderRecommended({ contentId: propContentId, title, cla
   return (
     <div className={className}>
       {title && (
-        <h3 className="video-category-title text-white pb-[20px] font-semibold text-[1.5rem] md:text-[1.3rem] lg:text-[1.5rem]">
+        <h3 className="video-category-title text-white font-semibold text-[1.5rem] px-[5px] py-[5px] pb-[15px] md:text-[1.8rem] md:px-[25px]">
           {title}
         </h3>
       )}
