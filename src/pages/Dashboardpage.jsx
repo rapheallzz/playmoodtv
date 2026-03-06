@@ -1345,13 +1345,14 @@ const UseractionsInteraction = styled.div`
   display: flex;
   justify-content: space-between;
   gap: 20px;
+  margin-top: 40px;
   p {
     color: white;
     cursor: pointer;
   }
   @media screen and (max-width: 768px) {
     width: 85%;
-    margin: 20px auto;
+    margin: 30px auto;
     flex-direction: column;
     align-items: center;
     font-size: 15px;
