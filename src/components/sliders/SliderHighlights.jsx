@@ -66,20 +66,23 @@ export default function SliderHighlights({ highlights, handleSelectHighlight, re
       {
         breakpoint: 600,
         settings: {
-          slidesToShow: 4,
+          slidesToShow: 2.2,
           slidesToScroll: 1,
           initialSlide: 0,
-          infinite: highlights.length > 4,
+          infinite: false,
+          arrows: true,
+          centerMode: false,
         },
       },
       {
         breakpoint: 480,
         settings: {
-          slidesToShow: 3,
+          slidesToShow: 2.2,
           slidesToScroll: 1,
           infinite: false,
           arrows: false,
           centerMode: false,
+          initialSlide: 0,
         },
       },
     ],
@@ -116,6 +119,10 @@ const SliderContainer = styled.div`
   width: 100%;
   padding: 20px 0;
   margin: 0 auto;
+
+  @media (max-width: 768px) {
+    padding: 0;
+  }
 
   .slick-slider {
     position: relative;
@@ -178,7 +185,6 @@ const SliderContainer = styled.div`
   }
 
   @media (max-width: 480px) {
-    padding: 0 15px;
     width: 100%; /* Ensure full width on mobile */
     margin: 0 auto;
 

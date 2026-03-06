@@ -1497,6 +1497,10 @@ export const StyledContentSection = styled.div`
 export const HighlightsSectionContainer = styled.div`
   padding: 24px 50px;
   width: 100%;
+
+  @media (max-width: 768px) {
+    padding: 0;
+  }
 `;
 
 export const HighlightsList = styled.div`

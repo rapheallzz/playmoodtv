@@ -471,7 +471,7 @@ const VideoCategoryHighlights = styled(VideoCategory)`
     padding-top: 20px;
     width: 100%;
     margin: 0;
-    padding: 0 10px;
+    padding: 0;
     padding-bottom: 30px;
   }
 `;
