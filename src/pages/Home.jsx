@@ -420,7 +420,7 @@ const SliderContainer = styled.div`
 
 const VideoCategory = styled.div`
   width: 95%;
-  margin: 20px auto;
+  margin: 5px auto;
   display: flex;
   flex-direction: column;
   height: auto;
@@ -432,8 +432,8 @@ const VideoCategory = styled.div`
     width: 100%;
     height: auto;
     min-height: 180px;
-    margin: 10px 0 20px 0;
-    padding-bottom: 20px;
+    margin: 5px 0 10px 0;
+    padding-bottom: 10px;
     z-index: 210;
   }
 
@@ -441,8 +441,8 @@ const VideoCategory = styled.div`
     width: 100%;
     min-height: 180px;
     height: auto;
-    margin: 10px 0 30px 0;
-    padding-bottom: 20px;
+    margin: 5px 0 15px 0;
+    padding-bottom: 10px;
     z-index: 210;
   }
 `;
@@ -450,7 +450,7 @@ const VideoCategory = styled.div`
 const VideoCategoryResponsive = styled(VideoCategory)`
   @media screen and (max-width: 495px) {
     height: auto;
-    padding-bottom: 20px;
+    padding-bottom: 10px;
   }
 `;
 
@@ -459,6 +459,7 @@ const VideoCategoryHighlights = styled(VideoCategory)`
   min-height: 220px;
   padding-top: 0;
   padding-bottom: 0;
+  margin: 5px auto;
 
   @media screen and (max-width: 768px) {
     height: auto;
@@ -468,54 +469,28 @@ const VideoCategoryHighlights = styled(VideoCategory)`
   @media screen and (max-width: 495px) {
     height: 200px;
     min-height: 150px;
-    padding-top: 20px;
+    padding-top: 10px;
     width: 100%;
     margin: 0;
     padding: 0;
-    padding-bottom: 30px;
+    padding-bottom: 15px;
   }
 `;
 
-const VideoCategoryCircle = styled.div`
-  width: 95%;
-  margin: 20px auto;
-  display: flex;
-  flex-direction: column;
-  height: auto;
-  min-height: 220px;
-  box-sizing: border-box;
-  z-index: 210;
+const VideoCategoryCircle = styled(VideoCategory)`
   padding-top: 0;
-
-  @media screen and (max-width: 768px) {
-    height: auto;
-    min-height: 180px;
-    margin: 10px auto 20px;
-    padding-bottom: 20px;
-    z-index: 210;
-  }
-
-  @media screen and (max-width: 495px) {
-    width: 100%;
-    min-height: 220px;
-    height: auto;
-    margin: 10px 0 30px 0;
-    padding-bottom: 20px;
-    z-index: 210;
-  }
 `;
 
 
 const Videocategorytitle = styled.h3`
   font-size: 1.5rem;
   color: white;
-  padding-bottom: 15px;
   font-weight: 600;
-  padding: 5px 5px 15px 5px;
+  padding: 5px 5px 5px 5px;
 
   @media only screen and (min-width: 769px) {
     font-size: 1.8rem;
-    padding: 5px 5px 15px 25px;
+    padding: 5px 5px 5px 25px;
   }
 `;
 

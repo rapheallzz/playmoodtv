@@ -117,7 +117,7 @@ export default function SliderHighlights({ highlights, handleSelectHighlight, re
 const SliderContainer = styled.div`
   position: relative;
   width: 100%;
-  padding: 20px 0;
+  padding: 5px 0;
   margin: 0 auto;
 
   @media (max-width: 768px) {
