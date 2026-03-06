@@ -49,6 +49,18 @@ const SliderContainer = styled.div`
   .slick-slider {
     position: relative;
     touch-action: pan-y; /* Allow vertical scrolling, enable horizontal swipe */
+    ${props => props.$isSingle && `
+      .slick-track {
+        margin-left: 0 !important;
+        transform: none !important;
+      }
+      .slick-slide {
+        width: 200px !important;
+        @media (max-width: 768px) {
+           width: 160px !important;
+        }
+      }
+    `}
   }
 
   .slick-prev,
@@ -234,7 +246,7 @@ export default function SliderSubscriptions({ subscriptions }) {
   };
 
   return (
-    <SliderContainer>
+    <SliderContainer $isSingle={numSubscriptions === 1}>
       {!subscriptions || subscriptions.length === 0 ? (
         <div className="error-message text-white">No subscriptions found.</div>
       ) : (

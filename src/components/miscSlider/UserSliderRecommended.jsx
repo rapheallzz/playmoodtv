@@ -102,7 +102,7 @@ export default function UserRecommended() {
 
   const settings = {
     dots: false,
-    infinite: data.length > 5,
+    infinite: false,
     speed: 300,
     slidesToShow: 5,
     slidesToScroll: 1,
@@ -117,7 +117,7 @@ export default function UserRecommended() {
         settings: {
           slidesToShow: 3,
           slidesToScroll: 1,
-          infinite: data.length > 3,
+          infinite: false,
           dots: true,
           arrows: true,
         },
@@ -154,7 +154,7 @@ export default function UserRecommended() {
       <h3 className="video-category-title text-white font-semibold text-[1.5rem] px-[5px] py-[5px] pb-[15px] md:text-[1.8rem] md:px-[25px]">
         Recommended for you
       </h3>
-      <SliderContainer>
+      <SliderContainer $isSingle={data.length === 1}>
         {error ? (
           <div className="error-message">{error}</div>
         ) : (
@@ -202,6 +202,18 @@ const SliderContainer = styled.div`
 
   .slick-slider {
     position: relative;
+    ${props => props.$isSingle && `
+      .slick-track {
+        margin-left: 0 !important;
+        transform: none !important;
+      }
+      .slick-slide {
+        width: 300px !important;
+        @media (max-width: 768px) {
+           width: 200px !important;
+        }
+      }
+    `}
   }
 
   // Hide default slick arrows

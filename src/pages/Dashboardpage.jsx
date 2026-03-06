@@ -667,10 +667,10 @@ function Dashboardpage() {
             </div>
           </div>
 
-          <div className="dash-btn flex">
+          <div className="dash-btn flex flex-col md:flex-row md:flex-wrap justify-center items-center w-full md:w-auto">
             {isAdmin && (
               <button
-                className="bg-[#541011] text-[#f3f3f3] py-2 px-8 border-none rounded cursor-pointer text-base font-normal transition-colors duration-300 ease-in-out m-2 hover:bg-white hover:text-[#541011]"
+                className="bg-[#541011] text-[#f3f3f3] py-2 px-8 border-none rounded cursor-pointer text-base font-normal transition-colors duration-300 ease-in-out m-2 hover:bg-white hover:text-[#541011] w-[90%] md:w-auto"
                 onClick={() => navigate('/admin')}
               >
                 Admin Page
@@ -679,7 +679,7 @@ function Dashboardpage() {
             {!isCreator &&
               (creatorApplicationStatus === 'approved' ? null : (
                 <button
-                  className={`bg-[#541011] text-[#f3f3f3] py-2 px-8 border-none rounded text-base font-normal transition-colors duration-300 ease-in-out m-2 ${
+                  className={`bg-[#541011] text-[#f3f3f3] py-2 px-8 border-none rounded text-base font-normal transition-colors duration-300 ease-in-out m-2 w-[90%] md:w-auto ${
                     creatorApplicationStatus === 'pending'
                       ? 'opacity-50 cursor-not-allowed'
                       : 'hover:bg-white hover:text-[#541011]'
@@ -697,13 +697,13 @@ function Dashboardpage() {
             {isCreator && (
               <>
                 <button
-                  className="bg-[#541011] text-[#f3f3f3] py-2 px-8 border-none rounded cursor-pointer text-base font-normal transition-colors duration-300 ease-in-out m-2 hover:bg-white hover:text-[#541011]"
+                  className="bg-[#541011] text-[#f3f3f3] py-2 px-8 border-none rounded cursor-pointer text-base font-normal transition-colors duration-300 ease-in-out m-2 hover:bg-white hover:text-[#541011] w-[90%] md:w-auto"
                   onClick={() => navigate('/creatorpage')}
                 >
                   View Channel
                 </button>
                 <button
-                  className="bg-[#541011] text-[#f3f3f3] py-2 px-8 border-none rounded cursor-pointer text-base font-normal transition-colors duration-300 ease-in-out m-2 hover:bg-white hover:text-[#541011]"
+                  className="bg-[#541011] text-[#f3f3f3] py-2 px-8 border-none rounded cursor-pointer text-base font-normal transition-colors duration-300 ease-in-out m-2 hover:bg-white hover:text-[#541011] w-[90%] md:w-auto"
                   onClick={handleAddVideo}
                 >
                   Upload a Video for Review
@@ -748,6 +748,9 @@ function Dashboardpage() {
         {!edit ? (
           <>
             <UseractionsContainer>
+              <div className="md:hidden text-white text-[10px] mb-1 ml-2 opacity-70 animate-pulse">
+                Swipe for more tabs ➜
+              </div>
               <Useractions className="h-fit">
                 <button
                   className={`flex items-center justify-center mr-2 py-2 px-4 border-none rounded cursor-pointer text-base font-normal transition-colors duration-300 ease-in-out m-2 ${

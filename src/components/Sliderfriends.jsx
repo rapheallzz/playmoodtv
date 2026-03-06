@@ -4,6 +4,7 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
 
 export default function Sliderfriends() {
   const navigate = useNavigate();
@@ -69,10 +70,10 @@ export default function Sliderfriends() {
 
   const handleSlideClick = (event, content) => {
     const clickedElement = event.target;
-  
+
     if (clickedElement.tagName.toLowerCase() === 'video') {
       const cardElement = clickedElement.closest('.slidescircle');
-  
+
       if (cardElement) {
         navigate(`/movie/{_id}`, {
           state: {
@@ -86,16 +87,36 @@ export default function Sliderfriends() {
     }
   };
   return (
-    <Slider {...settings}>
-      {filteredData.map((content, index) => (
-        <div
-          key={content.id}
-          className="slidesfriends"
-          onClick={(e) => handleSlideClick(e, content)}
-        >
-          <img src={content.thumbnail} alt={`Thumbnail ${index}`} />
-        </div>
-      ))}
-    </Slider>
+    <FriendsSliderContainer $isSingle={filteredData.length === 1}>
+      <Slider {...settings}>
+        {filteredData.map((content, index) => (
+          <div
+            key={content.id}
+            className="slidesfriends"
+            onClick={(e) => handleSlideClick(e, content)}
+          >
+            <img src={content.thumbnail} alt={`Thumbnail ${index}`} />
+          </div>
+        ))}
+      </Slider>
+    </FriendsSliderContainer>
   );
 }
+
+const FriendsSliderContainer = styled.div`
+  .slick-slider {
+    position: relative;
+    ${props => props.$isSingle && `
+      .slick-track {
+        margin-left: 0 !important;
+        transform: none !important;
+      }
+      .slick-slide {
+        width: 300px !important;
+        @media (max-width: 768px) {
+           width: 200px !important;
+        }
+      }
+    `}
+  }
+`;
