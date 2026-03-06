@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { FaHeart, FaComment, FaPaperPlane, FaTimes, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 import contentService from '../../features/contentService';
 import {
   ModalOverlay,
@@ -129,6 +130,13 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
     }
   };
 
+  const handleShare = () => {
+    if (currentMedia && currentMedia.url) {
+      navigator.clipboard.writeText(currentMedia.url);
+      toast.success('Media URL copied to clipboard!');
+    }
+  };
+
   if (!post) return null;
 
   const isHighlight = post.feedType === 'highlight' || (!post.media?.length && post.highlightUrl);
@@ -205,30 +213,18 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
           )}
 
           {allMedia.length > 1 && (
-            <>
-              {currentIndex > 0 && (
-                <MediaNavigationArrow direction="left" onClick={handlePrevMedia} aria-label="Previous Media">
-                  <FaChevronLeft />
-                </MediaNavigationArrow>
-              )}
-              {currentIndex < allMedia.length - 1 && (
-                <MediaNavigationArrow direction="right" onClick={handleNextMedia} aria-label="Next Media">
-                  <FaChevronRight />
-                </MediaNavigationArrow>
-              )}
-              <DotsContainer>
-                {allMedia.map((_, index) => (
-                  <Dot
-                    key={index}
-                    $isActive={index === currentIndex}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setCurrentIndex(index);
-                    }}
-                  />
-                ))}
-              </DotsContainer>
-            </>
+            <DotsContainer>
+              {allMedia.map((_, index) => (
+                <Dot
+                  key={index}
+                  $isActive={index === currentIndex}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCurrentIndex(index);
+                  }}
+                />
+              ))}
+            </DotsContainer>
           )}
         </ModalCardMedia>
         <NavigationArrow className="prev-arrow" onClick={onPrev}>
@@ -273,7 +269,7 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
               onClick={() => setIsCommentsOpen(!isCommentsOpen)}
               style={{ cursor: 'pointer' }}
             />
-            <FaPaperPlane />
+            <FaPaperPlane onClick={handleShare} style={{ cursor: 'pointer' }} />
           </ModalCardActions>
           <LikesContainer>{likesCount} likes</LikesContainer>
         </ModalCardContent>

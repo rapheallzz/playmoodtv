@@ -30,7 +30,6 @@ import {
   FaPlay, FaPause, FaExpand, FaFilm
 } from 'react-icons/fa';
 import { toast } from 'react-toastify';
-import HighlightShareModal from '../modals/HighlightShareModal';
 
 const VerticalHighlightViewer = ({
   highlights: initialHighlights,
@@ -54,8 +53,6 @@ const VerticalHighlightViewer = ({
   const [isLoadingComments, setIsLoadingComments] = useState(false);
   const [totalComments, setTotalComments] = useState(0);
   const [showCenterPlayPause, setShowCenterPlayPause] = useState(false);
-  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
-  const [shareUrl, setShareUrl] = useState('');
   const isProgrammaticScroll = useRef(false);
   const scrollTimeout = useRef(null);
   const selectedHighlightRef = useRef(null);
@@ -533,10 +530,10 @@ const VerticalHighlightViewer = ({
                   <span>{highlight.content.commentsCount || 0}</span>
                 </ViewerActionButton>
                 <ViewerActionButton onClick={() => {
-                  const encodedContentId = btoa(highlight.content._id);
-                  const url = `${window.location.origin}/highlight/${encodedContentId}`;
-                  setShareUrl(url);
-                  setIsShareModalOpen(true);
+                  if (highlight.content?.video) {
+                    navigator.clipboard.writeText(highlight.content.video);
+                    toast.success('Highlight URL copied to clipboard!');
+                  }
                 }}>
                   <FaPaperPlane />
                   <span>Share</span>
@@ -555,12 +552,6 @@ const VerticalHighlightViewer = ({
               </ActionsContainer>
             </BottomInfoContainer>
           </VideoContainer>
-          {isShareModalOpen && (
-            <HighlightShareModal
-              shareUrl={shareUrl}
-              onClose={() => setIsShareModalOpen(false)}
-            />
-          )}
           {isCommentSectionOpen && selectedHighlight?.content._id === highlight.content._id && (
             <CommentSection
               comments={comments}
