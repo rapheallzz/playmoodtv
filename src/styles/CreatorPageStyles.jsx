@@ -712,6 +712,7 @@ export const HoverIcon = styled.div`
 
 export const ModalCard = styled.div`
   display: flex;
+  position: relative;
   background-color: #1a1a1a;
   color: white;
   border-radius: 8px;
@@ -816,6 +817,19 @@ export const CloseButton = styled.button`
   font-size: 1.5rem;
   cursor: pointer;
   z-index: 1001;
+
+  @media screen and (max-width: 768px) {
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+  }
 `;
 
 export const ModalCardInput = styled.input`
@@ -1972,7 +1986,8 @@ export const ViewerActionButton = styled.button`
 
 export const NavigationArrow = styled.button`
   position: absolute;
-  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
   background: rgba(255, 255, 255, 0.2);
   border: none;
   color: white;
@@ -1986,11 +2001,15 @@ export const NavigationArrow = styled.button`
   z-index: 10;
 
   &.up-arrow {
+    top: auto;
+    transform: none;
     bottom: 360px;
     right: 40px;
   }
 
   &.down-arrow {
+    top: auto;
+    transform: none;
     bottom: 300px;
     right: 40px;
   }
@@ -2005,6 +2024,20 @@ export const NavigationArrow = styled.button`
 
   &.next-arrow {
     right: 10px;
+  }
+
+  @media screen and (max-width: 768px) {
+    width: 32px;
+    height: 32px;
+    background: rgba(0, 0, 0, 0.3);
+
+    &.prev-arrow {
+      left: 5px;
+    }
+
+    &.next-arrow {
+      right: 5px;
+    }
   }
 `;
 

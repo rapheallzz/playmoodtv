@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { FaHeart, FaComment, FaPaperPlane, FaTimes, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import contentService from '../../features/contentService';
@@ -29,6 +29,44 @@ import {
 
 const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const touchStart = useRef(null);
+  const touchEnd = useRef(null);
+
+  // Minimum swipe distance (in px)
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e) => {
+    touchEnd.current = null;
+    touchStart.current = {
+      x: e.targetTouches[0].clientX,
+      y: e.targetTouches[0].clientY
+    };
+  };
+
+  const onTouchMove = (e) => {
+    touchEnd.current = {
+      x: e.targetTouches[0].clientX,
+      y: e.targetTouches[0].clientY
+    };
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart.current || !touchEnd.current) return;
+    const distanceX = touchStart.current.x - touchEnd.current.x;
+    const distanceY = touchStart.current.y - touchEnd.current.y;
+    const isLeftSwipe = distanceX > minSwipeDistance;
+    const isRightSwipe = distanceX < -minSwipeDistance;
+
+    // Only trigger if horizontal movement is greater than vertical movement
+    // to avoid triggering when scrolling comments
+    if (Math.abs(distanceX) > Math.abs(distanceY)) {
+      if (isLeftSwipe && typeof onNext === 'function') {
+        onNext();
+      } else if (isRightSwipe && typeof onPrev === 'function') {
+        onPrev();
+      }
+    }
+  };
   const { user } = useSelector((state) => state.auth);
   const [isLiked, setIsLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
@@ -150,10 +188,15 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
 
   return (
     <ModalOverlay onClick={onClose} data-testid="feed-post-viewer-modal">
-      <CloseButton onClick={onClose} style={{ top: '20px', right: '20px', fontSize: '1.5rem' }}>
+      <CloseButton onClick={onClose}>
         <FaTimes />
       </CloseButton>
-      <ModalCard onClick={(e) => e.stopPropagation()}>
+      <ModalCard
+        onClick={(e) => e.stopPropagation()}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+      >
         <ModalCardMedia>
           {currentMedia.type === 'video' ? (
             <video src={currentMedia.url} controls autoPlay loop />
