@@ -1,19 +1,55 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import axios from 'axios';
+import BASE_API_URL from '../../apiConfig';
 import Slidercontent from '../Slidercont';
 import { useNavigate } from 'react-router-dom';
-import BASE_API_URL from '../../apiConfig';
+import ContentModal from '../ContentModal';
+import styled, { keyframes } from 'styled-components';
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
+// Pulse animation for right arrow
+const pulse = keyframes`
+  0% {
+    transform: translateY(-50%) scale(1);
+  }
+  50% {
+    transform: translateY(-50%) scale(1.1);
+  }
+  100% {
+    transform: translateY(-50%) scale(1);
+  }
+`;
 
+// Custom Arrow Components
+const CustomPrevArrow = (props) => {
+  const { onClick } = props;
+  return (
+    <div className="custom-arrow prev-arrow" onClick={onClick}>
+      <FaChevronLeft className="arrow-icon" />
+    </div>
+  );
+};
+
+const CustomNextArrow = (props) => {
+  const { onClick } = props;
+  return (
+    <div className="custom-arrow next-arrow" onClick={onClick}>
+      <FaChevronRight className="arrow-icon" />
+    </div>
+  );
+};
 
 export default function UserRecommended() {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [modalContent, setModalContent] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const sliderRef = useRef(null);
 
   useEffect(() => {
     async function fetchData() {
@@ -27,7 +63,7 @@ export default function UserRecommended() {
 
       try {
         setLoading(true);
-        const response = await axios.get(`${BASE_API_URL}/api/recommended/${id}`);
+        const response = await axios.get(`${BASE_API_URL}/api/content/recommended/${id}`);
 
         if (response.data && Array.isArray(response.data)) {
           setData(response.data);
@@ -64,17 +100,17 @@ export default function UserRecommended() {
     navigate(`/movie/${slug}`);
   };
 
-  const settings ={
-    dots: false ,
-    infinite: data.length > 1,
-    speed: 3000,
-    slidesToShow: 1,
+  const settings = {
+    dots: false,
+    infinite: data.length > 5,
+    speed: 300,
+    slidesToShow: 5,
     slidesToScroll: 1,
     initialSlide: 0,
-    autoplay: data.length > 1,
-    autoplaySpeed: 3000,
-    cssEase: "linear",
-    arrows: false,
+    prevArrow: <CustomPrevArrow />,
+    nextArrow: <CustomNextArrow />,
+    swipeToSlide: true,
+    lazyLoad: false,
     responsive: [
       {
         breakpoint: 1024,
@@ -82,39 +118,31 @@ export default function UserRecommended() {
           slidesToShow: 3,
           slidesToScroll: 1,
           infinite: data.length > 3,
-          dots: true
-        }
+          dots: true,
+          arrows: true,
+        },
       },
       {
         breakpoint: 600,
         settings: {
-          slidesToShow: 2.2,
+          slidesToShow: 1.5,
           slidesToScroll: 1,
           initialSlide: 0,
-          infinite: data.length > 2,
-        }
+          infinite: false,
+          arrows: true,
+        },
       },
       {
         breakpoint: 480,
         settings: {
-          slidesToShow: 1,
+          slidesToShow: 1.5,
           slidesToScroll: 1,
-          infinite: data.length > 1,
-        }
-      }
-    ]
-  };
-
-
-  const handleSlideClick = (event, content) => {
-    const target = event.target;
-    const isMetadataArea = target.closest('.metadata-area');
-
-    if (!isMetadataArea) {
-      const formattedTitle = content.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-      const slug = `${formattedTitle}-${content._id}`;
-      navigate(`/movie/${slug}`);
-    }
+          infinite: false,
+          arrows: false,
+          centerMode: false,
+        },
+      },
+    ],
   };
 
   if (!loading && data.length === 0) {
@@ -122,23 +150,128 @@ export default function UserRecommended() {
   }
 
   return (
-    <Slider {...settings}>
-      {data.map((content) => (
-        <div
-          key={content._id}
-          className="dashslide"
-          onClick={(e) => handleSlideClick(e, content)}
-        >
-          <Slidercontent
-            img={content.thumbnail}
-            title={content.title}
-            movie={content}
-            id={content._id}
-            desc={content.description}
-            customStyle={{}}
-          />
-        </div>
-      ))}
-    </Slider>
+    <>
+      <h3 className="video-category-title text-white font-semibold text-[1.5rem] px-[5px] py-[5px] pb-[15px] md:text-[1.8rem] md:px-[25px]">
+        Recommended for you
+      </h3>
+      <SliderContainer>
+        {error ? (
+          <div className="error-message">{error}</div>
+        ) : (
+          <Slider {...settings} ref={sliderRef}>
+            {data.map((content) => (
+              <div
+                key={content._id}
+                className="slides"
+              >
+                <Slidercontent
+                  img={content.thumbnail}
+                  title={content.title}
+                  movie={content}
+                  views={content.views}
+                  desc={content.description}
+                  customStyle={{}}
+                  onVideoClick={() => handleOpenModal(content)}
+                />
+              </div>
+            ))}
+          </Slider>
+        )}
+
+        <ContentModal
+          isOpen={isModalOpen}
+          content={modalContent}
+          onClose={handleCloseModal}
+          handleNavigateToMovie={handleNavigateToMovie}
+        />
+      </SliderContainer>
+    </>
   );
 }
+
+// Styled Components
+const SliderContainer = styled.div`
+  position: relative;
+  width: 100%;
+  padding: 0 20px;
+  margin: 0 auto;
+
+  @media (max-width: 768px) {
+    padding: 0;
+  }
+
+  .slick-slider {
+    position: relative;
+  }
+
+  // Hide default slick arrows
+  .slick-prev,
+  .slick-next {
+    display: none !important;
+  }
+
+  .custom-arrow {
+    display: none;
+    position: absolute;
+    top: 40%;
+    transform: translateY(-50%);
+    width: 50px;
+    height: 100px;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    z-index: 10;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.3s ease, background-color 0.3s ease;
+    opacity: 0;
+
+    &.prev-arrow {
+      left: -10px;
+    }
+
+    &.next-arrow {
+      right: -10px;
+      &:hover {
+        animation: ${pulse} 1s infinite; // Pulse effect on hover
+        background: rgba(0, 0, 0, 0.7); // Slightly darker on hover
+      }
+    }
+
+    .arrow-icon {
+      font-size: 24px;
+    }
+  }
+
+  &:hover .custom-arrow {
+    display: flex;
+    opacity: 1;
+  }
+
+  .slick-slide {
+    padding: 0 5px;
+  }
+
+  .slides {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  @media (max-width: 1024px) {
+    padding: 0 15px;
+  }
+
+  @media (max-width: 600px) {
+    padding: 0 10px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0;
+
+    .custom-arrow {
+      display: none !important;
+    }
+  }
+`;

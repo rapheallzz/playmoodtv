@@ -122,10 +122,10 @@ export default function UserFavourite() {
       {
         breakpoint: 600,
         settings: {
-          slidesToShow: 2.2,
+          slidesToShow: 1.5,
           slidesToScroll: 1,
           initialSlide: 0,
-          infinite: data.length > 2,
+          infinite: false,
           arrows: true,
         },
       },
@@ -134,47 +134,51 @@ export default function UserFavourite() {
         settings: {
           slidesToShow: 1.5,
           slidesToScroll: 1,
-          infinite: data.length > 1.5,
+          infinite: false,
           arrows: false,
-          centerMode: true,
-          centerPadding: '20px',
+          centerMode: false,
         },
       },
     ],
   };
 
   return (
-    <SliderContainer>
-      {error ? (
-        <div className="error-message">{error}</div>
-      ) : data && data.length > 0 ? (
-        <Slider {...settings} ref={sliderRef}>
-          {data.map((content, index) => (
-            <div key={content._id || index} className="slides">
-              <Slidercontent
-                img={content.thumbnail}
-                title={content.title}
-                movie={content}
-                views={content.views}
-                desc={content.description}
-                shortPreview={content.shortPreview}
-                customStyle={{}}
-                onVideoClick={() => handleOpenModal(content)} // Updated to open modal
-              />
-            </div>
-          ))}
-        </Slider>
-      ) : (
-        <div className="text-white flex text-center">You have No favourite</div>
-      )}
+    <>
+      <h3 className="video-category-title text-white font-semibold text-[1.5rem] px-[5px] py-[5px] pb-[15px] md:text-[1.8rem] md:px-[25px]">
+        Your Favorites
+      </h3>
+      <SliderContainer>
+        {error ? (
+          <div className="error-message">{error}</div>
+        ) : data && data.length > 0 ? (
+          <Slider {...settings} ref={sliderRef}>
+            {data.map((content, index) => (
+              <div key={content._id || index} className="slides">
+                <Slidercontent
+                  img={content.thumbnail}
+                  title={content.title}
+                  movie={content}
+                  views={content.views}
+                  desc={content.description}
+                  shortPreview={content.shortPreview}
+                  customStyle={{}}
+                  onVideoClick={() => handleOpenModal(content)}
+                />
+              </div>
+            ))}
+          </Slider>
+        ) : (
+          <div className="text-white flex text-center">You have No favourite</div>
+        )}
 
-      <ContentModal
-        isOpen={isModalOpen}
-        content={modalContent}
-        onClose={handleCloseModal}
-        handleNavigateToMovie={handleNavigateToMovie}
-      />
-    </SliderContainer>
+        <ContentModal
+          isOpen={isModalOpen}
+          content={modalContent}
+          onClose={handleCloseModal}
+          handleNavigateToMovie={handleNavigateToMovie}
+        />
+      </SliderContainer>
+    </>
   );
 }
 
@@ -184,6 +188,10 @@ const SliderContainer = styled.div`
   width: 100%;
   padding: 0 20px;
   margin: 0 auto;
+
+  @media (max-width: 768px) {
+    padding: 0;
+  }
 
   .slick-slider {
     position: relative;
@@ -253,7 +261,7 @@ const SliderContainer = styled.div`
   }
 
   @media (max-width: 480px) {
-    padding: 0 10px;
+    padding: 0;
 
     .custom-arrow {
       display: none !important;

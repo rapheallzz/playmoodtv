@@ -3,10 +3,10 @@ import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import axios from 'axios';
-import Slidercontent from '../Slidercont'; 
-import { useNavigate } from 'react-router-dom';
-import ContentModal from '../ContentModal'; 
 import BASE_API_URL from '../../apiConfig';
+import Slidercontent from '../Slidercont';
+import { useNavigate } from 'react-router-dom';
+import ContentModal from '../ContentModal';
 import styled, { keyframes } from 'styled-components';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
@@ -63,7 +63,8 @@ export default function UserRecommended() {
 
       try {
         setLoading(true);
-        const response = await axios.get(`${BASE_API_URL}/api/recommended/${id}`);
+        const response = await axios.get(`${BASE_API_URL}/api/content/recommended/${id}`);
+
         if (response.data && Array.isArray(response.data)) {
           setData(response.data);
         } else {
@@ -71,7 +72,6 @@ export default function UserRecommended() {
         }
       } catch (error) {
         setError('Error fetching data.');
-        setData([]);
       } finally {
         setLoading(false);
       }
@@ -102,15 +102,15 @@ export default function UserRecommended() {
 
   const settings = {
     dots: false,
-    infinite: data.length > 4,
+    infinite: data.length > 5,
     speed: 300,
-    slidesToShow: 4,
+    slidesToShow: 5,
     slidesToScroll: 1,
     initialSlide: 0,
     prevArrow: <CustomPrevArrow />,
     nextArrow: <CustomNextArrow />,
     swipeToSlide: true,
-    lazyLoad: 'ondemand',
+    lazyLoad: false,
     responsive: [
       {
         breakpoint: 1024,
@@ -125,10 +125,10 @@ export default function UserRecommended() {
       {
         breakpoint: 600,
         settings: {
-          slidesToShow: 2,
+          slidesToShow: 1.5,
           slidesToScroll: 1,
-          initialSlide: 2,
-          infinite: data.length > 2,
+          initialSlide: 0,
+          infinite: false,
           arrows: true,
         },
       },
@@ -137,10 +137,9 @@ export default function UserRecommended() {
         settings: {
           slidesToShow: 1.5,
           slidesToScroll: 1,
-          infinite: data.length > 1.5,
+          infinite: false,
           arrows: false,
-          centerMode: true,
-          centerPadding: '20px',
+          centerMode: false,
         },
       },
     ],
@@ -151,37 +150,42 @@ export default function UserRecommended() {
   }
 
   return (
-    <SliderContainer>
-      {error ? (
-        <div className="error-message">{error}</div>
-      ) : data && data.length > 0 ? (
-        <Slider {...settings} ref={sliderRef}>
-          {data.map((content, index) => (
-            <div key={content._id || index} className="slides">
-              <Slidercontent
-                img={content.thumbnail}
-                title={content.title}
-                movie={content}
-                views={content.views}
-                desc={content.description}
-                shortPreview={content.shortPreview}
-                customStyle={{}}
-                onVideoClick={() => handleOpenModal(content)}
-              />
-            </div>
-          ))}
-        </Slider>
-      ) : (
-        <div className="text-white flex text-center">No recommended content available</div>
-      )}
+    <>
+      <h3 className="video-category-title text-white font-semibold text-[1.5rem] px-[5px] py-[5px] pb-[15px] md:text-[1.8rem] md:px-[25px]">
+        Recommended for you
+      </h3>
+      <SliderContainer>
+        {error ? (
+          <div className="error-message">{error}</div>
+        ) : (
+          <Slider {...settings} ref={sliderRef}>
+            {data.map((content) => (
+              <div
+                key={content._id}
+                className="slides"
+              >
+                <Slidercontent
+                  img={content.thumbnail}
+                  title={content.title}
+                  movie={content}
+                  views={content.views}
+                  desc={content.description}
+                  customStyle={{}}
+                  onVideoClick={() => handleOpenModal(content)}
+                />
+              </div>
+            ))}
+          </Slider>
+        )}
 
-      <ContentModal
-        isOpen={isModalOpen}
-        content={modalContent}
-        onClose={handleCloseModal}
-        handleNavigateToMovie={handleNavigateToMovie}
-      />
-    </SliderContainer>
+        <ContentModal
+          isOpen={isModalOpen}
+          content={modalContent}
+          onClose={handleCloseModal}
+          handleNavigateToMovie={handleNavigateToMovie}
+        />
+      </SliderContainer>
+    </>
   );
 }
 
@@ -191,6 +195,10 @@ const SliderContainer = styled.div`
   width: 100%;
   padding: 0 20px;
   margin: 0 auto;
+
+  @media (max-width: 768px) {
+    padding: 0;
+  }
 
   .slick-slider {
     position: relative;
@@ -260,7 +268,7 @@ const SliderContainer = styled.div`
   }
 
   @media (max-width: 480px) {
-    padding: 0 10px;
+    padding: 0;
 
     .custom-arrow {
       display: none !important;

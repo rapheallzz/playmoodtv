@@ -747,38 +747,48 @@ function Dashboardpage() {
 
         {!edit ? (
           <>
-            <Useractions className="h-fit w-1/3 ml-36 flex justify-between gap-5 md:relative md:left-36 md:w-full md:my-1 md:ml-0 md:gap-0 md:justify-center md:text-xs">
-              <button
-                className="flex items-center justify-center mr-2 text-[#541011] bg-[#f3f3f3] py-2 px-4 border-none rounded cursor-pointer text-base font-normal transition-colors duration-300 ease-in-out m-2 hover:text-white hover:bg-[#541011]"
-                onClick={() => handleActionClick('LIKES')}
-              >
-                <AiOutlineHeart />
-                <span className="ml-1 text-xs">LIKES</span>
-              </button>
-              <button
-                className="flex items-center justify-center mr-2 text-[#541011] bg-[#f3f3f3] py-2 px-4 border-none rounded cursor-pointer text-base font-normal transition-colors duration-300 ease-in-out m-2 hover:text-white hover:bg-[#541011]"
-                onClick={() => handleActionClick('FAVORITES')}
-              >
-                <AiOutlineStar />
-                <span className="ml-1 text-xs">FAVORITES</span>
-              </button>
-              <button
-                className="flex items-center justify-center mr-2 text-[#541011] bg-[#f3f3f3] py-2 px-4 border-none rounded cursor-pointer text-base font-normal transition-colors duration-300 ease-in-out m-2 hover:text-white hover:bg-[#541011]"
-                onClick={() => handleActionClick('FOR YOU')}
-              >
-                <AiOutlineUser />
-                <span className="ml-1 text-xs">FOR_YOU</span>
-              </button>
-              <button
-                className="flex items-center justify-center mr-2 text-[#541011] bg-[#f3f3f3] py-2 px-4 border-none rounded cursor-pointer text-base font-normal transition-colors duration-300 ease-in-out m-2 hover:text-white hover:bg-[#541011]"
-                onClick={() => handleActionClick('WATCHLIST')}
-              >
-                <AiOutlineEye />
-                <span className="ml-1 text-xs">WATCHLIST</span>
-              </button>
-            </Useractions>
+            <UseractionsContainer>
+              <Useractions className="h-fit">
+                <button
+                  className={`flex items-center justify-center mr-2 py-2 px-4 border-none rounded cursor-pointer text-base font-normal transition-colors duration-300 ease-in-out m-2 ${
+                    activeAction === 'LIKES' ? 'bg-[#541011] text-white' : 'text-[#541011] bg-[#f3f3f3]'
+                  } hover:text-white hover:bg-[#541011]`}
+                  onClick={() => handleActionClick('LIKES')}
+                >
+                  <AiOutlineHeart />
+                  <span className="ml-1 text-xs">LIKES</span>
+                </button>
+                <button
+                  className={`flex items-center justify-center mr-2 py-2 px-4 border-none rounded cursor-pointer text-base font-normal transition-colors duration-300 ease-in-out m-2 ${
+                    activeAction === 'FAVORITES' ? 'bg-[#541011] text-white' : 'text-[#541011] bg-[#f3f3f3]'
+                  } hover:text-white hover:bg-[#541011]`}
+                  onClick={() => handleActionClick('FAVORITES')}
+                >
+                  <AiOutlineStar />
+                  <span className="ml-1 text-xs">FAVORITES</span>
+                </button>
+                <button
+                  className={`flex items-center justify-center mr-2 py-2 px-4 border-none rounded cursor-pointer text-base font-normal transition-colors duration-300 ease-in-out m-2 ${
+                    activeAction === 'FOR YOU' ? 'bg-[#541011] text-white' : 'text-[#541011] bg-[#f3f3f3]'
+                  } hover:text-white hover:bg-[#541011]`}
+                  onClick={() => handleActionClick('FOR YOU')}
+                >
+                  <AiOutlineUser />
+                  <span className="ml-1 text-xs">FOR_YOU</span>
+                </button>
+                <button
+                  className={`flex items-center justify-center mr-2 py-2 px-4 border-none rounded cursor-pointer text-base font-normal transition-colors duration-300 ease-in-out m-2 ${
+                    activeAction === 'WATCHLIST' ? 'bg-[#541011] text-white' : 'text-[#541011] bg-[#f3f3f3]'
+                  } hover:text-white hover:bg-[#541011]`}
+                  onClick={() => handleActionClick('WATCHLIST')}
+                >
+                  <AiOutlineEye />
+                  <span className="ml-1 text-xs">WATCHLIST</span>
+                </button>
+              </Useractions>
+            </UseractionsContainer>
 
-            <UserSlider className="w-4/5 mx-auto my-2 h-72 md:w-[90%] md:mx-auto">
+            <UserSlider className="user-slider-container">
               {activeAction === 'LIKES' && <SliderLiked />}
               {activeAction === 'FAVORITES' && <UserFavourite />}
               {activeAction === 'FOR YOU' && <UserRecommended />}
@@ -1279,35 +1289,50 @@ const User = styled.div`
     }
   }
 `;
-const Useractions = styled.div`
-  height: fit-content;
-  width: 30%;
-  margin-left: 150px;
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  p {
-    color: white;
-    cursor: pointer;
+const UseractionsContainer = styled.div`
+  width: 95%;
+  margin: 0 auto;
+  overflow-x: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+  &::-webkit-scrollbar {
+    display: none;
   }
+
   @media screen and (max-width: 768px) {
-    position: relative;
-    left: 150px;
-    margin: 2px 0;
-    margin-left: 0px;
-    gap: 0px;
-    justify-content: center;
-    flex-direction: column;
-    font-size: 8px;
+    width: 100%;
+    padding: 0 10px;
   }
 `;
+
+const Useractions = styled.div`
+  display: inline-flex;
+  width: fit-content;
+  gap: 10px;
+  padding: 10px 0;
+
+  @media screen and (min-width: 769px) {
+    margin-left: 25px;
+  }
+`;
+
 const UserSlider = styled.div`
-  width: 80%;
-  margin: 10px auto;
-  height: 300px;
+  width: 95%;
+  margin: 5px auto;
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  min-height: 220px;
+  box-sizing: border-box;
+  z-index: 210;
+
   @media screen and (max-width: 768px) {
-    width: 90%;
-    margin: 10px auto;
+    width: 100%;
+    height: auto;
+    min-height: 180px;
+    margin: 5px 0 10px 0;
+    padding-bottom: 10px;
+    z-index: 210;
   }
 `;
 const UseractionsInteraction = styled.div`

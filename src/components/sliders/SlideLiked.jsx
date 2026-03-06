@@ -128,9 +128,9 @@ export default function SliderLiked() {
 
   const settings = {
     dots: false,
-    infinite: data.length > 4,
+    infinite: data.length > 5,
     speed: 300,
-    slidesToShow: 4,
+    slidesToShow: 5,
     slidesToScroll: 1,
     initialSlide: 0,
     prevArrow: <CustomPrevArrow />,
@@ -151,59 +151,63 @@ export default function SliderLiked() {
       {
         breakpoint: 600,
         settings: {
-          slidesToShow: 2.2,
+          slidesToShow: 1.5,
           slidesToScroll: 1,
           initialSlide: 0,
+          infinite: false,
           arrows: true,
-          infinite: data.length > 2,
         },
       },
       {
         breakpoint: 480,
         settings: {
-          slidesToShow: 2.2,
+          slidesToShow: 1.5,
           slidesToScroll: 1,
+          infinite: false,
           arrows: false,
-          centerMode: true,
-          centerPadding: '20px',
-          infinite: data.length > 2,
+          centerMode: false,
         },
       },
     ],
   };
 
   return (
-    <SliderContainer>
-      {error ? (
-        <div className="error-message"></div>
-      ) : data && data.length > 0 ? (
-        <Slider {...settings} ref={sliderRef}>
-          {data.map((content, index) => (
-            <div key={content._id || index} className="slides">
-              <Slidercontent
-                img={content.thumbnail}
-                title={content.title}
-                movie={content}
-                views={content.views}
-                desc={content.description}
-                shortPreview={content.shortPreview}
-                customStyle={{}}
-                onVideoClick={() => handleOpenModal(content)}
-              />
-            </div>
-          ))}
-        </Slider>
-      ) : (
-        <div className="text-white flex text-center">You are yet to add any likes</div>
-      )}
+    <>
+      <h3 className="video-category-title text-white font-semibold text-[1.5rem] px-[5px] py-[5px] pb-[15px] md:text-[1.8rem] md:px-[25px]">
+        Liked Videos
+      </h3>
+      <SliderContainer>
+        {error ? (
+          <div className="error-message"></div>
+        ) : data && data.length > 0 ? (
+          <Slider {...settings} ref={sliderRef}>
+            {data.map((content, index) => (
+              <div key={content._id || index} className="slides">
+                <Slidercontent
+                  img={content.thumbnail}
+                  title={content.title}
+                  movie={content}
+                  views={content.views}
+                  desc={content.description}
+                  shortPreview={content.shortPreview}
+                  customStyle={{}}
+                  onVideoClick={() => handleOpenModal(content)}
+                />
+              </div>
+            ))}
+          </Slider>
+        ) : (
+          <div className="text-white flex text-center">You are yet to add any likes</div>
+        )}
 
-      <ContentModal
-        isOpen={isModalOpen}
-        content={modalContent}
-        onClose={handleCloseModal}
-        handleNavigateToMovie={handleNavigateToMovie}
-      />
-    </SliderContainer>
+        <ContentModal
+          isOpen={isModalOpen}
+          content={modalContent}
+          onClose={handleCloseModal}
+          handleNavigateToMovie={handleNavigateToMovie}
+        />
+      </SliderContainer>
+    </>
   );
 }
 
@@ -213,6 +217,10 @@ const SliderContainer = styled.div`
   width: 100%;
   padding: 0 20px;
   margin: 0 auto;
+
+  @media (max-width: 768px) {
+    padding: 0;
+  }
 
   .slick-slider {
     position: relative;
@@ -281,7 +289,7 @@ const SliderContainer = styled.div`
   }
 
   @media (max-width: 480px) {
-    padding: 0 10px;
+    padding: 0;
 
     .custom-arrow {
       display: none !important;
