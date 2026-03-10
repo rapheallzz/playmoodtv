@@ -88,7 +88,7 @@ export default function SliderSocial() {
   };
 
   return (
-    <>
+    <SliderContainer>
       {error ? (
         <div className="error-message">{error}</div>
       ) : (
@@ -115,6 +115,44 @@ export default function SliderSocial() {
         onClose={handleCloseModal}
         handleNavigateToMovie={handleNavigateToMovie}
       />
-    </>
+    </SliderContainer>
   );
 }
+
+// Styled Components
+const SliderContainer = styled.div`
+  position: relative;
+  width: 100%;
+  padding: 0 20px;
+  margin: 0 auto;
+
+  @media (max-width: 768px) {
+    padding: 0;
+  }
+
+  .slick-slider {
+    position: relative;
+  }
+
+  // Hide default slick arrows
+  .slick-prev,
+  .slick-next {
+    display: none !important;
+  }
+
+  .slick-slide {
+    padding: 0 5px;
+  }
+
+  .slides {
+    position: relative;
+    padding: 0 5px;
+    width: 100%;
+  }
+
+  @media (max-width: 480px) {
+    .custom-arrow {
+      display: none !important;
+    }
+  }
+`;

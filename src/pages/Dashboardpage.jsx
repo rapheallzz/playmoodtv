@@ -1320,8 +1320,8 @@ const Useractions = styled.div`
 `;
 
 const UserSlider = styled.div`
-  width: 95%;
-  margin: 5px auto;
+  width: 100%;
+  margin: 5px 0;
   display: flex;
   flex-direction: column;
   height: auto;

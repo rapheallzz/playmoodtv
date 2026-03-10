@@ -267,9 +267,11 @@ const SliderContainer = styled.div`
 
   .slides {
     position: relative;
+    padding: 0 5px;
+    width: 100%;
     display: flex;
     align-items: center;
-    justify-content: center; /* Center content in slides */
+    justify-content: center;
   }
 
   .view-more-slide {
@@ -279,17 +281,7 @@ const SliderContainer = styled.div`
     height: 100%; /* Match the height of other slides */
   }
 
-  @media (max-width: 1024px) {
-    padding: 0 15px;
-  }
-
-  @media (max-width: 600px) {
-    padding: 0 10px;
-  }
-
   @media (max-width: 480px) {
-    padding: 0 10px;
-
     .custom-arrow {
       display: none !important;
     }

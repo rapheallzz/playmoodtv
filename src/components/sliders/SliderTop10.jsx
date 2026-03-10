@@ -242,6 +242,9 @@ const SliderContainer = styled.div`
     position: relative;
     padding: 0 5px;
     width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .movie-ids {

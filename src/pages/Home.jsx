@@ -419,8 +419,8 @@ const SliderContainer = styled.div`
 `;
 
 const VideoCategory = styled.div`
-  width: 95%;
-  margin: 5px auto;
+  width: 100%;
+  margin: 5px 0;
   display: flex;
   flex-direction: column;
   height: auto;
@@ -460,6 +460,7 @@ const VideoCategoryHighlights = styled(VideoCategory)`
   padding-top: 0;
   padding-bottom: 0;
   margin: 5px auto;
+  width: 95%;
 
   @media screen and (max-width: 768px) {
     height: auto;
@@ -479,6 +480,8 @@ const VideoCategoryHighlights = styled(VideoCategory)`
 
 const VideoCategoryCircle = styled(VideoCategory)`
   padding-top: 0;
+  width: 95%;
+  margin: 5px auto;
 `;
 
 

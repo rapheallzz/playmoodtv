@@ -226,21 +226,11 @@ const SliderContainer = styled.div`
 
   .slides {
     position: relative;
-    display: flex;
-    align-items: center;
-  }
-
-  @media (max-width: 1024px) {
-    padding: 0 15px;
-  }
-
-  @media (max-width: 600px) {
-    padding: 0 10px;
+    padding: 0 5px;
+    width: 100%;
   }
 
   @media (max-width: 480px) {
-    padding: 0 10px;
-
     .custom-arrow {
       display: none !important;
     }
