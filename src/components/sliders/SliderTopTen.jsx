@@ -145,15 +145,17 @@ export default function SliderTopTen() {
                 <h1 className="movie-ids" aria-label={`Rank ${index + 1}`}>
                   {index + 1}
                 </h1>
-                <Slidercontent
-                  img={content.thumbnail}
-                  title={content.title}
-                  movie={content}
-                  views={content.views}
-                  desc={content.description}
-                  customStyle={{}}
-                  onVideoClick={() => handleOpenModal(content)}
-                />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <Slidercontent
+                    img={content.thumbnail}
+                    title={content.title}
+                    movie={content}
+                    views={content.views}
+                    desc={content.description}
+                    customStyle={{}}
+                    onVideoClick={() => handleOpenModal(content)}
+                  />
+                </div>
               </div>
             ))}
         </Slider>
@@ -235,69 +237,59 @@ const SliderContainer = styled.div`
 
   .slides {
     position: relative;
-    display: flex;
+    display: flex !important;
+    flex-direction: row;
     align-items: center;
-    justify-content: flex-start;
-    padding-left: 10px;
+    justify-content: center;
+    padding: 0 5px;
+    width: 100%;
   }
 
   .movie-ids {
     position: relative;
     flex-shrink: 0;
-    width: 40px;
+    width: auto;
+    min-width: 60px;
     color: white;
-    font-size: 60px;
+    font-size: 80px;
     font-weight: 900;
     z-index: 5;
     display: flex;
     align-items: center;
     justify-content: center;
-    text-shadow: 2px 2px 8px rgba(0, 0, 0, 1);
+    text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8);
     font-style: italic;
-    opacity: 0.9;
+    opacity: 1;
     pointer-events: none;
-    margin-right: 5px;
+    margin-right: 10px;
+    line-height: 1;
   }
 
   @media (max-width: 1024px) {
     .movie-ids {
-      font-size: 50px;
-      width: 35px;
+      font-size: 60px;
+      min-width: 50px;
+      margin-right: 8px;
     }
   }
 
   @media (max-width: 768px) {
-    .slides {
-      padding-left: 5px;
-    }
-
     .movie-ids {
-      font-size: 45px;
-      width: 30px;
-      margin-right: 2px;
+      font-size: 50px;
+      min-width: 40px;
+      margin-right: 5px;
     }
   }
 
   @media (max-width: 480px) {
-    width: 100%;
-    margin: 0;
-
-    .custom-arrow {
-      display: none !important;
-    }
-
-    .slides {
-      padding-left: 5px;
-    }
-
     .movie-ids {
-      font-size: 40px;
-      width: 25px;
-      margin-right: 2px;
+      font-size: 45px;
+      min-width: 35px;
+      margin-right: 5px;
     }
+  }
 
-    .slick-slide {
-      padding: 0 4px;
-    }
+  .slick-slide {
+    padding: 0 5px;
   }
 `;

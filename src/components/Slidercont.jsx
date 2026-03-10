@@ -28,7 +28,6 @@ const Slidercontent = React.memo(function Slidercontent({
   const videoRef = useRef(null);
   const touchStart = useRef({ x: 0, y: 0 });
   const touchStartTime = useRef(0);
-  const touchTimeout = useRef(null);
 
   // Compute preview timestamps when movie changes
   useEffect(() => {
@@ -48,6 +47,13 @@ const Slidercontent = React.memo(function Slidercontent({
     handleResize();
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  useEffect(() => {
+    if (!isVideoPlaying && videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = previewTimestamps.start;
+    }
+  }, [isVideoPlaying, previewTimestamps.start]);
 
   const handleHover = () => {
     if (!isMobile) {
@@ -100,6 +106,7 @@ const Slidercontent = React.memo(function Slidercontent({
       const duration = Date.now() - touchStartTime.current;
       if (isMobile) {
         if (duration < 300) {
+          if (e.cancelable) e.preventDefault();
           onVideoClick();
         }
       } else {

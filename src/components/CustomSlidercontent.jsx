@@ -21,7 +21,6 @@ const Slidercontent = memo(({ img, title, movie, views, desc, customStyle, progr
   const videoRef = useRef(null);
   const touchStart = useRef({ x: 0, y: 0 });
   const touchStartTime = useRef(0);
-  const touchTimeout = useRef(null);
 
   // Handle window resize
   useEffect(() => {
@@ -48,8 +47,9 @@ const Slidercontent = memo(({ img, title, movie, views, desc, customStyle, progr
       video.play().catch((err) => {});
     } else if (video) {
       video.pause();
+      video.currentTime = previewTimestamps.start;
     }
-  }, [isVideoPlaying]);
+  }, [isVideoPlaying, previewTimestamps.start]);
 
   const handleHover = () => {
     if (!isMobile) {
@@ -98,6 +98,7 @@ const Slidercontent = memo(({ img, title, movie, views, desc, customStyle, progr
       const duration = Date.now() - touchStartTime.current;
       if (isMobile) {
         if (duration < 300) {
+          if (e.cancelable) e.preventDefault();
           onVideoClick();
         }
       } else {

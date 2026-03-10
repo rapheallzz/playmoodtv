@@ -94,6 +94,7 @@ const Slidercontent = React.memo(function Slidercontent({ img, title, movie, id,
       const duration = Date.now() - touchStartTime.current;
       if (isMobile) {
         if (duration < 300 && onVideoClick) {
+          if (e.cancelable) e.preventDefault();
           onVideoClick();
         }
       } else if (onVideoClick) {

@@ -74,6 +74,13 @@ const Slidercontent = React.memo(function Slidercontent({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  useEffect(() => {
+    if (!isVideoPlaying && videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = previewTimestamps.start;
+    }
+  }, [isVideoPlaying, previewTimestamps.start]);
+
   // Handle hover for video playback
   const handleHover = () => {
     if (!movie) {
@@ -139,6 +146,7 @@ const Slidercontent = React.memo(function Slidercontent({
       const duration = Date.now() - touchStartTime.current;
       if (isMobile) {
         if (duration < 300) {
+          if (e.cancelable) e.preventDefault();
           onVideoClick();
         }
       } else {
