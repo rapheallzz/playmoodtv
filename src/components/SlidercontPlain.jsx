@@ -28,6 +28,8 @@ const Slidercontent = React.memo(function Slidercontent({
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const videoRef = useRef(null);
+  const touchStart = useRef({ x: 0, y: 0 });
+  const touchStartTime = useRef(0);
 
   // Compute preview timestamps
   useEffect(() => {
@@ -90,51 +92,63 @@ const Slidercontent = React.memo(function Slidercontent({
   };
 
   const handleHoverOut = () => {
-    setHover(false);
-    setIsVideoPlaying(false);
-    if (videoRef.current) {
-      videoRef.current.pause();
-      videoRef.current.currentTime = previewTimestamps.start;
+    if (!isMobile) {
+      setHover(false);
+      setIsVideoPlaying(false);
+      if (videoRef.current) {
+        videoRef.current.pause();
+        videoRef.current.currentTime = previewTimestamps.start;
+      }
     }
   };
 
-  const handleClick = (e) => {
-    e.preventDefault();
-    const target = e.target;
-    const isMetadataArea = target.closest('.metadata-area');
-    if (isMetadataArea) return;
+  const handleTouchStart = (e) => {
+    const clientX = e.type === 'mousedown' ? e.clientX : e.touches[0].clientX;
+    const clientY = e.type === 'mousedown' ? e.clientY : e.touches[0].clientY;
+    touchStart.current = { x: clientX, y: clientY };
+    touchStartTime.current = Date.now();
 
     if (isMobile) {
-      if (!isVideoPlaying) {
-        setHover(true);
-        setIsVideoPlaying(true);
-        if (videoRef.current) {
-          videoRef.current.currentTime = previewTimestamps.start;
-          videoRef.current.play().catch((error) => {
-            setIsVideoPlaying(false);
-            setLocalError('Failed to play video preview.');
-          });
-        }
+      setHover(true);
+      setIsVideoPlaying(true);
+    }
+  };
+
+  const handleTouchEnd = (e) => {
+    if (isMobile) {
+      setHover(false);
+      setIsVideoPlaying(false);
+      if (videoRef.current) {
+        videoRef.current.pause();
+        videoRef.current.currentTime = previewTimestamps.start;
       }
-    } else {
-      onVideoClick();
+    }
+
+    const clientX = e.type === 'mouseup' ? e.clientX : e.changedTouches[0].clientX;
+    const clientY = e.type === 'mouseup' ? e.clientY : e.changedTouches[0].clientY;
+
+    const distance = Math.sqrt(
+      Math.pow(clientX - touchStart.current.x, 2) +
+      Math.pow(clientY - touchStart.current.y, 2)
+    );
+
+    const target = e.target;
+    const isMetadataArea = target.closest('.metadata-area');
+
+    if (distance < 10 && !isMetadataArea) {
+      const duration = Date.now() - touchStartTime.current;
+      if (isMobile) {
+        if (duration < 300) {
+          onVideoClick();
+        }
+      } else {
+        onVideoClick();
+      }
     }
   };
 
   const handleVideoClick = (e) => {
     e.stopPropagation();
-    const target = e.target;
-    const isMetadataArea = target.closest('.metadata-area');
-    if (isMetadataArea) return;
-
-    if (isVideoPlaying) {
-      onVideoClick();
-      setHover(false);
-      setIsVideoPlaying(false);
-      if (videoRef.current) {
-        videoRef.current.pause();
-      }
-    }
   };
 
   const handleLike = async (e) => {
@@ -218,6 +232,10 @@ const Slidercontent = React.memo(function Slidercontent({
       className="relative overflow-hidden w-full h-[78%] mr-0.5"
       onMouseEnter={!isMobile ? handleHover : null}
       onMouseLeave={!isMobile ? handleHoverOut : null}
+      onMouseDown={handleTouchStart}
+      onTouchStart={handleTouchStart}
+      onMouseUp={handleTouchEnd}
+      onTouchEnd={handleTouchEnd}
     >
       {localError && (
         <ErrorMessage>{localError}</ErrorMessage>
@@ -238,7 +256,6 @@ const Slidercontent = React.memo(function Slidercontent({
               className="w-full h-full object-cover cursor-pointer"
               src={img || 'https://via.placeholder.com/300x200'}
               alt={title || 'No title'}
-              onClick={handleClick}
             />
           </div>
           <div className="metadata-area absolute bottom-0 w-full bg-black bg-opacity-50 flex justify-between p-3 gap-2.5">

@@ -20,6 +20,7 @@ const Slidercontent = memo(({ img, title, movie, views, desc, customStyle, progr
   const { user } = useSelector((state) => state.auth);
   const videoRef = useRef(null);
   const touchStart = useRef({ x: 0, y: 0 });
+  const touchStartTime = useRef(0);
   const touchTimeout = useRef(null);
 
   // Handle window resize
@@ -68,32 +69,41 @@ const Slidercontent = memo(({ img, title, movie, views, desc, customStyle, progr
     const clientX = e.type === 'mousedown' ? e.clientX : e.touches[0].clientX;
     const clientY = e.type === 'mousedown' ? e.clientY : e.touches[0].clientY;
     touchStart.current = { x: clientX, y: clientY };
+    touchStartTime.current = Date.now();
+
+    if (isMobile) {
+      setHover(true);
+      setIsVideoPlaying(true);
+    }
   };
 
   const handleTouchEnd = (e) => {
-    clearTimeout(touchTimeout.current);
-    touchTimeout.current = setTimeout(() => {
-      const clientX = e.type === 'mouseup' ? e.clientX : e.changedTouches[0].clientX;
-      const clientY = e.type === 'mouseup' ? e.clientY : e.changedTouches[0].clientY;
-      const distance = Math.sqrt(
-        Math.pow(clientX - touchStart.current.x, 2) +
-        Math.pow(clientY - touchStart.current.y, 2)
-      );
+    if (isMobile) {
+      setHover(false);
+      setIsVideoPlaying(false);
+    }
 
-      const target = e.target;
-      const isMetadataArea = target.closest('.metadata-area');
+    const clientX = e.type === 'mouseup' ? e.clientX : e.changedTouches[0].clientX;
+    const clientY = e.type === 'mouseup' ? e.clientY : e.changedTouches[0].clientY;
 
-      if (distance < 10 && !isMetadataArea) {
-        e.preventDefault();
-        e.stopPropagation();
-        if (isMobile) {
-          setHover(!hover);
-          setIsVideoPlaying(!isVideoPlaying);
-        } else {
+    const distance = Math.sqrt(
+      Math.pow(clientX - touchStart.current.x, 2) +
+      Math.pow(clientY - touchStart.current.y, 2)
+    );
+
+    const target = e.target;
+    const isMetadataArea = target.closest('.metadata-area');
+
+    if (distance < 10 && !isMetadataArea) {
+      const duration = Date.now() - touchStartTime.current;
+      if (isMobile) {
+        if (duration < 300) {
           onVideoClick();
         }
+      } else {
+        onVideoClick();
       }
-    }, 100);
+    }
   };
 
   const handleLike = async (e) => {
@@ -163,7 +173,9 @@ const Slidercontent = memo(({ img, title, movie, views, desc, customStyle, progr
     <SlideWrapper
       onMouseEnter={handleHover}
       onMouseLeave={handleHoverOut}
+      onMouseDown={handleTouchStart}
       onTouchStart={handleTouchStart}
+      onMouseUp={handleTouchEnd}
       onTouchEnd={handleTouchEnd}
       role="button"
       tabIndex={0}

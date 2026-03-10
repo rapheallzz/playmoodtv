@@ -27,6 +27,7 @@ const Slidercontent = React.memo(function Slidercontent({
   const { user } = useSelector((state) => state.auth);
   const videoRef = useRef(null);
   const touchStart = useRef({ x: 0, y: 0 });
+  const touchStartTime = useRef(0);
   const touchTimeout = useRef(null);
 
   // Compute preview timestamps when movie changes
@@ -67,43 +68,44 @@ const Slidercontent = React.memo(function Slidercontent({
     const clientX = e.type === 'mousedown' ? e.clientX : e.touches[0].clientX;
     const clientY = e.type === 'mousedown' ? e.clientY : e.touches[0].clientY;
     touchStart.current = { x: clientX, y: clientY };
+    touchStartTime.current = Date.now();
+
+    if (isMobile) {
+      setHover(true);
+      setIsVideoPlaying(true);
+    }
   };
 
   // Handle touch end to detect tap vs. drag
   const handleTouchEnd = (e) => {
-    clearTimeout(touchTimeout.current);
-    touchTimeout.current = setTimeout(() => {
-      const clientX = e.type === 'mouseup' ? e.clientX : e.changedTouches[0].clientX;
-      const clientY = e.type === 'mouseup' ? e.clientY : e.changedTouches[0].clientY;
-      const distance = Math.sqrt(
-        Math.pow(clientX - touchStart.current.x, 2) +
-        Math.pow(clientY - touchStart.current.y, 2)
-      );
+    if (isMobile) {
+      setHover(false);
+      setIsVideoPlaying(false);
+    }
 
-      // Check if the tap target is the image or its container, not the dots icon or metadata area
-      const target = e.target;
-      const isMetadataArea = target.closest('.metadata-area');
-      const isDotsIcon = target.closest('svg')?.classList.contains('text-white') || false;
+    const clientX = e.type === 'mouseup' ? e.clientX : e.changedTouches[0].clientX;
+    const clientY = e.type === 'mouseup' ? e.clientY : e.changedTouches[0].clientY;
 
-      if (distance < 10 && !isDotsIcon && !isMetadataArea) {
-        e.preventDefault();
-        e.stopPropagation();
-        if (isMobile) {
-          if (!isVideoPlaying) {
-            setHover(true);
-            setIsVideoPlaying(true);
-            setShowPopup(false); // Ensure popup closes when video preview is triggered
-          } else {
-            onVideoClick();
-            setHover(false);
-            setIsVideoPlaying(false);
-            setShowPopup(false); // Ensure popup closes when video preview is closed
-          }
-        } else {
+    const distance = Math.sqrt(
+      Math.pow(clientX - touchStart.current.x, 2) +
+      Math.pow(clientY - touchStart.current.y, 2)
+    );
+
+    // Check if the tap target is the image or its container, not the dots icon or metadata area
+    const target = e.target;
+    const isMetadataArea = target.closest('.metadata-area');
+    const isDotsIcon = target.closest('svg')?.classList.contains('text-white') || false;
+
+    if (distance < 10 && !isDotsIcon && !isMetadataArea) {
+      const duration = Date.now() - touchStartTime.current;
+      if (isMobile) {
+        if (duration < 300) {
           onVideoClick();
         }
+      } else {
+        onVideoClick();
       }
-    }, 100);
+    }
   };
 
   const handleLike = async (e) => {

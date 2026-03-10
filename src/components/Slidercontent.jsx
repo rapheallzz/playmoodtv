@@ -40,17 +40,66 @@ const Description = styled.p`
   overflow: hidden;
 `;
 
-const Slidercontent = React.memo(function Slidercontent({ img, title, movie, id, desc, customStyle }) {
+const Slidercontent = React.memo(function Slidercontent({ img, title, movie, id, desc, customStyle, onVideoClick }) {
   const [hover, setHover] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
+  const touchStart = React.useRef({ x: 0, y: 0 });
+  const touchStartTime = React.useRef(0);
+
+  React.useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const handleHover = () => {
-    setHover(true);
+    if (!isMobile) {
+      setHover(true);
+    }
   };
 
   const handleHoverOut = () => {
-    setHover(false);
+    if (!isMobile) {
+      setHover(false);
+    }
+  };
+
+  const handleTouchStart = (e) => {
+    const clientX = e.type === 'mousedown' ? e.clientX : e.touches[0].clientX;
+    const clientY = e.type === 'mousedown' ? e.clientY : e.touches[0].clientY;
+    touchStart.current = { x: clientX, y: clientY };
+    touchStartTime.current = Date.now();
+
+    if (isMobile) {
+      setHover(true);
+    }
+  };
+
+  const handleTouchEnd = (e) => {
+    if (isMobile) {
+      setHover(false);
+    }
+
+    const clientX = e.type === 'mouseup' ? e.clientX : e.changedTouches[0].clientX;
+    const clientY = e.type === 'mouseup' ? e.clientY : e.changedTouches[0].clientY;
+
+    const distance = Math.sqrt(
+      Math.pow(clientX - touchStart.current.x, 2) +
+      Math.pow(clientY - touchStart.current.y, 2)
+    );
+
+    if (distance < 10) {
+      const duration = Date.now() - touchStartTime.current;
+      if (isMobile) {
+        if (duration < 300 && onVideoClick) {
+          onVideoClick();
+        }
+      } else if (onVideoClick) {
+        onVideoClick();
+      }
+    }
   };
 
   const handleLikeClick = async () => {
@@ -75,6 +124,10 @@ const Slidercontent = React.memo(function Slidercontent({ img, title, movie, id,
       className="relative flex flex-col overflow-hidden justify-between w-full h-full cursor-pointer"
       onMouseEnter={handleHover}
       onMouseLeave={handleHoverOut}
+      onMouseDown={handleTouchStart}
+      onTouchStart={handleTouchStart}
+      onMouseUp={handleTouchEnd}
+      onTouchEnd={handleTouchEnd}
     >
       <div className="absolute top-2 left-2 flex justify-between items-center w-full p-2">
         <img src={logo} className="w-auto h-6" alt="Banner Stamp" />
