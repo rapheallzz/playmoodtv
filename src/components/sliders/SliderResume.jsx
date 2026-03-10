@@ -8,7 +8,40 @@ import { useNavigate } from 'react-router-dom';
 import ContentModal from '../ContentModal';
 import { useSelector } from 'react-redux';
 import BASE_API_URL from '../../apiConfig';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+
+// Pulse animation for right arrow
+const pulse = keyframes`
+  0% {
+    transform: translateY(-50%) scale(1);
+  }
+  50% {
+    transform: translateY(-50%) scale(1.1);
+  }
+  100% {
+    transform: translateY(-50%) scale(1);
+  }
+`;
+
+// Custom Arrow Components
+const CustomPrevArrow = (props) => {
+  const { onClick } = props;
+  return (
+    <div className="custom-arrow prev-arrow" onClick={onClick}>
+      <FaChevronLeft className="arrow-icon" />
+    </div>
+  );
+};
+
+const CustomNextArrow = (props) => {
+  const { onClick } = props;
+  return (
+    <div className="custom-arrow next-arrow" onClick={onClick}>
+      <FaChevronRight className="arrow-icon" />
+    </div>
+  );
+};
 
 export default function SliderResume() {
   const navigate = useNavigate();
@@ -78,17 +111,22 @@ export default function SliderResume() {
     }
   };
 
+  const sliderRef = useRef(null);
+
   const settings = {
     dots: false,
     infinite: data.length > 5,
-    speed: 3000,
+    speed: 300,
     slidesToShow: 5,
     slidesToScroll: 1,
     initialSlide: 0,
     autoplay: data.length > 5,
     autoplaySpeed: 3000,
     cssEase: 'linear',
-    arrows: false,
+    prevArrow: <CustomPrevArrow />,
+    nextArrow: <CustomNextArrow />,
+    swipeToSlide: true,
+    lazyLoad: false,
     responsive: [
       {
         breakpoint: 1024,
@@ -126,7 +164,7 @@ export default function SliderResume() {
       ) : data.length === 0 ? (
         <div className="no-content-message text-white">No videos in Continue Watching.</div>
       ) : (
-        <Slider {...settings}>
+        <Slider key={data.length} {...settings} ref={sliderRef}>
           {Array.isArray(data) &&
             data.map((content) => (
               <div key={content._id} className="slides" onClick={() => handleOpenModal(content)}>
@@ -158,7 +196,7 @@ export default function SliderResume() {
 const SliderContainer = styled.div`
   position: relative;
   width: 100%;
-  padding: 0 20px;
+  padding: 0 80px 0 20px;
   margin: 0 auto;
 
   @media (max-width: 768px) {
@@ -173,6 +211,45 @@ const SliderContainer = styled.div`
   .slick-prev,
   .slick-next {
     display: none !important;
+  }
+
+  .custom-arrow {
+    display: none;
+    position: absolute;
+    top: 40%;
+    transform: translateY(-50%);
+    width: 50px;
+    height: 100px;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    z-index: 10;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.3s ease, background-color 0.3s ease;
+    opacity: 0;
+
+    &.prev-arrow {
+      left: -10px;
+    }
+
+    &.next-arrow {
+      right: 70px;
+      &:hover {
+        animation: ${pulse} 1s infinite;
+        background: rgba(0, 0, 0, 0.7);
+      }
+    }
+
+    .arrow-icon {
+      font-size: 24px;
+    }
+  }
+
+  &:hover .custom-arrow {
+    display: flex;
+    opacity: 1;
   }
 
   .slick-slide {

@@ -184,7 +184,7 @@ export default function SliderTeens() {
 const SliderContainer = styled.div`
   position: relative;
   width: 100%;
-  padding: 0 20px;
+  padding: 0 80px 0 20px;
   margin: 0 auto;
 
   @media (max-width: 768px) {
@@ -222,7 +222,7 @@ const SliderContainer = styled.div`
     }
 
     &.next-arrow {
-      right: -10px;
+      right: 70px;
       &:hover {
         animation: ${pulse} 1s infinite;
         background: rgba(0, 0, 0, 0.7);

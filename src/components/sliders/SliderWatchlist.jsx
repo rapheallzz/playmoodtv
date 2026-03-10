@@ -5,14 +5,47 @@ import 'slick-carousel/slick/slick-theme.css';
 import axios from 'axios';
 import Slidercontent from '../Slidercont';
 import { useNavigate } from 'react-router-dom';
-import ContentModal from '../ContentModal'; 
+import ContentModal from '../ContentModal';
+import styled, { keyframes } from 'styled-components';
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
+// Pulse animation for right arrow
+const pulse = keyframes`
+  0% {
+    transform: translateY(-50%) scale(1);
+  }
+  50% {
+    transform: translateY(-50%) scale(1.1);
+  }
+  100% {
+    transform: translateY(-50%) scale(1);
+  }
+`;
+
+// Custom Arrow Components
+const CustomPrevArrow = (props) => {
+  const { onClick } = props;
+  return (
+    <div className="custom-arrow prev-arrow" onClick={onClick}>
+      <FaChevronLeft className="arrow-icon" />
+    </div>
+  );
+};
+
+const CustomNextArrow = (props) => {
+  const { onClick } = props;
+  return (
+    <div className="custom-arrow next-arrow" onClick={onClick}>
+      <FaChevronRight className="arrow-icon" />
+    </div>
+  );
+};
 
 export default function SliderWatchlist() {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
-  const [modalContent, setModalContent] = useState(null); 
+  const [modalContent, setModalContent] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
@@ -21,9 +54,9 @@ export default function SliderWatchlist() {
 
         // Fetch all data
         const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
-        
 
-      
+
+
         if (response.data && Array.isArray(response.data)) {
           const filteredData = response.data.filter(content => content.category === 'Top 10');
           setData(filteredData);
@@ -38,39 +71,44 @@ export default function SliderWatchlist() {
     fetchData();
   }, []);
 
-  
+
   const handleOpenModal = (content) => {
-    setModalContent(content); 
-    setIsModalOpen(true);    
+    setModalContent(content);
+    setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
-    setIsModalOpen(false);   
-    setModalContent(null);    
+    setIsModalOpen(false);
+    setModalContent(null);
   };
 
 
   const createSlug = (title, _id) => {
-    const formattedTitle = title.toLowerCase().replace(/[^a-z0-9]+/g, '-'); 
+    const formattedTitle = title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
     return `${formattedTitle}-${_id}`;
   };
 
   const handleNavigateToMovie = (content) => {
-    const slug = createSlug(content.title, content._id); 
+    const slug = createSlug(content.title, content._id);
     navigate(`/movie/${slug}`);
   };
+
+  const sliderRef = useRef(null);
 
   const settings = {
     dots: false,
     infinite: data.length > 5,
-    speed: 3000,
+    speed: 300,
     slidesToShow: 5,
     slidesToScroll: 1,
     initialSlide: 0,
     autoplay: data.length > 5,
     autoplaySpeed: 3000,
     cssEase: "linear",
-    arrows: false, 
+    prevArrow: <CustomPrevArrow />,
+    nextArrow: <CustomNextArrow />,
+    swipeToSlide: true,
+    lazyLoad: false,
     responsive: [
       {
         breakpoint: 1024,
@@ -103,19 +141,19 @@ export default function SliderWatchlist() {
 
 
   return (
-    <>
+    <SliderContainer>
       {error ? (
         <div className="error-message">{error}</div>
       ) : (
-        <Slider {...settings}> 
+        <Slider key={data.length} {...settings} ref={sliderRef}>
           {Array.isArray(data) && data.map((content) => (
             <div key={content._id} className="slides" onClick={() => handleOpenModal(content)}>
-              <Slidercontent 
-                img={content.thumbnail} 
-                title={content.title} 
-                 movie={content} 
+              <Slidercontent
+                img={content.thumbnail}
+                title={content.title}
+                 movie={content}
                 views={content.views}
-                desc={content.description} 
+                desc={content.description}
                 customStyle={{}}
                   onVideoClick={() => handleOpenModal(content)}
               />
@@ -123,7 +161,7 @@ export default function SliderWatchlist() {
           ))}
         </Slider>
       )}
-           
+
         <ContentModal
         isOpen={isModalOpen}
         content={modalContent}
@@ -131,6 +169,86 @@ export default function SliderWatchlist() {
         handleNavigateToMovie={handleNavigateToMovie}
       />
 
-    </>
+    </SliderContainer>
   );
 }
+
+// Styled Components
+const SliderContainer = styled.div`
+  position: relative;
+  width: 100%;
+  padding: 0 80px 0 20px;
+  margin: 0 auto;
+
+  @media (max-width: 768px) {
+    padding: 0;
+  }
+
+  .slick-slider {
+    position: relative;
+  }
+
+  // Hide default slick arrows
+  .slick-prev,
+  .slick-next {
+    display: none !important;
+  }
+
+  .custom-arrow {
+    display: none;
+    position: absolute;
+    top: 40%;
+    transform: translateY(-50%);
+    width: 50px;
+    height: 100px;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    z-index: 10;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.3s ease, background-color 0.3s ease;
+    opacity: 0;
+
+    &.prev-arrow {
+      left: -10px;
+    }
+
+    &.next-arrow {
+      right: 70px;
+      &:hover {
+        animation: ${pulse} 1s infinite;
+        background: rgba(0, 0, 0, 0.7);
+      }
+    }
+
+    .arrow-icon {
+      font-size: 24px;
+    }
+  }
+
+  &:hover .custom-arrow {
+    display: flex;
+    opacity: 1;
+  }
+
+  .slick-slide {
+    padding: 0 5px;
+  }
+
+  .slides {
+    position: relative;
+    padding: 0 5px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  @media (max-width: 480px) {
+    .custom-arrow {
+      display: none !important;
+    }
+  }
+`;

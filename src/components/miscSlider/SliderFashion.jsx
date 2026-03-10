@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -6,6 +6,40 @@ import axios from 'axios';
 import Slidercontent from '../Slidercont';
 import { useNavigate } from 'react-router-dom';
 import ContentModal from '../ContentModal'; 
+import styled, { keyframes } from 'styled-components';
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+
+// Pulse animation for right arrow
+const pulse = keyframes`
+  0% {
+    transform: translateY(-50%) scale(1);
+  }
+  50% {
+    transform: translateY(-50%) scale(1.1);
+  }
+  100% {
+    transform: translateY(-50%) scale(1);
+  }
+`;
+
+// Custom Arrow Components
+const CustomPrevArrow = (props) => {
+  const { onClick } = props;
+  return (
+    <div className="custom-arrow prev-arrow" onClick={onClick}>
+      <FaChevronLeft className="arrow-icon" />
+    </div>
+  );
+};
+
+const CustomNextArrow = (props) => {
+  const { onClick } = props;
+  return (
+    <div className="custom-arrow next-arrow" onClick={onClick}>
+      <FaChevronRight className="arrow-icon" />
+    </div>
+  );
+};
 
 export default function SliderSocial() {
   const navigate = useNavigate();
@@ -48,6 +82,8 @@ export default function SliderSocial() {
     setModalContent(null);    
   };
 
+  const sliderRef = useRef(null);
+
   const settings = {
     dots: false,
     infinite: data.length > 5,
@@ -55,10 +91,10 @@ export default function SliderSocial() {
     slidesToShow: 5,
     slidesToScroll: 1,
     autoplay: true,
-    speed: 3000,
     autoplaySpeed: 3000,
     cssEase: "linear",
-    arrows: false,
+    prevArrow: <CustomPrevArrow />,
+    nextArrow: <CustomNextArrow />,
     responsive: [
       {
         breakpoint: 1024,
@@ -92,7 +128,7 @@ export default function SliderSocial() {
       {error ? (
         <div className="error-message">{error}</div>
       ) : (
-        <Slider {...settings}> 
+        <Slider key={data.length} {...settings} ref={sliderRef}>
           {Array.isArray(data) && data.map((content) => (
             <div key={content._id} className="slides">
               <Slidercontent 
@@ -123,7 +159,7 @@ export default function SliderSocial() {
 const SliderContainer = styled.div`
   position: relative;
   width: 100%;
-  padding: 0 20px;
+  padding: 0 80px 0 20px;
   margin: 0 auto;
 
   @media (max-width: 768px) {
@@ -148,6 +184,48 @@ const SliderContainer = styled.div`
     position: relative;
     padding: 0 5px;
     width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .custom-arrow {
+    display: none;
+    position: absolute;
+    top: 40%;
+    transform: translateY(-50%);
+    width: 50px;
+    height: 100px;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    z-index: 10;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.3s ease, background-color 0.3s ease;
+    opacity: 0;
+
+    &.prev-arrow {
+      left: -10px;
+    }
+
+    &.next-arrow {
+      right: 70px;
+      &:hover {
+        animation: ${pulse} 1s infinite;
+        background: rgba(0, 0, 0, 0.7);
+      }
+    }
+
+    .arrow-icon {
+      font-size: 24px;
+    }
+  }
+
+  &:hover .custom-arrow {
+    display: flex;
+    opacity: 1;
   }
 
   @media (max-width: 480px) {

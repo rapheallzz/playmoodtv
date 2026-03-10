@@ -117,7 +117,7 @@ export default function SliderHighlights({ highlights, handleSelectHighlight, re
 const SliderContainer = styled.div`
   position: relative;
   width: 100%;
-  padding: 5px 0;
+  padding: 5px 80px 5px 25px;
   margin: 0 auto;
 
   @media (max-width: 768px) {
@@ -157,7 +157,7 @@ const SliderContainer = styled.div`
     }
 
     &.next-arrow {
-      right: -10px;
+      right: 70px;
       &:hover {
         animation: ${pulse} 1s infinite; // Pulse effect on hover
         background: rgba(0, 0, 0, 0.7); // Slightly darker on hover
