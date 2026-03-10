@@ -242,15 +242,16 @@ const SliderContainer = styled.div`
     position: relative;
     display: flex;
     align-items: center;
+    justify-content: flex-start;
+    padding-left: 10px;
   }
 
   .movie-ids {
-    position: absolute;
-    top: 35%;
-    transform: translateY(-50%);
-    left: 5px;
+    position: relative;
+    flex-shrink: 0;
+    width: 40px;
     color: white;
-    font-size: 44px;
+    font-size: 60px;
     font-weight: 900;
     z-index: 5;
     display: flex;
@@ -260,20 +261,25 @@ const SliderContainer = styled.div`
     font-style: italic;
     opacity: 0.9;
     pointer-events: none;
+    margin-right: 5px;
   }
 
   @media (max-width: 1024px) {
     .movie-ids {
-      font-size: 36px;
-      top: 35%;
+      font-size: 50px;
+      width: 35px;
     }
   }
 
-  @media (max-width: 600px) {
+  @media (max-width: 768px) {
+    .slides {
+      padding-left: 5px;
+    }
+
     .movie-ids {
-      font-size: 32px;
-      top: 35%;
-      left: 5px;
+      font-size: 45px;
+      width: 30px;
+      margin-right: 2px;
     }
   }
 
@@ -285,10 +291,14 @@ const SliderContainer = styled.div`
       display: none !important;
     }
 
+    .slides {
+      padding-left: 5px;
+    }
+
     .movie-ids {
-      font-size: 28px;
-      top: 35%;
-      left: 8px;
+      font-size: 40px;
+      width: 25px;
+      margin-right: 2px;
     }
 
     .slick-slide {
