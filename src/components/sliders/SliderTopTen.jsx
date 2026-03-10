@@ -145,17 +145,15 @@ export default function SliderTopTen() {
                 <h1 className="movie-ids" aria-label={`Rank ${index + 1}`}>
                   {index + 1}
                 </h1>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <Slidercontent
-                    img={content.thumbnail}
-                    title={content.title}
-                    movie={content}
-                    views={content.views}
-                    desc={content.description}
-                    customStyle={{}}
-                    onVideoClick={() => handleOpenModal(content)}
-                  />
-                </div>
+                <Slidercontent
+                  img={content.thumbnail}
+                  title={content.title}
+                  movie={content}
+                  views={content.views}
+                  desc={content.description}
+                  customStyle={{}}
+                  onVideoClick={() => handleOpenModal(content)}
+                />
               </div>
             ))}
         </Slider>
@@ -237,55 +235,44 @@ const SliderContainer = styled.div`
 
   .slides {
     position: relative;
-    display: flex !important;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
     padding: 0 5px;
     width: 100%;
   }
 
   .movie-ids {
-    position: relative;
-    flex-shrink: 0;
-    width: auto;
-    min-width: 60px;
+    position: absolute;
+    left: -15px;
+    top: 50%;
+    transform: translateY(-50%);
     color: white;
-    font-size: 80px;
+    font-size: 110px;
     font-weight: 900;
     z-index: 5;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8);
     font-style: italic;
-    opacity: 1;
     pointer-events: none;
-    margin-right: 10px;
+    margin: 0;
     line-height: 1;
   }
 
   @media (max-width: 1024px) {
     .movie-ids {
-      font-size: 60px;
-      min-width: 50px;
-      margin-right: 8px;
+      font-size: 90px;
+      left: -12px;
     }
   }
 
   @media (max-width: 768px) {
     .movie-ids {
-      font-size: 50px;
-      min-width: 40px;
-      margin-right: 5px;
+      font-size: 70px;
+      left: -10px;
     }
   }
 
   @media (max-width: 480px) {
     .movie-ids {
-      font-size: 45px;
-      min-width: 35px;
-      margin-right: 5px;
+      font-size: 60px;
+      left: -8px;
     }
   }
 
