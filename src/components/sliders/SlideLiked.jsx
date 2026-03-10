@@ -215,7 +215,7 @@ export default function SliderLiked() {
 const SliderContainer = styled.div`
   position: relative;
   width: 100%;
-  padding: 0 50px 0 20px;
+  padding: 0 40px 0 0;
   margin: 0 auto;
 
   @media (max-width: 768px) {

@@ -236,7 +236,7 @@ const MainContainer = styled.div`
 
 const ContentWrapper = styled.div`
   width: 100%;
-  padding: 0 20px;
+  padding: 0 40px 0 0;
   margin-top: ${(props) => (props.isMobile ? '140px' : '8%')};
   margin-bottom: 0; /* No gap before footer */
   flex-grow: 1;
@@ -261,7 +261,7 @@ const HeaderWrapper = styled.div`
 const SliderContainer = styled.div`
   position: relative;
   width: 100%;
-  padding: 0 20px;
+  padding: 0 40px 0 0;
   margin: 0 auto;
 
   .slick-slider {
@@ -295,7 +295,7 @@ const SliderContainer = styled.div`
     }
 
     &.next-arrow {
-      right: -10px;
+      right: 0px;
       &:hover {
         animation: ${pulse} 1s infinite;
         background: rgba(0, 0, 0, 0.7);

@@ -24,7 +24,6 @@ const CreatorSlider = React.memo(function CreatorSlider({ img, title, movie, id,
     setHover(false);
   };
 
-  const titleSpliced = title ? title.slice(0, 30) + '...' : '';
   const description = movie && movie.description ? movie.description.slice(0, 100) + '...' : '';
 
   const handleLikeClick = async (e) => {
@@ -50,22 +49,22 @@ const CreatorSlider = React.memo(function CreatorSlider({ img, title, movie, id,
         <img src={logo} className="w-auto h-6" alt="Banner Stamp" />
       </div>
       {!hover && (
-        <div className="absolute bottom-0 left-0 w-full bg-black bg-opacity-70 p-4 flex justify-between items-center gap-2">
-          <h3 className="text-white text-lg">{titleSpliced}</h3>
-          <HiDotsVertical color="white" className="text-xl" />
+        <div className="absolute bottom-0 left-0 w-full bg-black bg-opacity-50 p-1 md:p-2 flex justify-between items-center gap-2">
+          <h3 className="text-white text-xs md:text-sm truncate w-[80%]">{title}</h3>
+          <HiDotsVertical color="white" className="text-sm md:text-lg" />
         </div>
       )}
       {hover ? (
         <div className="flex flex-col w-full h-full bg-black">
-          <div className="h-3/5">
+          <div className="h-[65%]">
             <video playsInline loop autoPlay muted className="w-full h-full object-cover">
               <source src={movie?.shortPreview || movie?.video} />
             </video>
           </div>
-          <div className="flex-grow p-3 flex flex-col justify-between">
+          <div className="flex-grow p-2 flex flex-col justify-between h-[35%] overflow-hidden">
             <div>
-              <h4 className="text-white text-sm font-semibold">{titleSpliced}</h4>
-              <p className="text-white text-xs font-light mt-1">{description}</p>
+              <h4 className="text-white text-xs md:text-sm font-semibold truncate">{title}</h4>
+              <p className="text-white text-[0.65rem] font-light mt-0.5 line-clamp-2">{description}</p>
             </div>
             <div className="flex justify-end items-center">
               <img src={whiteheart} alt="like" className="w-5 h-5" onClick={handleLikeClick} />

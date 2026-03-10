@@ -236,7 +236,7 @@ const MainContainer = styled.div`
 
 const ContentWrapper = styled.div`
   width: 100%;
-  padding: 0 20px;
+  padding: 0;
   margin-top: ${(props) => (props.isMobile ? '140px' : '8%')};
   margin-bottom: 0; /* No gap before footer */
   flex-grow: 1;
@@ -244,7 +244,7 @@ const ContentWrapper = styled.div`
   @media (min-width: 768px) {
     width: calc(100% - 260px);
     margin-left: 260px;
-    padding: 0 30px;
+    padding: 0;
   }
 `;
 
@@ -261,8 +261,12 @@ const HeaderWrapper = styled.div`
 const SliderContainer = styled.div`
   position: relative;
   width: 100%;
-  padding: 0 20px;
+  padding: 0 40px 0 0;
   margin: 0 auto;
+
+  @media (max-width: 768px) {
+    padding: 0;
+  }
 
   .slick-slider {
     position: relative;
@@ -295,7 +299,7 @@ const SliderContainer = styled.div`
     }
 
     &.next-arrow {
-      right: -10px;
+      right: 0px;
       &:hover {
         animation: ${pulse} 1s infinite;
         background: rgba(0, 0, 0, 0.7);
@@ -329,6 +333,7 @@ const SliderContainer = styled.div`
   }
 
   .slidescircle {
+    padding: 0 5px;
     position: relative;
     display: flex;
     align-items: center;
@@ -362,16 +367,7 @@ const SliderContainer = styled.div`
     padding: 20px;
   }
 
-  @media (max-width: 1024px) {
-    padding: 0 15px;
-  }
-
-  @media (max-width: 600px) {
-    padding: 0 10px;
-  }
-
   @media (max-width: 480px) {
-    padding: 0 10px;
     .custom-arrow {
       display: none !important;
     }

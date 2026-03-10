@@ -349,8 +349,12 @@ export const NavButton = styled.button`
 export const StyledSliderContainer = styled.div`
   position: relative;
   width: 100%;
-  padding: 0 20px;
+  padding: 0 40px 0 0;
   margin: 0 auto;
+
+  @media (max-width: 768px) {
+    padding: 0;
+  }
 
   .slick-slider {
     position: relative;
@@ -379,11 +383,11 @@ export const StyledSliderContainer = styled.div`
     opacity: 0; // Hidden by default
 
     &.prev-arrow {
-      left: 0; // Position at left edge
+      left: -10px; // Position at left edge
     }
 
     &.next-arrow {
-      right: 0; // Position at right edge
+      right: 0px; // Position at right edge
       &:hover {
         animation: ${pulse} 1s infinite; // Pulse effect on hover
         background: rgba(0, 0, 0, 0.7); // Slightly darker on hover
@@ -405,21 +409,14 @@ export const StyledSliderContainer = styled.div`
 
   .slides {
     position: relative;
+    padding: 0 5px;
+    width: 100%;
     display: flex;
     align-items: center;
-  }
-
-  @media (max-width: 1024px) {
-    padding: 0 15px;
-  }
-
-  @media (max-width: 600px) {
-    padding: 0 10px;
+    justify-content: center;
   }
 
   @media (max-width: 480px) {
-    padding: 0 10px;
-
     .custom-arrow {
       display: none !important; // Hide arrows on small screens
     }
@@ -653,6 +650,11 @@ export const CreatorSlider = styled.div`
   overflow: hidden;
   border-radius: 8px;
 
+  @media (max-width: 768px) {
+    max-width: 200px;
+    height: 100%;
+  }
+
   @media (max-width: 600px) {
     max-width: 130px;
   }
@@ -852,7 +854,7 @@ export const FeedContainer = styled.div`
   margin-bottom: 40px;
 
   @media screen and (max-width: 768px) {
-    padding: 0 20px;
+    padding: 0 40px 0 0;
   }
 `;
 
@@ -1495,16 +1497,16 @@ export const StyledPlaylistModal = styled(ModalContent)`
 
 export const StyledContentSection = styled.div`
   width: 100%;
-  padding: 0 60px;
+  padding: 0;
   background-color: transparent;
   margin-bottom: 40px;
 
   @media screen and (max-width: 768px) {
-    padding: 0 20px;
+    padding: 0;
   }
 
   @media screen and (max-width: 480px) {
-    padding: 0 15px;
+    padding: 0;
   }
 `;
 
