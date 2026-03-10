@@ -224,20 +224,20 @@ const Slidercontent = React.memo(function Slidercontent({
       <div className="absolute top-2.5 w-full px-1 flex justify-between"></div>
       {!hover && !isVideoPlaying ? (
         <>
-          <div className="h-[70%]">
+          <div className="h-[82%]">
             <img
               className="w-full h-full object-cover cursor-pointer"
               src={img}
               alt={title}
             />
           </div>
-          <div className="metadata-area absolute bottom-0 w-full bg-black bg-opacity-50 flex justify-between p-2 md:p-3 gap-2.5">
+          <div className="metadata-area absolute bottom-0 w-full bg-black bg-opacity-50 flex justify-between p-0.5 md:p-1 gap-2.5">
             <h3
-              className="text-white text-xs md:text-base font-normal w-[80%]"
+              className="text-white text-xs md:text-base font-normal w-[80%] truncate"
               style={customStyle || {}}
               title={title}
             >
-              {truncateTitle(title, isMobile ? 15 : 20)}
+              {title}
             </h3>
             {isMobile && !hover && !isVideoPlaying && (
               <HiDotsVertical

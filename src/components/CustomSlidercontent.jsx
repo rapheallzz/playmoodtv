@@ -314,7 +314,7 @@ const SlideWrapper = styled.div`
 
 const ImageWrapper = styled.div`
   position: relative;
-  height: 70%;
+  height: 82%;
 `;
 
 const Overlay = styled.div`
@@ -324,7 +324,7 @@ const Overlay = styled.div`
   background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: space-between;
-  padding: 10px;
+  padding: 2px 4px;
   align-items: center;
 `;
 

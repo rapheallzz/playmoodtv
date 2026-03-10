@@ -186,7 +186,7 @@ export default function UserFavourite() {
 const SliderContainer = styled.div`
   position: relative;
   width: 100%;
-  padding: 0 80px 0 20px;
+  padding: 0 120px 0 20px;
   margin: 0 auto;
 
   @media (max-width: 768px) {
@@ -237,7 +237,7 @@ const SliderContainer = styled.div`
     }
 
     &.next-arrow {
-      right: 70px;
+      right: 65px;
       &:hover {
         animation: ${pulse} 1s infinite; // Pulse effect on hover
         background: rgba(0, 0, 0, 0.7); // Slightly darker on hover
