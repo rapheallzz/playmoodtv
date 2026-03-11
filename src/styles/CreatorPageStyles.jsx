@@ -1756,7 +1756,7 @@ export const LargeHighlightTitle = styled(HighlightTitle)`
 
 export const VideoGrid = styled.div`
   display: flex;
-  gap: 16px;
+  gap: 0;
   justify-content: flex-start;
   width: 100%;
   flex-wrap: wrap;

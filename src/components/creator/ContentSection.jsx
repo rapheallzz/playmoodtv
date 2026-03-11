@@ -5,7 +5,7 @@ import 'slick-carousel/slick/slick-theme.css';
 import { StyledContentSection, SectionTitle, SubTabNav, SubTabButton, StyledSliderContainer, NoPostsMessage, CustomPrevArrow, CustomNextArrow, VideoGrid } from '../../styles/CreatorPageStyles';
 import PlaylistSection from './PlaylistSection';
 import CommunitySection from './CommunitySection';
-import CreatorSlider from './CreatorSlider';
+import Slidercontent from '../Slidercont';
 import ContentModal from '../ContentModal';
 
 const getSliderSettings = (itemCount) => ({
@@ -114,33 +114,33 @@ const ContentSection = ({
               ) : approvedVideos.length > 5 ? (
                 <Slider {...getSliderSettings(approvedVideos.length)}>
                   {approvedVideos.map((content) => (
-                    <CreatorSlider
-                      key={content._id}
-                      img={content.thumbnail}
+                    <div key={content._id} className="slides">
+                      <Slidercontent
+                        img={content.thumbnail}
                         title={content.title}
                         movie={content}
                         views={content.views}
                         desc={content.description}
-                        shortPreview={content.shortPreview}
                         customStyle={{}}
                         onVideoClick={() => handleOpenContentModal(content)}
                       />
+                    </div>
                   ))}
                 </Slider>
               ) : (
                 <VideoGrid>
                   {approvedVideos.map((content) => (
-                    <CreatorSlider
-                      key={content._id}
-                      img={content.thumbnail}
+                    <div key={content._id} className="slides">
+                      <Slidercontent
+                        img={content.thumbnail}
                         title={content.title}
                         movie={content}
                         views={content.views}
                         desc={content.description}
-                        shortPreview={content.shortPreview}
                         customStyle={{}}
                         onVideoClick={() => handleOpenContentModal(content)}
                       />
+                    </div>
                   ))}
                 </VideoGrid>
               )
@@ -150,37 +150,37 @@ const ContentSection = ({
               ) : pendingVideos.length > 5 ? (
                 <Slider {...getSliderSettings(pendingVideos.length)}>
                   {pendingVideos.map((content) => (
-                    <CreatorSlider
-                      key={content._id}
-                      img={content.thumbnail}
+                    <div key={content._id} className="slides">
+                      <Slidercontent
+                        img={content.thumbnail}
                         title={content.title}
                         movie={content}
                         views={content.views}
                         desc={content.description}
-                        shortPreview={content.shortPreview}
                         customStyle={{}}
                         onVideoClick={() => {
                           handleOpenContentModal(content);
                         }}
                       />
+                    </div>
                   ))}
                 </Slider>
               ) : (
                 <VideoGrid>
                   {pendingVideos.map((content) => (
-                    <CreatorSlider
-                      key={content._id}
-                      img={content.thumbnail}
+                    <div key={content._id} className="slides">
+                      <Slidercontent
+                        img={content.thumbnail}
                         title={content.title}
                         movie={content}
                         views={content.views}
                         desc={content.description}
-                        shortPreview={content.shortPreview}
                         customStyle={{}}
                         onVideoClick={() => {
                           handleOpenContentModal(content);
                         }}
                       />
+                    </div>
                   ))}
                 </VideoGrid>
               )
@@ -209,33 +209,33 @@ const ContentSection = ({
                 selectedPlaylistVideos.length > 5 ? (
                   <Slider {...getSliderSettings(selectedPlaylistVideos.length)}>
                     {selectedPlaylistVideos.map((video) => (
-                      <CreatorSlider
-                        key={video._id}
-                        img={video.thumbnail}
+                      <div key={video._id} className="slides">
+                        <Slidercontent
+                          img={video.thumbnail}
                           title={video.title}
                           movie={video}
                           views={video.views || 0}
                           desc={video.description || ''}
-                          shortPreview={video.shortPreview || video.video}
                           customStyle={{}}
                           onVideoClick={() => handleOpenContentModal(video)}
                         />
+                      </div>
                     ))}
                   </Slider>
                 ) : (
                   <VideoGrid>
                     {selectedPlaylistVideos.map((video) => (
-                      <CreatorSlider
-                        key={video._id}
-                        img={video.thumbnail}
+                      <div key={video._id} className="slides">
+                        <Slidercontent
+                          img={video.thumbnail}
                           title={video.title}
                           movie={video}
                           views={video.views || 0}
                           desc={video.description || ''}
-                          shortPreview={video.shortPreview || video.video}
                           customStyle={{}}
                           onVideoClick={() => handleOpenContentModal(video)}
                         />
+                      </div>
                     ))}
                   </VideoGrid>
                 )
