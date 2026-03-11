@@ -1,5 +1,5 @@
 // CreatorChannel.js
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { Link, useNavigate, useLocation, useParams } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
@@ -538,6 +538,8 @@ const fetchPlaylists = async () => {
     setError('');
   };
 
+  const sliderRef = useRef(null);
+
   const finalIsLoading = isLoading || isLoadingHighlights;
 
   if (finalIsLoading) {
@@ -734,7 +736,7 @@ const fetchPlaylists = async () => {
               <NoPosts>No videos available.</NoPosts>
             ) : (
               <SliderContainer>
-                <Slider {...sliderSettings}>
+                <Slider {...sliderSettings} ref={sliderRef}>
                   {data.map((content) => (
                     <div key={content._id} className="slides">
                       <Slidercontent
@@ -751,7 +753,7 @@ const fetchPlaylists = async () => {
                 </Slider>
               </SliderContainer>
             )}
-          </>
+          </div>
         )}
 
         {activeTab === 'FEEDS' && (
