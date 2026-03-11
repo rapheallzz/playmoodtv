@@ -285,14 +285,10 @@ export const DropdownItem = styled.div`
 
 export const StlyedNavigation = styled.div`
   width: 100%;
-  padding: 24px 60px;
+  padding: 24px 40px;
 
   @media screen and (max-width: 768px) {
-    padding: 16px 20px;
-  }
-
-  @media screen and (max-width: 480px) {
-    padding: 12px 15px;
+    padding: 16px 16px;
   }
 `;
 
@@ -349,11 +345,11 @@ export const NavButton = styled.button`
 export const StyledSliderContainer = styled.div`
   position: relative;
   width: 100%;
-  padding: 0 40px 0 0;
+  padding: 0 40px 0 35px;
   margin: 0 auto;
 
   @media (max-width: 768px) {
-    padding: 0;
+    padding: 0 0 0 11px;
   }
 
   .slick-slider {
@@ -437,10 +433,12 @@ export const SectionTitle = styled.h2`
   font-size: 1.5rem;
   font-weight: 600;
   margin: 32px 0;
+  padding: 0 40px;
 
   @media screen and (max-width: 768px) {
     font-size: 1.25rem;
     margin: 24px 0;
+    padding: 0 16px;
   }
 
   @media screen and (max-width: 480px) {
@@ -456,7 +454,7 @@ export const StlyedCommunitySection = styled.div`
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 10px;
+  padding: 0 40px;
   margin-bottom: 40px;
 
   @media screen and (max-width: 1000px) {
@@ -464,7 +462,7 @@ export const StlyedCommunitySection = styled.div`
   }
 
   @media screen and (max-width: 768px) {
-    padding: 0 5px;
+    padding: 0 16px;
     gap: 15px;
   }
 
@@ -850,11 +848,11 @@ export const ModalCardInput = styled.input`
 
 export const FeedContainer = styled.div`
   width: 100%;
-  padding: 0 60px;
+  padding: 0 40px;
   margin-bottom: 40px;
 
   @media screen and (max-width: 768px) {
-    padding: 0 40px 0 0;
+    padding: 0 16px;
   }
 `;
 
@@ -1280,9 +1278,12 @@ export const FooterLink = styled.p`
 export const SliderContainer = styled.div`
   position: relative;
   width: 100%;
-  padding: 0 20px 0 0;
+  padding: 0 40px 0 35px;
   margin: 0;
-  margin-left: 10px;
+
+  @media (max-width: 768px) {
+    padding: 0 0 0 11px;
+  }
 
   .slick-slider {
     position: relative;
@@ -1358,20 +1359,11 @@ export const SliderContainer = styled.div`
     align-items: center;
   }
 
-  @media (max-width: 1024px) {
-    padding: 0 15px 0 0;
-    margin-left: 8px;
-  }
-
-  @media (max-width: 600px) {
-    padding: 0 10px 0 0;
-    margin-left: 5px;
+  @media (max-width: 768px) {
+    padding: 0 0 0 10px;
   }
 
   @media (max-width: 480px) {
-    padding: 0 10px 0 0;
-    margin-left: 5px;
-
     .custom-arrow {
       display: none !important;
     }
@@ -1503,7 +1495,7 @@ export const StyledContentSection = styled.div`
 `;
 
 export const HighlightsSectionContainer = styled.div`
-  padding: 5px 50px;
+  padding: 5px 0;
   width: 100%;
 
   @media (max-width: 768px) {
@@ -1515,7 +1507,11 @@ export const HighlightsList = styled.div`
   display: flex;
   overflow-x: auto;
   gap: 20px;
-  padding-bottom: 10px;
+  padding: 0 40px 10px 40px;
+
+  @media screen and (max-width: 768px) {
+    padding: 0 16px 10px 16px;
+  }
 `;
 
 export const HighlightItem = styled.div`

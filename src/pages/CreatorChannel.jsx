@@ -63,11 +63,11 @@ const CustomNextArrow = (props) => {
 const SliderContainer = styled.div`
   position: relative;
   width: 100%;
-  padding: 0 40px 0 0;
+  padding: 0 40px 0 35px;
   margin: 0 auto;
 
   @media (max-width: 768px) {
-    padding: 0;
+    padding: 0 0 0 11px;
   }
 
   .slick-slider {
@@ -144,7 +144,11 @@ const PlaylistTitle = styled.h3`
   font-size: 1.2rem;
   font-weight: 600;
   margin-bottom: 15px;
-  padding-left: 10px; /* Align with slider content */
+  padding: 0 40px;
+
+  @media screen and (max-width: 768px) {
+    padding: 0 16px;
+  }
 `;
 
 // Rest of the CreatorChannel component remains unchanged
@@ -683,7 +687,7 @@ const fetchPlaylists = async () => {
       </div>
 
       {/* Navigation Links */}
-      <div className="w-full flex justify-between py-6 px-10 overflow-x-auto whitespace-nowrap scrollbar-hide">
+      <div className="w-full flex justify-between py-6 px-4 md:px-10 overflow-x-auto whitespace-nowrap scrollbar-hide">
         <div className="flex gap-4">
           <a className="text-white text-sm font-medium hover:cursor-pointer" onClick={() => navigate('/')}>
             HOME
@@ -986,7 +990,11 @@ const CommunitySection = styled.div`
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 10px;
+  padding: 0 40px;
+
+  @media screen and (max-width: 768px) {
+    padding: 0 16px;
+  }
 `;
 
 const PostWrapper = styled.div`
