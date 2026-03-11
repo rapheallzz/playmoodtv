@@ -343,9 +343,12 @@ export const StyledSliderContainer = styled.div`
   width: 100%;
   padding: 0 40px 0 35px;
   margin: 0 auto;
+  min-height: 220px;
+  height: auto;
 
   @media (max-width: 768px) {
     padding: 0 0 0 11px;
+    min-height: 180px;
   }
 
   ${props => props.$isShort && `
@@ -653,20 +656,13 @@ export const CreatorSlider = styled.div`
   flex-direction: column;
   justify-content: space-between;
   width: 100%;
-  max-width: 200px;
-  height: auto;
-  aspect-ratio: 200 / 280;
+  height: 100%;
   cursor: pointer;
   overflow: hidden;
   border-radius: 8px;
 
   @media (max-width: 768px) {
-    max-width: 200px;
     height: 100%;
-  }
-
-  @media (max-width: 600px) {
-    max-width: 130px;
   }
 `;
 
@@ -1295,9 +1291,12 @@ export const SliderContainer = styled.div`
   width: 100%;
   padding: 0 40px 0 35px;
   margin: 0;
+  min-height: 220px;
+  height: auto;
 
   @media (max-width: 768px) {
     padding: 0 0 0 11px;
+    min-height: 180px;
   }
 
   ${props => props.$isShort && `
