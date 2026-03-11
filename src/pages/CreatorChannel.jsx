@@ -728,7 +728,7 @@ const fetchPlaylists = async () => {
       {/* Content Section */}
       <div className="w-full min-h-[300px] md:min-h-[500px] bg-[#1a1a1a] py-8">
         {activeTab === 'VIDEOS' && (
-          <>
+          <div className="w-full">
             <h2 className="text-white font-semibold mb-8 px-4 md:px-10">Videos</h2>
             {data.length === 0 ? (
               <NoPosts>No videos available.</NoPosts>

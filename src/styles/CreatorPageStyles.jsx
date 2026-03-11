@@ -1500,14 +1500,6 @@ export const StyledContentSection = styled.div`
   padding: 0;
   background-color: transparent;
   margin-bottom: 40px;
-
-  @media screen and (max-width: 768px) {
-    padding: 0;
-  }
-
-  @media screen and (max-width: 480px) {
-    padding: 0;
-  }
 `;
 
 export const HighlightsSectionContainer = styled.div`

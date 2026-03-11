@@ -33,20 +33,21 @@ const getSliderSettings = (itemCount) => ({
     {
       breakpoint: 600,
       settings: {
-        slidesToShow: 1,
+        slidesToShow: 1.5,
         slidesToScroll: 1,
         initialSlide: 0,
-        infinite: itemCount > 1,
+        infinite: false,
         arrows: true,
       },
     },
     {
       breakpoint: 480,
       settings: {
-        slidesToShow: 1,
+        slidesToShow: 1.5,
         slidesToScroll: 1,
-        infinite: itemCount > 1,
+        infinite: false,
         arrows: false,
+        centerMode: false,
       },
     },
   ],
@@ -111,7 +112,7 @@ const ContentSection = ({
             {activeSubTab === 'Approved' ? (
               approvedVideos.length === 0 ? (
                 <NoPostsMessage>No approved videos yet.</NoPostsMessage>
-              ) : approvedVideos.length > 5 ? (
+              ) : (
                 <Slider {...getSliderSettings(approvedVideos.length)}>
                   {approvedVideos.map((content) => (
                     <div key={content._id} className="slides">
@@ -127,27 +128,11 @@ const ContentSection = ({
                     </div>
                   ))}
                 </Slider>
-              ) : (
-                <VideoGrid>
-                  {approvedVideos.map((content) => (
-                    <div key={content._id} className="slides">
-                      <Slidercontent
-                        img={content.thumbnail}
-                        title={content.title}
-                        movie={content}
-                        views={content.views}
-                        desc={content.description}
-                        customStyle={{}}
-                        onVideoClick={() => handleOpenContentModal(content)}
-                      />
-                    </div>
-                  ))}
-                </VideoGrid>
               )
             ) : (
               pendingVideos.length === 0 ? (
                 <NoPostsMessage>No pending videos yet.</NoPostsMessage>
-              ) : pendingVideos.length > 5 ? (
+              ) : (
                 <Slider {...getSliderSettings(pendingVideos.length)}>
                   {pendingVideos.map((content) => (
                     <div key={content._id} className="slides">
@@ -165,24 +150,6 @@ const ContentSection = ({
                     </div>
                   ))}
                 </Slider>
-              ) : (
-                <VideoGrid>
-                  {pendingVideos.map((content) => (
-                    <div key={content._id} className="slides">
-                      <Slidercontent
-                        img={content.thumbnail}
-                        title={content.title}
-                        movie={content}
-                        views={content.views}
-                        desc={content.description}
-                        customStyle={{}}
-                        onVideoClick={() => {
-                          handleOpenContentModal(content);
-                        }}
-                      />
-                    </div>
-                  ))}
-                </VideoGrid>
               )
             )}
           </StyledSliderContainer>
@@ -206,39 +173,21 @@ const ContentSection = ({
               {isLoadingPlaylistVideos ? (
                 <NoPostsMessage>Loading videos...</NoPostsMessage>
               ) : Array.isArray(selectedPlaylistVideos) && selectedPlaylistVideos.length > 0 ? (
-                selectedPlaylistVideos.length > 5 ? (
-                  <Slider {...getSliderSettings(selectedPlaylistVideos.length)}>
-                    {selectedPlaylistVideos.map((video) => (
-                      <div key={video._id} className="slides">
-                        <Slidercontent
-                          img={video.thumbnail}
-                          title={video.title}
-                          movie={video}
-                          views={video.views || 0}
-                          desc={video.description || ''}
-                          customStyle={{}}
-                          onVideoClick={() => handleOpenContentModal(video)}
-                        />
-                      </div>
-                    ))}
-                  </Slider>
-                ) : (
-                  <VideoGrid>
-                    {selectedPlaylistVideos.map((video) => (
-                      <div key={video._id} className="slides">
-                        <Slidercontent
-                          img={video.thumbnail}
-                          title={video.title}
-                          movie={video}
-                          views={video.views || 0}
-                          desc={video.description || ''}
-                          customStyle={{}}
-                          onVideoClick={() => handleOpenContentModal(video)}
-                        />
-                      </div>
-                    ))}
-                  </VideoGrid>
-                )
+                <Slider {...getSliderSettings(selectedPlaylistVideos.length)}>
+                  {selectedPlaylistVideos.map((video) => (
+                    <div key={video._id} className="slides">
+                      <Slidercontent
+                        img={video.thumbnail}
+                        title={video.title}
+                        movie={video}
+                        views={video.views || 0}
+                        desc={video.description || ''}
+                        customStyle={{}}
+                        onVideoClick={() => handleOpenContentModal(video)}
+                      />
+                    </div>
+                  ))}
+                </Slider>
               ) : (
                 <NoPostsMessage>No videos in this playlist.</NoPostsMessage>
               )}
