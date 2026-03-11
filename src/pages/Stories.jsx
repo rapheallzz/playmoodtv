@@ -203,12 +203,17 @@ const Content = styled.div`
   display: flex;
   flex-wrap: wrap;
   justify-content: center; 
-  gap: 20px; /* Space between items */
+  gap: 0;
   width: 100%;
-
 
   @media screen and (max-width: 1000px) {
     margin-top: 10%;
+  }
+
+  /* Target the item wrapper to match slider gaps */
+  & > div {
+    padding: 0 5px;
+    margin-bottom: 10px;
   }
 `;
 

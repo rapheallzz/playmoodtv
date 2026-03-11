@@ -63,27 +63,16 @@ const CustomNextArrow = (props) => {
 const SliderContainer = styled.div`
   position: relative;
   width: 100%;
-  padding: 0 20px 0 0; /* Remove left padding, keep right padding */
-  margin: 0; /* Remove centering */
-  margin-left: 10px; /* Align to the left with minimal offset */
+  padding: 0 40px 0 0;
+  margin: 0 auto;
+
+  @media (max-width: 768px) {
+    padding: 0;
+  }
 
   .slick-slider {
     position: relative;
     touch-action: pan-y; /* Allow vertical scrolling, enable horizontal swipe */
-  }
-
-  .slick-list {
-    display: flex;
-    justify-content: flex-start; /* Align slides to the left */
-    margin: 0; /* Remove default margins */
-    padding: 0; /* Ensure no padding interferes */
-  }
-
-  .slick-track {
-    display: flex;
-    justify-content: flex-start; /* Ensure slides are left-aligned */
-    width: auto !important; /* Prevent track from stretching */
-    margin-left: 0; /* Override any default centering */
   }
 
   .slick-prev,
@@ -109,11 +98,11 @@ const SliderContainer = styled.div`
     opacity: 0;
 
     &.prev-arrow {
-      left: 0; /* Adjust to align with left edge */
+      left: -10px;
     }
 
     &.next-arrow {
-      right: 0; /* Adjust to align with right edge */
+      right: 0px;
       &:hover {
         animation: ${pulse} 1s infinite;
         background: rgba(0, 0, 0, 0.7);
@@ -132,29 +121,18 @@ const SliderContainer = styled.div`
 
   .slick-slide {
     padding: 0 5px;
-    flex-shrink: 0; /* Prevent slides from shrinking */
   }
 
   .slides {
     position: relative;
+    padding: 0 5px;
+    width: 100%;
     display: flex;
     align-items: center;
-  }
-
-  @media (max-width: 1024px) {
-    padding: 0 15px 0 0; /* Remove left padding */
-    margin-left: 8px; /* Minimal left offset */
-  }
-
-  @media (max-width: 600px) {
-    padding: 0 10px 0 0; /* Remove left padding */
-    margin-left: 5px; /* Minimal left offset */
+    justify-content: center;
   }
 
   @media (max-width: 480px) {
-    padding: 0 10px 0 0; /* Remove left padding */
-    margin-left: 5px; /* Minimal left offset */
-
     .custom-arrow {
       display: none !important;
     }
