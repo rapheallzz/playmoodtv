@@ -70,6 +70,24 @@ const SliderContainer = styled.div`
     padding: 0 0 0 11px;
   }
 
+  ${props => props.$isShort && `
+    .slick-track {
+      margin-left: 0 !important;
+      transform: none !important;
+      display: flex !important;
+      justify-content: flex-start !important;
+    }
+    .slick-slide {
+      width: 20% !important; /* Standard 5 slides per row */
+      @media (max-width: 1024px) {
+        width: 33.33% !important;
+      }
+      @media (max-width: 768px) {
+        width: 66.66% !important; /* 1.5 slides per row */
+      }
+    }
+  `}
+
   .slick-slider {
     position: relative;
     touch-action: pan-y; /* Allow vertical scrolling, enable horizontal swipe */
@@ -739,7 +757,7 @@ const fetchPlaylists = async () => {
             {data.length === 0 ? (
               <NoPosts>No videos available.</NoPosts>
             ) : (
-              <SliderContainer>
+              <SliderContainer $isShort={data.length < 5}>
                 <Slider {...sliderSettings} ref={sliderRef}>
                   {data.map((content) => (
                     <div key={content._id} className="slides">
@@ -783,7 +801,7 @@ const fetchPlaylists = async () => {
                 <div key={playlist._id} className="mb-8">
                   <PlaylistTitle className="px-4 md:px-10">{playlist.name}</PlaylistTitle>
                   {playlist.videos.length > 0 ? (
-                    <SliderContainer>
+                    <SliderContainer $isShort={playlist.videos.length < 5}>
                       <Slider {...sliderSettings}>
                         {playlist.videos.map((video) => (
                           <div key={video._id} className="slides">

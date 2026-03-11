@@ -108,7 +108,7 @@ const ContentSection = ({
               Pending
             </SubTabButton>
           </SubTabNav>
-          <StyledSliderContainer>
+          <StyledSliderContainer $isShort={(activeSubTab === 'Approved' ? approvedVideos.length : pendingVideos.length) < 5}>
             {activeSubTab === 'Approved' ? (
               approvedVideos.length === 0 ? (
                 <NoPostsMessage>No approved videos yet.</NoPostsMessage>
@@ -168,7 +168,7 @@ const ContentSection = ({
             selectedPlaylistId={selectedPlaylistId}
           />
           {selectedPlaylistId && (
-            <StyledSliderContainer>
+            <StyledSliderContainer $isShort={Array.isArray(selectedPlaylistVideos) && selectedPlaylistVideos.length < 5}>
               <SectionTitle>Playlist Videos</SectionTitle>
               {isLoadingPlaylistVideos ? (
                 <NoPostsMessage>Loading videos...</NoPostsMessage>

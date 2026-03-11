@@ -348,6 +348,24 @@ export const StyledSliderContainer = styled.div`
     padding: 0 0 0 11px;
   }
 
+  ${props => props.$isShort && `
+    .slick-track {
+      margin-left: 0 !important;
+      transform: none !important;
+      display: flex !important;
+      justify-content: flex-start !important;
+    }
+    .slick-slide {
+      width: 20% !important; /* Standard 5 slides per row */
+      @media (max-width: 1024px) {
+        width: 33.33% !important;
+      }
+      @media (max-width: 768px) {
+        width: 66.66% !important; /* 1.5 slides per row */
+      }
+    }
+  `}
+
   .slick-slider {
     position: relative;
     width: 100%;
@@ -1281,6 +1299,24 @@ export const SliderContainer = styled.div`
   @media (max-width: 768px) {
     padding: 0 0 0 11px;
   }
+
+  ${props => props.$isShort && `
+    .slick-track {
+      margin-left: 0 !important;
+      transform: none !important;
+      display: flex !important;
+      justify-content: flex-start !important;
+    }
+    .slick-slide {
+      width: 20% !important; /* Standard 5 slides per row */
+      @media (max-width: 1024px) {
+        width: 33.33% !important;
+      }
+      @media (max-width: 768px) {
+        width: 66.66% !important; /* 1.5 slides per row */
+      }
+    }
+  `}
 
   .slick-slider {
     position: relative;
