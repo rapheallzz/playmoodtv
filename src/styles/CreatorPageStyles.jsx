@@ -102,17 +102,13 @@ export const StyledUserHeader = styled.div`
   width: 100%;
   display: flex;
   justify-content: space-between;
-  padding: 24px 60px;
+  padding: 24px 40px;
   align-items: center;
 
   @media screen and (max-width: 768px) {
     flex-direction: column;
-    padding: 16px 20px;
+    padding: 16px 16px;
     gap: 16px;
-  }
-
-  @media screen and (max-width: 480px) {
-    padding: 12px 15px;
   }
 `;
 
@@ -452,8 +448,6 @@ export const StlyedCommunitySection = styled.div`
   flex-direction: column;
   gap: 20px;
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
   padding: 0 40px;
   margin-bottom: 40px;
 
@@ -1210,11 +1204,14 @@ export const NoPostsMessage = styled.div`
   color: #ccc;
   text-align: left;
   font-size: 1rem;
-  padding: 20px;
+  padding: 20px 40px;
+
+  @media screen and (max-width: 768px) {
+    padding: 15px 16px;
+  }
 
   @media screen and (max-width: 480px) {
     font-size: 0.9rem;
-    padding: 15px;
   }
 `;
 
@@ -1375,10 +1372,12 @@ export const SubTabNav = styled.div`
   justify-content: flex-start;
   gap: 16px;
   margin-bottom: 20px;
+  padding: 0 40px;
 
   @media screen and (max-width: 768px) {
     gap: 12px;
     margin-bottom: 16px;
+    padding: 0 16px;
   }
 
   @media screen and (max-width: 480px) {
