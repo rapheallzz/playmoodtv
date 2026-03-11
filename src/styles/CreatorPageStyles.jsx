@@ -387,7 +387,7 @@ export const StyledSliderContainer = styled.div`
     }
 
     &.next-arrow {
-      right: 0px; // Position at right edge
+      right: 0; // Position at right edge
       &:hover {
         animation: ${pulse} 1s infinite; // Pulse effect on hover
         background: rgba(0, 0, 0, 0.7); // Slightly darker on hover

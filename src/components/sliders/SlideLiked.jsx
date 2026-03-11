@@ -265,7 +265,7 @@ const SliderContainer = styled.div`
     }
 
     &.next-arrow {
-      right: 0px;
+      right: 0;
       &:hover {
         animation: ${pulse} 1s infinite;
         background: rgba(0, 0, 0, 0.7);

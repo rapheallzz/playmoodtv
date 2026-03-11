@@ -1,6 +1,6 @@
 import React from 'react';
 import Slider from 'react-slick';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slidercontent from '../Slidercont';
@@ -65,7 +65,7 @@ const PlaylistSliderContainer = styled.div`
 
     &.prev-arrow { left: -10px; }
     &.next-arrow {
-      right: 0px;
+      right: 0;
       &:hover {
         animation: ${pulse} 1s infinite;
         background: rgba(0, 0, 0, 0.7);
@@ -101,35 +101,37 @@ const PlaylistTitle = styled.h3`
   padding-left: 64px;
 `;
 
-const getSliderSettings = (itemCount) => ({
-  dots: false,
-  infinite: itemCount > 4,
-  speed: 300,
-  slidesToShow: 4,
-  slidesToScroll: 1,
-  prevArrow: <CustomPrevArrow />,
-  nextArrow: <CustomNextArrow />,
-  swipeToSlide: true,
-  responsive: [
-    {
-      breakpoint: 1024,
-      settings: {
-        slidesToShow: 3,
-      }
-    },
-    {
-      breakpoint: 600,
-      settings: {
-        slidesToShow: 2.2,
-      }
-    },
-    {
-      breakpoint: 480,
-      settings: {
-        slidesToShow: 1,
-      }
-    }
-  ]
+const getSliderSettings = (itemCount) => {
+  return {
+    dots: false,
+    infinite: itemCount > 4,
+    speed: 300,
+    slidesToShow: 4,
+    slidesToScroll: 1,
+    prevArrow: <CustomPrevArrow />,
+    nextArrow: <CustomNextArrow />,
+    swipeToSlide: true,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 3,
+        },
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 2.2,
+        },
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 1.5,
+        },
+      },
+    ],
+  };
 };
 
 const PlaylistSlider = ({ playlist }) => {

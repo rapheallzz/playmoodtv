@@ -102,7 +102,7 @@ const SliderContainer = styled.div`
     }
 
     &.next-arrow {
-      right: 0px;
+      right: 0;
       &:hover {
         animation: ${pulse} 1s infinite;
         background: rgba(0, 0, 0, 0.7);
@@ -726,10 +726,10 @@ const fetchPlaylists = async () => {
       />
 
       {/* Content Section */}
-      <div className="w-full min-h-[300px] md:min-h-[500px] bg-[#1a1a1a] px-4 md:px-10 py-8">
+      <div className="w-full min-h-[300px] md:min-h-[500px] bg-[#1a1a1a] py-8">
         {activeTab === 'VIDEOS' && (
           <>
-            <h2 className="text-white font-semibold mb-8">Videos</h2>
+            <h2 className="text-white font-semibold mb-8 px-4 md:px-10">Videos</h2>
             {data.length === 0 ? (
               <NoPosts>No videos available.</NoPosts>
             ) : (
@@ -775,7 +775,7 @@ const fetchPlaylists = async () => {
             ) : (
               playlists.map((playlist) => (
                 <div key={playlist._id} className="mb-8">
-                  <PlaylistTitle>{playlist.name}</PlaylistTitle>
+                  <PlaylistTitle className="px-4 md:px-10">{playlist.name}</PlaylistTitle>
                   {playlist.videos.length > 0 ? (
                     <SliderContainer>
                       <Slider {...sliderSettings}>
@@ -806,7 +806,7 @@ const fetchPlaylists = async () => {
         )}
 
         {activeTab === 'COMMUNITY' && (
-          <>
+          <div className="px-4 md:px-10">
             <h2 className="text-white font-semibold mb-8">Community Posts</h2>
             {isLoadingPosts ? (
               <Loading>Loading posts...</Loading>
@@ -874,7 +874,7 @@ const fetchPlaylists = async () => {
                 })}
               </CommunitySection>
             )}
-          </>
+          </div>
         )}
       </div>
 
