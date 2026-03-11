@@ -2,7 +2,7 @@ import React from 'react';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import { StyledContentSection, SectionTitle, SubTabNav, SubTabButton, StyledSliderContainer, NoPostsMessage, CustomPrevArrow, CustomNextArrow, VideoGrid } from '../../styles/CreatorPageStyles';
+import { StyledContentSection, SectionTitle, SubTabNav, SubTabButton, StyledSliderContainer, NoPostsMessage, CustomPrevArrow, CustomNextArrow, VideoGrid, StyledSlide } from '../../styles/CreatorPageStyles';
 import PlaylistSection from './PlaylistSection';
 import CommunitySection from './CommunitySection';
 import Slidercontent from '../Slidercont';
@@ -115,7 +115,7 @@ const ContentSection = ({
               ) : (
                 <Slider {...getSliderSettings(approvedVideos.length)}>
                   {approvedVideos.map((content) => (
-                    <div key={content._id} className="slides">
+                    <StyledSlide key={content._id} className="slides">
                       <Slidercontent
                         img={content.thumbnail}
                         title={content.title}
@@ -125,7 +125,7 @@ const ContentSection = ({
                         customStyle={{}}
                         onVideoClick={() => handleOpenContentModal(content)}
                       />
-                    </div>
+                    </StyledSlide>
                   ))}
                 </Slider>
               )
@@ -135,7 +135,7 @@ const ContentSection = ({
               ) : (
                 <Slider {...getSliderSettings(pendingVideos.length)}>
                   {pendingVideos.map((content) => (
-                    <div key={content._id} className="slides">
+                    <StyledSlide key={content._id} className="slides">
                       <Slidercontent
                         img={content.thumbnail}
                         title={content.title}
@@ -147,7 +147,7 @@ const ContentSection = ({
                           handleOpenContentModal(content);
                         }}
                       />
-                    </div>
+                    </StyledSlide>
                   ))}
                 </Slider>
               )
@@ -175,7 +175,7 @@ const ContentSection = ({
               ) : Array.isArray(selectedPlaylistVideos) && selectedPlaylistVideos.length > 0 ? (
                 <Slider {...getSliderSettings(selectedPlaylistVideos.length)}>
                   {selectedPlaylistVideos.map((video) => (
-                    <div key={video._id} className="slides">
+                    <StyledSlide key={video._id} className="slides">
                       <Slidercontent
                         img={video.thumbnail}
                         title={video.title}
@@ -185,7 +185,7 @@ const ContentSection = ({
                         customStyle={{}}
                         onVideoClick={() => handleOpenContentModal(video)}
                       />
-                    </div>
+                    </StyledSlide>
                   ))}
                 </Slider>
               ) : (

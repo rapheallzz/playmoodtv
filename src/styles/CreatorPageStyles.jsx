@@ -337,12 +337,12 @@ export const NavButton = styled.button`
 export const StyledSliderContainer = styled.div`
   position: relative;
   width: 100%;
-  padding: 0 25px 0 20px;
+  padding: 0 40px 0 20px;
   margin: 0 auto;
   min-height: 200px;
 
   @media (max-width: 768px) {
-    padding: 0 15px 0 10px;
+    padding: 0 15px;
     min-height: 150px;
   }
 
@@ -422,6 +422,11 @@ export const StyledSliderContainer = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
+    aspect-ratio: 16 / 9;
+    @media (max-width: 768px) {
+      aspect-ratio: auto;
+      height: 150px;
+    }
   }
 
   @media (max-width: 480px) {
@@ -466,6 +471,7 @@ export const StlyedCommunitySection = styled.div`
   width: 100%;
   padding: 0 25px;
   margin-bottom: 40px;
+  flex: none;
 
   @media screen and (max-width: 1000px) {
     margin-bottom: 30px;
@@ -654,6 +660,12 @@ export const CreatorSlider = styled.div`
   cursor: pointer;
   overflow: hidden;
   border-radius: 8px;
+  aspect-ratio: 16 / 9;
+
+  @media (max-width: 768px) {
+    aspect-ratio: auto;
+    height: 150px;
+  }
 `;
 
 export const DotsContainer = styled.div`
@@ -848,6 +860,7 @@ export const FeedContainer = styled.div`
   width: 100%;
   padding: 0 25px;
   margin-bottom: 40px;
+  flex: none;
 
   @media screen and (max-width: 768px) {
     padding: 0 15px;
@@ -876,11 +889,17 @@ export const FeedItem = styled.div`
   background: #1a1a1a;
   border-radius: 8px;
   overflow: hidden;
+  aspect-ratio: 16 / 9;
+
+  @media (max-width: 768px) {
+    aspect-ratio: auto;
+    height: 150px;
+  }
 `;
 
 export const FeedImage = styled.img`
   width: 100%;
-  height: 200px;
+  height: 100%;
   object-fit: cover;
 `;
 
@@ -1279,12 +1298,12 @@ export const FooterLink = styled.p`
 export const SliderContainer = styled.div`
   position: relative;
   width: 100%;
-  padding: 0 25px 0 20px;
+  padding: 0 40px 0 20px;
   margin: 0;
   min-height: 200px;
 
   @media (max-width: 768px) {
-    padding: 0 15px 0 10px;
+    padding: 0 15px;
     min-height: 150px;
   }
 
@@ -1378,6 +1397,11 @@ export const SliderContainer = styled.div`
     position: relative;
     display: flex;
     align-items: center;
+    aspect-ratio: 16 / 9;
+    @media (max-width: 768px) {
+      aspect-ratio: auto;
+      height: 150px;
+    }
   }
 
   @media (max-width: 768px) {
@@ -1516,6 +1540,21 @@ export const StyledContentSection = styled.div`
   background-color: transparent;
   margin-bottom: 40px;
   flex: none;
+`;
+
+export const StyledSlide = styled.div`
+  position: relative;
+  padding: 0 5px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 16 / 9;
+
+  @media (max-width: 768px) {
+    aspect-ratio: auto;
+    height: 150px;
+  }
 `;
 
 export const HighlightsSectionContainer = styled.div`
