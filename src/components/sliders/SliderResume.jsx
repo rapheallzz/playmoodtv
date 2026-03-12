@@ -167,7 +167,7 @@ export default function SliderResume() {
         <Slider key={data.length} {...settings} ref={sliderRef}>
           {Array.isArray(data) &&
             data.map((content) => (
-              <div key={content._id} className="slides" onClick={() => handleOpenModal(content)}>
+              <div key={content._id} className="slides">
                 <Slidercontent
                   img={content.thumbnail}
                   title={content.title}
@@ -175,6 +175,7 @@ export default function SliderResume() {
                   views={content.views}
                   desc={content.description}
                   customStyle={{}}
+                  onVideoClick={() => handleOpenModal(content)}
                   progress={content.progress || 0}
                 />
               </div>

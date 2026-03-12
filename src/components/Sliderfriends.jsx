@@ -68,23 +68,10 @@ export default function Sliderfriends() {
     ]
   };
 
-  const handleSlideClick = (event, content) => {
-    const clickedElement = event.target;
-
-    if (clickedElement.tagName.toLowerCase() === 'video') {
-      const cardElement = clickedElement.closest('.slidescircle');
-
-      if (cardElement) {
-        navigate(`/movie/{_id}`, {
-          state: {
-            movie: content.video,
-            title: content.title || '',
-            desc: content.description || '',
-            credits: content.credit || '',
-          },
-        });
-      }
-    }
+  const handleSlideClick = (content) => {
+    const formattedTitle = (content.title || '').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const slug = `${formattedTitle}-${content._id}`;
+    navigate(`/movie/${slug}`);
   };
   return (
     <FriendsSliderContainer $isSingle={filteredData.length === 1}>
@@ -93,7 +80,7 @@ export default function Sliderfriends() {
           <div
             key={content.id}
             className="slidesfriends"
-            onClick={(e) => handleSlideClick(e, content)}
+            onClick={() => handleSlideClick(content)}
           >
             <img src={content.thumbnail} alt={`Thumbnail ${index}`} />
           </div>

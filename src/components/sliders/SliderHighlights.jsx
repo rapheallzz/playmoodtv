@@ -40,8 +40,83 @@ const CustomNextArrow = (props) => {
   );
 };
 
+import { useState, useEffect } from 'react';
+
 export default function SliderHighlights({ highlights, handleSelectHighlight, recentHighlights, viewedHighlights }) {
   const sliderRef = useRef(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const touchStart = useRef({ x: 0, y: 0 });
+  const touchStartTime = useRef(0);
+  const holdTimer = useRef(null);
+  const [isHoldTriggered, setIsHoldTriggered] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const handleTouchStart = (e) => {
+    const clientX = e.type === 'mousedown' ? e.clientX : e.touches[0].clientX;
+    const clientY = e.type === 'mousedown' ? e.clientY : e.touches[0].clientY;
+    touchStart.current = { x: clientX, y: clientY };
+    touchStartTime.current = Date.now();
+    setIsHoldTriggered(false);
+
+    if (isMobile) {
+      holdTimer.current = setTimeout(() => {
+        setIsHoldTriggered(true);
+      }, 200);
+    }
+  };
+
+  const handleTouchMove = (e) => {
+    if (!touchStartTime.current) return;
+    const clientX = e.type === 'mousemove' ? e.clientX : e.touches[0].clientX;
+    const clientY = e.type === 'mousemove' ? e.clientY : e.touches[0].clientY;
+
+    const distance = Math.sqrt(
+      Math.pow(clientX - touchStart.current.x, 2) +
+      Math.pow(clientY - touchStart.current.y, 2)
+    );
+
+    if (distance > 10) {
+      if (holdTimer.current) {
+        clearTimeout(holdTimer.current);
+        holdTimer.current = null;
+      }
+      setIsHoldTriggered(false);
+    }
+  };
+
+  const handleTouchEnd = (e, highlight, index) => {
+    if (holdTimer.current) {
+      clearTimeout(holdTimer.current);
+      holdTimer.current = null;
+    }
+
+    const clientX = e.type === 'mouseup' ? e.clientX : e.changedTouches[0].clientX;
+    const clientY = e.type === 'mouseup' ? e.clientY : e.changedTouches[0].clientY;
+    const distance = Math.sqrt(
+      Math.pow(clientX - touchStart.current.x, 2) +
+      Math.pow(clientY - touchStart.current.y, 2)
+    );
+
+    if (distance < 10) {
+      const duration = Date.now() - touchStartTime.current;
+      if (isMobile) {
+        if (duration < 300 && !isHoldTriggered) {
+          if (e.cancelable) e.preventDefault();
+          handleSelectHighlight(highlight, index);
+        }
+      } else {
+        handleSelectHighlight(highlight, index);
+      }
+    }
+
+    setIsHoldTriggered(false);
+    touchStartTime.current = 0;
+  };
 
   const settings = {
     dots: false,
@@ -95,7 +170,12 @@ export default function SliderHighlights({ highlights, handleSelectHighlight, re
           <div key={highlight._id} className="slides">
             <div
               data-testid={`highlight-item-home-${index}`}
-              onClick={() => handleSelectHighlight(highlight, index)}
+              onMouseDown={handleTouchStart}
+              onTouchStart={handleTouchStart}
+              onMouseMove={handleTouchMove}
+              onTouchMove={handleTouchMove}
+              onMouseUp={(e) => handleTouchEnd(e, highlight, index)}
+              onTouchEnd={(e) => handleTouchEnd(e, highlight, index)}
               style={{ cursor: 'pointer' }}
             >
               <LargeHighlightCircle

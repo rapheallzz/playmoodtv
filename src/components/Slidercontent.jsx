@@ -47,6 +47,8 @@ const Slidercontent = React.memo(function Slidercontent({ img, title, movie, id,
   const { user } = useSelector((state) => state.auth);
   const touchStart = React.useRef({ x: 0, y: 0 });
   const touchStartTime = React.useRef(0);
+  const holdTimer = React.useRef(null);
+  const [isHoldTriggered, setIsHoldTriggered] = useState(false);
 
   React.useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
@@ -71,13 +73,44 @@ const Slidercontent = React.memo(function Slidercontent({ img, title, movie, id,
     const clientY = e.type === 'mousedown' ? e.clientY : e.touches[0].clientY;
     touchStart.current = { x: clientX, y: clientY };
     touchStartTime.current = Date.now();
+    setIsHoldTriggered(false);
 
     if (isMobile) {
-      setHover(true);
+      holdTimer.current = setTimeout(() => {
+        setHover(true);
+        setIsHoldTriggered(true);
+      }, 200);
+    }
+  };
+
+  const handleTouchMove = (e) => {
+    if (!touchStartTime.current) return;
+    const clientX = e.type === 'mousemove' ? e.clientX : e.touches[0].clientX;
+    const clientY = e.type === 'mousemove' ? e.clientY : e.touches[0].clientY;
+
+    const distance = Math.sqrt(
+      Math.pow(clientX - touchStart.current.x, 2) +
+      Math.pow(clientY - touchStart.current.y, 2)
+    );
+
+    if (distance > 10) {
+      if (holdTimer.current) {
+        clearTimeout(holdTimer.current);
+        holdTimer.current = null;
+      }
+      if (isMobile && isHoldTriggered) {
+        setHover(false);
+        setIsHoldTriggered(false);
+      }
     }
   };
 
   const handleTouchEnd = (e) => {
+    if (holdTimer.current) {
+      clearTimeout(holdTimer.current);
+      holdTimer.current = null;
+    }
+
     if (isMobile) {
       setHover(false);
     }
@@ -90,17 +123,23 @@ const Slidercontent = React.memo(function Slidercontent({ img, title, movie, id,
       Math.pow(clientY - touchStart.current.y, 2)
     );
 
-    if (distance < 10) {
+    const target = e.target;
+    const isMetadataArea = target.closest('.metadata-area');
+
+    if (distance < 10 && !isMetadataArea) {
       const duration = Date.now() - touchStartTime.current;
       if (isMobile) {
-        if (duration < 300 && onVideoClick) {
-          if (e.cancelable) e.preventDefault();
+        if (e.cancelable) e.preventDefault();
+        if (duration < 300 && !isHoldTriggered && onVideoClick) {
           onVideoClick();
         }
       } else if (onVideoClick) {
         onVideoClick();
       }
     }
+
+    setIsHoldTriggered(false);
+    touchStartTime.current = 0;
   };
 
   const handleLikeClick = async () => {
@@ -127,6 +166,8 @@ const Slidercontent = React.memo(function Slidercontent({ img, title, movie, id,
       onMouseLeave={handleHoverOut}
       onMouseDown={handleTouchStart}
       onTouchStart={handleTouchStart}
+      onMouseMove={handleTouchMove}
+      onTouchMove={handleTouchMove}
       onMouseUp={handleTouchEnd}
       onTouchEnd={handleTouchEnd}
     >
@@ -134,7 +175,7 @@ const Slidercontent = React.memo(function Slidercontent({ img, title, movie, id,
         <img src={logo} className="w-auto h-6" alt="Banner Stamp" />
       </div>
       {!hover && (
-        <div className="absolute bottom-0 left-0 w-full bg-black bg-opacity-70 p-4 flex justify-between items-center gap-2">
+        <div className="metadata-area absolute bottom-0 left-0 w-full bg-black bg-opacity-70 p-4 flex justify-between items-center gap-2">
           <h3
             className={`${customStyle ? customStyle : ""} text-white text-lg truncate`}
             title={title}
@@ -150,7 +191,7 @@ const Slidercontent = React.memo(function Slidercontent({ img, title, movie, id,
           <video playsInline loop autoPlay muted className="w-full h-[45%] object-cover">
             <source src={movie?.shortPreviewUrl || movie?.video || movie} />
           </video>
-          <InfoSection>
+          <InfoSection className="metadata-area">
             <div className="flex justify-end items-center mb-1">
               <img src={whiteheart} alt="like" className="w-5 h-5" onClick={handleLikeClick} />
               <div className="w-2"></div>

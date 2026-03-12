@@ -28,6 +28,8 @@ const Slidercontent = React.memo(function Slidercontent({
   const videoRef = useRef(null);
   const touchStart = useRef({ x: 0, y: 0 });
   const touchStartTime = useRef(0);
+  const holdTimer = useRef(null);
+  const [isHoldTriggered, setIsHoldTriggered] = useState(false);
 
   // Compute preview timestamps when movie changes
   useEffect(() => {
@@ -75,15 +77,48 @@ const Slidercontent = React.memo(function Slidercontent({
     const clientY = e.type === 'mousedown' ? e.clientY : e.touches[0].clientY;
     touchStart.current = { x: clientX, y: clientY };
     touchStartTime.current = Date.now();
+    setIsHoldTriggered(false);
 
     if (isMobile) {
-      setHover(true);
-      setIsVideoPlaying(true);
+      // Delay playing video to distinguish between tap and hold
+      holdTimer.current = setTimeout(() => {
+        setHover(true);
+        setIsVideoPlaying(true);
+        setIsHoldTriggered(true);
+      }, 200);
+    }
+  };
+
+  const handleTouchMove = (e) => {
+    if (!touchStartTime.current) return;
+    const clientX = e.type === 'mousemove' ? e.clientX : e.touches[0].clientX;
+    const clientY = e.type === 'mousemove' ? e.clientY : e.touches[0].clientY;
+
+    const distance = Math.sqrt(
+      Math.pow(clientX - touchStart.current.x, 2) +
+      Math.pow(clientY - touchStart.current.y, 2)
+    );
+
+    if (distance > 10) {
+      if (holdTimer.current) {
+        clearTimeout(holdTimer.current);
+        holdTimer.current = null;
+      }
+      if (isMobile && isHoldTriggered) {
+        setHover(false);
+        setIsVideoPlaying(false);
+        setIsHoldTriggered(false);
+      }
     }
   };
 
   // Handle touch end to detect tap vs. drag
   const handleTouchEnd = (e) => {
+    if (holdTimer.current) {
+      clearTimeout(holdTimer.current);
+      holdTimer.current = null;
+    }
+
     if (isMobile) {
       setHover(false);
       setIsVideoPlaying(false);
@@ -105,14 +140,18 @@ const Slidercontent = React.memo(function Slidercontent({
     if (distance < 10 && !isDotsIcon && !isMetadataArea) {
       const duration = Date.now() - touchStartTime.current;
       if (isMobile) {
-        if (duration < 300) {
-          if (e.cancelable) e.preventDefault();
+        if (e.cancelable) e.preventDefault();
+        // If it was a short tap (hold wasn't triggered)
+        if (duration < 300 && !isHoldTriggered && onVideoClick) {
           onVideoClick();
         }
       } else {
         onVideoClick();
       }
     }
+
+    setIsHoldTriggered(false);
+    touchStartTime.current = 0;
   };
 
   const handleLike = async (e) => {
@@ -211,6 +250,8 @@ const Slidercontent = React.memo(function Slidercontent({
       onMouseLeave={handleHoverOut}
       onMouseDown={handleTouchStart}
       onTouchStart={handleTouchStart}
+      onMouseMove={handleTouchMove}
+      onTouchMove={handleTouchMove}
       onMouseUp={handleTouchEnd}
       onTouchEnd={handleTouchEnd}
     >

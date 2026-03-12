@@ -147,15 +147,15 @@ export default function SliderWatchlist() {
       ) : (
         <Slider key={data.length} {...settings} ref={sliderRef}>
           {Array.isArray(data) && data.map((content) => (
-            <div key={content._id} className="slides" onClick={() => handleOpenModal(content)}>
+            <div key={content._id} className="slides">
               <Slidercontent
                 img={content.thumbnail}
                 title={content.title}
-                 movie={content}
+                movie={content}
                 views={content.views}
                 desc={content.description}
                 customStyle={{}}
-                  onVideoClick={() => handleOpenModal(content)}
+                onVideoClick={() => handleOpenModal(content)}
               />
             </div>
           ))}

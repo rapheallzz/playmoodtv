@@ -139,14 +139,9 @@ const PlaylistSlider = ({ playlist }) => {
   const itemCount = playlist?.videos?.length || 0;
 
   const handleCardClick = (content) => {
-    navigate(`/movie/${content._id}`, {
-      state: {
-        movie: content.video,
-        title: content.title || '',
-        desc: content.description || '',
-        credits: content.credit || '',
-      },
-    });
+    const formattedTitle = (content.title || '').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const slug = `${formattedTitle}-${content._id}`;
+    navigate(`/movie/${slug}`);
   };
 
   if (!playlist || !Array.isArray(playlist.videos) || playlist.videos.length === 0) {
@@ -158,14 +153,15 @@ const PlaylistSlider = ({ playlist }) => {
       <PlaylistTitle>{playlist.name}</PlaylistTitle>
       <Slider {...getSliderSettings(itemCount)}>
         {playlist.videos.map((video) => (
-          <div key={video._id} className="slides" onClick={() => handleCardClick(video)}>
+          <div key={video._id} className="slides">
             <Slidercontent
               img={video.thumbnail}
               title={video.title}
-              movie={video.video}
+              movie={video}
               id={video._id}
               desc={video.description}
               customStyle={{ cursor: 'pointer' }}
+              onVideoClick={() => handleCardClick(video)}
             />
           </div>
         ))}

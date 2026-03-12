@@ -24,7 +24,9 @@ const Slidercirclecontent = React.memo(function Slidercirclecontent({
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const touchStart = useRef({ x: 0, y: 0 });
-  const touchTimeout = useRef(null);
+  const touchStartTime = useRef(0);
+  const holdTimer = useRef(null);
+  const [isHoldTriggered, setIsHoldTriggered] = useState(false);
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
 
   useEffect(() => {
@@ -40,27 +42,68 @@ const Slidercirclecontent = React.memo(function Slidercirclecontent({
     const clientX = e.type === 'mousedown' ? e.clientX : e.touches[0].clientX;
     const clientY = e.type === 'mousedown' ? e.clientY : e.touches[0].clientY;
     touchStart.current = { x: clientX, y: clientY };
+    touchStartTime.current = Date.now();
+    setIsHoldTriggered(false);
+
+    if (isMobile) {
+      holdTimer.current = setTimeout(() => {
+        setIsHoldTriggered(true);
+      }, 200);
+    }
+  };
+
+  const handleTouchMove = (e) => {
+    if (!touchStartTime.current) return;
+    const clientX = e.type === 'mousemove' ? e.clientX : e.touches[0].clientX;
+    const clientY = e.type === 'mousemove' ? e.clientY : e.touches[0].clientY;
+
+    const distance = Math.sqrt(
+      Math.pow(clientX - touchStart.current.x, 2) +
+      Math.pow(clientY - touchStart.current.y, 2)
+    );
+
+    if (distance > 10) {
+      if (holdTimer.current) {
+        clearTimeout(holdTimer.current);
+        holdTimer.current = null;
+      }
+      if (isMobile && isHoldTriggered) {
+        setIsHoldTriggered(false);
+      }
+    }
   };
 
   const handleTouchEnd = (e) => {
-    clearTimeout(touchTimeout.current);
-    touchTimeout.current = setTimeout(() => {
-      const clientX = e.type === 'mouseup' ? e.clientX : e.changedTouches[0].clientX;
-      const clientY = e.type === 'mouseup' ? e.clientY : e.changedTouches[0].clientY;
-      const distance = Math.sqrt(
-        Math.pow(clientX - touchStart.current.x, 2) +
-        Math.pow(clientY - touchStart.current.y, 2)
-      );
+    if (holdTimer.current) {
+      clearTimeout(holdTimer.current);
+      holdTimer.current = null;
+    }
 
-      const target = e.target;
-      const isDotsIcon = target.closest('svg')?.classList.contains('text-white') || false;
+    const clientX = e.type === 'mouseup' ? e.clientX : e.changedTouches[0].clientX;
+    const clientY = e.type === 'mouseup' ? e.clientY : e.changedTouches[0].clientY;
+    const distance = Math.sqrt(
+      Math.pow(clientX - touchStart.current.x, 2) +
+      Math.pow(clientY - touchStart.current.y, 2)
+    );
 
-      if (distance < 10 && !isDotsIcon) {
-        e.preventDefault();
-        e.stopPropagation();
+    const target = e.target;
+    const isDotsIcon = target.closest('svg')?.classList.contains('text-white') || false;
+
+    if (distance < 10 && !isDotsIcon) {
+      const duration = Date.now() - touchStartTime.current;
+      if (isMobile) {
+        if (duration < 300 && !isHoldTriggered && onVideoClick) {
+          if (e.cancelable) e.preventDefault();
+          e.stopPropagation();
+          onVideoClick();
+        }
+      } else if (onVideoClick) {
         onVideoClick();
       }
-    }, 100);
+    }
+
+    setIsHoldTriggered(false);
+    touchStartTime.current = 0;
   };
 
   const handleLike = async (e) => {
@@ -147,6 +190,8 @@ const Slidercirclecontent = React.memo(function Slidercirclecontent({
     <CircleContainer
       onMouseDown={handleTouchStart}
       onTouchStart={handleTouchStart}
+      onMouseMove={handleTouchMove}
+      onTouchMove={handleTouchMove}
       onMouseUp={handleTouchEnd}
       onTouchEnd={handleTouchEnd}
     >
