@@ -117,11 +117,11 @@ export default function SliderHighlights({ highlights, handleSelectHighlight, re
 const SliderContainer = styled.div`
   position: relative;
   width: 100%;
-  padding: 5px 0 5px 25px;
+  padding: 5px 40px 5px 15px;
   margin: 0 auto;
 
   @media (max-width: 768px) {
-    padding: 0;
+    padding: 0 0 0 10px;
   }
 
   .slick-slider {
@@ -176,6 +176,9 @@ const SliderContainer = styled.div`
 
   .slick-slide {
     padding: 0 10px;
+    @media (max-width: 768px) {
+      padding: 0 5px;
+    }
   }
 
   .slides {
@@ -190,10 +193,6 @@ const SliderContainer = styled.div`
 
     .custom-arrow {
       display: none !important;
-    }
-
-    .slick-slide {
-      padding: 0 4px; /* Reduced padding to tighten space between larger circles */
     }
   }
 `;

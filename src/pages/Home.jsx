@@ -459,8 +459,8 @@ const VideoCategoryHighlights = styled(VideoCategory)`
   min-height: 220px;
   padding-top: 0;
   padding-bottom: 0;
-  margin: 5px auto;
-  width: 95%;
+  margin: 5px 0;
+  width: 100%;
 
   @media screen and (max-width: 768px) {
     height: auto;
@@ -480,8 +480,8 @@ const VideoCategoryHighlights = styled(VideoCategory)`
 
 const VideoCategoryCircle = styled(VideoCategory)`
   padding-top: 0;
-  width: 95%;
-  margin: 5px auto;
+  width: 100%;
+  margin: 5px 0;
 `;
 
 
@@ -489,7 +489,7 @@ const Videocategorytitle = styled.h3`
   font-size: 1.5rem;
   color: white;
   font-weight: 600;
-  padding: 5px 5px 5px 5px;
+  padding: 5px 5px 5px 15px;
 
   @media only screen and (min-width: 769px) {
     font-size: 1.8rem;

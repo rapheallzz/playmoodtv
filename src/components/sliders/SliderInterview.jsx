@@ -181,11 +181,11 @@ export default function SliderInterview() {
 const SliderContainer = styled.div`
   position: relative;
   width: 100%;
-  padding: 0 40px 0 0;
+  padding: 0 40px 0 20px;
   margin: 0 auto;
 
   @media (max-width: 768px) {
-    padding: 0;
+    padding: 0 0 0 10px;
   }
 
   .slick-slider {
