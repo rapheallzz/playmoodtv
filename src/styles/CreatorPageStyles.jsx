@@ -358,7 +358,7 @@ export const StyledSliderContainer = styled.div`
       justify-content: flex-start !important;
     }
     .slick-slide {
-      width: 20% !important; /* Standard 5 slides per row */
+      width: 25% !important; /* Standard 4 slides per row */
       @media (max-width: 1024px) {
         width: 33.33% !important;
       }
@@ -649,17 +649,6 @@ export const RemovePreviewButton = styled.button`
   }
 `;
 
-export const CreatorSlider = styled.div`
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  width: 100%;
-  height: 100%;
-  cursor: pointer;
-  overflow: hidden;
-  border-radius: 8px;
-`;
 
 export const DotsContainer = styled.div`
   position: absolute;

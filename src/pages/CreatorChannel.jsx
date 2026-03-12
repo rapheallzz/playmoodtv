@@ -26,6 +26,7 @@ import { Helmet } from 'react-helmet-async';
 import VerticalHighlightViewer from '../components/creator/VerticalHighlightViewer';
 import FeedSection from '../components/creator/FeedSection';
 import FeedPostViewerModal from '../components/modals/FeedPostViewerModal';
+import CreatorVideoCard from '../components/creator/CreatorVideoCard';
 
 // Pulse animation for right arrow
 const pulse = keyframes`
@@ -576,9 +577,9 @@ const fetchPlaylists = async () => {
 
   const sliderSettings = {
     dots: false,
-    infinite: data.length > 5,
+    infinite: data.length > 4,
     speed: 300,
-    slidesToShow: 5,
+    slidesToShow: 4,
     slidesToScroll: 1,
     initialSlide: 0,
     prevArrow: <CustomPrevArrow />,
@@ -759,18 +760,13 @@ const fetchPlaylists = async () => {
             {data.length === 0 ? (
               <NoPosts>No videos available.</NoPosts>
             ) : (
-              <SliderContainer $isShort={data.length < 5}>
+              <SliderContainer $isShort={data.length < 4}>
                 <Slider {...sliderSettings} ref={sliderRef}>
                   {data.map((content) => (
                     <div key={content._id} className="slides">
-                      <Slidercontent
-                        img={content.thumbnail}
-                        title={content.title}
+                      <CreatorVideoCard
                         movie={content}
-                        views={content.views}
-                        desc={content.description}
-                        customStyle={{}}
-                        onVideoClick={() => handleOpenModal(content)}
+                        onClick={() => handleOpenModal(content)}
                       />
                     </div>
                   ))}
@@ -803,18 +799,13 @@ const fetchPlaylists = async () => {
                 <div key={playlist._id} className="mb-8">
                   <PlaylistTitle className="px-[15px] md:px-[25px]">{playlist.name}</PlaylistTitle>
                   {playlist.videos.length > 0 ? (
-                    <SliderContainer $isShort={playlist.videos.length < 5}>
+                    <SliderContainer $isShort={playlist.videos.length < 4}>
                       <Slider {...sliderSettings}>
                         {playlist.videos.map((video) => (
                           <div key={video._id} className="slides">
-                            <Slidercontent
-                              img={video.thumbnail}
-                              title={video.title}
+                            <CreatorVideoCard
                               movie={video}
-                              views={video.views}
-                              desc={video.description}
-                              customStyle={{}}
-                              onVideoClick={() => handleOpenModal(video)}
+                              onClick={() => handleOpenModal(video)}
                             />
                           </div>
                         ))}

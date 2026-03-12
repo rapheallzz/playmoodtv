@@ -6,13 +6,14 @@ import { StyledContentSection, SectionTitle, SubTabNav, SubTabButton, StyledSlid
 import PlaylistSection from './PlaylistSection';
 import CommunitySection from './CommunitySection';
 import Slidercontent from '../Slidercont';
+import CreatorVideoCard from './CreatorVideoCard';
 import ContentModal from '../ContentModal';
 
 const getSliderSettings = (itemCount) => ({
   dots: false,
-  infinite: itemCount > 5, // Only enable infinite scroll if there are more items than slides to show
+  infinite: itemCount > 4, // Only enable infinite scroll if there are more items than slides to show
   speed: 300,
-  slidesToShow: 5,
+  slidesToShow: 4,
   slidesToScroll: 1,
   initialSlide: 0,
   prevArrow: <CustomPrevArrow />,
@@ -108,7 +109,7 @@ const ContentSection = ({
               Pending
             </SubTabButton>
           </SubTabNav>
-          <StyledSliderContainer $isShort={(activeSubTab === 'Approved' ? approvedVideos.length : pendingVideos.length) < 5}>
+          <StyledSliderContainer $isShort={(activeSubTab === 'Approved' ? approvedVideos.length : pendingVideos.length) < 4}>
             {activeSubTab === 'Approved' ? (
               approvedVideos.length === 0 ? (
                 <NoPostsMessage>No approved videos yet.</NoPostsMessage>
@@ -116,14 +117,9 @@ const ContentSection = ({
                 <Slider {...getSliderSettings(approvedVideos.length)}>
                   {approvedVideos.map((content) => (
                     <div key={content._id} className="slides">
-                      <Slidercontent
-                        img={content.thumbnail}
-                        title={content.title}
+                      <CreatorVideoCard
                         movie={content}
-                        views={content.views}
-                        desc={content.description}
-                        customStyle={{}}
-                        onVideoClick={() => handleOpenContentModal(content)}
+                        onClick={() => handleOpenContentModal(content)}
                       />
                     </div>
                   ))}
@@ -136,16 +132,9 @@ const ContentSection = ({
                 <Slider {...getSliderSettings(pendingVideos.length)}>
                   {pendingVideos.map((content) => (
                     <div key={content._id} className="slides">
-                      <Slidercontent
-                        img={content.thumbnail}
-                        title={content.title}
+                      <CreatorVideoCard
                         movie={content}
-                        views={content.views}
-                        desc={content.description}
-                        customStyle={{}}
-                        onVideoClick={() => {
-                          handleOpenContentModal(content);
-                        }}
+                        onClick={() => handleOpenContentModal(content)}
                       />
                     </div>
                   ))}
@@ -168,7 +157,7 @@ const ContentSection = ({
             selectedPlaylistId={selectedPlaylistId}
           />
           {selectedPlaylistId && (
-            <StyledSliderContainer $isShort={Array.isArray(selectedPlaylistVideos) && selectedPlaylistVideos.length < 5}>
+            <StyledSliderContainer $isShort={Array.isArray(selectedPlaylistVideos) && selectedPlaylistVideos.length < 4}>
               <SectionTitle>Playlist Videos</SectionTitle>
               {isLoadingPlaylistVideos ? (
                 <NoPostsMessage>Loading videos...</NoPostsMessage>
@@ -176,14 +165,9 @@ const ContentSection = ({
                 <Slider {...getSliderSettings(selectedPlaylistVideos.length)}>
                   {selectedPlaylistVideos.map((video) => (
                     <div key={video._id} className="slides">
-                      <Slidercontent
-                        img={video.thumbnail}
-                        title={video.title}
+                      <CreatorVideoCard
                         movie={video}
-                        views={video.views || 0}
-                        desc={video.description || ''}
-                        customStyle={{}}
-                        onVideoClick={() => handleOpenContentModal(video)}
+                        onClick={() => handleOpenContentModal(video)}
                       />
                     </div>
                   ))}
