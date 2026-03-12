@@ -8,6 +8,7 @@ import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import BASE_API_URL from '../../apiConfig';
 import CreatorContentModal from '../CreatorContentModal';
 import Slidercirclecontent from '../Slidercirclecontent';
+import { shuffleArray } from '../../utils/shuffle';
 
 // Pulse animation for right arrow
 const pulse = keyframes`
@@ -179,7 +180,7 @@ export default function SliderChannel() {
           },
         });
         if (Array.isArray(response.data)) {
-          setData(response.data);
+          setData(shuffleArray(response.data));
         } else {
           setError('Unexpected data format.');
         }
