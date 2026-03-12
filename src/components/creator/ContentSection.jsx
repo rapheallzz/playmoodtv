@@ -37,7 +37,7 @@ const getSliderSettings = (itemCount) => ({
         slidesToScroll: 1,
         initialSlide: 0,
         infinite: false,
-        arrows: true,
+        arrows: false,
       },
     },
     {
@@ -84,8 +84,8 @@ const ContentSection = ({
   selectedPlaylistVideos,
   isLoadingPlaylistVideos,
 }) => {
-  const approvedVideos = data.filter(content => content.isApproved === true);
-  const pendingVideos = [...new Map(data.filter(content => content.isApproved === false).map(item => [item._id, item])).values()];
+  const approvedVideos = data.filter(content => content.isApproved === true && content.video);
+  const pendingVideos = [...new Map(data.filter(content => content.isApproved === false && content.video).map(item => [item._id, item])).values()];
 
   return (
     <StyledContentSection>

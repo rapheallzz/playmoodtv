@@ -63,11 +63,13 @@ const CustomNextArrow = (props) => {
 const SliderContainer = styled.div`
   position: relative;
   width: 100%;
-  padding: 0 40px 0 35px;
+  padding: 0 25px 0 20px;
   margin: 0 auto;
+  min-height: 220px;
 
   @media (max-width: 768px) {
-    padding: 0 0 0 11px;
+    padding: 0 0 0 10px;
+    min-height: 180px;
   }
 
   ${props => props.$isShort && `
@@ -162,10 +164,10 @@ const PlaylistTitle = styled.h3`
   font-size: 1.2rem;
   font-weight: 600;
   margin-bottom: 15px;
-  padding: 0 40px;
+  padding: 0 25px;
 
   @media screen and (max-width: 768px) {
-    padding: 0 16px;
+    padding: 0 15px;
   }
 `;
 
@@ -675,7 +677,7 @@ const fetchPlaylists = async () => {
       </div>
 
       {/* Profile Section */}
-      <div className="w-full flex justify-between py-6 px-4 md:px-10">
+      <div className="w-full flex justify-between py-6 px-[15px] md:px-[25px]">
         <div className="flex gap-5 items-center">
           <div className="md:w-32 md:h-32 w-28 h-28 rounded-full border-[3px] border-white flex items-center justify-center font-semibold overflow-hidden">
             <ProfileImage
@@ -705,7 +707,7 @@ const fetchPlaylists = async () => {
       </div>
 
       {/* Navigation Links */}
-      <div className="w-full flex justify-between py-6 px-4 md:px-10 overflow-x-auto whitespace-nowrap scrollbar-hide">
+      <div className="w-full flex justify-between py-6 px-[15px] md:px-[25px] overflow-x-auto whitespace-nowrap scrollbar-hide">
         <div className="flex gap-4">
           <a className="text-white text-sm font-medium hover:cursor-pointer" onClick={() => navigate('/')}>
             HOME
@@ -753,7 +755,7 @@ const fetchPlaylists = async () => {
       <div className="w-full min-h-[300px] md:min-h-[500px] bg-[#1a1a1a] py-8">
         {activeTab === 'VIDEOS' && (
           <div className="w-full">
-            <h2 className="text-white font-semibold mb-8 px-4 md:px-10">Videos</h2>
+            <h2 className="text-white font-semibold mb-8 px-[15px] md:px-[25px]">Videos</h2>
             {data.length === 0 ? (
               <NoPosts>No videos available.</NoPosts>
             ) : (
@@ -799,7 +801,7 @@ const fetchPlaylists = async () => {
             ) : (
               playlists.map((playlist) => (
                 <div key={playlist._id} className="mb-8">
-                  <PlaylistTitle className="px-4 md:px-10">{playlist.name}</PlaylistTitle>
+                  <PlaylistTitle className="px-[15px] md:px-[25px]">{playlist.name}</PlaylistTitle>
                   {playlist.videos.length > 0 ? (
                     <SliderContainer $isShort={playlist.videos.length < 5}>
                       <Slider {...sliderSettings}>
@@ -830,7 +832,7 @@ const fetchPlaylists = async () => {
         )}
 
         {activeTab === 'COMMUNITY' && (
-          <div className="px-4 md:px-10">
+          <div className="px-[15px] md:px-[25px]">
             <h2 className="text-white font-semibold mb-8">Community Posts</h2>
             {isLoadingPosts ? (
               <Loading>Loading posts...</Loading>
@@ -1006,10 +1008,10 @@ const CommunitySection = styled.div`
   flex-direction: column;
   gap: 20px;
   width: 100%;
-  padding: 0 40px;
+  padding: 0 25px;
 
   @media screen and (max-width: 768px) {
-    padding: 0 16px;
+    padding: 0 15px;
   }
 `;
 

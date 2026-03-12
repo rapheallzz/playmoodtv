@@ -223,17 +223,17 @@ const Slidercontent = React.memo(function Slidercontent({
 
       <div className="absolute top-2.5 w-full px-1 flex justify-between"></div>
       {!hover && !isVideoPlaying ? (
-        <>
-          <div className="h-[82%]">
+        <div className="flex flex-col justify-between h-full w-full bg-black">
+          <div className="h-[70%]">
             <img
               className="w-full h-full object-cover cursor-pointer"
               src={img}
               alt={title}
             />
           </div>
-          <div className="metadata-area absolute bottom-0 w-full bg-black bg-opacity-50 flex justify-between p-0.5 md:p-1 gap-2.5">
+          <div className="metadata-area w-full h-[30%] bg-black flex justify-between p-2 gap-2.5 relative">
             <h3
-              className="text-white text-xs md:text-base font-normal w-[80%] truncate"
+              className="text-white text-xs md:text-base font-normal w-[85%] truncate self-center"
               style={customStyle || {}}
               title={title}
             >
@@ -241,12 +241,12 @@ const Slidercontent = React.memo(function Slidercontent({
             </h3>
             {isMobile && !hover && !isVideoPlaying && (
               <HiDotsVertical
-                className="text-white w-1/5 cursor-pointer"
+                className="text-white w-fit cursor-pointer self-center"
                 onClick={handleDotsClick}
               />
             )}
           </div>
-        </>
+        </div>
       ) : (
         <div className="flex flex-col justify-between h-full w-full bg-black">
           <video
@@ -255,7 +255,7 @@ const Slidercontent = React.memo(function Slidercontent({
             loop
             autoPlay={isVideoPlaying}
             muted
-            className="w-full h-[65%] object-cover cursor-pointer"
+            className="w-full h-[70%] object-cover cursor-pointer"
           >
             <source
               src={
@@ -268,7 +268,7 @@ const Slidercontent = React.memo(function Slidercontent({
             />
           </video>
           <div
-            className="metadata-area w-full h-[35%] p-2 flex flex-col gap-1.5"
+            className="metadata-area w-full h-[30%] p-2 flex flex-col gap-1.5"
             onClick={(e) => e.stopPropagation()}
           >
             <MetaContainer>
