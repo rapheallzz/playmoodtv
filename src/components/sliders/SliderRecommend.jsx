@@ -43,6 +43,26 @@ const CustomNextArrow = (props) => {
   );
 };
 
+const VideoCategoryWrapper = styled.div`
+  width: 100%;
+  margin: 5px 0;
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  box-sizing: border-box;
+  z-index: 210;
+
+  @media screen and (max-width: 768px) {
+    margin: 5px 0 10px 0;
+    padding-bottom: 10px;
+  }
+
+  @media screen and (max-width: 495px) {
+    margin: 5px 0 15px 0;
+    padding-bottom: 10px;
+  }
+`;
+
 export default function SliderRecommended({ contentId: propContentId, title, className }) {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
@@ -154,7 +174,7 @@ export default function SliderRecommended({ contentId: propContentId, title, cla
   }
 
   return (
-    <div className={className}>
+    <VideoCategoryWrapper className={className}>
       {title && (
         <h3 className="video-category-title text-white font-semibold text-[1.5rem] px-[5px] py-[5px] pb-[15px] md:text-[1.8rem] md:px-[25px]">
           {title}
@@ -198,7 +218,7 @@ export default function SliderRecommended({ contentId: propContentId, title, cla
           handleNavigateToMovie={handleNavigateToMovie}
         />
       </SliderContainer>
-    </div>
+    </VideoCategoryWrapper>
   );
 }
 

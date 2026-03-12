@@ -424,14 +424,12 @@ const VideoCategory = styled.div`
   display: flex;
   flex-direction: column;
   height: auto;
-  min-height: 220px;
   box-sizing: border-box;
   z-index: 210;
 
   @media screen and (max-width: 768px) {
     width: 100%;
     height: auto;
-    min-height: 180px;
     margin: 5px 0 10px 0;
     padding-bottom: 10px;
     z-index: 210;
@@ -439,7 +437,6 @@ const VideoCategory = styled.div`
 
   @media screen and (max-width: 495px) {
     width: 100%;
-    min-height: 180px;
     height: auto;
     margin: 5px 0 15px 0;
     padding-bottom: 10px;
@@ -456,20 +453,13 @@ const VideoCategoryResponsive = styled(VideoCategory)`
 
 const VideoCategoryHighlights = styled(VideoCategory)`
   height: auto;
-  min-height: 220px;
   padding-top: 0;
   padding-bottom: 0;
   margin: 5px 0;
   width: 100%;
 
-  @media screen and (max-width: 768px) {
-    height: auto;
-    min-height: 180px;
-  }
-
   @media screen and (max-width: 495px) {
-    height: 200px;
-    min-height: 150px;
+    height: auto;
     padding-top: 10px;
     width: 100%;
     margin: 0;
@@ -864,9 +854,7 @@ function HomeContent({
             <Videocategorytitle>Spaces</Videocategorytitle>
             <SliderSpace />
           </VideoCategoryCircle>
-          <VideoCategory>
-            <SlideRecommended title="Recommended for you" />
-          </VideoCategory>
+          <SlideRecommended title="Recommended for you" />
           <VideoCategory >
             <Videocategorytitle>Interviews</Videocategorytitle>
             <SliderInterview />
