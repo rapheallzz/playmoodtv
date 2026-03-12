@@ -127,21 +127,19 @@ const SliderContainer = styled.div`
     cursor: pointer;
     user-select: none;
     -webkit-touch-callout: none;
-    width: 160px;
-    height: 160px;
+    width: 160px !important;
+    height: auto !important;
+    aspect-ratio: 1/1 !important;
     @media (min-width: 768px) {
-      width: 200px;
-      height: 200px;
+      width: 200px !important;
     }
     @media (max-width: 480px) {
-      width: 40vw;
-      height: 40vw;
+      width: 40vw !important;
       max-width: 140px;
       max-height: 140px;
     }
     @media (max-width: 360px) {
-      width: 35vw;
-      height: 35vw;
+      width: 35vw !important;
       max-width: 120px;
       max-height: 120px;
     }

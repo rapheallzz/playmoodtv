@@ -185,6 +185,7 @@ const SliderContainer = styled.div`
     position: relative;
     display: flex;
     align-items: center;
+    height: auto !important;
   }
 
   @media (max-width: 480px) {
