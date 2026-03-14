@@ -52,7 +52,7 @@ export default function Slidertop10() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
+        const response = await axios.get(`${BASE_API_URL}/api/content/`);
         if (response.data && Array.isArray(response.data)) {
           const filteredData = response.data
             .filter((content) => content.category === 'Top 10')
@@ -178,11 +178,11 @@ export default function Slidertop10() {
 const SliderContainer = styled.div`
   position: relative;
   width: 100%;
-  padding: 0 40px 0 0;
+  padding: 0 20px 0 20px;
   margin: 0 auto;
 
   @media (max-width: 768px) {
-    padding: 0;
+    padding: 0 10px 0 10px;
   }
 
   .slick-slider {

@@ -7,7 +7,7 @@ import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import styled from 'styled-components';
 import BASE_API_URL from '../apiConfig';
-import HighlightShareModal from './modals/HighlightShareModal';
+import UniversalShareModal from './modals/UniversalShareModal';
 import WelcomePopup from './Welcomepop';
 
 const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
@@ -171,8 +171,11 @@ const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
   };
 
   const handleShare = () => {
-    const encodedContentId = btoa(content._id);
-    const url = `${window.location.origin}/highlight/${encodedContentId}`;
+    const slug = `${content.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${content._id}`;
+    const params = new URLSearchParams();
+    if (content.thumbnail) params.append('img', content.thumbnail);
+    if (content.video) params.append('video', content.video);
+    const url = `${window.location.origin}/movie/${slug}${params.toString() ? '?' + params.toString() : ''}`;
     setShareUrl(url);
     setIsShareModalOpen(true);
   };
@@ -272,9 +275,10 @@ const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
         onClose={() => setShowWelcomePopup(false)}
       />
       {isShareModalOpen && (
-        <HighlightShareModal
+        <UniversalShareModal
           ref={shareModalRef}
           shareUrl={shareUrl}
+          title={content.title}
           onClose={() => setIsShareModalOpen(false)}
         />
       )}

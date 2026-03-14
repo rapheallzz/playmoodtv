@@ -19,12 +19,12 @@ import SliderSoon from '../components/sliders/SliderSoon';
 import SliderTeens from '../components/sliders/SliderTeens';
 import SliderOnly from '../components/sliders/SliderOnly';
 import SliderSocial from '../components/sliders/SliderSocial';
-import ShareModal from '../components/ShareModal';
+import UniversalShareModal from '../components/modals/UniversalShareModal';
 import WelcomePopup from '../components/Welcomepop';
 import instagram from '/instagram.png';
 import channelsimg from '../assets/channels.png';
 import logo from '/PLAYMOOD_DEF.png';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import playbutton from '/play-button2.png';
 import plusbutton from '/addbutton.png';
 import whiteheart from '/whiteheart.png';
@@ -459,6 +459,8 @@ function HomeContent({
   setSelectedHighlight,
   viewedHighlights,
   setViewedHighlights,
+  showVerticalHighlightViewer,
+  setShowVerticalHighlightViewer,
 }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -471,6 +473,10 @@ function HomeContent({
       setShowCookiesPopup(true);
     }
   }, [setShowCookiesPopup]);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   useEffect(() => {
     const handleResize = () => {
@@ -597,7 +603,10 @@ function HomeContent({
       const slug = currentContent.title
         ? `${currentContent.title.replace(/\s+/g, '-')}-${currentContent._id}`
         : currentContent._id;
-      const url = `${window.location.origin}/movie/${slug}`;
+      const params = new URLSearchParams();
+      if (currentContent.thumbnail) params.append('img', currentContent.thumbnail);
+      if (currentContent.video) params.append('video', currentContent.video);
+      const url = `${window.location.origin}/movie/${slug}${params.toString() ? '?' + params.toString() : ''}`;
       setShareUrl(url);
       setShareModalOpen(true);
     }
@@ -738,10 +747,10 @@ function HomeContent({
                       </NeonButton>
                     </ButtonContainer>
                     {shareModalOpen && (
-                      <ShareModal
-                        open={shareModalOpen}
-                        onClose={() => setShareModalOpen(false)}
+                      <UniversalShareModal
                         shareUrl={shareUrl}
+                        title={homePageData[activeSlide]?.title}
+                        onClose={() => setShareModalOpen(false)}
                       />
                     )}
                   </BannerContent>
@@ -778,6 +787,16 @@ function HomeContent({
           <SliderTeens title="Teens" />
           <SliderOnly title="Only in Playmood" />
         </SliderContainer>
+
+        {showVerticalHighlightViewer && highlights.length > 0 && (
+          <VerticalHighlightViewer
+            highlights={highlights}
+            startIndex={0}
+            onClose={() => {
+              setShowVerticalHighlightViewer(false);
+            }}
+          />
+        )}
         <WelcomePopup
           showPopup={showWelcomePopup}
           onClose={() => setShowWelcomePopup(false)}
@@ -805,12 +824,25 @@ export default function Home() {
   const [isLoadingHighlights, setIsLoadingHighlights] = useState(true);
   const [selectedHighlight, setSelectedHighlight] = useState(null);
   const [viewedHighlights, setViewedHighlights] = useState(new Set());
+  const [showVerticalHighlightViewer, setShowVerticalHighlightViewer] = useState(false);
   const { encodedContentId } = useParams();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const sharedImg = queryParams.get('img');
+
   const [highlightData, setHighlightData] = useState(null);
 
   useEffect(() => {
     if (encodedContentId) {
-      const contentId = atob(encodedContentId);
+      let contentId;
+      try {
+        contentId = atob(encodedContentId);
+      } catch (e) {
+        contentId = encodedContentId;
+      }
+      const sharedVideo = queryParams.get('video');
+      const sharedImg = queryParams.get('img');
+
       axios.get(`${BASE_API_URL}/api/content/${contentId}`, {
         headers: {
           'Cache-Control': 'no-cache',
@@ -818,54 +850,77 @@ export default function Home() {
       })
         .then(response => {
           setHighlightData(response.data);
+          if (response.data) {
+            setHighlights([{
+              _id: `share-${contentId}`,
+              content: response.data,
+              highlightUrl: null
+            }]);
+            setShowVerticalHighlightViewer(true);
+          }
         })
         .catch(error => {
+          if (sharedVideo) {
+            setHighlights([{
+              _id: `fallback-${contentId}`,
+              content: {
+                _id: contentId,
+                title: 'Shared Highlight',
+                thumbnail: sharedImg,
+                video: sharedVideo
+              },
+              highlightUrl: sharedVideo
+            }]);
+            setShowVerticalHighlightViewer(true);
+          }
         });
     }
   }, [encodedContentId]);
 
   return (
     <>
-      {highlightData && (
+      {(highlightData || sharedImg) && (
         <Helmet>
-          <title>{highlightData.title}</title>
-          <meta name="description" content={highlightData.description} />
-          <meta property="og:title" content={highlightData.title} />
-          <meta property="og:description" content={highlightData.description} />
-          <meta property="og:image" content={highlightData.thumbnail} />
+          <title>{highlightData?.title || 'Highlight | Playmood'}</title>
+          <meta name="description" content={highlightData?.description || 'Watch highlights on Playmood'} />
+          <meta property="og:title" content={highlightData?.title || 'Highlight | Playmood'} />
+          <meta property="og:description" content={highlightData?.description || 'Watch highlights on Playmood'} />
+          <meta property="og:image" content={highlightData?.thumbnail || sharedImg} />
           <meta property="og:url" content={window.location.href} />
           <meta name="twitter:card" content="summary_large_image" />
-          <meta name="twitter:image" content={highlightData.thumbnail} />
+          <meta name="twitter:image" content={highlightData?.thumbnail || sharedImg} />
         </Helmet>
       )}
       <HomeContent
         channels={channels}
-      set_channels={set_channels}
-      isMobile={isMobile}
-      setIsMobile={setIsMobile}
-      showCookiesPopup={showCookiesPopup}
-      setShowCookiesPopup={setShowCookiesPopup}
-      isLiked={isLiked}
-      setIsLiked={setIsLiked}
-      user={user}
-      homePageData={homePageData}
-      setHomePageData={setHomePageData}
-      shareModalOpen={shareModalOpen}
-      setShareModalOpen={setShareModalOpen}
-      shareUrl={shareUrl}
-      setShareUrl={setShareUrl}
-      showWelcomePopup={showWelcomePopup}
-      setShowWelcomePopup={setShowWelcomePopup}
-      sliderContainerRef={sliderContainerRef}
-      highlights={highlights}
-      setHighlights={setHighlights}
-      isLoadingHighlights={isLoadingHighlights}
-      setIsLoadingHighlights={setIsLoadingHighlights}
-      selectedHighlight={selectedHighlight}
-      setSelectedHighlight={setSelectedHighlight}
-      viewedHighlights={viewedHighlights}
-      setViewedHighlights={setViewedHighlights}
-    />
+        set_channels={set_channels}
+        isMobile={isMobile}
+        setIsMobile={setIsMobile}
+        showCookiesPopup={showCookiesPopup}
+        setShowCookiesPopup={setShowCookiesPopup}
+        isLiked={isLiked}
+        setIsLiked={setIsLiked}
+        user={user}
+        homePageData={homePageData}
+        setHomePageData={setHomePageData}
+        shareModalOpen={shareModalOpen}
+        setShareModalOpen={setShareModalOpen}
+        shareUrl={shareUrl}
+        setShareUrl={setShareUrl}
+        showWelcomePopup={showWelcomePopup}
+        setShowWelcomePopup={setShowWelcomePopup}
+        sliderContainerRef={sliderContainerRef}
+        highlights={highlights}
+        setHighlights={setHighlights}
+        isLoadingHighlights={isLoadingHighlights}
+        setIsLoadingHighlights={setIsLoadingHighlights}
+        selectedHighlight={selectedHighlight}
+        setSelectedHighlight={setSelectedHighlight}
+        viewedHighlights={viewedHighlights}
+        setViewedHighlights={setViewedHighlights}
+        showVerticalHighlightViewer={showVerticalHighlightViewer}
+        setShowVerticalHighlightViewer={setShowVerticalHighlightViewer}
+      />
     </>
   );
 }

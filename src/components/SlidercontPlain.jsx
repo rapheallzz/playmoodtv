@@ -3,6 +3,7 @@ import { HiDotsVertical } from 'react-icons/hi';
 import { FaPaperPlane, FaHeart, FaPlus, FaCheck, FaEye } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import WelcomePopup from './Welcomepop';
+import UniversalShareModal from './modals/UniversalShareModal';
 import { likeContent, unlikeContent, addToWatchlist, removeFromWatchlist } from '../features/authSlice';
 import styled from 'styled-components';
 
@@ -23,7 +24,8 @@ const Slidercontent = React.memo(function Slidercontent({
   const [showPopup, setShowPopup] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [localError, setLocalError] = useState(null);
-  const [copyModal, setCopyModal] = useState({ show: false, message: '', isError: false });
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [shareUrl, setShareUrl] = useState('');
   const [previewTimestamps, setPreviewTimestamps] = useState({ start: 0, end: 15 });
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
@@ -246,19 +248,17 @@ const Slidercontent = React.memo(function Slidercontent({
     }
   };
 
-  const handleCopyLink = (e) => {
+  const handleShare = (e) => {
     e.stopPropagation();
-    const pageUrl = window.location.href;
-    navigator.clipboard
-      .writeText(pageUrl)
-      .then(() => {
-        setCopyModal({ show: true, message: 'Link copied to clipboard!', isError: false });
-        setTimeout(() => setCopyModal({ show: false, message: '', isError: false }), 3000);
-      })
-      .catch((err) => {
-        setCopyModal({ show: true, message: 'Failed to copy link. Please try again.', isError: true });
-        setTimeout(() => setCopyModal({ show: false, message: '', isError: false }), 3000);
-      });
+    if (id) {
+      const formattedTitle = title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      const params = new URLSearchParams();
+      if (img) params.append('img', img);
+      if (movie) params.append('video', typeof movie === 'string' ? movie : movie.video);
+      const url = `${window.location.origin}/movie/${formattedTitle}-${id}${params.toString() ? '?' + params.toString() : ''}`;
+      setShareUrl(url);
+      setIsShareModalOpen(true);
+    }
   };
 
   const handleDotsClick = (e) => {
@@ -286,14 +286,6 @@ const Slidercontent = React.memo(function Slidercontent({
     >
       {localError && (
         <ErrorMessage>{localError}</ErrorMessage>
-      )}
-      {copyModal.show && (
-        <CopyModal isError={copyModal.isError}>
-          <p>{copyModal.message}</p>
-          <button onClick={() => setCopyModal({ show: false, message: '', isError: false })}>
-            Close
-          </button>
-        </CopyModal>
       )}
       <div className="absolute top-2.5 w-full px-1 flex justify-between"></div>
       {!hover && !isVideoPlaying ? (
@@ -372,7 +364,7 @@ const Slidercontent = React.memo(function Slidercontent({
                 </span>
                 <FaPaperPlane
                   className="text-white cursor-pointer"
-                  onClick={handleCopyLink}
+                  onClick={handleShare}
                 />
               </div>
             </div>
@@ -421,7 +413,7 @@ const Slidercontent = React.memo(function Slidercontent({
           </span>
           <FaPaperPlane
             className="text-white cursor-pointer"
-            onClick={handleCopyLink}
+            onClick={handleShare}
           />
         </div>
       )}
@@ -429,6 +421,13 @@ const Slidercontent = React.memo(function Slidercontent({
         showPopup={showWelcomePopup}
         onClose={() => setShowWelcomePopup(false)}
       />
+      {isShareModalOpen && (
+        <UniversalShareModal
+          shareUrl={shareUrl}
+          title={title}
+          onClose={() => setIsShareModalOpen(false)}
+        />
+      )}
     </div>
   );
 });

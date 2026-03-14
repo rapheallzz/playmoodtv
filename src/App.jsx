@@ -26,7 +26,7 @@ import Cameras from './pages/Cameras';
 import SoonPlaymood from './pages/Soonplaymood';
 import TEEN from './pages/Teen';
 import OnlyPlaymood from './pages/Onlyplaymood';
-import Watchlist from './pages/Watchlistt';
+import Watchlist from './pages/Watchlist';
 import Creator from './pages/Creators';
 import CreatorChannel from './pages/CreatorChannel';
 import CreatorPage from './pages/CreatorPage';

@@ -172,7 +172,7 @@ const PlaylistTitle = styled.h3`
 
 // Rest of the CreatorChannel component remains unchanged
 export default function CreatorChannel() {
-  const { state } = useLocation();
+  const { state, search } = useLocation();
   const navigate = useNavigate();
   const { creatorSlug } = useParams();
   const user = useSelector((state) => state.auth.user);
@@ -214,6 +214,37 @@ export default function CreatorChannel() {
     feeds,
     isLoadingFeeds,
   } = useFeeds(user, creatorId);
+
+  useEffect(() => {
+    if (!isLoadingFeeds && feeds.length > 0) {
+      const queryParams = new URLSearchParams(window.location.search);
+      const feedId = queryParams.get('feedId');
+      const sharedVideo = queryParams.get('video');
+      const sharedImg = queryParams.get('img');
+
+      if (feedId) {
+        const index = feeds.findIndex(f => f._id === feedId);
+        if (index !== -1) {
+          setSelectedFeedPost(feeds[index]);
+          setSelectedFeedPostIndex(index);
+          setShowFeedPostViewerModal(true);
+        } else if (sharedVideo) {
+           // Fallback if feed post not found in initial fetch but we have shared data
+           setSelectedFeedPost({
+             _id: feedId,
+             user: creatorData,
+             caption: 'Shared Post',
+             highlightUrl: sharedVideo,
+             thumbnail: sharedImg,
+             feedType: 'highlight',
+             likes: [],
+             comments: []
+           });
+           setShowFeedPostViewerModal(true);
+        }
+      }
+    }
+  }, [isLoadingFeeds, feeds, creatorData]);
   const [viewedHighlights, setViewedHighlights] = useState(new Set());
   const [showVerticalHighlightViewer, setShowVerticalHighlightViewer] = useState(false);
   const [highlightStartIndex, setHighlightStartIndex] = useState(0);
@@ -614,23 +645,28 @@ const fetchPlaylists = async () => {
     ],
   };
 
+  const queryParams = new URLSearchParams(search);
+  const sharedFeedId = queryParams.get('feedId');
+  const sharedImg = queryParams.get('img');
+  const sharedFeed = sharedFeedId ? feeds.find(f => f._id === sharedFeedId) : null;
+
   return (
     <div className="w-full h-auto overflow-x-hidden flex flex-col items-center bg-black">
       <Helmet>
-        <title>{creatorData?.name || 'Creator Channel'}</title>
+        <title>{sharedFeed ? `${sharedFeed.content.title} | ${creatorData?.name}` : (creatorData?.name || 'Creator Channel')}</title>
         <meta
           name="description"
-          content={creatorData?.about || 'Check out this creator on Playmood.'}
+          content={sharedFeed ? sharedFeed.content.description : (creatorData?.about || 'Check out this creator on Playmood.')}
         />
-        <meta property="og:title" content={creatorData?.name || 'Creator Channel'} />
+        <meta property="og:title" content={sharedFeed ? sharedFeed.content.title : (creatorData?.name || 'Creator Channel')} />
         <meta
           property="og:description"
-          content={creatorData?.about || 'Check out this creator on Playmood.'}
+          content={sharedFeed ? sharedFeed.content.description : (creatorData?.about || 'Check out this creator on Playmood.')}
         />
-        <meta property="og:image" content={creatorData?.profileImage} />
+        <meta property="og:image" content={sharedFeed ? sharedFeed.content.thumbnail : (sharedImg || creatorData?.profileImage)} />
         <meta property="og:url" content={window.location.href} />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:image" content={creatorData?.profileImage} />
+        <meta name="twitter:image" content={sharedFeed ? sharedFeed.content.thumbnail : (sharedImg || creatorData?.profileImage)} />
       </Helmet>
       {/* Error Popup */}
       <ErrorPopup

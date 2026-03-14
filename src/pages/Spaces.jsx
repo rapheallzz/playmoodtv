@@ -177,7 +177,7 @@ export default function Spaces() {
           )}
 
           {/* Creator Slider */}
-          <SliderContainer>
+          <SliderContainer $isShort={creatorData.length < 5}>
             {creatorError ? (
               <div className="error-message">{creatorError}</div>
             ) : (
@@ -245,32 +245,38 @@ const ContentWrapper = styled.div`
   @media (min-width: 768px) {
     width: calc(100% - 260px);
     margin-left: 260px;
-    padding: 0;
   }
 `;
 
 const HeaderWrapper = styled.div`
-  padding-left: 1rem;
+  padding-left: 25px;
   padding-bottom: 0.5rem;
 
   @media (max-width: 768px) {
-    padding-left: 0;
-    text-align: center;
+    padding-left: 15px;
+    text-align: left;
   }
 `;
 
 const SliderContainer = styled.div`
   position: relative;
   width: 100%;
-  padding: 0 40px 0 0;
+  padding: 0 20px 0 20px;
   margin: 0 auto;
 
   @media (max-width: 768px) {
-    padding: 0;
+    padding: 0 10px 0 10px;
   }
 
   .slick-slider {
     position: relative;
+    ${props => props.$isShort && `
+      .slick-track {
+        margin-left: 0 !important;
+        transform: none !important;
+        display: flex !important;
+      }
+    `}
   }
 
   .slick-prev,

@@ -111,9 +111,9 @@ export default function OnlyPlaymood() {
 
   const settings = {
     dots: false,
-    infinite: data.length > 4,
+    infinite: data.length > 5,
     speed: 300,
-    slidesToShow: 4,
+    slidesToShow: 5,
     slidesToScroll: 1,
     initialSlide: 0,
     prevArrow: <CustomPrevArrow />,
@@ -126,7 +126,7 @@ export default function OnlyPlaymood() {
         settings: {
           slidesToShow: 3,
           slidesToScroll: 1,
-          infinite: data.length > 4,
+          infinite: data.length > 3,
           dots: true,
           arrows: true,
         },
@@ -179,7 +179,7 @@ export default function OnlyPlaymood() {
             </HeaderWrapper>
           )}
 
-          <SliderContainer $isShort={data.length < 4}>
+          <SliderContainer $isShort={data.length < 5}>
             {error ? (
               <div className="error-message">{error}</div>
             ) : (
@@ -256,23 +256,23 @@ const ContentWrapper = styled.div`
 `;
 
 const HeaderWrapper = styled.div`
-  padding-left: 1rem;
+  padding-left: 25px;
   padding-bottom: 0.5rem;
 
   @media (max-width: 768px) {
-    padding-left: 0;
-    text-align: center;
+    padding-left: 15px;
+    text-align: left;
   }
 `;
 
 const SliderContainer = styled.div`
   position: relative;
   width: 100%;
-  padding: 0 40px 0 0;
+  padding: 0 20px 0 20px;
   margin: 0 auto;
 
   @media (max-width: 768px) {
-    padding: 0;
+    padding: 0 10px 0 10px;
   }
 
   .slick-slider {
@@ -281,6 +281,7 @@ const SliderContainer = styled.div`
       .slick-track {
         margin-left: 0 !important;
         transform: none !important;
+        display: flex !important;
       }
     `}
   }

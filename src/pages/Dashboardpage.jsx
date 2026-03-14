@@ -567,7 +567,7 @@ function Dashboardpage() {
     <Dashboard>
       <Mainsection>
         {isMobile ? (
-          <Hamburger onClick={() => handle_sidebar_hover()}>
+          <Hamburger onClick={() => {}}>
             <MobileBurger channels={channels} set_channels={set_channels} />
           </Hamburger>
         ) : (

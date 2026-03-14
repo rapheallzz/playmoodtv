@@ -27,7 +27,7 @@ function Privacy() {
       {isMobile ? (
         // <MobileHeader channels={channels} set_channels={set_channels} />
         
-        <Hamburger onClick={() => handle_sidebar_hover()}>
+        <Hamburger onClick={() => {}}>
         <MobileBurger channels={channels} set_channels={set_channels} />
        </Hamburger>
       ) : (

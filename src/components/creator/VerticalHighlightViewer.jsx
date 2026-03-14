@@ -30,6 +30,7 @@ import {
   FaPlay, FaPause, FaExpand, FaFilm
 } from 'react-icons/fa';
 import { toast } from 'react-toastify';
+import UniversalShareModal from '../modals/UniversalShareModal';
 
 const VerticalHighlightViewer = ({
   highlights: initialHighlights,
@@ -53,6 +54,8 @@ const VerticalHighlightViewer = ({
   const [isLoadingComments, setIsLoadingComments] = useState(false);
   const [totalComments, setTotalComments] = useState(0);
   const [showCenterPlayPause, setShowCenterPlayPause] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [shareUrl, setShareUrl] = useState('');
   const isProgrammaticScroll = useRef(false);
   const scrollTimeout = useRef(null);
   const selectedHighlightRef = useRef(null);
@@ -535,10 +538,14 @@ const VerticalHighlightViewer = ({
                   <span>{highlight.content.commentsCount || 0}</span>
                 </ViewerActionButton>
                 <ViewerActionButton onClick={() => {
-                  if (highlight.content?.video) {
-                    navigator.clipboard.writeText(highlight.content.video);
-                    toast.success('Highlight URL copied to clipboard!');
-                  }
+                  const encodedId = btoa(highlight.content._id);
+                  const params = new URLSearchParams();
+                  if (highlight.content.thumbnail) params.append('img', highlight.content.thumbnail);
+                  const highlightVideo = highlight.highlightUrl || highlight.content.video;
+                  if (highlightVideo) params.append('video', highlightVideo);
+                  const url = `${window.location.origin}/highlight/${encodedId}${params.toString() ? '?' + params.toString() : ''}`;
+                  setShareUrl(url);
+                  setIsShareModalOpen(true);
                 }}>
                   <FaPaperPlane />
                   <span>Share</span>
@@ -569,6 +576,13 @@ const VerticalHighlightViewer = ({
           )}
         </HighlightStory>
       ))}
+      {isShareModalOpen && (
+        <UniversalShareModal
+          shareUrl={shareUrl}
+          title={highlights[currentIndex]?.content.title}
+          onClose={() => setIsShareModalOpen(false)}
+        />
+      )}
     </VerticalScrollViewer>
   );
 };

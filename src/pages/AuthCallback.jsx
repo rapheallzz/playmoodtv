@@ -18,6 +18,7 @@ const AuthCallback = () => {
       if (decodedUser) {
         const user = {
           ...decodedUser,
+          userId: decodedUser.id || decodedUser.userId || decodedUser._id,
           token,
         };
         localStorage.setItem('user', JSON.stringify(user));

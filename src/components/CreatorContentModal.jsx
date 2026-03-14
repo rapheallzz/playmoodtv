@@ -8,7 +8,7 @@ import { FaPaperPlane, FaHeart, FaPlus, FaCheck } from 'react-icons/fa';
 import { likeContent, unlikeContent, addToWatchlist, removeFromWatchlist } from '../features/authSlice';
 import styled from 'styled-components';
 import BASE_API_URL from '../apiConfig';
-import HighlightShareModal from './modals/HighlightShareModal';
+import UniversalShareModal from './modals/UniversalShareModal';
 import WelcomePopup from './Welcomepop';
 
 const CreatorContentModal = ({ isOpen, creator, onClose }) => {
@@ -145,8 +145,11 @@ const CreatorContentModal = ({ isOpen, creator, onClose }) => {
 
   const handleShare = () => {
     if (content) {
-      const encodedContentId = btoa(content._id);
-      const url = `${window.location.origin}/highlight/${encodedContentId}`;
+      const slug = createSlug(content.title, content._id);
+      const params = new URLSearchParams();
+      if (content.thumbnail) params.append('img', content.thumbnail);
+      if (content.video) params.append('video', content.video);
+      const url = `${window.location.origin}/movie/${slug}${params.toString() ? '?' + params.toString() : ''}`;
       setShareUrl(url);
       setIsShareModalOpen(true);
     }
@@ -274,8 +277,9 @@ const CreatorContentModal = ({ isOpen, creator, onClose }) => {
         onClose={() => setShowWelcomePopup(false)}
       />
       {isShareModalOpen && (
-        <HighlightShareModal
+        <UniversalShareModal
           shareUrl={shareUrl}
+          title={content?.title}
           onClose={() => setIsShareModalOpen(false)}
         />
       )}

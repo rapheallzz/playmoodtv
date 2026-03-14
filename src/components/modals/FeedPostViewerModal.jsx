@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { FaHeart, FaComment, FaPaperPlane, FaTimes, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import contentService from '../../features/contentService';
+import UniversalShareModal from './UniversalShareModal';
 import {
   ModalOverlay,
   ModalCard,
@@ -74,6 +75,8 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const [isCommentsOpen, setIsCommentsOpen] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [shareUrl, setShareUrl] = useState('');
 
   useEffect(() => {
     setCurrentIndex(0);
@@ -131,9 +134,20 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
   };
 
   const handleShare = () => {
-    if (currentMedia && currentMedia.url) {
-      navigator.clipboard.writeText(currentMedia.url);
-      toast.success('Media URL copied to clipboard!');
+    if (post) {
+      const creator = post.user;
+      const creatorSlug = `${creator.name.replace(/\s+/g, '-')}-${btoa(creator._id)}`;
+      const params = new URLSearchParams();
+      params.append('feedId', post._id);
+      if (post.content?.thumbnail) params.append('img', post.content.thumbnail);
+      else if (post.thumbnail) params.append('img', post.thumbnail);
+
+      const video = post.highlightUrl || post.content?.video;
+      if (video) params.append('video', video);
+
+      const url = `${window.location.origin}/creator/${creatorSlug}?${params.toString()}`;
+      setShareUrl(url);
+      setIsShareModalOpen(true);
     }
   };
 
@@ -274,6 +288,13 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
           <LikesContainer>{likesCount} likes</LikesContainer>
         </ModalCardContent>
       </ModalCard>
+      {isShareModalOpen && (
+        <UniversalShareModal
+          shareUrl={shareUrl}
+          title={post.caption || post.title}
+          onClose={() => setIsShareModalOpen(false)}
+        />
+      )}
     </ModalOverlay>
   );
 };

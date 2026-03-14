@@ -64,19 +64,21 @@ export default function Creator() {
     });
   };
 
+  const handleToggle = () => {};
+
   return (
     <Homecontent>
       {isMobile ? (
-        <Hamburger onClick={() => handle_sidebar_hover()}>
+        <Hamburger onClick={handleToggle}>
           <MobileBurger />
         </Hamburger>
       ) : (
         <DesktopHeader/>
       )}
 
-      <div className='flex'>
-        <div className=' hidden md:block fixed left-2 w-[40%] mt-[28%] pl-[2%] md:left-20 md:mt-[8%]  '>
-          <div className=' flex flex-col gap-1 text-sm  md:text-xl font-medium text-white '>
+      <div className='flex w-full'>
+        <div className=' hidden md:block fixed left-0 w-[260px] h-full mt-[80px] pl-[25px] z-10'>
+          <div className=' flex flex-col gap-2 text-xl font-medium text-white '>
             <Link to="/newplaymood" className='hover:text-red-700'>New on Playmood</Link>
             <Link to="/channels" className='hover:text-red-700'>Channels</Link>
             <Link to="/diaries" className='hover:text-red-700'>Diaries</Link>
@@ -93,9 +95,9 @@ export default function Creator() {
           </div>
         </div>
 
-        <div className='h-full relative  md:right-[-40%] w-full md:w-3/5 mt-[28%]  mb-36 md:mt-[8%] md:mb-8'>
-          <div className='flex justify-between items-center mb-4'>
-            <h3 className='pl-16 pb-2 text-white text-[1.5rem] font-bold'>{location.state?.creator?.name || 'Creator Name'}</h3>
+        <div className='h-full relative w-full md:ml-[260px] md:w-[calc(100%-260px)] mt-[140px] md:mt-[100px] mb-36 md:mb-8'>
+          <div className='flex justify-between items-center mb-4 px-[15px] md:px-[25px]'>
+            <h3 className='text-white text-[1.5rem] font-bold'>{location.state?.creator?.name || 'Creator Name'}</h3>
             <button className="bg-[#541011] text-white px-2 py-1 rounded hover:bg-[#461718]">
               Subscribe
             </button>
@@ -209,12 +211,17 @@ const ContentHolder = styled.div
 const Content = styled.div`
   display: flex;
   flex-wrap: wrap;
-  justify-content: center; 
+  justify-content: flex-start;
   gap: 0;
   width: 100%;
+  padding: 0 10px;
+
+  @media screen and (min-width: 768px) {
+    padding: 0 20px;
+  }
 
   @media screen and (max-width: 1000px) {
-    margin-top: 10%;
+    margin-top: 10px;
   }
 
   /* Target the item wrapper to match slider gaps */
@@ -230,7 +237,10 @@ const TabNav = styled.div`
   display: flex;
   gap: 20px;
   margin-bottom: 20px;
-  padding-left: 64px; // to align with creator name
+  padding-left: 15px;
+  @media (min-width: 768px) {
+    padding-left: 25px;
+  }
 `;
 
 const TabButton = styled.button`

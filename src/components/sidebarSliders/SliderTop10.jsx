@@ -18,7 +18,7 @@ export default function Slidertop10() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
+        const response = await axios.get(`${BASE_API_URL}/api/content/`);
         if (response.data && Array.isArray(response.data)) {
           const filteredData = response.data.filter(content => content.category === 'Top 10');
           setData(filteredData);

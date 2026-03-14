@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { likeContent, unlikeContent } from '../features/authSlice';
 import axios from 'axios';
@@ -15,13 +15,20 @@ import SliderDocumentaries from '../components/miscSlider/SliderDocumentaries';
 import WelcomePopup from '../components/Welcomepop';
 import MovieHeader from '../components/headers/MovieHeader';
 import Footer from '../components/footer/Footer';
-import HighlightShareModal from '../components/modals/HighlightShareModal';
+import UniversalShareModal from '../components/modals/UniversalShareModal';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import SliderRecommended from '../components/sliders/SliderRecommend';
 import SliderResume from '../components/sliders/SliderResume';
+import { Helmet } from 'react-helmet-async';
 
 export default function MoviePage() {
+  const { slug } = useParams();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const sharedImg = queryParams.get('img');
+  const sharedVideo = queryParams.get('video');
+
   const [info, setInfo] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [showFavoriteMessage, setShowFavoriteMessage] = useState(false);
@@ -49,7 +56,6 @@ export default function MoviePage() {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const [isLiked, setIsLiked] = useState(false);
-  const { slug } = useParams();
   const contentId = slug && /^[0-9a-fA-F]{24}$/.test(slug.split('-').pop()) ? slug.split('-').pop() : null;
   const videoRef = useRef(null);
   const lastSavedSecond = useRef(0);
@@ -336,6 +342,34 @@ export default function MoviePage() {
   }
 
   if (error || !movie) {
+    if (sharedVideo) {
+      // Fallback UI if API fails but we have a shared video URL
+      return (
+        <Movie>
+          <Helmet>
+            <title>Playmood</title>
+            <meta property="og:image" content={sharedImg} />
+            <meta property="og:video" content={sharedVideo} />
+          </Helmet>
+          <MovieHeader />
+          <div className="video-container relative mt-20">
+            <video controls autoPlay className="w-full h-[550px] md:h-[900px] object-cover">
+              <source src={sharedVideo} type="video/mp4" />
+            </video>
+          </div>
+          <div className="flex flex-col items-center justify-center p-10 text-center bg-black">
+             <h1 className="text-xl text-white mb-4">You are watching a shared video</h1>
+             <button
+              className="px-4 py-2 bg-[#541011] text-white rounded-lg"
+              onClick={() => navigate('/')}
+            >
+              Explore More on Playmood
+            </button>
+          </div>
+          <Footer />
+        </Movie>
+      );
+    }
     return (
       <div className="flex flex-col items-center justify-center h-screen text-center bg-black">
         <h1 className="text-2xl font-semibold mb-4 text-white">{error}</h1>
@@ -443,6 +477,14 @@ export default function MoviePage() {
 
   return (
     <Movie>
+      <Helmet>
+        <title>{movie?.title ? `${movie.title} | Playmood` : 'Playmood'}</title>
+        <meta property="og:title" content={movie?.title || 'Playmood'} />
+        <meta property="og:description" content={movie?.description || 'Watch on Playmood'} />
+        <meta property="og:image" content={movie?.thumbnail || sharedImg} />
+        <meta property="og:url" content={window.location.href} />
+        <meta name="twitter:card" content="summary_large_image" />
+      </Helmet>
       <ToastContainer />
       <div className="h-auto">
         <MovieHeader />
@@ -522,8 +564,11 @@ export default function MoviePage() {
                     <h6 className="text-white text-[0.6rem]">{likes?.length || 0}</h6>
                   </div>
                   <div className="flex gap-1 items-center" onClick={() => {
-                    const encodedContentId = btoa(movie._id);
-                    const url = `${window.location.origin}/highlight/${encodedContentId}`;
+                    const slug = `${title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${movie._id}`;
+                    const params = new URLSearchParams();
+                    if (movie.thumbnail) params.append('img', movie.thumbnail);
+                    if (movie.video) params.append('video', movie.video);
+                    const url = `${window.location.origin}/movie/${slug}${params.toString() ? '?' + params.toString() : ''}`;
                     setShareUrl(url);
                     setIsShareModalOpen(true);
                   }}>
@@ -680,12 +725,11 @@ export default function MoviePage() {
           <WelcomePopup
             showPopup={showWelcomePopup}
             onClose={() => setShowWelcomePopup(false)}
-            onLogin={() => setShowWelcomePopup(false)}
-            onRegister={() => setShowWelcomePopup(false)}
           />
           {isShareModalOpen && (
-            <HighlightShareModal
+            <UniversalShareModal
               shareUrl={shareUrl}
+              title={title}
               onClose={() => setIsShareModalOpen(false)}
             />
           )}
