@@ -79,6 +79,18 @@ const SliderContainer = styled.div`
     touch-action: pan-y; /* Allow vertical scrolling, enable horizontal swipe */
   }
 
+  /* Force left alignment when items are fewer than slidesToShow on desktop */
+  @media (min-width: 1025px) {
+    ${(props) =>
+      props.$isShort &&
+      `
+      .slick-track {
+        margin-left: 0 !important;
+        transform: none !important;
+      }
+    `}
+  }
+
   .slick-prev,
   .slick-next {
     display: none !important;
@@ -291,7 +303,7 @@ export default function SliderDiaries({ title }) {
   return (
     <VideoCategoryCircle>
       {title && <Videocategorytitle>{title}</Videocategorytitle>}
-      <SliderContainer>
+      <SliderContainer $isShort={data.length < 4}>
         {error ? (
           <div className="error-message">{error}</div>
         ) : (

@@ -182,7 +182,7 @@ export default function SliderTopTen({ title }) {
   return (
     <VideoCategory>
       {title && <Videocategorytitle>{title}</Videocategorytitle>}
-      <SliderContainer>
+      <SliderContainer $isShort={data.length < 5}>
         {error ? (
           <div className="error-message">{error}</div>
         ) : (
@@ -231,6 +231,18 @@ const SliderContainer = styled.div`
 
   .slick-slider {
     position: relative;
+  }
+
+  /* Force left alignment when items are fewer than slidesToShow on desktop */
+  @media (min-width: 1025px) {
+    ${(props) =>
+      props.$isShort &&
+      `
+      .slick-track {
+        margin-left: 0 !important;
+        transform: none !important;
+      }
+    `}
   }
 
   // Hide default slick arrows

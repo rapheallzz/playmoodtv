@@ -164,7 +164,7 @@ export default function SliderHighlights({ highlights, handleSelectHighlight, re
   };
 
   return (
-    <SliderContainer>
+    <SliderContainer $isShort={highlights.length < 8}>
       <Slider key={highlights.length} {...settings} ref={sliderRef}>
         {highlights.map((highlight, index) => (
           <div key={highlight._id} className="slides">
@@ -207,6 +207,18 @@ const SliderContainer = styled.div`
   .slick-slider {
     position: relative;
     overflow: visible;
+  }
+
+  /* Force left alignment when items are fewer than slidesToShow on desktop */
+  @media (min-width: 1025px) {
+    ${(props) =>
+      props.$isShort &&
+      `
+      .slick-track {
+        margin-left: 0 !important;
+        transform: none !important;
+      }
+    `}
   }
 
   // Hide default slick arrows

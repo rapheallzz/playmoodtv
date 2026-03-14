@@ -180,7 +180,7 @@ export default function SliderRecommended({ contentId: propContentId, title, cla
           {title}
         </h3>
       )}
-      <SliderContainer>
+      <SliderContainer $isShort={data.length < 5}>
         {error ? (
           <div className="error-message">{error}</div>
         ) : (
@@ -200,8 +200,8 @@ export default function SliderRecommended({ contentId: propContentId, title, cla
                   />
                 </div>
               ))}
-            {data.length > 0 && (
-              // Only show View More if there is at least one item
+            {data.length >= 5 && (
+              // Only show View More if there are 5 or more items
               <div className="slides view-more-slide">
                 <ViewMoreSlide>
                   <ViewMoreButton onClick={handleViewMore}>View More</ViewMoreButton>
@@ -235,6 +235,18 @@ const SliderContainer = styled.div`
 
   .slick-slider {
     position: relative;
+  }
+
+  /* Force left alignment when items are fewer than slidesToShow on desktop */
+  @media (min-width: 1025px) {
+    ${(props) =>
+      props.$isShort &&
+      `
+      .slick-track {
+        margin-left: 0 !important;
+        transform: none !important;
+      }
+    `}
   }
 
   .slick-prev,
