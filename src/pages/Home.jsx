@@ -875,10 +875,10 @@ function HomeContent({
             <Videocategorytitle>Behind the Cameras</Videocategorytitle>
             <SliderCamera />
           </VideoCategory>
-          {/* <VideoCategory>
+          <VideoCategory>
             <Videocategorytitle>Soon in Playmood</Videocategorytitle>
             <SliderSoon />
-          </VideoCategory> */}
+          </VideoCategory>
           <VideoCategory>
             <Videocategorytitle>Teens</Videocategorytitle>
             <SliderTeens />
