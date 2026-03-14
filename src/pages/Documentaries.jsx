@@ -46,7 +46,7 @@ const CustomNextArrow = (props) => {
   );
 };
 
-export default function Documentarie() {
+export default function Documentaries() {
   const navigate = useNavigate();
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -68,12 +68,12 @@ export default function Documentarie() {
     };
   }, []);
 
-    useEffect(() => {
+  useEffect(() => {
     async function fetchData() {
       try {
         const response = await axios.get(`${BASE_API_URL}/api/content/`);
         if (response.data && Array.isArray(response.data)) {
-          const filteredData = response.data.filter((content) => content.category === 'Documentarie');
+          const filteredData = response.data.filter((content) => content.category === 'Documentaries');
           setData(filteredData);
         } else {
           setError('Unexpected data format.');
@@ -180,7 +180,7 @@ export default function Documentarie() {
             </HeaderWrapper>
           )}
 
-          <SliderContainer>
+          <SliderContainer $isShort={data.length < 4}>
             {error ? (
               <div className="error-message">{error}</div>
             ) : (
@@ -278,6 +278,12 @@ const SliderContainer = styled.div`
 
   .slick-slider {
     position: relative;
+    ${props => props.$isShort && `
+      .slick-track {
+        margin-left: 0 !important;
+        transform: none !important;
+      }
+    `}
   }
 
   // Hide default slick arrows

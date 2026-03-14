@@ -219,7 +219,6 @@ export default function MobileHeader({ channels, set_channels }) {
   const [behindTheCamerasToggled, setBehindTheCamerasToggled] = useState(false);
   const [soonInPlaymoodToggled, setSoonInPlaymoodToggled] = useState(false);
   const [teenToggled, setTeenToggled] = useState(false);
-  const [bestInFashionToggled, setBestInFashionToggled] = useState(false);
   const [onlyInPlaymoodToggled, setOnlyInPlaymoodToggled] = useState(false);
   const [watchlistToggled, setWatchlistToggled] = useState(false);
 
@@ -276,10 +275,6 @@ export default function MobileHeader({ channels, set_channels }) {
 
   const handleTeenToggle = () => {
     setTeenToggled(!teenToggled);
-  };
-
-  const handleBestInFashionToggle = () => {
-    setBestInFashionToggled(!bestInFashionToggled);
   };
 
   const handleOnlyInPlaymoodToggle = () => {
@@ -488,7 +483,7 @@ export default function MobileHeader({ channels, set_channels }) {
                 {user && recommendationsToggled && <SidebarSliderc />}
                 <h3 onClick={handleInterviewsToggle}>Interviews</h3>
                 {interviewsToggled && <SidebarSliderc />}
-                <h3 onClick={handleFashionShowsToggle}>Fashion Shows Stories</h3>
+                <h3 onClick={handleFashionShowsToggle}>Fashion Shows</h3>
                 {fashionShowsToggled && <SidebarSliderc />}
                 <h3 onClick={handleSpacesToggle}>Spaces</h3>
                 {spacesToggled && <SidebarSliderc />}
@@ -500,8 +495,6 @@ export default function MobileHeader({ channels, set_channels }) {
                 {soonInPlaymoodToggled && <SidebarSliderc />}
                 <h3 onClick={handleTeenToggle}>Teen</h3>
                 {teenToggled && <SidebarSliderc />}
-                <h3 onClick={handleBestInFashionToggle}>Best in Fashion</h3>
-                {bestInFashionToggled && <SidebarSliderc />}
                 <h3 onClick={handleOnlyInPlaymoodToggle}>Only in Playmood</h3>
                 {onlyInPlaymoodToggled && <SidebarSliderc />}
                 <h3 onClick={handleWatchlistToggle}>Watchlist</h3>

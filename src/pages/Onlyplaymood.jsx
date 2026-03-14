@@ -179,7 +179,7 @@ export default function OnlyPlaymood() {
             </HeaderWrapper>
           )}
 
-          <SliderContainer>
+          <SliderContainer $isShort={data.length < 4}>
             {error ? (
               <div className="error-message">{error}</div>
             ) : (
@@ -277,6 +277,12 @@ const SliderContainer = styled.div`
 
   .slick-slider {
     position: relative;
+    ${props => props.$isShort && `
+      .slick-track {
+        margin-left: 0 !important;
+        transform: none !important;
+      }
+    `}
   }
 
   // Hide default slick arrows

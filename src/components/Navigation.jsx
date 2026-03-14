@@ -11,12 +11,11 @@ const navLinks = [
   { to: "/spaces", label: "Spaces" },
   { to: "/recommended", label: "Recommendations for you" },
   { to: "/interviews", label: "Interviews" },
-  { to: "/fashion", label: "Fashion Shows Stories" },
+  { to: "/fashion", label: "Fashion Shows" },
   { to: "/documentaries", label: "Documentaries and report" },
   { to: "/cameras", label: "Behind the cameras" },
   { to: "/soon", label: "Soon in Playmood" },
   { to: "/teen", label: "Teen" },
-  { to: "/bestfashion", label: "Best in Fashion" },
   { to: "/onlyplaymood", label: "Only in Playmood" },
   { to: "/watchlist", label: "Watchlist" },
 ];

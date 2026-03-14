@@ -75,7 +75,6 @@ export default function MobileBurger() {
   const [behindTheCamerasToggled, setBehindTheCamerasToggled] = useState(false);
   const [soonInPlaymoodToggled, setSoonInPlaymoodToggled] = useState(false);
   const [teenToggled, setTeenToggled] = useState(false);
-  const [bestInFashionToggled, setBestInFashionToggled] = useState(false);
   const [onlyInPlaymoodToggled, setOnlyInPlaymoodToggled] = useState(false);
   const [watchlistToggled, setWatchlistToggled] = useState(false);
 
@@ -104,7 +103,6 @@ export default function MobileBurger() {
     if (excludeSetter !== setBehindTheCamerasToggled) setBehindTheCamerasToggled(false);
     if (excludeSetter !== setSoonInPlaymoodToggled) setSoonInPlaymoodToggled(false);
     if (excludeSetter !== setTeenToggled) setTeenToggled(false);
-    if (excludeSetter !== setBestInFashionToggled) setBestInFashionToggled(false);
     if (excludeSetter !== setOnlyInPlaymoodToggled) setOnlyInPlaymoodToggled(false);
     if (excludeSetter !== setWatchlistToggled) setWatchlistToggled(false);
   };
@@ -215,15 +213,6 @@ export default function MobileBurger() {
     } else {
       closeAllCategories(setTeenToggled);
       setTeenToggled(true);
-    }
-  };
-
-  const handleBestInFashionToggle = () => {
-    if (bestInFashionToggled) {
-      setBestInFashionToggled(false);
-    } else {
-      closeAllCategories(setBestInFashionToggled);
-      setBestInFashionToggled(true);
     }
   };
 
@@ -651,8 +640,6 @@ export default function MobileBurger() {
                   {soonInPlaymoodToggled && <SliderSoon />}
                   <h3 onClick={handleTeenToggle}>Teen</h3>
                   {teenToggled && <SliderTeens />}
-                  <h3 onClick={handleBestInFashionToggle}>Best in Fashion</h3>
-                  {bestInFashionToggled && <SliderFashion />}
                   <h3 onClick={handleOnlyInPlaymoodToggle}>Only in Playmood</h3>
                   {onlyInPlaymoodToggled && <SliderOnly />}
                   <h3 onClick={() => {

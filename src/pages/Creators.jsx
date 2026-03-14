@@ -83,12 +83,11 @@ export default function Creator() {
             <Link to="/spaces" className='hover:text-red-700'>Spaces</Link>
             <Link to="/recommended" className='hover:text-red-700'>Recommendations for you</Link>
             <Link to="/interviews" className='hover:text-red-700'>Interviews</Link>
-            <Link to="/fashion" className='hover:text-red-700'>Fashion Shows Stories</Link>
+            <Link to="/fashion" className='hover:text-red-700'>Fashion Shows</Link>
             <Link to="/documentaries" className='hover:text-red-700'>Documentaries and report</Link>
             <Link to="/cameras" className='hover:text-red-700'>Behind the cameras</Link>
             <Link to="/soon" className='hover:text-red-700'>Soon in Playmood</Link>
             <Link to="/teen" className='hover:text-red-700'>Teen</Link>
-            <Link to="/bestfashion" className='hover:text-red-700'>Best in Fashion</Link>
             <Link to="/onlyplaymood" className='hover:text-red-700'>Only in Playmood</Link>
             <Link to="/watchlist" className='hover:text-red-700'>Watchlist</Link>
           </div>

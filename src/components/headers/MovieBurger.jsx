@@ -468,7 +468,7 @@ export default function MobileBurger({ }) {
                 {user && recommendationsToggled && <SidebarSlider />}
                 <h3 onClick={handleInterviewsToggle}>Interviews</h3>
                 {interviewsToggled && <SidebarSlider />}
-                <h3 onClick={handleFashionShowsToggle}>Fashion Shows Stories</h3>
+                <h3 onClick={handleFashionShowsToggle}>Fashion Shows</h3>
                 {fashionShowsToggled && <SidebarSlider />}
                 <h3 onClick={handleSpacesToggle}>Spaces</h3>
                 {spacesToggled && <SidebarSlider />}
@@ -480,8 +480,6 @@ export default function MobileBurger({ }) {
                 {soonInPlaymoodToggled && <SidebarSlider />}
                 <h3 onClick={handleTeenToggle}>Teen</h3>
                 {teenToggled && <SidebarSlider />}
-                <h3 onClick={handleBestInFashionToggle}>Best in Fashion</h3>
-                {bestInFashionToggled && <SidebarSlider />}
                 <h3 onClick={handleOnlyInPlaymoodToggle}>Only in Playmood</h3>
                 {onlyInPlaymoodToggled && <SidebarSlider />}
                 <h3 onClick={() => {

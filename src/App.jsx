@@ -25,7 +25,6 @@ import Documentaries from './pages/Documentaries';
 import Cameras from './pages/Cameras';
 import SoonPlaymood from './pages/Soonplaymood';
 import TEEN from './pages/Teen';
-import BestFashion from './pages/Bestfashion';
 import OnlyPlaymood from './pages/Onlyplaymood';
 import Watchlist from './pages/Watchlistt';
 import Creator from './pages/Creators';
@@ -78,7 +77,6 @@ const router = createBrowserRouter([
       { path: '/cameras', element: <Cameras /> },
       { path: '/soon', element: <SoonPlaymood /> },
       { path: '/teen', element: <TEEN /> },
-      { path: '/bestfashion', element: <BestFashion /> },
       { path: '/onlyplaymood', element: <OnlyPlaymood /> },
       { path: '/watchlist', element: <Watchlist /> },
       { path: '/recommended', element: <Recommended /> },

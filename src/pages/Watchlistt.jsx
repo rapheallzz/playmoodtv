@@ -5,6 +5,8 @@ import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import axios from 'axios';
+import { useSelector } from 'react-redux';
+import { jwtDecode } from 'jwt-decode';
 import MobileBurger from '../components/headers/MobileBurger';
 import DesktopHeader from '../components/headers/DesktopHeader';
 import BASE_API_URL from '../apiConfig';
@@ -55,6 +57,7 @@ export default function Watchlist() {
   const [modalContent, setModalContent] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const sliderRef = useRef(null);
+  const { user, userToken } = useSelector((state) => state.auth);
 
   const handleResize = () => {
     setIsMobile(window.innerWidth <= 768);
@@ -68,23 +71,50 @@ export default function Watchlist() {
     };
   }, []);
 
-    useEffect(() => {
+  useEffect(() => {
     async function fetchData() {
+      if (!user || !userToken) {
+        setData([]);
+        navigate('/login');
+        return;
+      }
+
       try {
-        const response = await axios.get(`${BASE_API_URL}/api/content/`);
-        if (response.data && Array.isArray(response.data)) {
-          const filteredData = response.data.filter((content) => content.category === 'Top 10');
-          setData(filteredData);
-        } else {
-          setError('Unexpected data format.');
+        const decoded = jwtDecode(userToken);
+        const currentTime = Date.now() / 1000;
+        if (decoded.exp < currentTime) {
+          setData([]);
+          navigate('/login');
+          return;
         }
       } catch (error) {
-        setError('Error fetching data.');
+        setError('Session invalid. Please log in again.');
+        setData([]);
+        navigate('/login');
+        return;
+      }
+
+      try {
+        const response = await axios.get(
+          `${BASE_API_URL}/api/content/watchlist/all`,
+          {
+            headers: {
+              Authorization: `Bearer ${userToken}`,
+            },
+          }
+        );
+        setData(response.data.watchList || []);
+      } catch (error) {
+        setError('Failed to load watchlist content. Please try again later.');
+        setData([]);
+        if (error.response?.status === 401) {
+          navigate('/login');
+        }
       }
     }
 
     fetchData();
-  }, []);
+  }, [user, userToken, navigate]);
 
   const handleOpenModal = (content) => {
     setModalContent(content);
@@ -180,9 +210,11 @@ export default function Watchlist() {
             </HeaderWrapper>
           )}
 
-          <SliderContainer>
+          <SliderContainer $isShort={data.length < 4}>
             {error ? (
-              <div className="error-message">{error}</div>
+              <div className="error-message text-white text-center py-10">{error}</div>
+            ) : data.length === 0 ? (
+              <div className="text-white text-center py-10">You have no watchlist content.</div>
             ) : (
               <Slider {...settings} ref={sliderRef}>
                 {Array.isArray(data) &&
@@ -278,6 +310,12 @@ const SliderContainer = styled.div`
 
   .slick-slider {
     position: relative;
+    ${props => props.$isShort && `
+      .slick-track {
+        margin-left: 0 !important;
+        transform: none !important;
+      }
+    `}
   }
 
   // Hide default slick arrows

@@ -68,12 +68,12 @@ export default function Fashion() {
     };
   }, []);
 
-    useEffect(() => {
+  useEffect(() => {
     async function fetchData() {
       try {
         const response = await axios.get(`${BASE_API_URL}/api/content/`);
         if (response.data && Array.isArray(response.data)) {
-          const filteredData = response.data.filter((content) => content.category === 'Teen');
+          const filteredData = response.data.filter((content) => content.category === 'Fashion Show');
           setData(filteredData);
         } else {
           setError('Unexpected data format.');
@@ -176,11 +176,11 @@ export default function Fashion() {
         <ContentWrapper isMobile={isMobile}>
           {!isMobile && (
             <HeaderWrapper>
-              <h3 className="text-white text-[1.5rem] font-bold">FASHION SHOW STORIES</h3>
+              <h3 className="text-white text-[1.5rem] font-bold">FASHION SHOWS</h3>
             </HeaderWrapper>
           )}
 
-          <SliderContainer>
+          <SliderContainer $isShort={data.length < 4}>
             {error ? (
               <div className="error-message">{error}</div>
             ) : (
@@ -278,6 +278,12 @@ const SliderContainer = styled.div`
 
   .slick-slider {
     position: relative;
+    ${props => props.$isShort && `
+      .slick-track {
+        margin-left: 0 !important;
+        transform: none !important;
+      }
+    `}
   }
 
   // Hide default slick arrows

@@ -446,8 +446,6 @@ export default function DesktopHeader({ }) {
                   {openCategory === 'soonInPlaymood' && <SliderSoon />}
                   <h3 onClick={() => handleToggle('teen')}>Teen</h3>
                   {openCategory === 'teen' && <SliderTeens />}
-                  <h3 onClick={() => handleToggle('bestInFashion')}>Best in Fashion</h3>
-                  {openCategory === 'bestInFashion' && <SliderFashion />}
                   <h3 onClick={() => handleToggle('onlyInPlaymood')}>Only in Playmood</h3>
                   {openCategory === 'onlyInPlaymood' && <SliderOnly />}
                   <h3 onClick={() => {

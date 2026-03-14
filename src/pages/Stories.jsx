@@ -30,7 +30,9 @@ export default function Stories() {
     const fetchData = async () => {
       try {
         const response = await axios.get(`${BASE_API_URL}/api/content/`);
-        setData(response.data);
+        if (Array.isArray(response.data)) {
+          setData(response.data);
+        }
       } catch (error) {
       }
     };
@@ -38,7 +40,7 @@ export default function Stories() {
     fetchData();
   }, []);
 
-  const filteredData = data.filter((content) => content.category === 'Top 10');
+  const filteredData = data.filter((content) => content.category === 'Social');
 
   const createSlug = (title, _id) => {
     const formattedTitle = title.toLowerCase().replace(/[^a-z0-9]+/g, '-'); 
@@ -71,12 +73,11 @@ export default function Stories() {
                   <Link to="/spaces" className='hover:text-red-700'>Spaces</Link>
                   <Link to="/recommended" className='hover:text-red-700'>Recommendations for you</Link>
                   <Link to="/interviews" className='hover:text-red-700'>Interviews</Link>
-                  <Link to="/fashion" className='hover:text-red-700'>Fashion Shows Stories</Link>
+                  <Link to="/fashion" className='hover:text-red-700'>Fashion Shows</Link>
                   <Link to="/documentaries" className='hover:text-red-700'>Documentaries and report</Link>
                   <Link to="/cameras" className='hover:text-red-700'>Behind the cameras</Link>
                   <Link to="/soon" className='hover:text-red-700'>Soon in Playmood</Link>
                   <Link to="/teen" className='hover:text-red-700'>Teen</Link>
-                  <Link to="/bestfashion" className='hover:text-red-700'>Best in Fashion</Link>
                   <Link to="/onlyplaymood" className='hover:text-red-700'>Only in Playmood</Link>
                   <Link to="/watchlist" className='hover:text-red-700'>Watchlist</Link>
                 </div>

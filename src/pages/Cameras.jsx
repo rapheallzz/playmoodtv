@@ -68,7 +68,7 @@ export default function Cameras() {
     };
   }, []);
 
-    useEffect(() => {
+  useEffect(() => {
     async function fetchData() {
       try {
         const response = await axios.get(`${BASE_API_URL}/api/content/`);
@@ -180,7 +180,7 @@ export default function Cameras() {
             </HeaderWrapper>
           )}
 
-          <SliderContainer>
+          <SliderContainer $isShort={data.length < 4}>
             {error ? (
               <div className="error-message">{error}</div>
             ) : (
@@ -278,6 +278,12 @@ const SliderContainer = styled.div`
 
   .slick-slider {
     position: relative;
+    ${props => props.$isShort && `
+      .slick-track {
+        margin-left: 0 !important;
+        transform: none !important;
+      }
+    `}
   }
 
   // Hide default slick arrows

@@ -10,6 +10,7 @@ import BASE_API_URL from '../apiConfig';
 import Navigation from '../components/Navigation';
 import Slidercirclecontent from '../components/Slidercirclecontent';
 import CreatorContentModal from '../components/CreatorContentModal';
+import { shuffleArray } from '../utils/shuffle';
 import Footer from '../components/footer/Footer';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
@@ -78,7 +79,7 @@ export default function Channels() {
           },
         });
         if (Array.isArray(response.data)) {
-          setCreatorData(response.data);
+          setCreatorData(shuffleArray(response.data));
         } else {
           setCreatorError('Unexpected creators data format.');
         }
