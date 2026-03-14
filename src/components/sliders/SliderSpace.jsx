@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -41,6 +41,26 @@ const CustomNextArrow = (props) => {
     </div>
   );
 };
+
+const VideoCategoryCircle = styled.div`
+  padding-top: 0;
+  width: 100%;
+  margin: 5px 0;
+  display: flex;
+  flex-direction: column;
+`;
+
+const Videocategorytitle = styled.h3`
+  font-size: 1.5rem;
+  color: white;
+  font-weight: 600;
+  padding: 5px 5px 5px 15px;
+
+  @media only screen and (min-width: 769px) {
+    font-size: 1.8rem;
+    padding: 5px 5px 5px 25px;
+  }
+`;
 
 // Styled Container for Slider
 const SliderContainer = styled.div`
@@ -161,15 +181,18 @@ const SliderContainer = styled.div`
   }
 `;
 
-export default function SliderSpace() {
+export default function SliderSpace({ title }) {
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [modalCreator, setModalCreator] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const sliderRef = useRef(null);
 
   useEffect(() => {
     const fetchCreators = async () => {
       try {
+        setLoading(true);
         const response = await axios.get(`${BASE_API_URL}/api/users/creators`, {
           headers: {
             'Cache-Control': 'no-cache',
@@ -184,6 +207,8 @@ export default function SliderSpace() {
         }
       } catch (error) {
         setError('Error fetching creators.');
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -258,31 +283,38 @@ export default function SliderSpace() {
     ],
   };
 
+  if (!loading && data.length === 0) {
+    return null;
+  }
+
   return (
-    <SliderContainer>
-      {error ? (
-        <div className="error-message">{error}</div>
-      ) : (
-        <>
-          <Slider key={data.length} {...settings}>
-            {Array.isArray(data) &&
-              data.map((creator, index) => (
-                <div key={creator._id} className="slidescircle">
-                  <Slidercirclecontent
-                    img={creator.profileImage}
-                    movie={creator}
-                    onVideoClick={() => handleOpenModal(creator)}
-                  />
-                </div>
-              ))}
-          </Slider>
-          <CreatorContentModal
-            isOpen={isModalOpen}
-            creator={modalCreator}
-            onClose={handleCloseModal}
-          />
-        </>
-      )}
-    </SliderContainer>
+    <VideoCategoryCircle>
+      {title && <Videocategorytitle>{title}</Videocategorytitle>}
+      <SliderContainer>
+        {error ? (
+          <div className="error-message">{error}</div>
+        ) : (
+          <>
+            <Slider key={data.length} {...settings} ref={sliderRef}>
+              {Array.isArray(data) &&
+                data.map((creator, index) => (
+                  <div key={creator._id} className="slidescircle">
+                    <Slidercirclecontent
+                      img={creator.profileImage}
+                      movie={creator}
+                      onVideoClick={() => handleOpenModal(creator)}
+                    />
+                  </div>
+                ))}
+            </Slider>
+            <CreatorContentModal
+              isOpen={isModalOpen}
+              creator={modalCreator}
+              onClose={handleCloseModal}
+            />
+          </>
+        )}
+      </SliderContainer>
+    </VideoCategoryCircle>
   );
 }

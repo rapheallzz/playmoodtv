@@ -19,37 +19,37 @@ const useChannelDetails = (user) => {
   const [isLoading, setIsLoading] = useState(true);
   const isFetchingRef = useRef(false);
 
-  useEffect(() => {
-    const fetchChannelDetails = async () => {
-      if (isFetchingRef.current || !user?._id) return;
-      setIsLoading(true);
-      isFetchingRef.current = true;
-      try {
-        const response = await axios.get(
-          `${BASE_API_URL}/api/channel/my-channel/${user._id}`,
-          { headers: { Authorization: `Bearer ${user.token}` } }
-        );
-        const content = Array.isArray(response.data.content) ? response.data.content : [];
-        const uniqueContent = [...new Map(content.map(item => [item._id, item])).values()];
-        setBannerImage(response.data.bannerImage || '');
-        setProfileImage(response.data.profileImage || '');
-        setCreatorName(response.data.name || '');
-        setAbout(response.data.about || '');
-        setInstagram(response.data.instagram || '');
-        setTiktok(response.data.tiktok || '');
-        setLinkedin(response.data.linkedin || '');
-        setTwitter(response.data.twitter || '');
-        setSubscribers(response.data.subscribers || 0);
-        setData(uniqueContent);
-        setErrorMessage('');
-      } catch (error) {
-        setErrorMessage('Failed to load channel details. Please try again later.');
-      } finally {
-        isFetchingRef.current = false;
-        setIsLoading(false);
-      }
-    };
+  const fetchChannelDetails = async () => {
+    if (isFetchingRef.current || !user?._id) return;
+    setIsLoading(true);
+    isFetchingRef.current = true;
+    try {
+      const response = await axios.get(
+        `${BASE_API_URL}/api/channel/my-channel/${user._id}`,
+        { headers: { Authorization: `Bearer ${user.token}` } }
+      );
+      const content = Array.isArray(response.data.content) ? response.data.content : [];
+      const uniqueContent = [...new Map(content.map(item => [item._id, item])).values()];
+      setBannerImage(response.data.bannerImage || '');
+      setProfileImage(response.data.profileImage || '');
+      setCreatorName(response.data.name || '');
+      setAbout(response.data.about || '');
+      setInstagram(response.data.instagram || '');
+      setTiktok(response.data.tiktok || '');
+      setLinkedin(response.data.linkedin || '');
+      setTwitter(response.data.twitter || '');
+      setSubscribers(response.data.subscribers || 0);
+      setData(uniqueContent);
+      setErrorMessage('');
+    } catch (error) {
+      setErrorMessage('Failed to load channel details. Please try again later.');
+    } finally {
+      isFetchingRef.current = false;
+      setIsLoading(false);
+    }
+  };
 
+  useEffect(() => {
     if (user && user._id) {
       fetchChannelDetails();
     }
@@ -157,6 +157,7 @@ const useChannelDetails = (user) => {
     subscribers,
     errorMessage,
     handleUpdateChannelInfo,
+    refreshChannel: fetchChannelDetails,
     isLoading,
   };
 };

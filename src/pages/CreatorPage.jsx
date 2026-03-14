@@ -75,6 +75,7 @@ export default function CreatorPage() {
     about, setAbout, instagram, setInstagram, tiktok, setTiktok,
     linkedin, setLinkedin, twitter, setTwitter, data, subscribers,
     errorMessage: channelErrorMessage, handleUpdateChannelInfo,
+    refreshChannel,
     isLoading: isLoadingChannel,
   } = useChannelDetails(user);
 
@@ -267,6 +268,7 @@ export default function CreatorPage() {
         handleRemoveVideoFromPlaylist={handleRemoveVideoFromPlaylist}
         handleLikePost={handleLikePost}
         handleDeletePost={handleDeletePost}
+        onRefresh={refreshChannel}
         setShowEditPostModal={setShowEditPostModal}
         setEditingPostId={setEditingPostId}
         setEditPostContent={setEditPostContent}

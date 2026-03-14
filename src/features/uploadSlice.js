@@ -196,6 +196,27 @@ export const updateContent = createAsyncThunk(
   }
 );
 
+export const deleteContent = createAsyncThunk(
+  'upload/deleteContent',
+  async (contentId, thunkAPI) => {
+    const { userToken } = thunkAPI.getState().auth;
+    if (!userToken) {
+      return thunkAPI.rejectWithValue('User not authenticated.');
+    }
+
+    try {
+      await axios.delete(`${BASE_API_URL}/api/content/${contentId}`, {
+        headers: { Authorization: `Bearer ${userToken}` },
+      });
+      return contentId;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || error.message || 'Delete failed.';
+      return thunkAPI.rejectWithValue(errorMessage);
+    }
+  }
+);
+
 const uploadSlice = createSlice({
   name: 'upload',
   initialState,
@@ -263,6 +284,15 @@ const uploadSlice = createSlice({
         state.isUploading = false;
       })
       .addCase(updateContent.rejected, (state) => {
+        state.isUploading = false;
+      })
+      .addCase(deleteContent.pending, (state) => {
+        state.isUploading = true;
+      })
+      .addCase(deleteContent.fulfilled, (state) => {
+        state.isUploading = false;
+      })
+      .addCase(deleteContent.rejected, (state) => {
         state.isUploading = false;
       });
   },

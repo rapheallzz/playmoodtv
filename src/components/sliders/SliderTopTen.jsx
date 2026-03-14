@@ -42,10 +42,49 @@ const CustomNextArrow = (props) => {
   );
 };
 
-export default function SliderTopTen() {
+const VideoCategory = styled.div`
+  width: 100%;
+  margin: 5px 0;
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  box-sizing: border-box;
+  z-index: 210;
+
+  @media screen and (max-width: 768px) {
+    width: 100%;
+    height: auto;
+    margin: 5px 0 10px 0;
+    padding-bottom: 10px;
+    z-index: 210;
+  }
+
+  @media screen and (max-width: 495px) {
+    width: 100%;
+    height: auto;
+    margin: 5px 0 15px 0;
+    padding-bottom: 10px;
+    z-index: 210;
+  }
+`;
+
+const Videocategorytitle = styled.h3`
+  font-size: 1.5rem;
+  color: white;
+  font-weight: 600;
+  padding: 5px 5px 5px 15px;
+
+  @media only screen and (min-width: 769px) {
+    font-size: 1.8rem;
+    padding: 5px 5px 5px 25px;
+  }
+`;
+
+export default function SliderTopTen({ title }) {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [modalContent, setModalContent] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const sliderRef = useRef(null);
@@ -53,14 +92,17 @@ export default function SliderTopTen() {
   useEffect(() => {
     async function fetchData() {
       try {
+        setLoading(true);
         const response = await axios.get(`${BASE_API_URL}/api/content/top-ten`);
         if (response.data && Array.isArray(response.data)) {
-          setData(response.data); // Set all data without filtering
+          setData(response.data);
         } else {
           setError('Unexpected data format.');
         }
       } catch (error) {
         setError('Error fetching data.');
+      } finally {
+        setLoading(false);
       }
     }
 
@@ -133,39 +175,46 @@ export default function SliderTopTen() {
     ],
   };
 
-  return (
-    <SliderContainer>
-      {error ? (
-        <div className="error-message">{error}</div>
-      ) : (
-        <Slider key={data.length} {...settings} ref={sliderRef}>
-          {Array.isArray(data) &&
-            data.map((content, index) => (
-              <div key={content._id} className="slides">
-                <h1 className="movie-ids" aria-label={`Rank ${index + 1}`}>
-                  {index + 1}
-                </h1>
-                <Slidercontent
-                  img={content.thumbnail}
-                  title={content.title}
-                  movie={content}
-                  views={content.views}
-                  desc={content.description}
-                  customStyle={{}}
-                  onVideoClick={() => handleOpenModal(content)}
-                />
-              </div>
-            ))}
-        </Slider>
-      )}
+  if (!loading && data.length === 0) {
+    return null;
+  }
 
-      <ContentModal
-        isOpen={isModalOpen}
-        content={modalContent}
-        onClose={handleCloseModal}
-        handleNavigateToMovie={handleNavigateToMovie}
-      />
-    </SliderContainer>
+  return (
+    <VideoCategory>
+      {title && <Videocategorytitle>{title}</Videocategorytitle>}
+      <SliderContainer>
+        {error ? (
+          <div className="error-message">{error}</div>
+        ) : (
+          <Slider key={data.length} {...settings} ref={sliderRef}>
+            {Array.isArray(data) &&
+              data.map((content, index) => (
+                <div key={content._id} className="slides">
+                  <h1 className="movie-ids" aria-label={`Rank ${index + 1}`}>
+                    {index + 1}
+                  </h1>
+                  <Slidercontent
+                    img={content.thumbnail}
+                    title={content.title}
+                    movie={content}
+                    views={content.views}
+                    desc={content.description}
+                    customStyle={{}}
+                    onVideoClick={() => handleOpenModal(content)}
+                  />
+                </div>
+              ))}
+          </Slider>
+        )}
+
+        <ContentModal
+          isOpen={isModalOpen}
+          content={modalContent}
+          onClose={handleCloseModal}
+          handleNavigateToMovie={handleNavigateToMovie}
+        />
+      </SliderContainer>
+    </VideoCategory>
   );
 }
 

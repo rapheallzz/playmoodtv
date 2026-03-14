@@ -8,7 +8,6 @@ import Slidercontent from '../Slidercont';
 import { useNavigate } from 'react-router-dom';
 import ContentModal from '../ContentModal';
 
-
 import styled, { keyframes } from 'styled-components';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
@@ -44,11 +43,49 @@ const CustomNextArrow = (props) => {
   );
 };
 
+const VideoCategory = styled.div`
+  width: 100%;
+  margin: 5px 0;
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  box-sizing: border-box;
+  z-index: 210;
 
-export default function SliderCamera() {
-  const navigate = useNavigate();
+  @media screen and (max-width: 768px) {
+    width: 100%;
+    height: auto;
+    margin: 5px 0 10px 0;
+    padding-bottom: 10px;
+    z-index: 210;
+  }
+
+  @media screen and (max-width: 495px) {
+    width: 100%;
+    height: auto;
+    margin: 5px 0 15px 0;
+    padding-bottom: 10px;
+    z-index: 210;
+  }
+`;
+
+const Videocategorytitle = styled.h3`
+  font-size: 1.5rem;
+  color: white;
+  font-weight: 600;
+  padding: 5px 5px 5px 15px;
+
+  @media only screen and (min-width: 769px) {
+    font-size: 1.8rem;
+    padding: 5px 5px 5px 25px;
+  }
+`;
+
+export default function SliderCamera({ title }) {
+const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [modalContent, setModalContent] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const sliderRef = useRef(null);
@@ -56,6 +93,7 @@ export default function SliderCamera() {
   useEffect(() => {
     async function fetchData() {
       try {
+        setLoading(true);
         const response = await axios.get(`${BASE_API_URL}/api/content/`);
         if (response.data && Array.isArray(response.data)) {
           const filteredData = response.data.filter((content) => content.category === 'Behind the camera');
@@ -65,6 +103,8 @@ export default function SliderCamera() {
         }
       } catch (error) {
         setError('Error fetching data.');
+      } finally {
+        setLoading(false);
       }
     }
 
@@ -90,6 +130,7 @@ export default function SliderCamera() {
     const slug = createSlug(content.title, content._id);
     navigate(`/movie/${slug}`);
   };
+
 
   const handleViewMore = () => {
     navigate('/cameras');
@@ -140,43 +181,50 @@ export default function SliderCamera() {
     ],
   };
 
-  return (
-    <SliderContainer>
-      {error ? (
-        <div className="error-message">{error}</div>
-      ) : (
-        <Slider key={data.length} {...settings} ref={sliderRef}>
-          {Array.isArray(data) &&
-            data.slice(0, 10).map((content) => ( // Limit to 10 slides
-              <div key={content._id} className="slides">
-                <Slidercontent
-                  img={content.thumbnail}
-                  title={content.title}
-                  movie={content}
-                  views={content.views}
-                  desc={content.description}
-                  customStyle={{}}
-                  onVideoClick={() => handleOpenModal(content)}
-                />
-              </div>
-            ))}
-          {data.length > 0 && ( // Only show View More if there is at least one item
-            <div className="slides view-more-slide">
-              <ViewMoreSlide>
-                <ViewMoreButton onClick={handleViewMore}>View More</ViewMoreButton>
-              </ViewMoreSlide>
-            </div>
-          )}
-        </Slider>
-      )}
+  if (!loading && data.length === 0) {
+    return null;
+  }
 
-      <ContentModal
-        isOpen={isModalOpen}
-        content={modalContent}
-        onClose={handleCloseModal}
-        handleNavigateToMovie={handleNavigateToMovie}
-      />
-    </SliderContainer>
+  return (
+    <VideoCategory>
+      {title && <Videocategorytitle>{title}</Videocategorytitle>}
+      <SliderContainer>
+        {error ? (
+          <div className="error-message">{error}</div>
+        ) : (
+          <Slider key={data.length} {...settings} ref={sliderRef}>
+            {Array.isArray(data) &&
+              data.slice(0, 10).map((content) => ( // Limit to 10 slides
+                <div key={content._id} className="slides">
+                  <Slidercontent
+                    img={content.thumbnail}
+                    title={content.title}
+                    movie={content}
+                    views={content.views}
+                    desc={content.description}
+                    customStyle={{}}
+                    onVideoClick={() => handleOpenModal(content)}
+                  />
+                </div>
+              ))}
+            {data.length > 0 && ( // Only show View More if there is at least one item
+              <div className="slides view-more-slide">
+                <ViewMoreSlide>
+                  <ViewMoreButton onClick={handleViewMore}>View More</ViewMoreButton>
+                </ViewMoreSlide>
+              </div>
+            )}
+          </Slider>
+        )}
+
+        <ContentModal
+          isOpen={isModalOpen}
+          content={modalContent}
+          onClose={handleCloseModal}
+          handleNavigateToMovie={handleNavigateToMovie}
+        />
+      </SliderContainer>
+    </VideoCategory>
   );
 }
 

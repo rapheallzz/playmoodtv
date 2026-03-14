@@ -1,4 +1,4 @@
-import React, { useEffect, useState , useRef} from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -42,11 +42,49 @@ const CustomNextArrow = (props) => {
   );
 };
 
+const VideoCategory = styled.div`
+  width: 100%;
+  margin: 5px 0;
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  box-sizing: border-box;
+  z-index: 210;
 
-export default function SliderOnly() {
+  @media screen and (max-width: 768px) {
+    width: 100%;
+    height: auto;
+    margin: 5px 0 10px 0;
+    padding-bottom: 10px;
+    z-index: 210;
+  }
+
+  @media screen and (max-width: 495px) {
+    width: 100%;
+    height: auto;
+    margin: 5px 0 15px 0;
+    padding-bottom: 10px;
+    z-index: 210;
+  }
+`;
+
+const Videocategorytitle = styled.h3`
+  font-size: 1.5rem;
+  color: white;
+  font-weight: 600;
+  padding: 5px 5px 5px 15px;
+
+  @media only screen and (min-width: 769px) {
+    font-size: 1.8rem;
+    padding: 5px 5px 5px 25px;
+  }
+`;
+
+export default function SliderOnly({ title }) {
 const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [modalContent, setModalContent] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const sliderRef = useRef(null);
@@ -54,6 +92,7 @@ const navigate = useNavigate();
   useEffect(() => {
     async function fetchData() {
       try {
+        setLoading(true);
         const response = await axios.get(`${BASE_API_URL}/api/content/only-on-playmood`);
         if (response.data && Array.isArray(response.data)) {
           setData(response.data);
@@ -62,6 +101,8 @@ const navigate = useNavigate();
         }
       } catch (error) {
         setError('Error fetching data.');
+      } finally {
+        setLoading(false);
       }
     }
 
@@ -138,43 +179,50 @@ const navigate = useNavigate();
     ],
   };
 
-  return (
-    <SliderContainer>
-      {error ? (
-        <div className="error-message">{error}</div>
-      ) : (
-        <Slider key={data.length} {...settings} ref={sliderRef}>
-          {Array.isArray(data) &&
-            data.slice(0, 10).map((content) => ( // Limit to 10 slides
-              <div key={content._id} className="slides">
-                <Slidercontent
-                  img={content.thumbnail}
-                  title={content.title}
-                  movie={content}
-                  views={content.views}
-                  desc={content.description}
-                  customStyle={{}}
-                  onVideoClick={() => handleOpenModal(content)}
-                />
-              </div>
-            ))}
-          {data.length > 0 && ( // Only show View More if there is at least one item
-            <div className="slides view-more-slide">
-              <ViewMoreSlide>
-                <ViewMoreButton onClick={handleViewMore}>View More</ViewMoreButton>
-              </ViewMoreSlide>
-            </div>
-          )}
-        </Slider>
-      )}
+  if (!loading && data.length === 0) {
+    return null;
+  }
 
-      <ContentModal
-        isOpen={isModalOpen}
-        content={modalContent}
-        onClose={handleCloseModal}
-        handleNavigateToMovie={handleNavigateToMovie}
-      />
-    </SliderContainer>
+  return (
+    <VideoCategory>
+      {title && <Videocategorytitle>{title}</Videocategorytitle>}
+      <SliderContainer>
+        {error ? (
+          <div className="error-message">{error}</div>
+        ) : (
+          <Slider key={data.length} {...settings} ref={sliderRef}>
+            {Array.isArray(data) &&
+              data.slice(0, 10).map((content) => ( // Limit to 10 slides
+                <div key={content._id} className="slides">
+                  <Slidercontent
+                    img={content.thumbnail}
+                    title={content.title}
+                    movie={content}
+                    views={content.views}
+                    desc={content.description}
+                    customStyle={{}}
+                    onVideoClick={() => handleOpenModal(content)}
+                  />
+                </div>
+              ))}
+            {data.length > 0 && ( // Only show View More if there is at least one item
+              <div className="slides view-more-slide">
+                <ViewMoreSlide>
+                  <ViewMoreButton onClick={handleViewMore}>View More</ViewMoreButton>
+                </ViewMoreSlide>
+              </div>
+            )}
+          </Slider>
+        )}
+
+        <ContentModal
+          isOpen={isModalOpen}
+          content={modalContent}
+          onClose={handleCloseModal}
+          handleNavigateToMovie={handleNavigateToMovie}
+        />
+      </SliderContainer>
+    </VideoCategory>
   );
 }
 

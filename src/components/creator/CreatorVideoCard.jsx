@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { FaEye, FaCheckCircle, FaClock, FaPlay, FaEdit } from 'react-icons/fa';
+import { FaEye, FaCheckCircle, FaClock, FaPlay, FaEdit, FaTrash } from 'react-icons/fa';
 
 const CardContainer = styled.div`
   background: #111111;
@@ -90,10 +90,9 @@ const StatusBadge = styled.div`
   box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 `;
 
-const EditButton = styled.button`
+const IconButton = styled.button`
   position: absolute;
   top: 12px;
-  left: 12px;
   background: rgba(0, 0, 0, 0.6);
   color: white;
   border: none;
@@ -176,12 +175,17 @@ const DetailsLink = styled.div`
   }
 `;
 
-const CreatorVideoCard = ({ movie, onClick, onEdit }) => {
+const CreatorVideoCard = ({ movie, onClick, onEdit, onDelete }) => {
   const { thumbnail, title, category, views, isApproved } = movie;
 
   const handleEditClick = (e) => {
     e.stopPropagation();
     onEdit(movie);
+  };
+
+  const handleDeleteClick = (e) => {
+    e.stopPropagation();
+    onDelete(movie);
   };
 
   return (
@@ -199,9 +203,14 @@ const CreatorVideoCard = ({ movie, onClick, onEdit }) => {
           )}
         </StatusBadge>
         {onEdit && (
-          <EditButton onClick={handleEditClick} title="Edit Video">
+          <IconButton onClick={handleEditClick} title="Edit Video" style={{ left: '12px' }}>
             <FaEdit size={16} />
-          </EditButton>
+          </IconButton>
+        )}
+        {onDelete && (
+          <IconButton onClick={handleDeleteClick} title="Delete Video" style={{ left: '50px' }}>
+            <FaTrash size={14} />
+          </IconButton>
         )}
       </ThumbnailWrapper>
       <CardContent>

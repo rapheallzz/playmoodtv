@@ -418,74 +418,6 @@ const SliderContainer = styled.div`
   }
 `;
 
-const VideoCategory = styled.div`
-  width: 100%;
-  margin: 5px 0;
-  display: flex;
-  flex-direction: column;
-  height: auto;
-  box-sizing: border-box;
-  z-index: 210;
-
-  @media screen and (max-width: 768px) {
-    width: 100%;
-    height: auto;
-    margin: 5px 0 10px 0;
-    padding-bottom: 10px;
-    z-index: 210;
-  }
-
-  @media screen and (max-width: 495px) {
-    width: 100%;
-    height: auto;
-    margin: 5px 0 15px 0;
-    padding-bottom: 10px;
-    z-index: 210;
-  }
-`;
-
-const VideoCategoryResponsive = styled(VideoCategory)`
-  @media screen and (max-width: 495px) {
-    height: auto;
-    padding-bottom: 10px;
-  }
-`;
-
-const VideoCategoryHighlights = styled(VideoCategory)`
-  height: auto;
-  padding-top: 0;
-  padding-bottom: 0;
-  margin: 5px 0;
-  width: 100%;
-
-  @media screen and (max-width: 495px) {
-    height: auto;
-    padding-top: 10px;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    padding-bottom: 15px;
-  }
-`;
-
-const VideoCategoryCircle = styled(VideoCategory)`
-  padding-top: 0;
-  width: 100%;
-  margin: 5px 0;
-`;
-
-
-const Videocategorytitle = styled.h3`
-  font-size: 1.5rem;
-  color: white;
-  font-weight: 600;
-  padding: 5px 5px 5px 15px;
-
-  @media only screen and (min-width: 769px) {
-    font-size: 1.8rem;
-    padding: 5px 5px 5px 25px;
-  }
-`;
 
 const FooterContainer = styled.footer`
   width: 100%;
@@ -830,67 +762,21 @@ function HomeContent({
           </Banner>
         )}
         <SliderContainer ref={sliderContainerRef}>
-          <VideoCategory>
-            <Videocategorytitle>Top 10</Videocategorytitle>
-            <SliderTopTen />
-          </VideoCategory>
-          <VideoCategoryHighlights>
-            <Videocategorytitle>Highlights</Videocategorytitle>
-            <HighlightsHome />
-          </VideoCategoryHighlights>
-          <VideoCategoryResponsive>
-            <Videocategorytitle>New on Playmood</Videocategorytitle>
-            <SliderNew />
-          </VideoCategoryResponsive>
-          <VideoCategoryCircle >
-            <Videocategorytitle>Channels</Videocategorytitle>
-            <SliderChannel />
-          </VideoCategoryCircle>
-          <VideoCategoryCircle >
-            <Videocategorytitle>Diaries</Videocategorytitle>
-            <SliderDiaries />
-          </VideoCategoryCircle>
-          <VideoCategoryCircle >
-            <Videocategorytitle>Spaces</Videocategorytitle>
-            <SliderSpace />
-          </VideoCategoryCircle>
+          <SliderTopTen title="Top 10" />
+          <HighlightsHome title="Highlights" />
+          <SliderNew title="New on Playmood" />
+          <SliderChannel title="Channels" />
+          <SliderDiaries title="Diaries" />
+          <SliderSpace title="Spaces" />
           <SlideRecommended title="Recommended for you" />
-          <VideoCategory >
-            <Videocategorytitle>Interviews</Videocategorytitle>
-            <SliderInterview />
-          </VideoCategory>
-          <VideoCategory>
-            <Videocategorytitle>Fashion Shows</Videocategorytitle>
-            <SliderFashion />
-          </VideoCategory>
-          <VideoCategory>
-            <Videocategorytitle>Social</Videocategorytitle>
-            <SliderSocial />
-          </VideoCategory>
-          <VideoCategory>
-            <Videocategorytitle>Documentaries and Reports</Videocategorytitle>
-            <SliderDocumentaries />
-          </VideoCategory>
-          <VideoCategory>
-            <Videocategorytitle>Behind the Cameras</Videocategorytitle>
-            <SliderCamera />
-          </VideoCategory>
-          <VideoCategory>
-            <Videocategorytitle>Soon in Playmood</Videocategorytitle>
-            <SliderSoon />
-          </VideoCategory>
-          <VideoCategory>
-            <Videocategorytitle>Teens</Videocategorytitle>
-            <SliderTeens />
-          </VideoCategory>
-          {/* <VideoCategory>
-            <Videocategorytitle>Best in Fashion</Videocategorytitle>
-            <SliderFashion />
-          </VideoCategory> */}
-          <VideoCategory>
-            <Videocategorytitle>Only in Playmood</Videocategorytitle>
-            <SliderOnly />
-          </VideoCategory>
+          <SliderInterview title="Interviews" />
+          <SliderFashion title="Fashion Shows" />
+          <SliderSocial title="Social" />
+          <SliderDocumentaries title="Documentaries and Reports" />
+          <SliderCamera title="Behind the Cameras" />
+          <SliderSoon title="Soon in Playmood" />
+          <SliderTeens title="Teens" />
+          <SliderOnly title="Only in Playmood" />
         </SliderContainer>
         <WelcomePopup
           showPopup={showWelcomePopup}
