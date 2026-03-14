@@ -64,28 +64,25 @@ const CustomNextArrow = (props) => {
 const SliderContainer = styled.div`
   position: relative;
   width: 100%;
-  padding: 0 40px 0 35px;
+  padding: 0 40px 0 20px;
   margin: 0 auto;
 
   @media (max-width: 768px) {
-    padding: 0 0 0 11px;
+    padding: 0 0 0 10px;
   }
 
-  ${props => props.$isShort && `
+  /* Override problematic global styles locally to prevent distortion */
+  .slick-slider .slides {
+    width: 100% !important;
+    padding: 0 !important;
+  }
+
+  ${(props) =>
+    props.$isShort &&
+    `
     .slick-track {
       margin-left: 0 !important;
       transform: none !important;
-      display: flex !important;
-      justify-content: flex-start !important;
-    }
-    .slick-slide {
-      width: 20% !important; /* Standard 5 slides per row */
-      @media (max-width: 1024px) {
-        width: 33.33% !important;
-      }
-      @media (max-width: 768px) {
-        width: 66.66% !important; /* 1.5 slides per row */
-      }
     }
   `}
 
@@ -160,13 +157,13 @@ const SliderContainer = styled.div`
 
 const PlaylistTitle = styled.h3`
   color: white;
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   font-weight: 600;
   margin-bottom: 15px;
-  padding: 0 40px;
+  padding: 0 25px;
 
   @media screen and (max-width: 768px) {
-    padding: 0 16px;
+    padding: 0 15px;
   }
 `;
 
@@ -626,20 +623,20 @@ const fetchPlaylists = async () => {
       {
         breakpoint: 600,
         settings: {
-          slidesToShow: 2,
+          slidesToShow: 1.5,
           slidesToScroll: 1,
-          initialSlide: 2,
+          initialSlide: 0,
           arrows: true,
-          infinite: data.length > 2,
+          infinite: false,
         },
       },
       {
         breakpoint: 480,
         settings: {
-          slidesToShow: 2,
+          slidesToShow: 1.5,
           slidesToScroll: 1,
           arrows: false,
-          infinite: data.length > 2,
+          infinite: false,
         },
       },
     ],
@@ -709,7 +706,7 @@ const fetchPlaylists = async () => {
       </div>
 
       {/* Profile Section */}
-      <div className="w-full flex justify-between py-6 px-4 md:px-10">
+      <div className="w-full flex justify-between py-6 px-4 md:px-[25px]">
         <div className="flex gap-5 items-center">
           <div className="md:w-32 md:h-32 w-28 h-28 rounded-full border-[3px] border-white flex items-center justify-center font-semibold overflow-hidden">
             <ProfileImage
@@ -739,7 +736,7 @@ const fetchPlaylists = async () => {
       </div>
 
       {/* Navigation Links */}
-      <div className="w-full flex justify-between py-6 px-4 md:px-10 overflow-x-auto whitespace-nowrap scrollbar-hide">
+      <div className="w-full flex justify-between py-6 px-4 md:px-[25px] overflow-x-auto whitespace-nowrap scrollbar-hide">
         <div className="flex gap-4">
           <a className="text-white text-sm font-medium hover:cursor-pointer" onClick={() => navigate('/')}>
             HOME
@@ -787,12 +784,12 @@ const fetchPlaylists = async () => {
       <div className="w-full min-h-[300px] md:min-h-[500px] bg-[#1a1a1a] py-8">
         {activeTab === 'VIDEOS' && (
           <div className="w-full">
-            <h2 className="text-white font-semibold mb-8 px-4 md:px-10">Videos</h2>
+            <h2 className="text-white font-semibold mb-8 px-4 md:px-[25px] text-[1.5rem]">Videos</h2>
             {data.length === 0 ? (
               <NoPosts>No videos available.</NoPosts>
             ) : (
               <SliderContainer $isShort={data.length < 5}>
-                <Slider {...sliderSettings} ref={sliderRef}>
+                <Slider key={data.length} {...sliderSettings} ref={sliderRef}>
                   {data.map((content) => (
                     <div key={content._id} className="slides">
                       <Slidercontent
@@ -833,10 +830,10 @@ const fetchPlaylists = async () => {
             ) : (
               playlists.map((playlist) => (
                 <div key={playlist._id} className="mb-8">
-                  <PlaylistTitle className="px-4 md:px-10">{playlist.name}</PlaylistTitle>
+                  <PlaylistTitle>{playlist.name}</PlaylistTitle>
                   {playlist.videos.length > 0 ? (
                     <SliderContainer $isShort={playlist.videos.length < 5}>
-                      <Slider {...sliderSettings}>
+                      <Slider key={playlist.videos.length} {...sliderSettings}>
                         {playlist.videos.map((video) => (
                           <div key={video._id} className="slides">
                             <Slidercontent
@@ -864,8 +861,8 @@ const fetchPlaylists = async () => {
         )}
 
         {activeTab === 'COMMUNITY' && (
-          <div className="px-4 md:px-10">
-            <h2 className="text-white font-semibold mb-8">Community Posts</h2>
+          <div className="px-4 md:px-[25px]">
+            <h2 className="text-white font-semibold mb-8 text-[1.5rem]">Community Posts</h2>
             {isLoadingPosts ? (
               <Loading>Loading posts...</Loading>
             ) : communityPosts.length === 0 ? (
@@ -1045,11 +1042,7 @@ const CommunitySection = styled.div`
   flex-direction: column;
   gap: 20px;
   width: 100%;
-  padding: 0 40px;
-
-  @media screen and (max-width: 768px) {
-    padding: 0 16px;
-  }
+  padding: 0;
 `;
 
 const PostWrapper = styled.div`
