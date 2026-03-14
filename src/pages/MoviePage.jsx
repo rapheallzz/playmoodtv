@@ -16,8 +16,7 @@ import WelcomePopup from '../components/Welcomepop';
 import MovieHeader from '../components/headers/MovieHeader';
 import Footer from '../components/footer/Footer';
 import UniversalShareModal from '../components/modals/UniversalShareModal';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 import SliderRecommended from '../components/sliders/SliderRecommend';
 import SliderResume from '../components/sliders/SliderResume';
 import { Helmet } from 'react-helmet-async';
@@ -485,7 +484,6 @@ export default function MoviePage() {
         <meta property="og:url" content={window.location.href} />
         <meta name="twitter:card" content="summary_large_image" />
       </Helmet>
-      <ToastContainer />
       <div className="h-auto">
         <MovieHeader />
         {/* Video Holder */}

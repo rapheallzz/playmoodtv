@@ -453,10 +453,15 @@ const VerticalHighlightViewer = ({
   const currentVideoState = playerStates[currentIndex] || { isPlaying: false, volume: 1, isMuted: true };
 
   const viewerContent = (
-    <VerticalScrollViewer ref={viewerRef} data-testid="vertical-highlight-viewer" onScroll={onScroll}>
+    <VerticalScrollViewer
+      ref={viewerRef}
+      data-testid="vertical-highlight-viewer"
+      onScroll={onScroll}
+      style={{ zIndex: 10010 }} // Ensure it's above DesktopHeader (1001)
+    >
       <CloseButton
         onClick={isCommentSectionOpen ? () => setCommentSectionOpen(false) : onClose}
-        style={{ position: 'fixed', top: '20px', right: '20px', zIndex: 10004 }}
+        style={{ position: 'fixed', top: '20px', right: '20px', zIndex: 10011 }}
       >
         <FaTimes />
       </CloseButton>

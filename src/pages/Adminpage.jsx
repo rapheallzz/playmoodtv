@@ -9,8 +9,6 @@ import CreatorAnalytics from '../components/admin/CreatorAnalytics';
 import VideoManagement from '../components/admin/VideoManagement';
 import UserManagement from '../components/admin/UserManagement';
 import TVScheduleManagement from '../components/admin/TVScheduleManagement';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 const AdminDashboard = () => {
   const { user } = useSelector((state) => state.auth);
@@ -51,7 +49,6 @@ const AdminDashboard = () => {
 
   return (
     <div className="flex h-screen bg-[#f4f7fe]">
-      <ToastContainer />
       <div className="w-64 bg-[#0a0a0a] text-white flex flex-col">
         <div className="p-6">
           <h2 className="text-2xl font-black text-[#541011] tracking-tighter">PLAYMOOD</h2>
