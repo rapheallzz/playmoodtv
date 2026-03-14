@@ -176,9 +176,11 @@ const VerticalHighlightViewer = ({
 
     // Snippet logic
     const highlight = highlights[currentIndex];
-    let startTime = highlight?.content?.shortPreview?.start ?? 0;
-    let endTime = highlight?.content?.shortPreview?.end ?? video.duration;
-    if (endTime - startTime > 60) {
+    const isFragment = !!highlight.highlightUrl;
+    let startTime = isFragment ? 0 : (highlight?.content?.shortPreview?.start ?? 0);
+    let endTime = isFragment ? video.duration : (highlight?.content?.shortPreview?.end ?? video.duration);
+
+    if (!isFragment && endTime - startTime > 60) {
       endTime = startTime + 60;
     }
 
@@ -488,18 +490,21 @@ const VerticalHighlightViewer = ({
               </CenterPlayPauseButton>
             )}
 
-            {highlight.content?.video ? (
+            {highlight.highlightUrl || highlight.content?.video ? (
               <Video
                 ref={el => videoRefs.current[index] = el}
-                src={highlight.content.video}
+                src={highlight.highlightUrl || highlight.content.video}
                 playsInline
                 onClick={togglePlay}
                 onLoadedMetadata={(e) => {
                   const video = e.target;
                   const highlight = highlights[index];
-                  const startTime = highlight?.content?.shortPreview?.start;
-                  if (startTime !== undefined) {
-                    video.currentTime = startTime;
+                  // Only apply startTime if we are using the full content video
+                  if (!highlight.highlightUrl) {
+                    const startTime = highlight?.content?.shortPreview?.start;
+                    if (startTime !== undefined) {
+                      video.currentTime = startTime;
+                    }
                   }
                 }}
               />
