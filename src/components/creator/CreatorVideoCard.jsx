@@ -4,18 +4,22 @@ import { FaEye, FaCheckCircle, FaClock, FaPlay, FaEdit, FaTrash } from 'react-ic
 
 const CardContainer = styled.div`
   background: #111111;
-  border-radius: 12px;
+  border-radius: 8px;
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
   border: 1px solid #222;
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 350px;
   width: 100%;
-  max-width: 380px;
-  margin: 0 auto;
+  max-width: 100%;
+  margin: 0;
   position: relative;
+
+  @media (max-width: 768px) {
+    height: 260px;
+  }
 
   &:hover {
     transform: translateY(-8px);
@@ -26,6 +30,11 @@ const CardContainer = styled.div`
       opacity: 1;
     }
 
+  .details-link {
+    opacity: 1;
+    color: #541011;
+  }
+
     img {
       transform: scale(1.05);
     }
@@ -35,7 +44,7 @@ const CardContainer = styled.div`
 const ThumbnailWrapper = styled.div`
   position: relative;
   width: 100%;
-  padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+  height: 70%;
   background: #000;
   overflow: hidden;
 `;
@@ -112,33 +121,39 @@ const IconButton = styled.button`
 `;
 
 const CardContent = styled.div`
-  padding: 16px;
+  padding: 12px;
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
-  background: linear-gradient(180deg, #111 0%, #0a0a0a 100%);
+  height: 30%;
+  background: #111;
 `;
 
 const Category = styled.span`
   color: #541011;
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 1.2px;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
+
+  @media (min-width: 768px) {
+    font-size: 0.75rem;
+  }
 `;
 
 const Title = styled.h4`
   color: #efefef;
-  font-size: 1.05rem;
+  font-size: 0.8rem;
   font-weight: 600;
-  margin: 0 0 12px 0;
+  margin: 0;
   line-height: 1.4;
-  height: 2.8em; /* Force 2 lines height */
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
+
+  @media (min-width: 768px) {
+    font-size: 1rem;
+  }
 `;
 
 const FooterRow = styled.div`
@@ -146,7 +161,7 @@ const FooterRow = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-top: auto;
-  padding-top: 12px;
+  padding-top: 8px;
   border-top: 1px solid #222;
 `;
 
@@ -168,11 +183,6 @@ const DetailsLink = styled.div`
   color: #fff;
   opacity: 0.6;
   transition: opacity 0.2s;
-
-  ${CardContainer}:hover & {
-    opacity: 1;
-    color: #541011;
-  }
 `;
 
 const CreatorVideoCard = ({ movie, onClick, onEdit, onDelete }) => {
@@ -221,7 +231,7 @@ const CreatorVideoCard = ({ movie, onClick, onEdit, onDelete }) => {
             <FaEye />
             <span>{views?.toLocaleString() || 0} views</span>
           </ViewCount>
-          <DetailsLink>View Details</DetailsLink>
+          <DetailsLink className="details-link">View Details</DetailsLink>
         </FooterRow>
       </CardContent>
     </CardContainer>

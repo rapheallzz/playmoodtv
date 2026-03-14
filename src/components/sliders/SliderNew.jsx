@@ -75,7 +75,7 @@ const Videocategorytitle = styled.h3`
   padding: 5px 5px 5px 15px;
 
   @media only screen and (min-width: 769px) {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     padding: 5px 5px 5px 25px;
   }
 `;
@@ -229,11 +229,11 @@ export default function SliderNew({ title }) {
 const SliderContainer = styled.div`
   position: relative;
   width: 100%;
-  padding: 0 40px 0 20px;
+  padding: 0 40px 0 15px;
   margin: 0 auto;
 
   @media (max-width: 768px) {
-    padding: 0 0 0 10px;
+    padding: 0 10px 0 10px;
   }
 
   .slick-slider {
@@ -295,7 +295,10 @@ const SliderContainer = styled.div`
   }
 
   .slick-slide {
-    padding: 0 5px;
+    padding: 0 10px;
+    @media (max-width: 768px) {
+      padding: 0 5px;
+    }
   }
 
   .slides {

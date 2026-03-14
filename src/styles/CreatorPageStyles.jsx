@@ -102,12 +102,12 @@ export const StyledUserHeader = styled.div`
   width: 100%;
   display: flex;
   justify-content: space-between;
-  padding: 24px 40px;
+  padding: 24px 25px;
   align-items: center;
 
   @media screen and (max-width: 768px) {
     flex-direction: column;
-    padding: 16px 16px;
+    padding: 16px 15px;
     gap: 16px;
   }
 `;
@@ -281,10 +281,10 @@ export const DropdownItem = styled.div`
 
 export const StlyedNavigation = styled.div`
   width: 100%;
-  padding: 24px 40px;
+  padding: 24px 25px;
 
   @media screen and (max-width: 768px) {
-    padding: 16px 16px;
+    padding: 16px 15px;
   }
 `;
 
@@ -342,11 +342,11 @@ export const NavButton = styled.button`
 export const StyledSliderContainer = styled.div`
   position: relative;
   width: 100%;
-  padding: 0 40px 0 35px;
+  padding: 0 40px 0 15px;
   margin: 0 auto;
 
   @media (max-width: 768px) {
-    padding: 0 0 0 11px;
+    padding: 0 10px 0 10px;
   }
 
   ${props => props.$isShort && `
@@ -415,7 +415,10 @@ export const StyledSliderContainer = styled.div`
   }
 
   .slick-slide {
-    padding: 0 5px;
+    padding: 0 10px;
+    @media (max-width: 768px) {
+      padding: 0 5px;
+    }
   }
 
   .slides {
@@ -448,12 +451,12 @@ export const SectionTitle = styled.h2`
   font-size: 1.5rem;
   font-weight: 600;
   margin: 32px 0;
-  padding: 0 40px;
+  padding: 0 25px;
 
   @media screen and (max-width: 768px) {
     font-size: 1.25rem;
     margin: 24px 0;
-    padding: 0 16px;
+    padding: 0 15px;
   }
 
   @media screen and (max-width: 480px) {
@@ -467,7 +470,6 @@ export const StlyedCommunitySection = styled.div`
   flex-direction: column;
   gap: 20px;
   width: 100%;
-  padding: 0 40px;
   margin-bottom: 40px;
 
   @media screen and (max-width: 1000px) {
@@ -475,7 +477,6 @@ export const StlyedCommunitySection = styled.div`
   }
 
   @media screen and (max-width: 768px) {
-    padding: 0 16px;
     gap: 15px;
   }
 
@@ -654,20 +655,13 @@ export const CreatorSlider = styled.div`
   flex-direction: column;
   justify-content: space-between;
   width: 100%;
-  max-width: 200px;
-  height: auto;
-  aspect-ratio: 200 / 280;
+  height: 350px;
   cursor: pointer;
   overflow: hidden;
   border-radius: 8px;
 
   @media (max-width: 768px) {
-    max-width: 200px;
-    height: 100%;
-  }
-
-  @media (max-width: 600px) {
-    max-width: 130px;
+    height: 260px;
   }
 `;
 
@@ -861,12 +855,7 @@ export const ModalCardInput = styled.input`
 
 export const FeedContainer = styled.div`
   width: 100%;
-  padding: 0 40px;
   margin-bottom: 40px;
-
-  @media screen and (max-width: 768px) {
-    padding: 0 16px;
-  }
 `;
 
 export const FeedGrid = styled.div`
@@ -1223,10 +1212,10 @@ export const NoPostsMessage = styled.div`
   color: #ccc;
   text-align: left;
   font-size: 1rem;
-  padding: 20px 40px;
+  padding: 20px 25px;
 
   @media screen and (max-width: 768px) {
-    padding: 15px 16px;
+    padding: 15px 15px;
   }
 
   @media screen and (max-width: 480px) {
@@ -1294,11 +1283,11 @@ export const FooterLink = styled.p`
 export const SliderContainer = styled.div`
   position: relative;
   width: 100%;
-  padding: 0 40px 0 35px;
+  padding: 0 40px 0 20px;
   margin: 0;
 
   @media (max-width: 768px) {
-    padding: 0 0 0 11px;
+    padding: 0 0 0 10px;
   }
 
   ${props => props.$isShort && `
@@ -1409,12 +1398,12 @@ export const SubTabNav = styled.div`
   justify-content: flex-start;
   gap: 16px;
   margin-bottom: 20px;
-  padding: 0 40px;
+  padding: 0 25px;
 
   @media screen and (max-width: 768px) {
     gap: 12px;
     margin-bottom: 16px;
-    padding: 0 16px;
+    padding: 0 15px;
   }
 
   @media screen and (max-width: 480px) {
@@ -1543,10 +1532,10 @@ export const HighlightsList = styled.div`
   display: flex;
   overflow-x: auto;
   gap: 20px;
-  padding: 0 40px 10px 40px;
+  padding: 0 25px 10px 25px;
 
   @media screen and (max-width: 768px) {
-    padding: 0 16px 10px 16px;
+    padding: 0 15px 10px 15px;
   }
 `;
 
@@ -1779,14 +1768,23 @@ export const LargeHighlightTitle = styled(HighlightTitle)`
 `;
 
 export const VideoGrid = styled.div`
-  display: flex;
-  gap: 0;
-  justify-content: flex-start;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
   width: 100%;
-  flex-wrap: wrap;
+  padding: 0 25px;
+
+  @media screen and (max-width: 1200px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  @media screen and (max-width: 1024px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
 
   @media screen and (max-width: 768px) {
-    justify-content: flex-start;
+    grid-template-columns: repeat(2, 1fr);
+    padding: 0 15px;
   }
 `;
 

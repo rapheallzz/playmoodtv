@@ -19,13 +19,6 @@
   margin-right: 0.8px;
 }
 
-.slick-slider .slides{
- width: 90%;
- padding: 0 30px;
-}
-
-
-
 .slides {
   height: 350px;
   cursor: pointer;
@@ -719,11 +712,7 @@
 
   .slides,
   .thisslides {
-
-    width: 10px;
     height: 260px;
-    object-fit: contain !important;
-
   }
 
   /* .slidescircle {
