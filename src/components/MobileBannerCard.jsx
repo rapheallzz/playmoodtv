@@ -134,11 +134,9 @@ const MobileBannerCard = ({ homePageData, isVisibleOnMobile }) => {
 
             <RadioButtons>
               {bannerContent.map((_, index) => (
-                <Dot
-                  key={index}
-                  active={index === activeSlide}
-                  onClick={() => setActiveSlide(index)}
-                />
+                <DotContainer key={index} onClick={() => setActiveSlide(index)}>
+                  <Dot active={index === activeSlide} />
+                </DotContainer>
               ))}
             </RadioButtons>
           </CardContained>
@@ -298,8 +296,16 @@ const Loveshare = styled.div`
 
 const RadioButtons = styled.div`
   display: flex;
-  gap: 8px;
+  gap: 4px;
   margin-top: 10px;
+`;
+
+const DotContainer = styled.div`
+  padding: 10px 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const Dot = styled.div`
@@ -307,7 +313,6 @@ const Dot = styled.div`
   height: 8px;
   background-color: ${(props) => (props.active ? '#541011' : 'rgba(255, 255, 255, 0.4)')};
   border-radius: 10px;
-  cursor: pointer;
   transition: all 0.3s ease;
 `;
 
