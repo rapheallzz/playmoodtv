@@ -1681,7 +1681,7 @@ export const HighlightNavButton = styled.button`
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.5);
   color: white;
   border: none;
   border-radius: 50%;
@@ -2035,7 +2035,13 @@ export const NavigationArrow = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 10;
+  z-index: 10003;
+  transition: background-color 0.3s, transform 0.2s;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.4);
+    transform: translateY(-50%) scale(1.1);
+  }
 
   &.up-arrow {
     top: auto;
@@ -2061,6 +2067,15 @@ export const NavigationArrow = styled.button`
 
   &.next-arrow {
     right: 10px;
+  }
+
+  &:disabled {
+    opacity: 0.2;
+    cursor: not-allowed;
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-50%) scale(1);
+    }
   }
 
   @media screen and (max-width: 768px) {
@@ -2092,27 +2107,47 @@ export const MediaNavigationArrow = styled.button`
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: 11;
-  transition: background-color 0.3s;
+  z-index: 10004;
+  transition: background-color 0.3s, transform 0.2s;
 
   &:hover {
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.8);
+    transform: translateY(-50%) scale(1.1);
   }
 
   ${(props) =>
     props.direction === 'left' &&
     `
-    left: 10px;
+    left: 60px;
   `}
 
   ${(props) =>
     props.direction === 'right' &&
     `
-    right: 10px;
+    right: 60px;
   `}
 
   svg {
     font-size: 1rem;
+  }
+
+  &:disabled {
+    opacity: 0.2;
+    cursor: not-allowed;
+  }
+
+  @media screen and (max-width: 768px) {
+    ${(props) =>
+      props.direction === 'left' &&
+      `
+      left: 45px;
+    `}
+
+    ${(props) =>
+      props.direction === 'right' &&
+      `
+      right: 45px;
+    `}
   }
 `;
 

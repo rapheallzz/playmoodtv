@@ -650,20 +650,20 @@ const fetchPlaylists = async () => {
   return (
     <div className="w-full h-auto overflow-x-hidden flex flex-col items-center bg-black">
       <Helmet>
-        <title>{sharedFeed ? `${sharedFeed.content.title} | ${creatorData?.name}` : (creatorData?.name || 'Creator Channel')}</title>
+        <title>{sharedFeed?.content?.title ? `${sharedFeed.content.title} | ${creatorData?.name}` : (creatorData?.name || 'Creator Channel')}</title>
         <meta
           name="description"
-          content={sharedFeed ? sharedFeed.content.description : (creatorData?.about || 'Check out this creator on Playmood.')}
+          content={sharedFeed?.content?.description || creatorData?.about || 'Check out this creator on Playmood.'}
         />
-        <meta property="og:title" content={sharedFeed ? sharedFeed.content.title : (creatorData?.name || 'Creator Channel')} />
+        <meta property="og:title" content={sharedFeed?.content?.title || creatorData?.name || 'Creator Channel'} />
         <meta
           property="og:description"
-          content={sharedFeed ? sharedFeed.content.description : (creatorData?.about || 'Check out this creator on Playmood.')}
+          content={sharedFeed?.content?.description || creatorData?.about || 'Check out this creator on Playmood.'}
         />
-        <meta property="og:image" content={sharedFeed ? sharedFeed.content.thumbnail : (sharedImg || creatorData?.profileImage)} />
+        <meta property="og:image" content={sharedFeed?.content?.thumbnail || sharedImg || creatorData?.profileImage} />
         <meta property="og:url" content={window.location.href} />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:image" content={sharedFeed ? sharedFeed.content.thumbnail : (sharedImg || creatorData?.profileImage)} />
+        <meta name="twitter:image" content={sharedFeed?.content?.thumbnail || sharedImg || creatorData?.profileImage} />
       </Helmet>
       {/* Error Popup */}
       <ErrorPopup
