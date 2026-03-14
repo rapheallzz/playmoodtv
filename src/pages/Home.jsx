@@ -781,8 +781,6 @@ function HomeContent({
         <WelcomePopup
           showPopup={showWelcomePopup}
           onClose={() => setShowWelcomePopup(false)}
-          onLogin={() => setShowWelcomePopup(false)}
-          onRegister={() => setShowWelcomePopup(false)}
         />
         <FooterContainer>
           <Footer />

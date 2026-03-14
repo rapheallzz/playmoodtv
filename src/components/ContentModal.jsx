@@ -8,6 +8,7 @@ import { jwtDecode } from 'jwt-decode';
 import styled from 'styled-components';
 import BASE_API_URL from '../apiConfig';
 import HighlightShareModal from './modals/HighlightShareModal';
+import WelcomePopup from './Welcomepop';
 
 const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
@@ -266,19 +267,10 @@ const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
           </CommentSection>
         </ModalContent>
       </ModalContainer>
-      {showWelcomePopup && (
-        <PopupOverlay onClick={() => setShowWelcomePopup(false)}>
-          <PopupContainer onClick={(e) => e.stopPropagation()}>
-            <p className="text-sm sm:text-base">Please log in to like, add to playlist, or comment.</p>
-            <button
-              className="mt-4 bg-[#541011] text-white py-2 px-4 rounded text-sm sm:text-base"
-              onClick={() => setShowWelcomePopup(false)}
-            >
-              Close
-            </button>
-          </PopupContainer>
-        </PopupOverlay>
-      )}
+      <WelcomePopup
+        showPopup={showWelcomePopup}
+        onClose={() => setShowWelcomePopup(false)}
+      />
       {isShareModalOpen && (
         <HighlightShareModal
           ref={shareModalRef}
@@ -570,32 +562,6 @@ const ErrorMessage = styled.div`
 
   @media (min-width: 640px) {
     font-size: 0.875rem;
-  }
-`;
-
-const PopupOverlay = styled.div`
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10011;
-  padding: 1rem;
-  animation: fade-in 0.3s ease-in;
-`;
-
-const PopupContainer = styled.div`
-  background: white;
-  padding: 1rem;
-  border-radius: 8px;
-  width: 100%;
-  max-width: 90vw;
-  text-align: center;
-
-  @media (min-width: 640px) {
-    max-width: 300px;
-    padding: 1.25rem;
   }
 `;
 

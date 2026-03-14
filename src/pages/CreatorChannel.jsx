@@ -17,6 +17,7 @@ import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import ContentModal from '../components/ContentModal';
+import WelcomePopup from '../components/Welcomepop';
 import ErrorPopup from '../components/ErrorPopup';
 import useHighlights from '../hooks/useHighlights';
 import useFeeds from '../hooks/useFeeds';
@@ -191,6 +192,7 @@ export default function CreatorChannel() {
   const [playlists, setPlaylists] = useState([]);
   const [isLoadingPlaylists, setIsLoadingPlaylists] = useState(false);
   const [activeTab, setActiveTab] = useState('VIDEOS');
+  const [showWelcomePopup, setShowWelcomePopup] = useState(false);
   const [showFeedPostViewerModal, setShowFeedPostViewerModal] = useState(false);
   const [selectedFeedPost, setSelectedFeedPost] = useState(null);
   const [selectedFeedPostIndex, setSelectedFeedPostIndex] = useState(0);
@@ -300,8 +302,7 @@ export default function CreatorChannel() {
 
   const handleSubscribeClick = async () => {
     if (!currentUserId) {
-      setError('Please log in to subscribe.');
-      setShowErrorPopup(true);
+      setShowWelcomePopup(true);
       return;
     }
 
@@ -368,8 +369,7 @@ const fetchCommunityPosts = async () => {
   }
 
   if (!currentUserId) {
-    setError('Please log in to view community posts.');
-    setShowErrorPopup(true);
+    setShowWelcomePopup(true);
     setIsLoadingPosts(false);
     return;
   }
@@ -442,8 +442,7 @@ const fetchPlaylists = async () => {
 
   const handleLike = async (postId, isLiked) => {
     if (!currentUserId) {
-      setError('Please log in to like posts.');
-      setShowErrorPopup(true);
+      setShowWelcomePopup(true);
       return;
     }
     try {
@@ -478,8 +477,7 @@ const fetchPlaylists = async () => {
 
   const handleCommentSubmit = async (postId) => {
     if (!currentUserId) {
-      setError('Please log in to comment.');
-      setShowErrorPopup(true);
+      setShowWelcomePopup(true);
       return;
     }
     if (!newComment[postId]?.trim()) {
@@ -996,6 +994,11 @@ const fetchPlaylists = async () => {
           onPrev={handlePreviousFeed}
         />
       )}
+
+      <WelcomePopup
+        showPopup={showWelcomePopup}
+        onClose={() => setShowWelcomePopup(false)}
+      />
     </div>
   );
 }

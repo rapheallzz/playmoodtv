@@ -232,14 +232,10 @@ const Slidercirclecontent = React.memo(function Slidercirclecontent({
         </div>
       )}
 
-      {showWelcomePopup && (
-        <WelcomePopup
-          showPopup={showWelcomePopup}
-          onClose={() => setShowWelcomePopup(false)}
-          onLogin={() => setShowWelcomePopup(false)}
-          onRegister={() => setShowWelcomePopup(false)}
-        />
-      )}
+      <WelcomePopup
+        showPopup={showWelcomePopup}
+        onClose={() => setShowWelcomePopup(false)}
+      />
     </CircleContainer>
   );
 });
