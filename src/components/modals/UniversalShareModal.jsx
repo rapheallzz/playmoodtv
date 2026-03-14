@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import styled from 'styled-components';
 import {
   FacebookShareButton,
@@ -113,7 +114,7 @@ const UniversalShareModal = React.forwardRef(({ shareUrl, title, onClose }, ref)
 
   const shareTitle = title || "Check out this amazing content on PlaymoodTV!";
 
-  return (
+  const modalContent = (
     <ModalOverlay onClick={onClose}>
       <ModalContent ref={ref} onClick={(e) => e.stopPropagation()}>
         <CloseButton onClick={onClose}>
@@ -141,6 +142,8 @@ const UniversalShareModal = React.forwardRef(({ shareUrl, title, onClose }, ref)
       </ModalContent>
     </ModalOverlay>
   );
+
+  return createPortal(modalContent, document.body);
 });
 
 export default UniversalShareModal;

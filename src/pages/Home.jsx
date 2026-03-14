@@ -39,6 +39,7 @@ import BASE_API_URL, { CLOUDINARY_CLOUD_NAME } from '../apiConfig';
 import SliderTopTen from '../components/sliders/SliderTopTen';
 import HighlightsHome from '../components/HighlightsHome';
 import { Helmet } from 'react-helmet-async';
+import VerticalHighlightViewer from '../components/creator/VerticalHighlightViewer';
 
 // CookiesPopupContainer styled component
 const CookiesPopupContainer = styled.div`
