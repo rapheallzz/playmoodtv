@@ -242,17 +242,15 @@ const SliderContainer = styled.div`
     position: relative;
   }
 
-  /* Force left alignment when items are fewer than slidesToShow on desktop */
-  @media (min-width: 1025px) {
-    ${(props) =>
-      props.$isShort &&
-      `
-      .slick-track {
-        margin-left: 0 !important;
-        transform: none !important;
-      }
-    `}
-  }
+  /* Force left alignment when items are fewer than slidesToShow */
+  ${(props) =>
+    props.$isShort &&
+    `
+    .slick-track {
+      margin-left: 0 !important;
+      transform: none !important;
+    }
+  `}
 
   .slick-prev,
   .slick-next {
