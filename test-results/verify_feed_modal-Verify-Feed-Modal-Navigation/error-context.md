@@ -1,0 +1,81 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - img "banner" [ref=e6]
+  - generic [ref=e7]:
+    - generic [ref=e8]:
+      - img "profile" [ref=e10]
+      - generic [ref=e11]:
+        - heading "Test Creator" [level=2] [ref=e12]
+        - heading "10 subscribers" [level=6] [ref=e13]
+    - button "Subscribe" [ref=e15] [cursor=pointer]
+  - generic [ref=e17]:
+    - generic [ref=e18]: HOME
+    - button "VIDEOS" [ref=e19] [cursor=pointer]
+    - button "FEEDS" [active] [ref=e20] [cursor=pointer]
+    - button "PLAYLIST" [ref=e21] [cursor=pointer]
+    - button "COMMUNITY" [ref=e22] [cursor=pointer]
+    - button "ABOUT" [ref=e23] [cursor=pointer]
+  - generic [ref=e28] [cursor=pointer]:
+    - img [ref=e29]
+    - generic:
+      - generic:
+        - img
+        - text: "0"
+      - generic:
+        - img
+        - text: "0"
+  - generic [ref=e31]:
+    - img "PlaymoodTV Logo" [ref=e33] [cursor=pointer]
+    - generic [ref=e34]:
+      - generic [ref=e35]:
+        - link "Instagram Official" [ref=e36] [cursor=pointer]:
+          - /url: https://instagram.com/playmoodtv?igshid=MzRlODBiNWFlZA==
+          - img "Instagram Official" [ref=e37]
+        - paragraph [ref=e38]:
+          - link "Official" [ref=e39] [cursor=pointer]:
+            - /url: https://instagram.com/playmoodtv?igshid=MzRlODBiNWFlZA==
+      - generic [ref=e40]:
+        - link "Instagram Latam" [ref=e41] [cursor=pointer]:
+          - /url: https://www.instagram.com/playmoodlat/
+          - img "Instagram Latam" [ref=e42]
+        - paragraph [ref=e43]:
+          - link "Latam" [ref=e44] [cursor=pointer]:
+            - /url: https://www.instagram.com/playmoodlat/
+      - generic [ref=e45]:
+        - link "Instagram MX" [ref=e46] [cursor=pointer]:
+          - /url: https://www.instagram.com/playmoodmx/
+          - img "Instagram MX" [ref=e47]
+        - paragraph [ref=e48]:
+          - link "MX" [ref=e49] [cursor=pointer]:
+            - /url: https://www.instagram.com/playmoodmx/
+      - generic [ref=e50]:
+        - link "Instagram India" [ref=e51] [cursor=pointer]:
+          - /url: https://www.instagram.com/playmoodindia/
+          - img "Instagram India" [ref=e52]
+        - paragraph [ref=e53]:
+          - link "IN" [ref=e54] [cursor=pointer]:
+            - /url: https://www.instagram.com/playmoodindia/
+      - generic [ref=e55]:
+        - link "Instagram Argentina" [ref=e56] [cursor=pointer]:
+          - /url: https://www.instagram.com/playmoodargentina/
+          - img "Instagram Argentina" [ref=e57]
+        - paragraph [ref=e58]:
+          - link "AR" [ref=e59] [cursor=pointer]:
+            - /url: https://www.instagram.com/playmoodargentina/
+      - generic [ref=e60]:
+        - link "Instagram Colombia" [ref=e61] [cursor=pointer]:
+          - /url: https://www.instagram.com/playmoodcolombia/
+          - img "Instagram Colombia" [ref=e62]
+        - paragraph [ref=e63]:
+          - link "COL" [ref=e64] [cursor=pointer]:
+            - /url: https://www.instagram.com/playmoodcolombia/
+    - generic [ref=e65]:
+      - heading "Contact us:" [level=2] [ref=e66]
+      - heading "Creators@playmoodtv.com" [level=3] [ref=e67]
+      - generic [ref=e68]:
+        - paragraph [ref=e69] [cursor=pointer]: Privacy Policy
+        - paragraph [ref=e70] [cursor=pointer]: Cookies Policy
+      - paragraph [ref=e72] [cursor=pointer]: All rights reserved to PlaymoodTV 2023
+```

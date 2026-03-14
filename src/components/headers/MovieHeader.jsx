@@ -86,6 +86,7 @@ export default function MovieHeader({ }) {
   };
 
   const handleSearch = () => {
+    if (!Array.isArray(data)) return;
     const results = data.filter((item) =>
       item.name?.toLowerCase().includes(searchQuery.toLowerCase())
     );

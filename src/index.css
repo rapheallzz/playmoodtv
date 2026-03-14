@@ -162,22 +162,24 @@
 }
 .movie-title{
   height: fit-content;
-  width: 40%;
+  width: auto;
+  max-width: 40%;
   padding: 10px 20px 10px 20px ;
   background-color: red;
   position: absolute;
   top: 20px;
   left: 20px;
   border-bottom-right-radius: 40px;
+  z-index: 11;
 }
 .home-page-icon{
   display: flex;
-  gap: 39px;
+  gap: 20px;
   height: fit-content;
   padding: 0px 0px 10px 0px;
   position: absolute;
   top: 13px;
-  right: 300px;
+  right: 20px;
   display: flex;
   z-index: 12;
 }
@@ -741,17 +743,21 @@
 
   .movie-title {
     display: flex;
-    width: 80%;
+    width: auto;
+    max-width: 35%;
     left: 10px;
     top: 10px;
     border-bottom-right-radius: 20px;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
+    z-index: 11;
   }
 
   .home-page-icon {
     right: 10px; /* Adjusted right position for smaller screens */
     top: 10px; /* Adjusted top position for smaller screens */
+    z-index: 12;
+    gap: 8px;
   }
 
   .prev-movie-info h3 {
@@ -763,19 +769,6 @@
     font-size: 0.6rem; /* Adjusted font size for smaller screens */
   }
 
-  .home-page-icon {
-    right: -8px; /* Adjusted right position for smaller screens */
-    top: 10px; /* Adjusted top position for smaller screens */
-  }
-
-  .movie-title {
-    width: 35%;
-    height: 40px;
-    left: 50px;
-    top: 10px;
-    border-bottom-right-radius: 20px;
-    padding: 10px;
-  }
 
   .movie-title h1{
     font-size: 7px;

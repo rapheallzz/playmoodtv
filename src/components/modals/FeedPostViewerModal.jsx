@@ -227,42 +227,18 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
           )}
 
           {allMedia.length > 1 && (
-            <>
-              <MediaNavigationArrow
-                direction="left"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handlePrevMedia(e);
-                }}
-                disabled={currentIndex === 0}
-                style={{ opacity: currentIndex === 0 ? 0.3 : 1 }}
-              >
-                <FaChevronLeft />
-              </MediaNavigationArrow>
-              <MediaNavigationArrow
-                direction="right"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleNextMedia(e);
-                }}
-                disabled={currentIndex === allMedia.length - 1}
-                style={{ opacity: currentIndex === allMedia.length - 1 ? 0.3 : 1 }}
-              >
-                <FaChevronRight />
-              </MediaNavigationArrow>
-              <DotsContainer>
-                {allMedia.map((_, index) => (
-                  <Dot
-                    key={index}
-                    $isActive={index === currentIndex}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setCurrentIndex(index);
-                    }}
-                  />
-                ))}
-              </DotsContainer>
-            </>
+            <DotsContainer>
+              {allMedia.map((_, index) => (
+                <Dot
+                  key={index}
+                  $isActive={index === currentIndex}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCurrentIndex(index);
+                  }}
+                />
+              ))}
+            </DotsContainer>
           )}
 
           {/* Post Navigation Arrows positioned over media */}
