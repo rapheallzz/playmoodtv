@@ -42,7 +42,7 @@ const Description = styled.p`
 
 const Slidercontent = React.memo(function Slidercontent({ img, title, movie, id, desc, customStyle, onVideoClick }) {
   const [hover, setHover] = useState(false);
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768 || window.matchMedia('(pointer: coarse)').matches);
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const touchStart = React.useRef({ x: 0, y: 0 });
@@ -51,7 +51,7 @@ const Slidercontent = React.memo(function Slidercontent({ img, title, movie, id,
   const [isHoldTriggered, setIsHoldTriggered] = useState(false);
 
   React.useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    const handleResize = () => setIsMobile(window.innerWidth <= 768 || window.matchMedia('(pointer: coarse)').matches);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);

@@ -10,7 +10,7 @@ import 'react-lazy-load-image-component/src/effects/blur.css';
 
 const Slidercontent = memo(({ img, title, movie, views, desc, customStyle, progress, onVideoClick }) => {
   const [hover, setHover] = useState(false);
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768 || window.matchMedia('(pointer: coarse)').matches);
   const [showPopup, setShowPopup] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [localError, setLocalError] = useState(null);
@@ -26,7 +26,7 @@ const Slidercontent = memo(({ img, title, movie, views, desc, customStyle, progr
 
   // Handle window resize
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    const handleResize = () => setIsMobile(window.innerWidth <= 768 || window.matchMedia('(pointer: coarse)').matches);
     window.addEventListener('resize', handleResize);
     handleResize();
     return () => window.removeEventListener('resize', handleResize);

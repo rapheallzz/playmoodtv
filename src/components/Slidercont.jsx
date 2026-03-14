@@ -43,7 +43,7 @@ const Slidercontent = React.memo(function Slidercontent({
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
+      setIsMobile(window.innerWidth <= 768 || window.matchMedia('(pointer: coarse)').matches);
     };
     window.addEventListener('resize', handleResize);
     handleResize();

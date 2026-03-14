@@ -44,14 +44,14 @@ import { useState, useEffect } from 'react';
 
 export default function SliderHighlights({ highlights, handleSelectHighlight, recentHighlights, viewedHighlights }) {
   const sliderRef = useRef(null);
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768 || window.matchMedia('(pointer: coarse)').matches);
   const touchStart = useRef({ x: 0, y: 0 });
   const touchStartTime = useRef(0);
   const holdTimer = useRef(null);
   const [isHoldTriggered, setIsHoldTriggered] = useState(false);
 
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    const handleResize = () => setIsMobile(window.innerWidth <= 768 || window.matchMedia('(pointer: coarse)').matches);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);

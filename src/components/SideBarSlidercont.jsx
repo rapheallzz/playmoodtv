@@ -32,7 +32,7 @@ const SideBarSlidercont = React.memo(function SideBarSlidercont({
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
+      setIsMobile(window.innerWidth <= 768 || window.matchMedia('(pointer: coarse)').matches);
     };
     window.addEventListener('resize', handleResize);
     handleResize();
