@@ -124,6 +124,78 @@ export const uploadFile = createAsyncThunk(
   }
 );
 
+export const updateContent = createAsyncThunk(
+  'upload/updateContent',
+  async (updateData, thunkAPI) => {
+    const {
+      contentId,
+      thumbnailFile,
+      videoMetadata,
+    } = updateData;
+
+    const { userToken } = thunkAPI.getState().auth;
+    if (!userToken) {
+      return thunkAPI.rejectWithValue('User not authenticated.');
+    }
+
+    try {
+      let thumbnailData = null;
+      if (thumbnailFile) {
+        // Step 1: Get Permission (Presigned URL) for Thumbnail
+        const thumbSignatureFormData = new FormData();
+        thumbSignatureFormData.append('provider', 'r2');
+        thumbSignatureFormData.append('fileName', thumbnailFile.name);
+        thumbSignatureFormData.append('contentType', thumbnailFile.type);
+
+        const thumbSignatureResponse = await axios.post(
+          `${BASE_API_URL}/api/content/signature`,
+          thumbSignatureFormData,
+          { headers: { Authorization: `Bearer ${userToken}` } }
+        );
+        const { uploadUrl: thumbUploadUrl, key: thumbKey, publicUrl: thumbPublicUrl } = thumbSignatureResponse.data;
+
+        // Step 2: Perform the Actual Upload for Thumbnail
+        await uploadService.uploadToR2(
+          thumbnailFile,
+          thumbUploadUrl,
+          thumbnailFile.type,
+          () => {} // Not tracking thumbnail progress
+        );
+
+        thumbnailData = {
+          url: thumbPublicUrl || thumbUploadUrl,
+          key: thumbKey,
+        };
+      }
+
+      // Step 3: Update the Record
+      const finalPayload = {
+        ...videoMetadata,
+      };
+      if (thumbnailData) {
+        finalPayload.thumbnail = thumbnailData;
+      }
+
+      const response = await axios.put(
+        `${BASE_API_URL}/api/content/${contentId}`,
+        finalPayload,
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || error.message || 'Update failed.';
+      return thunkAPI.rejectWithValue(errorMessage);
+    }
+  }
+);
+
 const uploadSlice = createSlice({
   name: 'upload',
   initialState,
@@ -182,6 +254,15 @@ const uploadSlice = createSlice({
         state.isUploading = false;
       })
       .addCase(uploadFile.rejected, (state) => {
+        state.isUploading = false;
+      })
+      .addCase(updateContent.pending, (state) => {
+        state.isUploading = true;
+      })
+      .addCase(updateContent.fulfilled, (state) => {
+        state.isUploading = false;
+      })
+      .addCase(updateContent.rejected, (state) => {
         state.isUploading = false;
       });
   },

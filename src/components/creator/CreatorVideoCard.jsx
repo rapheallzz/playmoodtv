@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { FaEye, FaCheckCircle, FaClock, FaPlay } from 'react-icons/fa';
+import { FaEye, FaCheckCircle, FaClock, FaPlay, FaEdit } from 'react-icons/fa';
 
 const CardContainer = styled.div`
   background: #111111;
@@ -90,6 +90,28 @@ const StatusBadge = styled.div`
   box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 `;
 
+const EditButton = styled.button`
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  padding: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #541011;
+    transform: scale(1.1);
+  }
+`;
+
 const CardContent = styled.div`
   padding: 16px;
   display: flex;
@@ -154,8 +176,13 @@ const DetailsLink = styled.div`
   }
 `;
 
-const CreatorVideoCard = ({ movie, onClick }) => {
+const CreatorVideoCard = ({ movie, onClick, onEdit }) => {
   const { thumbnail, title, category, views, isApproved } = movie;
+
+  const handleEditClick = (e) => {
+    e.stopPropagation();
+    onEdit(movie);
+  };
 
   return (
     <CardContainer onClick={onClick}>
@@ -171,6 +198,11 @@ const CreatorVideoCard = ({ movie, onClick }) => {
             <><FaClock size={12} /> Pending</>
           )}
         </StatusBadge>
+        {onEdit && (
+          <EditButton onClick={handleEditClick} title="Edit Video">
+            <FaEdit size={16} />
+          </EditButton>
+        )}
       </ThumbnailWrapper>
       <CardContent>
         <Category>{category || 'Video'}</Category>

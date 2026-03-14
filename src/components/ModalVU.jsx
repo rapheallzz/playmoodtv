@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { uploadFile } from '../features/uploadSlice';
+import { uploadFile, updateContent } from '../features/uploadSlice';
 import { HiCloudUpload, HiVideoCamera, HiPhotograph } from 'react-icons/hi';
 import { FaTimes } from 'react-icons/fa';
 
@@ -70,23 +70,29 @@ const FileUploadZone = ({ accept, onChange, file, icon: Icon, label, maxSizeLabe
   );
 };
 
-const VideoModal = ({ onClose }) => {
+const VideoModal = ({ onClose, content }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user, userToken } = useSelector((state) => state.auth);
   const { isUploading } = useSelector((state) => state.upload);
 
+  const isEditing = !!content;
+
   const [videoData, setVideoData] = useState({
-    title: '',
-    description: '',
-    credit: '',
-    category: 'Fashion Show',
+    title: content?.title || '',
+    description: content?.description || '',
+    credit: content?.credit || '',
+    category: content?.category || 'Fashion Show',
+    isOnlyOnPlaymood: content?.isOnlyOnPlaymood || false,
+    scheduledDate: content?.scheduledDate || '',
+    scheduledStartTime: content?.scheduledStartTime || '',
   });
 
+  const [isScheduled, setIsScheduled] = useState(!!(content?.scheduledDate || content?.scheduledStartTime));
   const [videoFile, setVideoFile] = useState(null);
   const [thumbnailFile, setThumbnailFile] = useState(null);
-  const [previewStart, setPreviewStart] = useState(0);
-  const [previewEnd, setPreviewEnd] = useState(10);
+  const [previewStart, setPreviewStart] = useState(content?.previewStart || 0);
+  const [previewEnd, setPreviewEnd] = useState(content?.previewEnd || 10);
   const [videoDuration, setVideoDuration] = useState(null);
   const [error, setError] = useState('');
   const videoRef = useRef(null);
@@ -145,10 +151,10 @@ const VideoModal = ({ onClose }) => {
   };
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     setVideoData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: type === 'checkbox' ? checked : value,
     }));
   };
 
@@ -193,15 +199,17 @@ const VideoModal = ({ onClose }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!videoFile) {
+    if (!isEditing && !videoFile) {
       setError('Please select a video file to upload.');
       return;
     }
 
-    const previewDuration = previewEnd - previewStart;
-    if (previewDuration < 10 || previewDuration > 15) {
-      setError('Preview must be between 10 and 15 seconds.');
-      return;
+    if (!isEditing) {
+      const previewDuration = previewEnd - previewStart;
+      if (previewDuration < 10 || previewDuration > 15) {
+        setError('Preview must be between 10 and 15 seconds.');
+        return;
+      }
     }
 
     if (!user || !userToken) {
@@ -212,15 +220,40 @@ const VideoModal = ({ onClose }) => {
       return;
     }
 
-    dispatch(
-      uploadFile({
-        videoFile,
-        thumbnailFile,
-        videoMetadata: videoData,
-        previewStart,
-        previewEnd,
-      })
-    );
+    let scheduledReleaseDate = null;
+    if (isScheduled && videoData.scheduledDate && videoData.scheduledStartTime) {
+      scheduledReleaseDate = new Date(`${videoData.scheduledDate}T${videoData.scheduledStartTime}:00Z`).toISOString();
+    }
+
+    const metadata = {
+      ...videoData,
+      previewStart,
+      previewEnd,
+      scheduledReleaseDate,
+      // Ensure strings for the API if not scheduled
+      scheduledDate: isScheduled ? videoData.scheduledDate : "",
+      scheduledStartTime: isScheduled ? videoData.scheduledStartTime : "",
+    };
+
+    if (isEditing) {
+      dispatch(
+        updateContent({
+          contentId: content._id,
+          thumbnailFile,
+          videoMetadata: metadata,
+        })
+      );
+    } else {
+      dispatch(
+        uploadFile({
+          videoFile,
+          thumbnailFile,
+          videoMetadata: metadata,
+          previewStart,
+          previewEnd,
+        })
+      );
+    }
 
     onClose(); // Close the modal immediately
   };
@@ -232,7 +265,7 @@ const VideoModal = ({ onClose }) => {
         <CloseButton onClick={onClose}>
           <FaTimes />
         </CloseButton>
-        <h2>Submit Video</h2>
+        <h2>{isEditing ? 'Edit Video' : 'Submit Video'}</h2>
         {error && <ErrorMessage>{error}</ErrorMessage>}
         <Form onSubmit={handleSubmit}>
           <Label>Title</Label>
@@ -275,17 +308,67 @@ const VideoModal = ({ onClose }) => {
             <option value="Diaries">Diaries</option>
           </Select>
 
-          <Label>Upload Video</Label>
-          <FileUploadZone
-            accept="video/*"
-            onChange={handleVideoChange}
-            file={videoFile}
-            icon={HiVideoCamera}
-            label="MP4, WebM or Ogg"
-            maxSizeLabel="max. 2GB"
-          />
+          <CheckboxContainer>
+            <input
+              type="checkbox"
+              id="isOnlyOnPlaymood"
+              name="isOnlyOnPlaymood"
+              checked={videoData.isOnlyOnPlaymood}
+              onChange={handleInputChange}
+            />
+            <Label htmlFor="isOnlyOnPlaymood">Only on Playmood</Label>
+          </CheckboxContainer>
 
-          <Label>Upload Thumbnail</Label>
+          <CheckboxContainer>
+            <input
+              type="checkbox"
+              id="isScheduled"
+              checked={isScheduled}
+              onChange={(e) => setIsScheduled(e.target.checked)}
+            />
+            <Label htmlFor="isScheduled">Schedule Release Date</Label>
+          </CheckboxContainer>
+
+          {isScheduled && (
+            <ScheduleContainer>
+              <div style={{ flex: 1 }}>
+                <Label>Release Date</Label>
+                <Input
+                  type="date"
+                  name="scheduledDate"
+                  value={videoData.scheduledDate}
+                  onChange={handleInputChange}
+                  required={isScheduled}
+                />
+              </div>
+              <div style={{ flex: 1 }}>
+                <Label>Release Time</Label>
+                <Input
+                  type="time"
+                  name="scheduledStartTime"
+                  value={videoData.scheduledStartTime}
+                  onChange={handleInputChange}
+                  required={isScheduled}
+                />
+              </div>
+            </ScheduleContainer>
+          )}
+
+          {!isEditing && (
+            <>
+              <Label>Upload Video</Label>
+              <FileUploadZone
+                accept="video/*"
+                onChange={handleVideoChange}
+                file={videoFile}
+                icon={HiVideoCamera}
+                label="MP4, WebM or Ogg"
+                maxSizeLabel="max. 2GB"
+              />
+            </>
+          )}
+
+          <Label>{isEditing ? 'Change Thumbnail (Optional)' : 'Upload Thumbnail'}</Label>
           <FileUploadZone
             accept="image/*"
             onChange={handleThumbnailChange}
@@ -295,7 +378,7 @@ const VideoModal = ({ onClose }) => {
             maxSizeLabel="max. 10MB"
           />
 
-          {videoFile && (
+          {!isEditing && videoFile && (
             <>
               <Label>Preview Selection (10–15 seconds)</Label>
               {videoDuration ? (
@@ -349,8 +432,8 @@ const VideoModal = ({ onClose }) => {
             </>
           )}
 
-          <UploadButton type="submit" disabled={isUploading || !videoFile || !user}>
-            {isUploading ? 'Uploading...' : 'Start Upload'}
+          <UploadButton type="submit" disabled={isUploading || (!isEditing && !videoFile) || !user}>
+            {isUploading ? (isEditing ? 'Updating...' : 'Uploading...') : (isEditing ? 'Save Changes' : 'Start Upload')}
           </UploadButton>
         </Form>
       </ModalContainer>
@@ -425,6 +508,8 @@ const Input = styled.input`
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
 `;
 
 const Select = styled.select`
@@ -440,6 +525,36 @@ const TextArea = styled.textarea`
   border-radius: 4px;
   font-size: 14px;
   resize: vertical;
+`;
+
+const CheckboxContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+  }
+
+  label {
+    cursor: pointer;
+    margin-bottom: 0;
+  }
+`;
+
+const ScheduleContainer = styled.div`
+  display: flex;
+  gap: 15px;
+  background: #f9f9f9;
+  padding: 15px;
+  border-radius: 4px;
+  border: 1px solid #eee;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+  }
 `;
 
 const UploadButton = styled.button`

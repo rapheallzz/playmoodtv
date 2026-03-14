@@ -71,6 +71,7 @@ const ContentSection = ({
                       key={content._id}
                       movie={content}
                       onClick={() => handleOpenContentModal(content)}
+                      onEdit={handleOpenModal}
                     />
                   ))}
                 </VideoGrid>
@@ -85,6 +86,7 @@ const ContentSection = ({
                       key={content._id}
                       movie={content}
                       onClick={() => handleOpenContentModal(content)}
+                      onEdit={handleOpenModal}
                     />
                   ))}
                 </VideoGrid>
@@ -117,6 +119,7 @@ const ContentSection = ({
                       key={video._id}
                       movie={video}
                       onClick={() => handleOpenContentModal(video)}
+                      onEdit={handleOpenModal}
                     />
                   ))}
                 </VideoGrid>
