@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { likeContent, unlikeContent } from '../../features/authSlice';
@@ -451,7 +452,7 @@ const VerticalHighlightViewer = ({
 
   const currentVideoState = playerStates[currentIndex] || { isPlaying: false, volume: 1, isMuted: true };
 
-  return (
+  const viewerContent = (
     <VerticalScrollViewer ref={viewerRef} data-testid="vertical-highlight-viewer" onScroll={onScroll}>
       <CloseButton
         onClick={isCommentSectionOpen ? () => setCommentSectionOpen(false) : onClose}
@@ -585,6 +586,8 @@ const VerticalHighlightViewer = ({
       )}
     </VerticalScrollViewer>
   );
+
+  return createPortal(viewerContent, document.body);
 };
 
 export default VerticalHighlightViewer;

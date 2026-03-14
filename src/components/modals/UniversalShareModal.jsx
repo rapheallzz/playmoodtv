@@ -115,8 +115,21 @@ const UniversalShareModal = React.forwardRef(({ shareUrl, title, onClose }, ref)
   const shareTitle = title || "Check out this amazing content on PlaymoodTV!";
 
   const modalContent = (
-    <ModalOverlay onClick={onClose}>
-      <ModalContent ref={ref} onClick={(e) => e.stopPropagation()}>
+    <ModalOverlay
+      onClick={onClose}
+      onMouseDown={(e) => e.stopPropagation()}
+      onMouseUp={(e) => e.stopPropagation()}
+      onTouchStart={(e) => e.stopPropagation()}
+      onTouchEnd={(e) => e.stopPropagation()}
+    >
+      <ModalContent
+        ref={ref}
+        onClick={(e) => e.stopPropagation()}
+        onMouseDown={(e) => e.stopPropagation()}
+        onMouseUp={(e) => e.stopPropagation()}
+        onTouchStart={(e) => e.stopPropagation()}
+        onTouchEnd={(e) => e.stopPropagation()}
+      >
         <CloseButton onClick={onClose}>
           <FaTimes />
         </CloseButton>

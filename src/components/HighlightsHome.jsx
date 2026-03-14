@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from 'react';
-import ReactDOM from 'react-dom';
 import axios from 'axios';
 import BASE_API_URL from '../apiConfig';
 import {
@@ -143,15 +142,14 @@ const HighlightsHome = ({ title }) => {
           viewedHighlights={viewedHighlights}
         />
       </HighlightsSectionContainer>
-      {showVerticalHighlightViewer && enrichedHighlights.length > 0 && ReactDOM.createPortal(
+      {showVerticalHighlightViewer && enrichedHighlights.length > 0 && (
         <VerticalHighlightViewer
           highlights={enrichedHighlights}
           startIndex={highlightStartIndex}
           onClose={() => {
             setShowVerticalHighlightViewer(false);
           }}
-        />,
-        document.body
+        />
       )}
     </VideoCategoryHighlights>
   );
