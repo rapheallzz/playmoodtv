@@ -350,7 +350,7 @@ export default function MoviePage() {
           </Helmet>
           <MovieHeader title="Playmood" />
           <div className="video-container relative mt-[70px]">
-            <video controls autoPlay className="w-full h-[550px] md:h-[900px] object-cover">
+            <video controls autoPlay className="w-full h-[55vh] md:h-[70vh] object-cover">
               <source src={sharedVideo} type="video/mp4" />
             </video>
           </div>
@@ -495,8 +495,8 @@ export default function MoviePage() {
             onTimeUpdate={handleTimeUpdate}
             onPause={handlePause}
             controlsList="nodownload"
-            className={`object-cover z-1 ${isMinimized ? 'bottom-0 right-0 w-52' : 'w-full h-[550px] static'} md:${
-              isMinimized ? 'h-auto' : 'h-[900px]'
+            className={`object-cover z-1 ${isMinimized ? 'bottom-0 right-0 w-52' : 'w-full h-[55vh] static'} md:${
+              isMinimized ? 'h-auto' : 'h-[70vh]'
             }`}
           >
             <source src={movie?.video} type="video/mp4" />
