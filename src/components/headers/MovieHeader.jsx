@@ -88,6 +88,11 @@ export default function MovieHeader({ title }) {
     setHoverStates(prev => ({ ...prev, [key]: val }));
   };
 
+  const handleNavItemClick = (path) => {
+    navigate(path);
+    setSidebarOpen(false);
+  };
+
   return (
     <HeaderWrapper>
       <HeaderContent>
@@ -153,7 +158,7 @@ export default function MovieHeader({ title }) {
                 {searchQuery && (
                   <SearchResults>
                     {searchResults.map((result, index) => (
-                      <SearchResultItem key={index} onClick={() => navigate(`/movie/${result.slug}`)}>
+                      <SearchResultItem key={index} onClick={() => handleNavItemClick(`/movie/${result.slug}`)}>
                         {result.name}
                       </SearchResultItem>
                     ))}
@@ -162,37 +167,37 @@ export default function MovieHeader({ title }) {
               </SidebarItem>
 
               <SidebarNavItems>
-                <NavItem onClick={() => navigate('/')} onMouseEnter={() => handleHover('home', false)} onMouseLeave={() => handleHover('home', true)}>
+                <NavItem onClick={() => handleNavItemClick('/')} onMouseEnter={() => handleHover('home', false)} onMouseLeave={() => handleHover('home', true)}>
                   <img src={hoverStates.home ? home : home_red} alt="" />
                   <span>Home</span>
                 </NavItem>
 
-                <NavItem onClick={() => user ? navigate('/recommended') : setShowWelcomePopup(true)} onMouseEnter={() => handleHover('thumbs', false)} onMouseLeave={() => handleHover('thumbs', true)}>
+                <NavItem onClick={() => user ? handleNavItemClick('/recommended') : setShowWelcomePopup(true)} onMouseEnter={() => handleHover('thumbs', false)} onMouseLeave={() => handleHover('thumbs', true)}>
                   <img src={hoverStates.thumbs ? thumbs : thumbs_red} alt="" />
                   <span>Recommended</span>
                 </NavItem>
 
-                <NavItem onClick={() => navigate('/newplaymood')} onMouseEnter={() => handleHover('new', false)} onMouseLeave={() => handleHover('new', true)}>
+                <NavItem onClick={() => handleNavItemClick('/newplaymood')} onMouseEnter={() => handleHover('new', false)} onMouseLeave={() => handleHover('new', true)}>
                   <img src={hoverStates.new ? newp : newp_red} alt="" />
                   <span>New on Playmood</span>
                 </NavItem>
 
-                <NavItem onClick={() => navigate('/channels')} onMouseEnter={() => handleHover('snowflakes', false)} onMouseLeave={() => handleHover('snowflakes', true)}>
+                <NavItem onClick={() => handleNavItemClick('/channels')} onMouseEnter={() => handleHover('snowflakes', false)} onMouseLeave={() => handleHover('snowflakes', true)}>
                   <img src={hoverStates.snowflakes ? snowflakes : snowflakes_red} alt="" />
                   <span>Channels</span>
                 </NavItem>
 
-                <NavItem onClick={() => navigate('/spaces')} onMouseEnter={() => handleHover('location', false)} onMouseLeave={() => handleHover('location', true)}>
+                <NavItem onClick={() => handleNavItemClick('/spaces')} onMouseEnter={() => handleHover('location', false)} onMouseLeave={() => handleHover('location', true)}>
                   <img src={hoverStates.location ? location : location_red} alt="" />
                   <span>Spaces</span>
                 </NavItem>
 
-                <NavItem onClick={() => navigate('/schedule')} onMouseEnter={() => handleHover('schedule', false)} onMouseLeave={() => handleHover('schedule', true)}>
+                <NavItem onClick={() => handleNavItemClick('/schedule')} onMouseEnter={() => handleHover('schedule', false)} onMouseLeave={() => handleHover('schedule', true)}>
                   <img src={hoverStates.schedule ? schedule_white : schedule_red} alt="" />
                   <span>Schedule</span>
                 </NavItem>
 
-                <NavItem onClick={() => navigate('/favourites')} onMouseEnter={() => handleHover('favourites', false)} onMouseLeave={() => handleHover('favourites', true)}>
+                <NavItem onClick={() => handleNavItemClick('/favourites')} onMouseEnter={() => handleHover('favourites', false)} onMouseLeave={() => handleHover('favourites', true)}>
                   <img src={hoverStates.favourites ? favourite : favourite_red} alt="" />
                   <span>Favorites</span>
                 </NavItem>
@@ -321,7 +326,7 @@ const SidebarOverlay = styled.div`
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
-  z-index: 1001;
+  z-index: 10050;
 `;
 
 const SidebarContent = styled.div`
