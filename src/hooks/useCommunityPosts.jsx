@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 const useCommunityPosts = (user, activeTab, socket, apiUrl) => {
   const [communityPosts, setCommunityPosts] = useState([]);
@@ -82,7 +83,7 @@ const useCommunityPosts = (user, activeTab, socket, apiUrl) => {
   const handleCreatePost = async () => {
     try {
       const response = await axios.post(
-        'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/community/create',
+        `${apiUrl}/api/community/create`,
         { content: newPostContent },
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
@@ -107,7 +108,7 @@ const useCommunityPosts = (user, activeTab, socket, apiUrl) => {
     if (!editingPostId || !editPostContent.trim()) return;
     try {
       const response = await axios.put(
-        `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/community/${editingPostId}`,
+        `${apiUrl}/api/community/${editingPostId}`,
         { content: editPostContent },
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
@@ -131,16 +132,28 @@ const useCommunityPosts = (user, activeTab, socket, apiUrl) => {
   };
 
   const handleDeletePost = async (postId) => {
-    if (!window.confirm('Are you sure you want to delete this post?')) return;
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#541011',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Yes, delete it!'
+    });
+
+    if (!result.isConfirmed) return;
     try {
       await axios.delete(
-        `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/community/${postId}`,
+        `${apiUrl}/api/community/${postId}`,
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
       setCommunityPosts(communityPosts.filter(post => post._id !== postId));
       setErrorMessage('');
+      Swal.fire('Deleted!', 'Your post has been deleted.', 'success');
     } catch (error) {
       setErrorMessage('Failed to delete post. Please try again later.');
+      Swal.fire('Error!', 'Failed to delete post.', 'error');
     }
   };
 
@@ -151,7 +164,7 @@ const useCommunityPosts = (user, activeTab, socket, apiUrl) => {
     }
     try {
       const response = await axios.post(
-        `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/community/${postId}/comment`,
+        `${apiUrl}/api/community/${postId}/comment`,
         { content: newComment[postId] },
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
@@ -183,10 +196,20 @@ const useCommunityPosts = (user, activeTab, socket, apiUrl) => {
   };
 
   const handleDeleteComment = async (postId, commentId) => {
-    if (!window.confirm('Are you sure you want to delete this comment?')) return;
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#541011',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Yes, delete it!'
+    });
+
+    if (!result.isConfirmed) return;
     try {
       await axios.delete(
-        `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/community/${postId}/comment/${commentId}`,
+        `${apiUrl}/api/community/${postId}/comment/${commentId}`,
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
       setCommunityPosts(
@@ -197,8 +220,10 @@ const useCommunityPosts = (user, activeTab, socket, apiUrl) => {
         )
       );
       setErrorMessage('');
+      Swal.fire('Deleted!', 'Your comment has been deleted.', 'success');
     } catch (error) {
       setErrorMessage('Failed to delete comment. Please try again later.');
+      Swal.fire('Error!', 'Failed to delete comment.', 'error');
     }
   };
 
@@ -210,7 +235,7 @@ const useCommunityPosts = (user, activeTab, socket, apiUrl) => {
         ? `/api/community/${postId}/unlike`
         : `/api/community/${postId}/like`;
       const response = await axios.put(
-        `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com${endpoint}`,
+        `${apiUrl}${endpoint}`,
         {},
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
