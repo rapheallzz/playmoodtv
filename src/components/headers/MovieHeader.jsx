@@ -337,6 +337,7 @@ const SidebarContent = styled.div`
   width: 280px;
   height: 100%;
   background: black;
+  color: white;
   display: flex;
   flex-direction: column;
   box-shadow: 2px 0 10px rgba(0,0,0,0.5);
