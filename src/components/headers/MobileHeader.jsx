@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import playmood from '/PLAYMOOD_DEF.png';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { AiOutlineUser } from 'react-icons/ai';
+import { FaPlus, FaVideo, FaList, FaPenSquare, FaUpload } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import profile from '/icon-profile.png';
 import settings from '/settings-icon.png';
@@ -34,11 +35,13 @@ import SidebarSlider from '../sidebarSliders/slidersidebar';
 import SidebarSliderc from '../sidebarSliders/slidersidebarc';
 import { useSelector, useDispatch } from 'react-redux'
 import { logout, reset } from '.././../features/authSlice'
+import { CreateDropdown, DropdownItem } from '../../styles/CreatorPageStyles';
 import DonationModal from '../DonationModal';
 import Slidertop10 from '../sidebarSliders/SliderTop10';
 import SliderNew from '../sidebarSliders/SliderNew';
 import SliderChannel from '../sidebarSliders/SliderChannels';
 import SliderDiaries from '../sidebarSliders/SliderDiaries';
+import CreatorApplicationModal from '../modals/CreatorApplicationModal';
 import WelcomePopup from '../Welcomepop';
 
 export default function MobileHeader({ channels, set_channels }) {
@@ -47,7 +50,9 @@ export default function MobileHeader({ channels, set_channels }) {
   const [top, set_top] = useState(false);
   const [settings_hover, set_settings_hovered] = useState(true);
   const [showDonationModal, setShowDonationModal] = useState(false);
+  const [showCreatorApplicationModal, setShowCreatorApplicationModal] = useState(false);
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
+  const [showCreateDropdown, setShowCreateDropdown] = useState(false);
 
   const dispatch = useDispatch()
   const { user } = useSelector((state) => state.auth)
@@ -291,24 +296,68 @@ export default function MobileHeader({ channels, set_channels }) {
 <div className="flex justify-between flex-col bg-black  items-center py-2 px-8 h-20">
 
 {/* Logo and Profile */}
-<div className="flex w-full items-center justify-around gap-10">
+<div className="flex w-full items-center justify-between gap-2">
 
 
-  <div className="w-48 cursor-pointer">
+  <div className="w-32 cursor-pointer">
     <img src={playmood} alt="Playmood Logo" onClick={() => navigate('/')} />
   </div>
 
-  <div
-    className="w-10 h-10 flex justify-center items-center rounded-full bg-red-600 cursor-pointer"
-    onClick={() => {
-      if (user) {
-        navigate('/dashboard');
-      } else {
-        navigate('/login');
-      }
-    }}
-  >
-    <img src={profile} alt="Profile Icon" className="w-6 h-6" />
+  <div className="flex items-center gap-4">
+    <div style={{ position: 'relative' }}>
+      <div
+        className="flex items-center justify-center gap-2 w-auto h-8 border border-white cursor-pointer px-4"
+        onClick={() => {
+          if (user && user.role === 'creator') {
+            setShowCreateDropdown(!showCreateDropdown);
+          } else if (user) {
+            setShowCreatorApplicationModal(true);
+          } else {
+            navigate('/login');
+          }
+        }}
+      >
+        <p className="text-xs">Post</p>
+        <FaPlus size={10} />
+      </div>
+      {showCreateDropdown && (
+        <CreateDropdown style={{ top: '110%', left: 'auto', right: '0', width: '160px' }}>
+          <DropdownItem onClick={() => { navigate('/creatorpage', { state: { openModal: 'highlight' } }); setShowCreateDropdown(false); }}>
+            <FaVideo size={12} />
+            <span style={{ fontSize: '12px' }}>Highlight</span>
+          </DropdownItem>
+          <DropdownItem onClick={() => { navigate('/creatorpage', { state: { openModal: 'playlist' } }); setShowCreateDropdown(false); }}>
+            <FaList size={12} />
+            <span style={{ fontSize: '12px' }}>Playlist</span>
+          </DropdownItem>
+          <DropdownItem onClick={() => { navigate('/creatorpage', { state: { openModal: 'community' } }); setShowCreateDropdown(false); }}>
+            <FaPenSquare size={12} />
+            <span style={{ fontSize: '12px' }}>Post</span>
+          </DropdownItem>
+          <DropdownItem onClick={() => { navigate('/creatorpage', { state: { openModal: 'feed' } }); setShowCreateDropdown(false); }}>
+            <FaPlus size={12} />
+            <span style={{ fontSize: '12px' }}>Feed</span>
+          </DropdownItem>
+          <DropdownItem onClick={() => { navigate('/creatorpage', { state: { openModal: 'video' } }); setShowCreateDropdown(false); }}>
+            <FaUpload size={12} />
+            <span style={{ fontSize: '12px' }}>Video</span>
+          </DropdownItem>
+        </CreateDropdown>
+      )}
+    </div>
+
+    <div
+      className="w-8 h-8 flex justify-center items-center rounded-full bg-red-600 cursor-pointer"
+      onClick={() => {
+        if (user) {
+          navigate('/dashboard');
+        } else {
+          navigate('/login');
+        }
+      }}
+    >
+      <img src={profile} alt="Profile Icon" className="w-5 h-5" />
+    </div>
   </div>
 
 </div>
@@ -347,6 +396,7 @@ export default function MobileHeader({ channels, set_channels }) {
             showPopup={showWelcomePopup}
             onClose={() => setShowWelcomePopup(false)}
           />
+          {showCreatorApplicationModal && <CreatorApplicationModal onClose={() => setShowCreatorApplicationModal(false)} />}
 
         <Side>
 

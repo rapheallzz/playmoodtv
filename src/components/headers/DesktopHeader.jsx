@@ -33,8 +33,9 @@ import SidebarSliderc from '../slidersidebarc';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout, reset } from '.././../features/authSlice';
 import DonationModal from '../DonationModal';
-import { FaPlus } from 'react-icons/fa';
+import { FaPlus, FaVideo, FaList, FaPenSquare, FaUpload } from 'react-icons/fa';
 import { AiOutlineUser } from 'react-icons/ai';
+import { CreateDropdown, DropdownItem } from '../../styles/CreatorPageStyles';
 import { VideoModal } from '../ModalVU';
 import CreatorApplicationModal from '../modals/CreatorApplicationModal';
 import WelcomePopup from '../Welcomepop';
@@ -65,6 +66,7 @@ export default function DesktopHeader({ }) {
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [showCreatorApplicationModal, setShowCreatorApplicationModal] = useState(false);
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
+  const [showCreateDropdown, setShowCreateDropdown] = useState(false);
 
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
@@ -271,20 +273,46 @@ export default function DesktopHeader({ }) {
             </Link>
           </div>
           <div className="flex gap-8 items-center">
-            <div
-              className="flex items-center justify-center gap-4 w-auto h-10 border border-white cursor-pointer px-6"
-              onClick={() => {
-                if (user && user.role === 'creator') {
-                  setShowVideoModal(true);
-                } else if (user) {
-                  setShowCreatorApplicationModal(true);
-                } else {
-                  navigate('/login');
-                }
-              }}
-            >
-              <p className="text-base">Post</p>
-              <FaPlus />
+            <div style={{ position: 'relative' }}>
+              <div
+                className="flex items-center justify-center gap-4 w-auto h-10 border border-white cursor-pointer px-6"
+                onClick={() => {
+                  if (user && user.role === 'creator') {
+                    setShowCreateDropdown(!showCreateDropdown);
+                  } else if (user) {
+                    setShowCreatorApplicationModal(true);
+                  } else {
+                    navigate('/login');
+                  }
+                }}
+              >
+                <p className="text-base">Post</p>
+                <FaPlus />
+              </div>
+              {showCreateDropdown && (
+                <CreateDropdown style={{ top: '110%', left: '0', right: 'auto' }}>
+                  <DropdownItem onClick={() => { navigate('/creatorpage', { state: { openModal: 'highlight' } }); setShowCreateDropdown(false); }}>
+                    <FaVideo />
+                    <span>Create Highlight</span>
+                  </DropdownItem>
+                  <DropdownItem onClick={() => { navigate('/creatorpage', { state: { openModal: 'playlist' } }); setShowCreateDropdown(false); }}>
+                    <FaList />
+                    <span>Create Playlist</span>
+                  </DropdownItem>
+                  <DropdownItem onClick={() => { navigate('/creatorpage', { state: { openModal: 'community' } }); setShowCreateDropdown(false); }}>
+                    <FaPenSquare />
+                    <span>Create Post</span>
+                  </DropdownItem>
+                  <DropdownItem onClick={() => { navigate('/creatorpage', { state: { openModal: 'feed' } }); setShowCreateDropdown(false); }}>
+                    <FaPlus />
+                    <span>Create Feed</span>
+                  </DropdownItem>
+                  <DropdownItem onClick={() => { navigate('/creatorpage', { state: { openModal: 'video' } }); setShowCreateDropdown(false); }}>
+                    <FaUpload />
+                    <span>Upload Video</span>
+                  </DropdownItem>
+                </CreateDropdown>
+              )}
             </div>
             <img src={playmood} className="h-10 cursor-pointer" alt="Playmood" onClick={() => navigate('/')} />
           </div>
