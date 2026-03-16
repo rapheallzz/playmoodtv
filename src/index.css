@@ -160,56 +160,6 @@
   font-size: 1.1rem;
   font-weight: 700;
 }
-.movie-title{
-  height: fit-content;
-  width: auto;
-  max-width: 40%;
-  padding: 10px 20px 10px 20px ;
-  background-color: red;
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  border-bottom-right-radius: 40px;
-  z-index: 11;
-}
-.home-page-icon{
-  display: flex;
-  gap: 20px;
-  height: fit-content;
-  padding: 0px 0px 10px 0px;
-  position: absolute;
-  top: 13px;
-  right: 20px;
-  display: flex;
-  z-index: 12;
-}
-.home-page-icon img{
-  height: 40px;
-  width: auto;
-  cursor: pointer;
-
-}
-.movie-title h1 {
-  color: white;
-  font-size: 1rem;
-  font-weight: 500;
-  /* For WebKit-based browsers */
-  -webkit-line-clamp: 3;
-  /* For Firefox */
-  -moz-line-clamp: 3;
-  /* For IE */
-  -ms-line-clamp: 3;
-  /* Standard */
-  line-clamp: 3;
-  /* Ensure text wraps within container */
-  display: -webkit-box;
-  overflow: hidden;
-  /* Ensure proper display for multi-line text */
-  -webkit-box-orient: vertical;
-  /* Add ellipsis for overflow text */
-  text-overflow: ellipsis;
-
-}
 
 .movie-slider{
   width: 100%;
@@ -741,25 +691,6 @@
     height: 200px; /* Adjusted height for smaller screens */
   }
 
-  .movie-title {
-    display: flex;
-    width: auto;
-    max-width: 35%;
-    left: 10px;
-    top: 10px;
-    border-bottom-right-radius: 20px;
-    align-items: center;
-    justify-content: flex-start;
-    z-index: 11;
-  }
-
-  .home-page-icon {
-    right: 10px; /* Adjusted right position for smaller screens */
-    top: 10px; /* Adjusted top position for smaller screens */
-    z-index: 12;
-    gap: 8px;
-  }
-
   .prev-movie-info h3 {
     font-size: 0.8rem; /* Adjusted font size for smaller screens */
   }
@@ -767,11 +698,6 @@
   .video-hovered-bottom h4,
   .video-hovered-bottom p {
     font-size: 0.6rem; /* Adjusted font size for smaller screens */
-  }
-
-
-  .movie-title h1{
-    font-size: 7px;
   }
 
   .dash-btn .lgt_btn {

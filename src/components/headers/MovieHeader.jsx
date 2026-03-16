@@ -1,68 +1,66 @@
 
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
-import playmood from '/PLAYMOOD_DEF.png';
-import { GiHamburgerMenu } from 'react-icons/gi';
 import { useNavigate } from 'react-router-dom';
-import profile from '/icon-profile.png';
-import settings from '/settings-icon.png';
-import settings_red from '/settings-red-icon.png';
-import search from '/search.png';
-import recommended from '/recommended.png';
-import newp from '/newp.png';
-import snowflakes from '/snowflakes.png';
-import schedule from '/schedule.png';
-import favourite from '/favourite.png';
-import categories from '/categories.png';
-import home from '/home.png';
-import search_icon from '/search_white.png';
-import search_red from '/search_red.png';
-import thumbs from '/thumbs.png';
-import thumbs_red from '/thumbs_red.png';
-import location from '/location_white.png';
-import home_red from '/home_red.png';
-import newp_red from '/newp_red.png';
-import snowflakes_red from '/snowflakes_red.png';
-import location_red from '/location.png';
-import schedule_white from '/schedule_white.png';
-import schedule_red from '/schedule_red.png';
-import plus from '/plus.png';
-import favourite_red from '/star_red.png';
-import SidebarSlider from '../slidersidebar';
-import SidebarSliderc from '../slidersidebarc';
-import { useSelector, useDispatch } from 'react-redux'
-import { logout, reset } from '.././../features/authSlice'
+import { useSelector, useDispatch } from 'react-redux';
+import { GiHamburgerMenu } from 'react-icons/gi';
+import { logout, reset } from '../../features/authSlice';
 import axios from 'axios';
 import BASE_API_URL from '../../apiConfig';
 import WelcomePopup from '../Welcomepop';
+import SidebarSlider from '../slidersidebar';
+import profile from '/icon-profile.png';
+import logo from '/PLAYMOOD_DEF.png';
+import search_icon from '/search_white.png';
+import search_red from '/search_red.png';
+import home from '/home.png';
+import home_red from '/home_red.png';
+import thumbs from '/thumbs.png';
+import thumbs_red from '/thumbs_red.png';
+import newp from '/newp.png';
+import newp_red from '/newp_red.png';
+import snowflakes from '/snowflakes.png';
+import snowflakes_red from '/snowflakes_red.png';
+import location from '/location_white.png';
+import location_red from '/location.png';
+import schedule_white from '/schedule_white.png';
+import schedule_red from '/schedule_red.png';
+import favourite from '/favourite.png';
+import favourite_red from '/star_red.png';
+import categories from '/categories.png';
+import plus from '/plus.png';
 
-export default function MovieHeader({ }) {
-  const [dropbar, set_drop_bar] = useState(false);
-  const navigate = useNavigate();
-  const [top, set_top] = useState(false);
-  const [settings_hover, set_settings_hovered] = useState(true);
+export default function MovieHeader({ title }) {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
-
-  const dispatch = useDispatch()
-  const { user } = useSelector((state) => state.auth)
-
+  const [mountcategory, set_mountcategory] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [data, setData] = useState([]);
 
-  const onLogout = () => {
-    dispatch(logout())
-    dispatch(reset())
-    navigate('/')
-  }
+  // States for hover effects
+  const [hoverStates, setHoverStates] = useState({
+    search: true,
+    home: true,
+    thumbs: true,
+    new: true,
+    snowflakes: true,
+    location: true,
+    schedule: true,
+    favourites: true,
+    categories: true,
+  });
 
-  const handle_tab_hover = () => {
-    set_tab_hovered(true);
-  };
-  
-  const handle_tab_hover_out = () => {
-    set_tab_hovered(false);
+  const [categoryToggles, setCategoryToggles] = useState({});
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
+
+  const onLogout = () => {
+    dispatch(logout());
+    dispatch(reset());
+    navigate('/');
   };
 
   useEffect(() => {
@@ -70,727 +68,427 @@ export default function MovieHeader({ }) {
       try {
         const response = await axios.get(`${BASE_API_URL}/api/content/`);
         setData(response.data);
-      } catch (error) {
-      }
+      } catch (error) {}
     };
-
     fetchData();
   }, []);
 
   useEffect(() => {
-    handleSearch();
-  }, [searchQuery, data]);
-
-  const handleSearchInputChange = (e) => {
-    setSearchQuery(e.target.value);
-  };
-
-  const handleSearch = () => {
     if (!Array.isArray(data)) return;
     const results = data.filter((item) =>
       item.name?.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setSearchResults(results);
-  };
+  }, [searchQuery, data]);
 
+  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+  const toggleCategory = (cat) => setCategoryToggles(prev => ({ ...prev, [cat]: !prev[cat] }));
 
-  const handleTopClick = () => {
-    set_top(!top);
-    set_newplaymood(false);
-    set_chanels(false);
-    set_diaries(false);
-  };
-
-  const [newplaymood, set_newplaymood] = useState(false);
-  const handleNewPlaymoodClick = () => {
-    set_newplaymood(!newplaymood);
-    set_top(false);
-    set_chanels(false);
-    set_diaries(false);
-  };
-
-  const [chanels, set_chanels] = useState(false);
-
-  const handleChannelClick = () => {
-    set_chanels(!chanels);
-    set_newplaymood(false);
-    set_top(false);
-    set_diaries(false);
-  };
-
-  const [diaries, set_diaries] = useState(false);
-
-  const handleDiaries = () => {
-    set_diaries(!diaries);
-    set_newplaymood(false);
-    set_top(false);
-    set_chanels(false);
-  };
-
-  const handle_hovered_settings = () => {
-    set_settings_hovered(!settings_hover);
-  };
-
-  const handle_hovered_settings_out = () => {
-    set_settings_hovered(!settings_hover);
-  };
-
-  const [search_hover, set_search_hover] = useState(true);
-  const [home_hover, set_home_hover] = useState(true);
-  const [thumbs_hover, set_thumbs_hover] = useState(true);
-  const [new_hover, set_new_hover] = useState(true);
-  const [snowflakes_hover, set_snow_flakes] = useState(true);
-  const [location_hover, set_location_flakes] = useState(true);
-  const [schedule_hover, setschedule_hover] = useState(true);
-  const [favourites_hover, set_favourites_hover] = useState(true);
-  const [categories_hover, set_categories_hover] = useState(true);
-
-  const handle_search_hover = () => {
-    set_search_hover(!search_hover);
-  };
-
-  const handle_search_hover_out = () => {
-    set_search_hover(!search_hover);
-  };
-
-  const handle_home_hover = () => {
-    set_home_hover(!home_hover);
-  };
-
-  const handle_home_hover_out = () => {
-    set_home_hover(!home_hover);
-  };
-
-  const handle_thumbs_hover = () => {
-    set_thumbs_hover(!thumbs_hover);
-  };
-
-  const handle_thumbs_hover_out = () => {
-    set_thumbs_hover(!thumbs_hover);
-  };
-
-  const handle_newp_hover = () => {
-    set_new_hover(!new_hover);
-  };
-
-  const handle_newp_hover_out = () => {
-    set_new_hover(!new_hover);
-  };
-
-  const handle_snowflakes_hover = () => {
-    set_snow_flakes(!snowflakes_hover);
-  };
-
-  const handle_snowflakes_hover_out = () => {
-    set_snow_flakes(!snowflakes_hover);
-  };
-
-  const handle_location_hover = () => {
-    set_location_flakes(!location_hover);
-  };
-
-  const handle_location_hover_out = () => {
-    set_location_flakes(!location_hover);
-  };
-
-  const handle_schedule_hover = () => {
-    setschedule_hover(!schedule_hover);
-  };
-
-  const handle_schedule_hover_out = () => {
-    setschedule_hover(!schedule_hover);
-  };
-
-  const handle_favourites_hover = () => {
-    set_favourites_hover(!favourites_hover);
-  };
-
-  const handle_favourites_hover_out = () => {
-    set_favourites_hover(!favourites_hover);
-  };
-
-  const handle_category_hover_out = () => {
-    set_categories_hover(!categories_hover);
-  };
-
-  const handle_category_hover = () => {
-    set_categories_hover(!categories_hover);
-  };
-
-
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
-  }
-
-  const [mountcategory, set_mountcategory] = useState(false);
-
-  const handle_mountcategory = () => {
-    set_mountcategory(!mountcategory);
-  };
-
-
-  const [top10Toggled, setTop10Toggled] = useState(false);
-  const [newPlaymoodToggled, setNewPlaymoodToggled] = useState(false);
-  const [channelsToggled, setChannelsToggled] = useState(false);
-  const [diariesToggled, setDiariesToggled] = useState(false);
-  const [spacesToggled, setSpacesToggled] = useState(false);
-  const [recommendationsToggled, setRecommendationsToggled] = useState(false);
-  const [interviewsToggled, setInterviewsToggled] = useState(false);
-  const [fashionShowsToggled, setFashionShowsToggled] = useState(false);
-  const [documentariesToggled, setDocumentariesToggled] = useState(false);
-  const [behindTheCamerasToggled, setBehindTheCamerasToggled] = useState(false);
-  const [soonInPlaymoodToggled, setSoonInPlaymoodToggled] = useState(false);
-  const [teenToggled, setTeenToggled] = useState(false);
-  const [bestInFashionToggled, setBestInFashionToggled] = useState(false);
-  const [onlyInPlaymoodToggled, setOnlyInPlaymoodToggled] = useState(false);
-  const [watchlistToggled, setWatchlistToggled] = useState(false);
-
-
-
-  const handleTop10Toggle = () => {
-    setTop10Toggled(!top10Toggled);
-  };
-  
-  const handleNewPlaymoodToggle = () => {
-    setNewPlaymoodToggled(!newPlaymoodToggled);
-  };
-  
-  const handleDiariesToggle = () => {
-    setDiariesToggled(!diariesToggled);
-  };
-  
-  const handleChannelsToggle = () => {
-    setChannelsToggled(!channelsToggled);
-  };
-  
-  const handleSpacesToggle = () => {
-    setSpacesToggled(!spacesToggled);
-  };
-  
-  const handleRecommendationsToggle = () => {
-    setRecommendationsToggled(!recommendationsToggled);
-  };
-  
-  const handleInterviewsToggle = () => {
-    setInterviewsToggled(!interviewsToggled);
-  };
-  
-  const handleFashionShowsToggle = () => {
-    setFashionShowsToggled(!fashionShowsToggled);
-  };
-  
-  const handleDocumentariesToggle = () => {
-    setDocumentariesToggled(!documentariesToggled);
-  };
-  
-  const handleBehindTheCamerasToggle = () => {
-    setBehindTheCamerasToggled(!behindTheCamerasToggled);
-  };
-  
-  const handleSoonInPlaymoodToggle = () => {
-    setSoonInPlaymoodToggled(!soonInPlaymoodToggled);
-  };
-  
-  const handleTeenToggle = () => {
-    setTeenToggled(!teenToggled);
-  };
-  
-  const handleBestInFashionToggle = () => {
-    setBestInFashionToggled(!bestInFashionToggled);
-  };
-  
-  const handleOnlyInPlaymoodToggle = () => {
-    setOnlyInPlaymoodToggled(!onlyInPlaymoodToggled);
-  };
-  
-  const handleWatchlistToggle = () => {
-    setWatchlistToggled(!watchlistToggled);
+  const handleHover = (key, val) => {
+    setHoverStates(prev => ({ ...prev, [key]: val }));
   };
 
   return (
-    <MobileHead>
-             
-             <div className="flex justify-between flex-col  items-center ">
+    <HeaderWrapper>
+      <HeaderContent>
+        <LeftSection>
+          <GiHamburgerMenu size={28} color="white" onClick={toggleSidebar} style={{ cursor: 'pointer' }} />
+          <Logo src={logo} alt="Playmood Logo" onClick={() => navigate('/')} />
+        </LeftSection>
 
+        <CenterSection>
+          {title && <MovieTitle>{title}</MovieTitle>}
+        </CenterSection>
 
-
-
-          </div>
-
-      <WelcomePopup
-        showPopup={showWelcomePopup}
-        onClose={() => setShowWelcomePopup(false)}
-      />
-
-         <Side>
-
- 
-
-          {sidebarOpen ? (
-            <SettingsAndDropdown>
-              
-                {window.innerWidth > 768 ? (
-                  <GiHamburgerMenu  size={30} color="white" onClick={toggleSidebar}/>
-                ) : (
-                 <div></div>
-                )}
-
-            </SettingsAndDropdown>
-          ) : (
-            <SidebarClicked onMouseLeave={toggleSidebar} >
-
-                    <div className="flex align-middle justify-between">
-                     {user && (
-                   <button className="bg-red-600 text-white  px-3 rounded-md text-xs cursor-pointer  transition-colors duration-300 ease-in-out" onClick={onLogout}>
-                   Logout
-                   </button>
-                                  )}
-                    <button
-                    className=" w-8 h-8 text-sm rounded-full text-white"
-                   onClick={toggleSidebar}
-                      > X </button>
-
-
-                    </div>
-
-                             
-                             <div className='mt-33'>
-                             {user && (
-                         <div className="" >
-                            <div className=" flex gap-5 align-middle my-4 ">
-                          <img className=' w-8 h-8' src={profile} onClick={() => { navigate('/dashboard') }} />
-                            <h1 className='text-sm self-center '>{user.name}</h1>
-                             </div>
-                     </div>
-                       )}
-
-              {!mountcategory && (
-                <>
-                                      {!user && (
-                      <div onClick={() => { navigate('/login') }}> <button className='font-semibold text-[10px] w-28 h-10 bg-red-950 text-white rounded-md'>
-                               Sign In / Register
-                        </button>
-                        
-                        </div> ) }
-      <div className="search_tab">
-        <div className="flex items-center">
-          {search_hover ? (
-            <img src={search_icon} onMouseEnter={handle_search_hover} />
-          ) : (
-            <img src={search_red} onMouseOut={handle_search_hover_out} />
-          )}
-          <input
-            type="text"
-            placeholder="Search..."
-            value={searchQuery}
-            onChange={handleSearchInputChange}
-            className="ml-2 p-1 bg-transparent  border-b border-white text-red-200 text-sm focus:outline-none"
+        <RightSection>
+          <ProfileIcon
+            src={user?.profileImage || profile}
+            alt="Profile"
+            onClick={() => (user ? navigate('/dashboard') : navigate('/login'))}
           />
-        </div>
-        
-      </div>           
-           <div className="search_results">
-          {searchResults.map((result, index) => (
-           <div key={index} className="search_result_item">
-            {result.name}
-           </div>
-            ))}
-          </div>
-                  <div className="home_tab" onClick={() => { navigate('/') }}>
-                    {home_hover ? <img src={home} onMouseEnter={handle_home_hover} /> : <img src={home_red} onMouseOut={handle_home_hover_out} />}
-                    <p>Home</p>
-                  </div>
-                  <div className="recommended_tab" onClick={() => {
-                    if (user) {
-                      navigate('/recommended');
-                    } else {
-                      setShowWelcomePopup(true);
-                    }
-                  }}>
-                    {thumbs_hover ? <img src={thumbs} onMouseEnter={handle_thumbs_hover} /> : <img src={thumbs_red} onMouseOut={handle_thumbs_hover_out} />}
-                    <p>Recommended</p>
-                  </div>
-                  <div className="new_tab" onClick={() => { navigate('/newplaymood') }}>
-                    {new_hover ? <img src={newp} onMouseEnter={handle_newp_hover} /> : <img src={newp_red} onMouseOut={handle_newp_hover_out} />}
-                    <p>New on playmood</p>
-                  </div>
-                  <div className="channels_tab" onClick={() => { navigate('/channels') }}>
-                    {snowflakes_hover ? <img src={snowflakes} onMouseEnter={handle_snowflakes_hover} /> : <img src={snowflakes_red} onMouseOut={handle_snowflakes_hover_out} />}
-                    <p>Channels</p>
-                  </div>
-                  <div className="spaces_tab" onClick={() => { navigate('/spaces') }}>
-                    {location_hover ? <img src={location} onMouseEnter={handle_location_hover} /> : <img src={location_red} onMouseOut={handle_location_hover_out} />}
-                    <p>Spaces</p>
-                  </div>
-                  <div className="schedule_tab" onClick={() => { navigate('/schedule') }}>
-                    {schedule_hover ? <img src={schedule_white} onMouseEnter={handle_schedule_hover} /> : <img src={schedule_red} onMouseOut={handle_schedule_hover_out} />}
-                    <p>Schedule</p>
-                  </div>
-                  <div className="favorites_tab" onClick={() => { navigate('/favourites') }}>
-                    {favourites_hover ? <img src={favourite} onMouseEnter={handle_favourites_hover} /> : <img src={favourite_red} onMouseOut={handle_favourites_hover_out} />}
-                    <p>Favorites</p>
-                  </div>
-                </>
-              )}
-              <div className="categories" onClick={handle_mountcategory}>
-                {categories_hover ? <img src={categories} onMouseEnter={handle_category_hover} /> : <img src={plus} onMouseOut={handle_category_hover_out} />}
-                <p>Categories</p>
-              </div>
-              {mountcategory && (
-                <div className="categories_subsection">
-                <h3 onClick={handleTop10Toggle}>TOP 10</h3>
-                {top10Toggled && <SidebarSlider />}
-                <h3 onClick={handleNewPlaymoodToggle}>New on Playmood</h3>
-                {newPlaymoodToggled && <SidebarSlider />}
-                <h3 onClick={handleChannelsToggle}>Channels</h3>
-                {channelsToggled && <SidebarSlider />}
-                <h3 onClick={handleDiariesToggle}>Diaries</h3>
-                {diariesToggled && <SidebarSlider />}
-                <h3 onClick={handleSpacesToggle}>Spaces</h3>
-                {spacesToggled && <SidebarSlider />}
-                <h3 onClick={() => {
-                  if (user) {
-                    handleRecommendationsToggle();
-                  } else {
-                    setShowWelcomePopup(true);
-                  }
-                }}>Recommendations for you</h3>
-                {user && recommendationsToggled && <SidebarSlider />}
-                <h3 onClick={handleInterviewsToggle}>Interviews</h3>
-                {interviewsToggled && <SidebarSlider />}
-                <h3 onClick={handleFashionShowsToggle}>Fashion Shows</h3>
-                {fashionShowsToggled && <SidebarSlider />}
-                <h3 onClick={handleSpacesToggle}>Spaces</h3>
-                {spacesToggled && <SidebarSlider />}
-                <h3 onClick={handleDocumentariesToggle}>Documentaries and Reports</h3>
-                {documentariesToggled && <SidebarSlider />}
-                <h3 onClick={handleBehindTheCamerasToggle}>Behind the cameras</h3>
-                {behindTheCamerasToggled && <SidebarSlider />}
-                <h3 onClick={handleSoonInPlaymoodToggle}>Soon in Playmood</h3>
-                {soonInPlaymoodToggled && <SidebarSlider />}
-                <h3 onClick={handleTeenToggle}>Teen</h3>
-                {teenToggled && <SidebarSlider />}
-                <h3 onClick={handleOnlyInPlaymoodToggle}>Only in Playmood</h3>
-                {onlyInPlaymoodToggled && <SidebarSlider />}
-                <h3 onClick={() => {
-                  if (user) {
-                    handleWatchlistToggle();
-                  } else {
-                    setShowWelcomePopup(true);
-                  }
-                }}>Watchlist</h3>
-                {user && watchlistToggled && <SidebarSlider />}
-              </div>
-               
-              )}
-                             </div>
- 
- 
-            </SidebarClicked>
-          )}
-         </Side>
+        </RightSection>
+      </HeaderContent>
 
-    </MobileHead>
+      <WelcomePopup showPopup={showWelcomePopup} onClose={() => setShowWelcomePopup(false)} />
+
+      {sidebarOpen && (
+        <SidebarOverlay onClick={toggleSidebar}>
+          <SidebarContent onClick={(e) => e.stopPropagation()}>
+            <SidebarHeader>
+              {user && (
+                <LogoutButton onClick={onLogout}>Logout</LogoutButton>
+              )}
+              <CloseButton onClick={toggleSidebar}>X</CloseButton>
+            </SidebarHeader>
+
+            <SidebarScrollArea>
+              {user && (
+                <UserInfo onClick={() => navigate('/dashboard')}>
+                  <UserAvatar src={user.profileImage || profile} />
+                  <UserName>{user.name}</UserName>
+                </UserInfo>
+              )}
+
+              {!user && (
+                <SignInButton onClick={() => navigate('/login')}>
+                  Sign In / Register
+                </SignInButton>
+              )}
+
+              <SidebarItem>
+                <SearchContainer>
+                  <img
+                    src={hoverStates.search ? search_icon : search_red}
+                    onMouseEnter={() => handleHover('search', false)}
+                    onMouseLeave={() => handleHover('search', true)}
+                    alt="Search"
+                  />
+                  <SearchInput
+                    type="text"
+                    placeholder="Search..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </SearchContainer>
+                {searchQuery && (
+                  <SearchResults>
+                    {searchResults.map((result, index) => (
+                      <SearchResultItem key={index} onClick={() => navigate(`/movie/${result.slug}`)}>
+                        {result.name}
+                      </SearchResultItem>
+                    ))}
+                  </SearchResults>
+                )}
+              </SidebarItem>
+
+              <SidebarNavItems>
+                <NavItem onClick={() => navigate('/')} onMouseEnter={() => handleHover('home', false)} onMouseLeave={() => handleHover('home', true)}>
+                  <img src={hoverStates.home ? home : home_red} alt="" />
+                  <span>Home</span>
+                </NavItem>
+
+                <NavItem onClick={() => user ? navigate('/recommended') : setShowWelcomePopup(true)} onMouseEnter={() => handleHover('thumbs', false)} onMouseLeave={() => handleHover('thumbs', true)}>
+                  <img src={hoverStates.thumbs ? thumbs : thumbs_red} alt="" />
+                  <span>Recommended</span>
+                </NavItem>
+
+                <NavItem onClick={() => navigate('/newplaymood')} onMouseEnter={() => handleHover('new', false)} onMouseLeave={() => handleHover('new', true)}>
+                  <img src={hoverStates.new ? newp : newp_red} alt="" />
+                  <span>New on Playmood</span>
+                </NavItem>
+
+                <NavItem onClick={() => navigate('/channels')} onMouseEnter={() => handleHover('snowflakes', false)} onMouseLeave={() => handleHover('snowflakes', true)}>
+                  <img src={hoverStates.snowflakes ? snowflakes : snowflakes_red} alt="" />
+                  <span>Channels</span>
+                </NavItem>
+
+                <NavItem onClick={() => navigate('/spaces')} onMouseEnter={() => handleHover('location', false)} onMouseLeave={() => handleHover('location', true)}>
+                  <img src={hoverStates.location ? location : location_red} alt="" />
+                  <span>Spaces</span>
+                </NavItem>
+
+                <NavItem onClick={() => navigate('/schedule')} onMouseEnter={() => handleHover('schedule', false)} onMouseLeave={() => handleHover('schedule', true)}>
+                  <img src={hoverStates.schedule ? schedule_white : schedule_red} alt="" />
+                  <span>Schedule</span>
+                </NavItem>
+
+                <NavItem onClick={() => navigate('/favourites')} onMouseEnter={() => handleHover('favourites', false)} onMouseLeave={() => handleHover('favourites', true)}>
+                  <img src={hoverStates.favourites ? favourite : favourite_red} alt="" />
+                  <span>Favorites</span>
+                </NavItem>
+
+                <NavItem onClick={() => set_mountcategory(!mountcategory)} onMouseEnter={() => handleHover('categories', false)} onMouseLeave={() => handleHover('categories', true)}>
+                  <img src={hoverStates.categories ? categories : plus} alt="" />
+                  <span>Categories</span>
+                </NavItem>
+
+                {mountcategory && (
+                  <CategorySubsection>
+                    {[
+                      'TOP 10', 'New on Playmood', 'Channels', 'Diaries', 'Spaces',
+                      'Recommendations for you', 'Interviews', 'Fashion Shows',
+                      'Documentaries and Reports', 'Behind the cameras', 'Soon in Playmood',
+                      'Teen', 'Only in Playmood', 'Watchlist'
+                    ].map(cat => (
+                      <React.Fragment key={cat}>
+                        <h3 onClick={() => toggleCategory(cat)}>{cat}</h3>
+                        {categoryToggles[cat] && <SidebarSlider />}
+                      </React.Fragment>
+                    ))}
+                  </CategorySubsection>
+                )}
+              </SidebarNavItems>
+            </SidebarScrollArea>
+          </SidebarContent>
+        </SidebarOverlay>
+      )}
+    </HeaderWrapper>
   );
 }
 
+const HeaderWrapper = styled.div`
+  height: 70px;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  color: white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+`;
 
+const HeaderContent = styled.div`
+  width: 100%;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+`;
 
-const MobileHead = styled.div`
-    height: 80px;
-    width: 100%;
-    // background-color: rgba(0,0,0,0.6);
+const LeftSection = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-shrink: 0;
+`;
 
-    color: white;
-    position: fixed;
-    top: 0px;
-    right: 0px; 
-     z-index: 10;
-`
-
-
-
-const Logo = styled.div`
-    width:100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: Space-between;
-    gap: 10px; 
-    .profile-container{
-      width: 40px;
-      background-color:rgb(140,7,52);
-        height: 40px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        border-radius:100%;
-        cursor: pointer;
-       
-        img{
-            width: 80%;
-            height: 80%;
-            
-          
-           
-        }
-    }
-    .main-logo{
-        height: 40px;
-        width:auto;
-        cursor: pointer;
-        padding-right:150px;
-    }
-`
-
-const SettingsAndDropdown = styled.div`
-    width: 60px; 
-    height: 100vh;
-    background-color: transparent;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: absolute;
-    top: 0;
-    right: 0;
-    img{
-        height: 40px;
-        width: 40px;
-        cursor: pointer;
-    }
-
-    @media screen and (max-width: 768px) {
-      left: 0;  // Align to the left instead of right
-      right: unset;  // Remove the right positioning
-      // Full width on mobile screens
+const Logo = styled.img`
+  height: 35px;
+  cursor: pointer;
+  @media (max-width: 480px) {
+    height: 25px;
   }
-`
-const Settings = styled.div`
-    height: 80px;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-bottom: 0.5px solid rgba(255,255,255,0.4);
-`
+`;
 
-const Side = styled.div`
-    display: flex;
-    height: 10%;
-    align-items: center;
-    gap: 30px;
-    position: relative;
-    top: 10px;
-    right: 0px;
-    // z-index: 1000;
+const CenterSection = styled.div`
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  min-width: 0; /* Important for truncation */
+`;
 
-`
-const SidebarClicked = styled.div`
-width: 250px;
-height: 100vh;
-background-color: black;
-top: 0;
-right: 0; // Align to the left
-position: fixed;
-padding: 20px 10px 0px 10px;
-display: flex;
-flex-direction: column;
-gap: 18px;
+const MovieTitle = styled.h1`
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: white;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  max-width: 100%;
 
-    .categories_subsection{
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-        height: fit-content;
-        padding-left: 50px;
-        gap: 15px;
-        h3{
-            color: white;
-            font-size: 0.7rem;
-            font-weight: 600;
-            cursor: pointer;
-        }
+  @media (max-width: 768px) {
+    font-size: 0.9rem;
+  }
+  @media (max-width: 480px) {
+    font-size: 0.8rem;
+  }
+`;
+
+const RightSection = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-shrink: 0;
+`;
+
+const ProfileIcon = styled.img`
+  height: 35px;
+  width: 35px;
+  border-radius: 50%;
+  cursor: pointer;
+  object-fit: cover;
+  border: 2px solid transparent;
+  transition: border-color 0.2s;
+  &:hover {
+    border-color: #541011;
+  }
+  @media (max-width: 480px) {
+    height: 30px;
+    width: 30px;
+  }
+`;
+
+const SidebarOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1001;
+`;
+
+const SidebarContent = styled.div`
+  width: 280px;
+  height: 100%;
+  background: black;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.5);
+`;
+
+const SidebarHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #333;
+`;
+
+const SidebarScrollArea = styled.div`
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 10px;
+  }
+`;
+
+const LogoutButton = styled.button`
+  background: #dc3545;
+  color: white;
+  padding: 5px 15px;
+  border-radius: 5px;
+  font-size: 0.8rem;
+  border: none;
+  cursor: pointer;
+`;
+
+const CloseButton = styled.button`
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+`;
+
+const UserInfo = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 25px;
+  cursor: pointer;
+`;
+
+const UserAvatar = styled.img`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+`;
+
+const UserName = styled.span`
+  font-size: 0.9rem;
+  font-weight: 600;
+`;
+
+const SignInButton = styled.button`
+  width: 100%;
+  background: #541011;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  font-weight: 600;
+  margin-bottom: 25px;
+  border: none;
+  cursor: pointer;
+`;
+
+const SidebarItem = styled.div`
+  margin-bottom: 20px;
+`;
+
+const SearchContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #1a1a1a;
+  padding: 8px 12px;
+  border-radius: 20px;
+  img {
+    width: 20px;
+  }
+`;
+
+const SearchInput = styled.input`
+  background: none;
+  border: none;
+  color: white;
+  font-size: 0.9rem;
+  width: 100%;
+  &:focus {
+    outline: none;
+  }
+`;
+
+const SearchResults = styled.div`
+  margin-top: 10px;
+  background: #1a1a1a;
+  border-radius: 5px;
+  max-height: 200px;
+  overflow-y: auto;
+`;
+
+const SearchResultItem = styled.div`
+  padding: 10px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  &:hover {
+    background: #333;
+  }
+`;
+
+const SidebarNavItems = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+`;
+
+const NavItem = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.2s;
+  &:hover {
+    background: #1a1a1a;
+    border-right: 4px solid #541011;
+  }
+  img {
+    width: 22px;
+    height: 22px;
+  }
+  span {
+    font-size: 0.9rem;
+  }
+`;
+
+const CategorySubsection = styled.div`
+  padding-left: 37px;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  h3 {
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin: 0;
+    cursor: pointer;
+    color: #ccc;
+    &:hover {
+      color: white;
     }
-    .user_and_settings{
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        img{
-            width: 40px;
-            height: 40px;
-        }
-        .head_section{
-            h1{
-                font-size: 0.8rem;
-            }
-            p{
-                font-size: 0.6rem;
-            }
-            cursor: pointer;
-        }
-    }
-    .search_tab{
-        display: flex;
-        align-items: center;
-        gap: 30px;
-        padding: 8px 10px 8px 10px;
-        cursor: pointer;
-        &:hover{
-            background-color: grey;
-            border-right: 4px solid red;
-        }
-        img{
-            width: 25px;
-            height: 25px;
-        }
-        p{
-            font-size: 0.9rem;
-        }
-    }
-    .home_tab{
-        display: flex;
-        align-items: center;
-        gap: 30px;
-        padding: 8px 10px 8px 20px;
-        cursor: pointer;
-        &:hover{
-            background-color: grey;
-            border-right: 4px solid red;
-        }
-        img{
-            width: 25px;
-            height: 25px;
-        }
-        p{
-            font-size: 0.9rem;
-        }
-    }
-    .recommended_tab{
-        display: flex;
-        align-items: center;
-        gap: 30px;
-        padding: 8px 10px 8px 20px;
-        cursor: pointer;
-        &:hover{
-            background-color: grey;
-            border-right: 4px solid red;
-        }
-        img{
-            width: 25px;
-            height: 25px;
-        }
-        p{
-            font-size: 0.9rem;
-        }
-    }
-    .new_tab{
-        display: flex;
-        align-items: center;
-        gap: 30px;
-        padding: 8px 10px 8px 20px;
-        cursor: pointer;
-        &:hover{
-            background-color: grey;
-            border-right: 4px solid red;
-        }
-        img{
-            width: 25px;
-            height: 25px;
-        }
-        p{
-            font-size: 0.9rem;
-        }
-    }
-    .channels_tab{
-        display: flex;
-        align-items: center;
-        gap: 30px;
-        padding: 8px 10px 8px 20px;
-        cursor: pointer;
-        &:hover{
-            background-color: grey;
-            border-right: 4px solid red;
-        }
-        img{
-            width: 25px;
-            height: 25px;
-        }
-        p{
-            font-size: 0.9rem;
-        }
-    }
-    .spaces_tab{
-        display: flex;
-        align-items: center;
-        gap: 30px;
-        padding: 8px 10px 8px 20px;
-        cursor: pointer;
-        &:hover{
-            background-color: grey;
-            border-right: 4px solid red;
-        }
-        img{
-            width: 25px;
-            height: 25px;
-        }
-        p{
-            font-size: 0.9rem;
-        }
-    }
-    .schedule_tab{
-        display: flex;
-        align-items: center;
-        gap: 30px;
-        padding: 8px 10px 8px 20px;
-        cursor: pointer;
-        &:hover{
-            background-color: grey;
-            border-right: 4px solid red;
-        }
-        img{
-            width: 25px;
-            height: 25px;
-        }
-        p{
-            font-size: 0.9rem;
-        }
-    }
-    .favorites_tab{
-        display: flex;
-        align-items: center;
-        gap: 30px;
-        padding: 8px 10px 8px 20px;
-        cursor: pointer;
-        &:hover{
-            background-color: grey;
-            border-right: 4px solid red;
-        }
-        img{
-            width: 25px;
-            height: 25px;
-        }
-        p{
-            font-size: 0.9rem;
-        }
-    }
-    .categories{
-        display: flex;
-        align-items: center;
-        gap: 30px;
-        padding: 8px 10px 8px 20px;
-        cursor: pointer;
-        &:hover{
-            background-color: grey;
-            border-right: 4px solid red;
-        }
-        img{
-            width: 25px;
-            height: 25px;
-        }
-        p{
-            font-size: 0.9rem;
-        }
-    }
-`
+  }
+`;

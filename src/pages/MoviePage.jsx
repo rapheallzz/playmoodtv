@@ -4,11 +4,9 @@ import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { likeContent, unlikeContent } from '../features/authSlice';
 import axios from 'axios';
-import MovieBurger from '../components/headers/MovieBurger';
 import instagram from '/instagram.png';
 import BASE_API_URL from '../apiConfig';
 import logo from '/PLAYMOOD_DEF.png';
-import profile from '/icon-profile.png';
 import { FaPlay, FaHeart, FaBell, FaDonate, FaUser, FaEye, FaPaperPlane } from 'react-icons/fa';
 import Sliderinterviews from '../components/miscSlider/SliderInterview';
 import SliderDocumentaries from '../components/miscSlider/SliderDocumentaries';
@@ -350,8 +348,8 @@ export default function MoviePage() {
             <meta property="og:image" content={sharedImg} />
             <meta property="og:video" content={sharedVideo} />
           </Helmet>
-          <MovieHeader />
-          <div className="video-container relative mt-20">
+          <MovieHeader title="Playmood" />
+          <div className="video-container relative mt-[70px]">
             <video controls autoPlay className="w-full h-[550px] md:h-[900px] object-cover">
               <source src={sharedVideo} type="video/mp4" />
             </video>
@@ -484,10 +482,10 @@ export default function MoviePage() {
         <meta property="og:url" content={window.location.href} />
         <meta name="twitter:card" content="summary_large_image" />
       </Helmet>
-      <div className="h-auto">
-        <MovieHeader />
+      <div className="h-auto pt-[70px]">
+        <MovieHeader title={movie?.title} />
         {/* Video Holder */}
-        <div className="video-container relative mt-20">
+        <div className="video-container relative">
           <video
             muted
             playsInline
@@ -529,19 +527,6 @@ export default function MoviePage() {
               </CaptionMenu>
             )}
           </CaptionControl>
-        </div>
-        <Hamburger>
-          <MovieBurger />
-        </Hamburger>
-        <div className="movie-title">
-          <h1>{title}</h1>
-        </div>
-        <div className="home-page-icon">
-          <img src={logo} alt="" onClick={() => navigate('/')} />
-          <img
-            src={profile}
-            onClick={() => (user ? navigate('/dashboard') : navigate('/login'))}
-          />
         </div>
         {/* Main Section */}
         <div className="flex flex-col  md:flex-row w-full gap-[3rem] md:gap-[8rem] h-auto my-[2rem] mx-12">
