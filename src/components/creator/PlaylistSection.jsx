@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Swal from 'sweetalert2';
 import { StlyedCommunitySection, PlaylistCard, NoPostsMessage } from '../../styles/CreatorPageStyles';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import styled from 'styled-components';
@@ -30,22 +31,30 @@ const PlaylistSection = ({
   fetchPlaylistById,
   selectedPlaylistId,
 }) => {
-  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
-
-  const handleDeleteClick = (e, playlistId) => {
+  const handleDeleteClick = async (e, playlistId) => {
     e.stopPropagation();
-    setConfirmDeleteId(playlistId);
-  };
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#541011',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Yes, delete it!'
+    });
 
-  const cancelDelete = (e) => {
-    e.stopPropagation();
-    setConfirmDeleteId(null);
-  };
-
-  const confirmDelete = (e, playlistId) => {
-    e.stopPropagation();
-    handleDeletePlaylist(playlistId);
-    setConfirmDeleteId(null);
+    if (result.isConfirmed) {
+      try {
+        const deleteResult = await handleDeletePlaylist(playlistId);
+        if (deleteResult.success) {
+          Swal.fire('Deleted!', 'Your playlist has been deleted.', 'success');
+        } else {
+          Swal.fire('Error!', deleteResult.error || 'Failed to delete playlist.', 'error');
+        }
+      } catch (error) {
+        Swal.fire('Error!', 'Failed to delete playlist.', 'error');
+      }
+    }
   };
 
   return (
@@ -95,13 +104,6 @@ const PlaylistSection = ({
                       title="Delete Playlist"
                     />
                   </div>
-                  {confirmDeleteId === playlist._id && (
-                    <DeleteConfirmation>
-                      Are you sure?
-                      <button onClick={(e) => confirmDelete(e, playlist._id)}>Yes</button>
-                      <button onClick={cancelDelete}>No</button>
-                    </DeleteConfirmation>
-                  )}
                 </div>
                 {videoCount > 0 && (
                   <PlaylistThumbnail

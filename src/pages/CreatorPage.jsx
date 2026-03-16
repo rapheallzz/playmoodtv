@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useWebSocket } from '../context/WebSocketContext';
 import { Homecontent } from '../styles/CreatorPageStyles';
@@ -33,6 +33,7 @@ import axios from 'axios';
 import BASE_API_URL from '../apiConfig';
 export default function CreatorPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const socket = useWebSocket();
   const { user } = useSelector((state) => state.auth);
   const [activeTab, setActiveTab] = useState('Uploads');
@@ -107,6 +108,33 @@ export default function CreatorPage() {
   } = useHighlights(user);
 
   // Feeds hook
+  useEffect(() => {
+    if (location.state?.openModal) {
+      const modalToOpen = location.state.openModal;
+      switch (modalToOpen) {
+        case 'highlight':
+          setShowCreateHighlightModal(true);
+          break;
+        case 'playlist':
+          setShowCreatePlaylistModal(true);
+          break;
+        case 'community':
+          setShowCommunityModal(true);
+          break;
+        case 'feed':
+          setShowCreateFeedPostModal(true);
+          break;
+        case 'video':
+          setShowVideoModal(true);
+          break;
+        default:
+          break;
+      }
+      // Clear state after handling
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state, navigate]);
+
   const {
     feeds,
     isLoadingFeeds,
