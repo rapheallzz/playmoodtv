@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
@@ -93,6 +94,118 @@ export default function MovieHeader({ title }) {
     setSidebarOpen(false);
   };
 
+  const sidebarContent = (
+    <SidebarOverlay onClick={toggleSidebar}>
+      <SidebarContent onClick={(e) => e.stopPropagation()}>
+        <SidebarHeader>
+          {user && (
+            <LogoutButton onClick={onLogout}>Logout</LogoutButton>
+          )}
+          <CloseButton onClick={toggleSidebar}>X</CloseButton>
+        </SidebarHeader>
+
+        <SidebarScrollArea>
+          {user && (
+            <UserInfo onClick={() => navigate('/dashboard')}>
+              <UserAvatar src={user.profileImage || profile} />
+              <UserName>{user.name}</UserName>
+            </UserInfo>
+          )}
+
+          {!user && (
+            <SignInButton onClick={() => navigate('/login')}>
+              Sign In / Register
+            </SignInButton>
+          )}
+
+          <SidebarItem>
+            <SearchContainer>
+              <img
+                src={hoverStates.search ? search_icon : search_red}
+                onMouseEnter={() => handleHover('search', false)}
+                onMouseLeave={() => handleHover('search', true)}
+                alt="Search"
+              />
+              <SearchInput
+                type="text"
+                placeholder="Search..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </SearchContainer>
+            {searchQuery && (
+              <SearchResults>
+                {searchResults.map((result, index) => (
+                  <SearchResultItem key={index} onClick={() => handleNavItemClick(`/movie/${result.slug}`)}>
+                    {result.name}
+                  </SearchResultItem>
+                ))}
+              </SearchResults>
+            )}
+          </SidebarItem>
+
+          <SidebarNavItems>
+            <NavItem onClick={() => handleNavItemClick('/')} onMouseEnter={() => handleHover('home', false)} onMouseLeave={() => handleHover('home', true)}>
+              <img src={hoverStates.home ? home : home_red} alt="" />
+              <span>Home</span>
+            </NavItem>
+
+            <NavItem onClick={() => user ? handleNavItemClick('/recommended') : setShowWelcomePopup(true)} onMouseEnter={() => handleHover('thumbs', false)} onMouseLeave={() => handleHover('thumbs', true)}>
+              <img src={hoverStates.thumbs ? thumbs : thumbs_red} alt="" />
+              <span>Recommended</span>
+            </NavItem>
+
+            <NavItem onClick={() => handleNavItemClick('/newplaymood')} onMouseEnter={() => handleHover('new', false)} onMouseLeave={() => handleHover('new', true)}>
+              <img src={hoverStates.new ? newp : newp_red} alt="" />
+              <span>New on Playmood</span>
+            </NavItem>
+
+            <NavItem onClick={() => handleNavItemClick('/channels')} onMouseEnter={() => handleHover('snowflakes', false)} onMouseLeave={() => handleHover('snowflakes', true)}>
+              <img src={hoverStates.snowflakes ? snowflakes : snowflakes_red} alt="" />
+              <span>Channels</span>
+            </NavItem>
+
+            <NavItem onClick={() => handleNavItemClick('/spaces')} onMouseEnter={() => handleHover('location', false)} onMouseLeave={() => handleHover('location', true)}>
+              <img src={hoverStates.location ? location : location_red} alt="" />
+              <span>Spaces</span>
+            </NavItem>
+
+            <NavItem onClick={() => handleNavItemClick('/schedule')} onMouseEnter={() => handleHover('schedule', false)} onMouseLeave={() => handleHover('schedule', true)}>
+              <img src={hoverStates.schedule ? schedule_white : schedule_red} alt="" />
+              <span>Schedule</span>
+            </NavItem>
+
+            <NavItem onClick={() => handleNavItemClick('/favourites')} onMouseEnter={() => handleHover('favourites', false)} onMouseLeave={() => handleHover('favourites', true)}>
+              <img src={hoverStates.favourites ? favourite : favourite_red} alt="" />
+              <span>Favorites</span>
+            </NavItem>
+
+            <NavItem onClick={() => set_mountcategory(!mountcategory)} onMouseEnter={() => handleHover('categories', false)} onMouseLeave={() => handleHover('categories', true)}>
+              <img src={hoverStates.categories ? categories : plus} alt="" />
+              <span>Categories</span>
+            </NavItem>
+
+            {mountcategory && (
+              <CategorySubsection>
+                {[
+                  'TOP 10', 'New on Playmood', 'Channels', 'Diaries', 'Spaces',
+                  'Recommendations for you', 'Interviews', 'Fashion Shows',
+                  'Documentaries and Reports', 'Behind the cameras', 'Soon in Playmood',
+                  'Teen', 'Only in Playmood', 'Watchlist'
+                ].map(cat => (
+                  <React.Fragment key={cat}>
+                    <h3 onClick={() => toggleCategory(cat)}>{cat}</h3>
+                    {categoryToggles[cat] && <SidebarSlider />}
+                  </React.Fragment>
+                ))}
+              </CategorySubsection>
+            )}
+          </SidebarNavItems>
+        </SidebarScrollArea>
+      </SidebarContent>
+    </SidebarOverlay>
+  );
+
   return (
     <HeaderWrapper>
       <HeaderContent>
@@ -116,117 +229,7 @@ export default function MovieHeader({ title }) {
 
       <WelcomePopup showPopup={showWelcomePopup} onClose={() => setShowWelcomePopup(false)} />
 
-      {sidebarOpen && (
-        <SidebarOverlay onClick={toggleSidebar}>
-          <SidebarContent onClick={(e) => e.stopPropagation()}>
-            <SidebarHeader>
-              {user && (
-                <LogoutButton onClick={onLogout}>Logout</LogoutButton>
-              )}
-              <CloseButton onClick={toggleSidebar}>X</CloseButton>
-            </SidebarHeader>
-
-            <SidebarScrollArea>
-              {user && (
-                <UserInfo onClick={() => navigate('/dashboard')}>
-                  <UserAvatar src={user.profileImage || profile} />
-                  <UserName>{user.name}</UserName>
-                </UserInfo>
-              )}
-
-              {!user && (
-                <SignInButton onClick={() => navigate('/login')}>
-                  Sign In / Register
-                </SignInButton>
-              )}
-
-              <SidebarItem>
-                <SearchContainer>
-                  <img
-                    src={hoverStates.search ? search_icon : search_red}
-                    onMouseEnter={() => handleHover('search', false)}
-                    onMouseLeave={() => handleHover('search', true)}
-                    alt="Search"
-                  />
-                  <SearchInput
-                    type="text"
-                    placeholder="Search..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                </SearchContainer>
-                {searchQuery && (
-                  <SearchResults>
-                    {searchResults.map((result, index) => (
-                      <SearchResultItem key={index} onClick={() => handleNavItemClick(`/movie/${result.slug}`)}>
-                        {result.name}
-                      </SearchResultItem>
-                    ))}
-                  </SearchResults>
-                )}
-              </SidebarItem>
-
-              <SidebarNavItems>
-                <NavItem onClick={() => handleNavItemClick('/')} onMouseEnter={() => handleHover('home', false)} onMouseLeave={() => handleHover('home', true)}>
-                  <img src={hoverStates.home ? home : home_red} alt="" />
-                  <span>Home</span>
-                </NavItem>
-
-                <NavItem onClick={() => user ? handleNavItemClick('/recommended') : setShowWelcomePopup(true)} onMouseEnter={() => handleHover('thumbs', false)} onMouseLeave={() => handleHover('thumbs', true)}>
-                  <img src={hoverStates.thumbs ? thumbs : thumbs_red} alt="" />
-                  <span>Recommended</span>
-                </NavItem>
-
-                <NavItem onClick={() => handleNavItemClick('/newplaymood')} onMouseEnter={() => handleHover('new', false)} onMouseLeave={() => handleHover('new', true)}>
-                  <img src={hoverStates.new ? newp : newp_red} alt="" />
-                  <span>New on Playmood</span>
-                </NavItem>
-
-                <NavItem onClick={() => handleNavItemClick('/channels')} onMouseEnter={() => handleHover('snowflakes', false)} onMouseLeave={() => handleHover('snowflakes', true)}>
-                  <img src={hoverStates.snowflakes ? snowflakes : snowflakes_red} alt="" />
-                  <span>Channels</span>
-                </NavItem>
-
-                <NavItem onClick={() => handleNavItemClick('/spaces')} onMouseEnter={() => handleHover('location', false)} onMouseLeave={() => handleHover('location', true)}>
-                  <img src={hoverStates.location ? location : location_red} alt="" />
-                  <span>Spaces</span>
-                </NavItem>
-
-                <NavItem onClick={() => handleNavItemClick('/schedule')} onMouseEnter={() => handleHover('schedule', false)} onMouseLeave={() => handleHover('schedule', true)}>
-                  <img src={hoverStates.schedule ? schedule_white : schedule_red} alt="" />
-                  <span>Schedule</span>
-                </NavItem>
-
-                <NavItem onClick={() => handleNavItemClick('/favourites')} onMouseEnter={() => handleHover('favourites', false)} onMouseLeave={() => handleHover('favourites', true)}>
-                  <img src={hoverStates.favourites ? favourite : favourite_red} alt="" />
-                  <span>Favorites</span>
-                </NavItem>
-
-                <NavItem onClick={() => set_mountcategory(!mountcategory)} onMouseEnter={() => handleHover('categories', false)} onMouseLeave={() => handleHover('categories', true)}>
-                  <img src={hoverStates.categories ? categories : plus} alt="" />
-                  <span>Categories</span>
-                </NavItem>
-
-                {mountcategory && (
-                  <CategorySubsection>
-                    {[
-                      'TOP 10', 'New on Playmood', 'Channels', 'Diaries', 'Spaces',
-                      'Recommendations for you', 'Interviews', 'Fashion Shows',
-                      'Documentaries and Reports', 'Behind the cameras', 'Soon in Playmood',
-                      'Teen', 'Only in Playmood', 'Watchlist'
-                    ].map(cat => (
-                      <React.Fragment key={cat}>
-                        <h3 onClick={() => toggleCategory(cat)}>{cat}</h3>
-                        {categoryToggles[cat] && <SidebarSlider />}
-                      </React.Fragment>
-                    ))}
-                  </CategorySubsection>
-                )}
-              </SidebarNavItems>
-            </SidebarScrollArea>
-          </SidebarContent>
-        </SidebarOverlay>
-      )}
+      {sidebarOpen && createPortal(sidebarContent, document.body)}
     </HeaderWrapper>
   );
 }
@@ -240,7 +243,7 @@ const HeaderWrapper = styled.div`
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 1000;
+  z-index: 100000;
   display: flex;
   align-items: center;
 `;
@@ -326,7 +329,8 @@ const SidebarOverlay = styled.div`
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
-  z-index: 10050;
+  z-index: 1000000;
+  display: flex;
 `;
 
 const SidebarContent = styled.div`

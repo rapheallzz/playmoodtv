@@ -482,10 +482,10 @@ export default function MoviePage() {
         <meta property="og:url" content={window.location.href} />
         <meta name="twitter:card" content="summary_large_image" />
       </Helmet>
-      <div className="h-auto pt-[70px]">
-        <MovieHeader title={movie?.title} />
+      <MovieHeader title={movie?.title} />
+      <div className="h-auto pt-[70px] relative z-0">
         {/* Video Holder */}
-        <div className="video-container relative">
+        <div className="video-container relative z-0">
           <video
             muted
             playsInline
@@ -495,7 +495,7 @@ export default function MoviePage() {
             onTimeUpdate={handleTimeUpdate}
             onPause={handlePause}
             controlsList="nodownload"
-            className={`object-cover z-1 ${isMinimized ? 'bottom-0 right-0 w-52' : 'w-full h-[55vh] static'} md:${
+            className={`object-cover ${isMinimized ? 'bottom-0 right-0 w-52' : 'w-full h-[55vh] static'} md:${
               isMinimized ? 'h-auto' : 'h-[70vh]'
             }`}
           >
