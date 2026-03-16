@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 const useCommunityPosts = (user, activeTab, socket, apiUrl) => {
   const [communityPosts, setCommunityPosts] = useState([]);
@@ -131,7 +132,17 @@ const useCommunityPosts = (user, activeTab, socket, apiUrl) => {
   };
 
   const handleDeletePost = async (postId) => {
-    if (!window.confirm('Are you sure you want to delete this post?')) return;
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#541011',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Yes, delete it!'
+    });
+
+    if (!result.isConfirmed) return;
     try {
       await axios.delete(
         `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/community/${postId}`,
@@ -183,7 +194,17 @@ const useCommunityPosts = (user, activeTab, socket, apiUrl) => {
   };
 
   const handleDeleteComment = async (postId, commentId) => {
-    if (!window.confirm('Are you sure you want to delete this comment?')) return;
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#541011',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Yes, delete it!'
+    });
+
+    if (!result.isConfirmed) return;
     try {
       await axios.delete(
         `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/community/${postId}/comment/${commentId}`,

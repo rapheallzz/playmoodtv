@@ -112,6 +112,7 @@ export default function CreatorPage() {
     isLoadingFeeds,
     error: feedsError,
     createFeedPost,
+    deleteFeedPost,
   } = useFeeds(user);
 
   const approvedVideos = useMemo(() => {
@@ -234,6 +235,7 @@ export default function CreatorPage() {
             setSelectedFeedPostIndex(index);
             setShowFeedPostViewerModal(true);
           }}
+          onDelete={deleteFeedPost}
         />
       ) : (
         <ContentSection

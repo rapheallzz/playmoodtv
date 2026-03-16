@@ -98,6 +98,16 @@ const useFeeds = (user, creatorId = null) => {
     }
   };
 
+  const deleteFeedPost = async (postId) => {
+    try {
+      await api.delete(`/api/feed/${postId}`);
+      setFeeds(feeds.filter(feed => feed._id !== postId));
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to delete feed post.');
+      throw err;
+    }
+  };
+
   useEffect(() => {
     fetchFeeds();
   }, [user]);
@@ -111,6 +121,7 @@ const useFeeds = (user, creatorId = null) => {
     likeFeedPost,
     unlikeFeedPost,
     addCommentToFeed,
+    deleteFeedPost,
   };
 };
 

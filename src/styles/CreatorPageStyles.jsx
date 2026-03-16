@@ -713,6 +713,33 @@ export const MediaHoverOverlay = styled.div`
   pointer-events: none;
 `;
 
+export const FeedDeleteButton = styled.button`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  padding: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.2s;
+  opacity: 0;
+
+  ${FeedPostCardContainer}:hover & {
+    opacity: 1;
+  }
+
+  &:hover {
+    background: #541011;
+    transform: scale(1.1);
+  }
+`;
+
 export const HoverIcon = styled.div`
   display: flex;
   align-items: center;
