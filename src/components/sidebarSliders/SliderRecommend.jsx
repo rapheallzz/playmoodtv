@@ -62,10 +62,8 @@ export default function SliderRecommended() {
 
   const settings = {
     dots: false,
-    infinite: data.length > 3,
     speed: 500,
-    slidesToShow: 3, // Show 3 slides for sidebar
-    slidesToScroll: 1,
+    slidesToShow: 3,
     initialSlide: 0,
     autoplay: true,
     autoplaySpeed: 3000,
@@ -78,8 +76,6 @@ export default function SliderRecommended() {
         breakpoint: 1024,
         settings: {
           slidesToShow: 3,
-          slidesToScroll: 1,
-          infinite: data.length > 3,
           dots: true,
           arrows: true,
         },
@@ -87,8 +83,7 @@ export default function SliderRecommended() {
       {
         breakpoint: 600,
         settings: {
-          slidesToShow: 2,
-          slidesToScroll: 1,
+          slidesToShow: 2.5,
           initialSlide: 2,
           arrows: true,
         },
@@ -96,8 +91,7 @@ export default function SliderRecommended() {
       {
         breakpoint: 480,
         settings: {
-          slidesToShow: 2,
-          slidesToScroll: 1,
+          slidesToShow: 2.5,
           arrows: false,
           centerMode: true,
         centerPadding: '20px',
@@ -217,7 +211,7 @@ const SliderContainer = styled.div`
   @media (max-width: 768px) {
     .sidebar-slide {
       width: 120px;
-      height: 180px;
+      height: 110px;
       margin: 0 2px;
     }
 

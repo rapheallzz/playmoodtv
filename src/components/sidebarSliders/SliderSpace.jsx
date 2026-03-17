@@ -121,31 +121,15 @@ const SliderContainer = styled.div`
 
   .slidescircle {
     position: relative;
-    display: flex;
+    display: flex !important;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     user-select: none;
     -webkit-touch-callout: none;
-    width: 80px;
-    height: 80px;
-    // @media (min-width: 768px) {
-    //   width: 100px;
-    //   height: 100px;
-    // }
-      
-    // @media (max-width: 480px) {
-    //   width: 40vw;
-    //   height: 40vw;
-    //   max-width: 140px;
-    //   max-height: 140px;
-    // }
-    // @media (max-width: 360px) {
-    //   width: 35vw;
-    //   height: 35vw;
-    //   max-width: 120px;
-    //   max-height: 120px;
-    // }
+    width: 60px !important;
+    height: 60px !important;
+    margin: 0 auto;
   }
 
   @media (max-width: 1024px) {
@@ -204,57 +188,27 @@ export default function SliderSpace() {
   };
 
   const settings = {
-  dots: false,
-    infinite: data.length > 3,
+    dots: false,
     speed: 500,
-    slidesToShow: 2, // Show 3 slides for sidebar
-    slidesToScroll: 1,
+    slidesToShow: 3,
     initialSlide: 0,
     autoplay: true,
     autoplaySpeed: 3000,
     cssEase: 'linear',
-    arrows: false, 
+    arrows: false,
     swipeToSlide: true,
     lazyLoad: 'ondemand',
-     responsive: [
+    responsive: [
       {
         breakpoint: 1024,
         settings: {
-          slidesToShow: 2,
-          slidesToScroll: 1,
-          infinite: data.length > 3,
-          dots: true,
-          arrows: true,
+          slidesToShow: 3,
         },
       },
       {
         breakpoint: 600,
         settings: {
-          slidesToShow: 2,
-          slidesToScroll: 1,
-          arrows: true,
-          centerMode: true,
-          centerPadding: '10px',
-        },
-      },
-      {
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 1.5,
-          slidesToScroll: 1,
-          arrows: false,
-          centerMode: true,
-          centerPadding: '5px',
-        },
-      },
-      {
-        breakpoint: 360,
-        settings: {
-          slidesToShow: 1.5,
-          slidesToScroll: 1,
-          arrows: false,
-          centerMode: true,
-          centerPadding: '5px',
+          slidesToShow: 2.5,
         },
       },
     ],
