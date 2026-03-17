@@ -976,7 +976,7 @@ export const ModalOverlay = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 10001;
 `;
 
 export const ModalHeader = styled.div`
@@ -2149,11 +2149,11 @@ export const NavigationArrow = styled.button`
     background: rgba(0, 0, 0, 0.3);
 
     &.prev-arrow {
-      left: 5px;
+      left: 10px !important;
     }
 
     &.next-arrow {
-      right: 5px;
+      right: 10px !important;
     }
   }
 `;

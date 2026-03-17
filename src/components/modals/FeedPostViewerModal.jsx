@@ -212,6 +212,29 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
       <CloseButton onClick={onClose}>
         <FaTimes />
       </CloseButton>
+
+      {/* Post Navigation Arrows positioned outside the card */}
+      <NavigationArrow
+        className="prev-arrow"
+        style={{ left: '20px', zIndex: 10005 }}
+        onClick={(e) => {
+          e.stopPropagation();
+          onPrev();
+        }}
+      >
+        <FaChevronLeft />
+      </NavigationArrow>
+      <NavigationArrow
+        className="next-arrow"
+        style={{ right: '20px', zIndex: 10005 }}
+        onClick={(e) => {
+          e.stopPropagation();
+          onNext();
+        }}
+      >
+        <FaChevronRight />
+      </NavigationArrow>
+
       <ModalCard
         onClick={(e) => e.stopPropagation()}
         onTouchStart={onTouchStart}
@@ -241,26 +264,6 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
               </SwiperSlide>
             ))}
           </Swiper>
-
-          {/* Post Navigation Arrows positioned over media */}
-          <NavigationArrow
-            className="prev-arrow"
-            onClick={(e) => {
-              e.stopPropagation();
-              onPrev();
-            }}
-          >
-            <FaChevronLeft />
-          </NavigationArrow>
-          <NavigationArrow
-            className="next-arrow"
-            onClick={(e) => {
-              e.stopPropagation();
-              onNext();
-            }}
-          >
-            <FaChevronRight />
-          </NavigationArrow>
         </ModalCardMedia>
         <ModalCardContent>
           <ModalCardHeader>
