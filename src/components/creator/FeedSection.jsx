@@ -1,11 +1,12 @@
 import React from 'react';
-import { FaHeart, FaComment, FaTrash } from 'react-icons/fa';
+import { FaHeart, FaComment, FaTrash, FaClone } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import {
   FeedContainer,
   FeedGrid,
   FeedItem,
   FeedImage,
+  CarouselIcon,
   NoPostsMessage,
   FeedPostCardContainer,
   MediaHoverOverlay,
@@ -79,10 +80,32 @@ const FeedSection = ({ feeds, isLoadingFeeds, onPostClick, onDelete }) => {
     if (!imageUrl) {
       return null;
     }
+
+    // Determine if it's a carousel (multiple images/videos)
+    let mediaCount = 0;
+    if (feed.media) mediaCount += feed.media.length;
+    if (feed.highlightUrl) mediaCount++;
+    if (feed.content?.video) mediaCount++;
+    if (feed.content?.thumbnail) mediaCount++;
+    if (feed.thumbnail) mediaCount++;
+    // Correct logic for distinct media items (some URLs might overlap)
+    const distinctUrls = new Set();
+    if (feed.media) feed.media.forEach(m => distinctUrls.add(m.url));
+    if (feed.highlightUrl) distinctUrls.add(feed.highlightUrl);
+    if (feed.content?.video) distinctUrls.add(feed.content.video);
+    if (feed.content?.thumbnail) distinctUrls.add(feed.content.thumbnail);
+    if (feed.thumbnail) distinctUrls.add(feed.thumbnail);
+    const isCarousel = distinctUrls.size > 1;
+
     return (
       <FeedPostCardContainer key={feed._id} onClick={() => onPostClick(feed, index)}>
         <FeedItem>
           <FeedImage src={imageUrl} alt={feed.caption || feed.title} />
+          {isCarousel && (
+            <CarouselIcon>
+              <FaClone size={14} />
+            </CarouselIcon>
+          )}
           {onDelete && (
             <FeedDeleteButton onClick={(e) => handleDelete(e, feed._id)} title="Delete Feed Post">
               <FaTrash size={14} />

@@ -3,6 +3,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { FaHeart, FaComment, FaPaperPlane, FaTimes, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { toast } from 'react-toastify';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Pagination, Navigation } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/pagination';
+import 'swiper/css/navigation';
 import contentService from '../../features/contentService';
 import UniversalShareModal from './UniversalShareModal';
 import {
@@ -21,9 +26,6 @@ import {
   CreatorName,
   CloseButton,
   NavigationArrow,
-  MediaNavigationArrow,
-  DotsContainer,
-  Dot,
   LikesContainer,
   CommentInputContainer,
   SendButton,
@@ -191,9 +193,6 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
     post.media.forEach((m) => addMediaItem(m.url));
   }
 
-  const currentMedia = allMedia[currentIndex];
-  if (!currentMedia) return null;
-
   const handleNextMedia = (e) => {
     e.stopPropagation();
     if (currentIndex < allMedia.length - 1) {
@@ -220,26 +219,28 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
         onTouchEnd={onTouchEnd}
       >
         <ModalCardMedia>
-          {currentMedia.type === 'video' ? (
-            <video src={currentMedia.url} controls autoPlay loop />
-          ) : (
-            <img src={currentMedia.url} alt={post.caption || post.title} />
-          )}
-
-          {allMedia.length > 1 && (
-            <DotsContainer>
-              {allMedia.map((_, index) => (
-                <Dot
-                  key={index}
-                  $isActive={index === currentIndex}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setCurrentIndex(index);
-                  }}
-                />
-              ))}
-            </DotsContainer>
-          )}
+          <Swiper
+            modules={[Pagination, Navigation]}
+            pagination={{ clickable: true }}
+            navigation={allMedia.length > 1}
+            onSlideChange={(swiper) => setCurrentIndex(swiper.activeIndex)}
+            className="w-full h-full"
+            style={{
+              '--swiper-pagination-color': '#fff',
+              '--swiper-navigation-color': '#fff',
+              '--swiper-navigation-size': '25px',
+            }}
+          >
+            {allMedia.map((media, idx) => (
+              <SwiperSlide key={idx} className="flex items-center justify-center">
+                {media.type === 'video' ? (
+                  <video src={media.url} controls autoPlay={idx === currentIndex} loop className="max-w-full max-h-full object-contain" />
+                ) : (
+                  <img src={media.url} alt={post.caption || post.title} className="max-w-full max-h-full object-contain" />
+                )}
+              </SwiperSlide>
+            ))}
+          </Swiper>
 
           {/* Post Navigation Arrows positioned over media */}
           <NavigationArrow

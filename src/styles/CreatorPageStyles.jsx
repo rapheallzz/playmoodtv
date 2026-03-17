@@ -782,9 +782,30 @@ export const ModalCardMedia = styled.div`
     object-fit: contain;
   }
 
+  /* Custom styles for Swiper pagination and navigation */
+  .swiper-pagination-bullet {
+    background: white;
+    opacity: 0.5;
+  }
+  .swiper-pagination-bullet-active {
+    opacity: 1;
+    background: white;
+  }
+  .swiper-button-next,
+  .swiper-button-prev {
+    color: white;
+    &:after {
+      font-size: 20px;
+    }
+  }
+
   @media (max-width: 768px) {
     flex: 1;
     height: 60%;
+    .swiper-button-next,
+    .swiper-button-prev {
+      display: none !important;
+    }
   }
 `;
 
@@ -915,6 +936,22 @@ export const FeedItem = styled.div`
   background: #1a1a1a;
   border-radius: 8px;
   overflow: hidden;
+  position: relative;
+`;
+
+export const CarouselIcon = styled.div`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: white;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
 `;
 
 export const FeedImage = styled.img`
