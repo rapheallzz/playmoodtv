@@ -439,6 +439,7 @@ export default function CreatorPage() {
           }}
           creatorName={creatorName}
           profileImage={profileImage}
+          creatorId={user?._id}
         />
       )}
       <Footer />

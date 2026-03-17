@@ -796,6 +796,9 @@ function HomeContent({
             onClose={() => {
               setShowVerticalHighlightViewer(false);
             }}
+            creatorName={highlights[0].creator?.name || highlights[0].content?.user?.name}
+            profileImage={highlights[0].creator?.profileImage || highlights[0].content?.user?.profileImage}
+            creatorId={highlights[0].creator?._id || highlights[0].content?.user?._id || highlights[0].content?.user}
           />
         )}
         <WelcomePopup

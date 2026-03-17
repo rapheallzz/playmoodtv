@@ -1016,6 +1016,7 @@ const fetchPlaylists = async () => {
           }}
           creatorName={creatorData.name}
           profileImage={creatorData.profileImage}
+          creatorId={creatorData._id}
         />
       )}
 

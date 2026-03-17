@@ -37,6 +37,9 @@ const VerticalHighlightViewer = ({
   highlights: initialHighlights,
   startIndex,
   onClose,
+  creatorName,
+  profileImage,
+  creatorId,
 }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -439,14 +442,16 @@ const VerticalHighlightViewer = ({
     }
   };
 
-  const handleNavigateToCreator = (creatorId) => {
-    const creator = highlights.find(h => h.content.user._id === creatorId)?.creator;
-    if (creator) {
-      const encodedId = btoa(creatorId);
-      const creatorSlug = `${creator.name.replace(/\s+/g, '-')}-${encodedId}`;
+  const handleNavigateToCreator = (cId, cName) => {
+    if (!cId) return;
+    const name = cName || 'creator';
+    try {
+      const encodedId = btoa(cId);
+      const creatorSlug = `${name.replace(/\s+/g, '-')}-${encodedId}`;
       onClose();
       navigate(`/creator/${creatorSlug}`);
-    } else {
+    } catch (error) {
+      console.error("Navigation error:", error);
     }
   };
 
@@ -523,10 +528,14 @@ const VerticalHighlightViewer = ({
             <HighlightOverlay />
             <BottomInfoContainer>
               <TextInfoContainer>
-                {highlight.creator && (
-                  <CreatorInfo onClick={() => handleNavigateToCreator(highlight.content.user._id)}>
-                    <CreatorAvatar src={highlight.creator.profileImage} alt={highlight.creator.name} />
-                    <CreatorName>@{highlight.creator.name}</CreatorName>
+                {(highlight.creator || (creatorName && profileImage)) && (
+                  <CreatorInfo onClick={() => {
+                    const cId = highlight.content?.user?._id || highlight.content?.user || highlight.user?._id || highlight.user || creatorId;
+                    const cName = highlight.creator?.name || creatorName;
+                    handleNavigateToCreator(cId, cName);
+                  }}>
+                    <CreatorAvatar src={highlight.creator?.profileImage || profileImage} alt={highlight.creator?.name || creatorName} />
+                    <CreatorName>@{highlight.creator?.name || creatorName}</CreatorName>
                   </CreatorInfo>
                 )}
                 <HighlightViewerTitle>{highlight.content.title}</HighlightViewerTitle>

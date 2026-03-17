@@ -1978,7 +1978,8 @@ export const CreatorInfo = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
-  cursor: pointer;
+  cursor: pointer !important;
+  z-index: 15;
 `;
 
 export const CreatorAvatar = styled.img`
