@@ -19,10 +19,9 @@ export default function SidebarInterview() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await axios.get(`${BASE_API_URL}/api/content/`);
+        const response = await axios.get(`${BASE_API_URL}/api/content/category?category=Interview`);
         if (response.data && Array.isArray(response.data)) {
-          const filteredData = response.data.filter(content => content.category === 'Interview');
-          setData(filteredData);
+          setData(response.data);
         } else {
           setError('Unexpected data format.');
         }

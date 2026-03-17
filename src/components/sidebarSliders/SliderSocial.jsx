@@ -19,10 +19,9 @@ export default function SliderSocial() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await axios.get(`${BASE_API_URL}/api/content/`);
+        const response = await axios.get(`${BASE_API_URL}/api/content/category?category=Social`);
         if (response.data && Array.isArray(response.data)) {
-          const filteredData = response.data.filter(content => content.category === 'Social');
-          setData(filteredData);
+          setData(response.data);
         } else {
           setError('Unexpected data format.');
         }

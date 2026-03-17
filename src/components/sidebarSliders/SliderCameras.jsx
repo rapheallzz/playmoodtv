@@ -19,10 +19,9 @@ export default function SliderCamera() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await axios.get(`${BASE_API_URL}/api/content/`);
+        const response = await axios.get(`${BASE_API_URL}/api/content/category?category=Behind the camera`);
         if (response.data && Array.isArray(response.data)) {
-          const filteredData = response.data.filter(content => content.category === 'Behind the camera');
-          setData(filteredData);
+          setData(response.data);
         } else {
           setError('Unexpected data format.');
         }

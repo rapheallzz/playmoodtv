@@ -19,10 +19,9 @@ export default function SliderFashion() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await axios.get(`${BASE_API_URL}/api/content/`);
+        const response = await axios.get(`${BASE_API_URL}/api/content/category?category=Fashion Show`);
         if (response.data && Array.isArray(response.data)) {
-          const filteredData = response.data.filter(content => content.category === 'Fashion Show');
-          setData(filteredData);
+          setData(response.data);
         } else {
           setError('Unexpected data format.');
         }

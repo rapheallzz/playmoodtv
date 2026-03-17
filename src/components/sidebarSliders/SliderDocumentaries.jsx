@@ -19,10 +19,9 @@ export default function SliderDocumentaries() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await axios.get(`${BASE_API_URL}/api/content/`);
+        const response = await axios.get(`${BASE_API_URL}/api/content/category?category=Documentaries`);
         if (response.data && Array.isArray(response.data)) {
-          const filteredData = response.data.filter(content => content.category === 'Documentaries');
-          setData(filteredData);
+          setData(response.data);
         } else {
           setError('Unexpected data format.');
         }

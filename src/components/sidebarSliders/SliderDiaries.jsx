@@ -1,6 +1,7 @@
 import BASE_API_URL from '../../apiConfig';
 import React, { useEffect, useState, useRef } from 'react';
 import Slider from 'react-slick';
+import { shuffleArray } from '../../utils/shuffle';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import axios from 'axios';
@@ -167,7 +168,7 @@ export default function SliderDiaries() {
           },
         });
         if (Array.isArray(response.data)) {
-          setData(response.data);
+          setData(shuffleArray(response.data));
         } else {
           setError('Unexpected data format.');
         }
