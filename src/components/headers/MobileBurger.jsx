@@ -51,7 +51,7 @@ import schedule_red from '/schedule_red.png';
 import plus from '/plus.png';
 import favourite_red from '/star_red.png';
 
-export default function MobileBurger() {
+export default function MobileBurger({ channels, set_channels }) {
   const navigate = useNavigate();
   const [showDonationModal, setShowDonationModal] = useState(false);
   const dispatch = useDispatch();
@@ -390,7 +390,7 @@ export default function MobileBurger() {
           {/* Profile Icon */}
           <div className="flex-1 flex justify-end">
             <div
-              className="w-8 h-8 flex justify-center items-center rounded-full cursor-pointer overflow-hidden border border-white/10"
+              className="w-8 h-8 flex justify-center items-center rounded-full cursor-pointer overflow-hidden border border-white/10 relative"
               onClick={() => {
                 if (user) {
                   navigate('/dashboard');
@@ -399,14 +399,16 @@ export default function MobileBurger() {
                 }
               }}
             >
-              {user && (user.profileImage?.url || user.profileImage) ? (
+              <AiOutlineUser size={20} color="white" style={{ position: 'absolute' }} />
+              {user && (user.profileImage?.url || user.profileImage) && (
                 <img
                   src={user.profileImage?.url || user.profileImage}
                   alt="Profile"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover relative z-10"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                  }}
                 />
-              ) : (
-                <img src={profile} alt="Profile Icon" className="w-5 h-5" />
               )}
             </div>
           </div>
