@@ -1,3 +1,4 @@
+import BASE_API_URL from '../../apiConfig';
 import React, { useEffect, useState } from 'react';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
@@ -17,10 +18,9 @@ export default function SliderSoon() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
+        const response = await axios.get(`${BASE_API_URL}/api/content/soon`);
         if (response.data && Array.isArray(response.data)) {
-          const filteredData = response.data.filter(content => content.category === 'Documentarie');
-          setData(filteredData);
+          setData(response.data);
         } else {
           setError('Unexpected data format.');
         }

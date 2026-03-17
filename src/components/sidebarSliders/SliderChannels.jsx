@@ -1,3 +1,4 @@
+import BASE_API_URL from '../../apiConfig';
 import React, { useEffect, useState } from 'react';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
@@ -172,7 +173,7 @@ export default function SliderChannel() {
   useEffect(() => {
     const fetchCreators = async () => {
       try {
-        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/users/creators', {
+        const response = await axios.get(`${BASE_API_URL}/api/users/creators`, {
           headers: {
             'Cache-Control': 'no-cache',
             'Pragma': 'no-cache',

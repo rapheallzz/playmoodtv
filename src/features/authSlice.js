@@ -3,8 +3,9 @@ import authService from './authService';
 import contentService from './contentService';
 import { decodeToken } from '../utils/auth';
 import axios from 'axios';
+import BASE_API_URL from '../apiConfig';
 
-const API_URL = 'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/user/';
+const API_URL = `${BASE_API_URL}/api/user/`;
 
 // Get user from localStorage with validation
 let user = null;

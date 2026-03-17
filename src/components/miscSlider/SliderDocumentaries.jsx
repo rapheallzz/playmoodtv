@@ -1,3 +1,4 @@
+import BASE_API_URL from '../../apiConfig';
 
 import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
@@ -54,7 +55,7 @@ export default function SliderDocumentaries() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
+        const response = await axios.get(`${BASE_API_URL}/api/content/`);
         if (response.data && Array.isArray(response.data)) {
           const filteredData = response.data.filter((content) => content.category === 'Teen');
           setData(filteredData);

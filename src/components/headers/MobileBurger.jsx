@@ -1,3 +1,4 @@
+import BASE_API_URL from '../../apiConfig';
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom';
@@ -337,7 +338,7 @@ export default function MobileBurger() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
+        const response = await axios.get(`${BASE_API_URL}/api/content/`);
         setData(response.data);
       } catch (error) {
       }

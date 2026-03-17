@@ -1,3 +1,4 @@
+import BASE_API_URL from '../../apiConfig';
 import React, { useEffect, useState, useRef } from 'react';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
@@ -53,7 +54,7 @@ export default function SliderWatchlist() {
       try {
 
         // Fetch all data
-        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
+        const response = await axios.get(`${BASE_API_URL}/api/content/`);
 
 
 

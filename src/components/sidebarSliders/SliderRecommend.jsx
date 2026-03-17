@@ -3,6 +3,7 @@ import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import axios from 'axios';
+import BASE_API_URL from '../../apiConfig';
 import SideBarSlidercont from '../SideBarSlidercont';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
@@ -17,11 +18,17 @@ export default function SliderRecommended() {
 
   useEffect(() => {
     async function fetchData() {
+      const id = localStorage.getItem('lastWatchedContentId');
+
+      if (!id) {
+        setData([]);
+        return;
+      }
+
       try {
-        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
+        const response = await axios.get(`${BASE_API_URL}/api/content/recommended/${id}`);
         if (response.data && Array.isArray(response.data)) {
-          const filteredData = response.data.filter(content => content.category === 'Teen');
-          setData(filteredData);
+          setData(response.data);
         } else {
           setError('Unexpected data format.');
         }

@@ -1,3 +1,4 @@
+import BASE_API_URL from '../../apiConfig';
 import React, { useEffect, useState } from 'react';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
@@ -19,7 +20,7 @@ export default function SliderNew() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/new');
+        const response = await axios.get(`${BASE_API_URL}/api/content/new`);
         if (response.data && Array.isArray(response.data)) {
           setData(response.data); // Set all data without filtering
         } else {

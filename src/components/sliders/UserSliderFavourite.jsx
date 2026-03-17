@@ -1,3 +1,4 @@
+import BASE_API_URL from '../../apiConfig';
 import React, { useEffect, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import Slider from 'react-slick';
@@ -60,7 +61,7 @@ export default function UserFavourite() {
 
       try {
         const response = await axios.get(
-          `https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/user/watchlist/${user._id}`,
+          `${BASE_API_URL}/api/user/watchlist/${user._id}`,
           {
             headers: {
               Authorization: `Bearer ${user.token}`,

@@ -10,14 +10,14 @@ import App from './App';
 import { WebSocketProvider } from './context/WebSocketContext';
 import './index.css'
 import 'sweetalert2/dist/sweetalert2.min.css'
+import BASE_API_URL from './apiConfig';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
-const apiUrl = 'https://playmoodserver-stg-0fb54b955e6b.herokuapp.com';
 root.render(
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
       <HelmetProvider>
-        <WebSocketProvider url={apiUrl}>
+        <WebSocketProvider url={BASE_API_URL}>
           <App />
         </WebSocketProvider>
       </HelmetProvider>

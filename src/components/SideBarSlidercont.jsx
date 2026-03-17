@@ -1,3 +1,4 @@
+import BASE_API_URL from '../apiConfig';
 import React, { useState, useEffect, useRef } from 'react';
 import { HiDotsVertical } from 'react-icons/hi';
 import { FaPaperPlane, FaHeart, FaPlus, FaCheck } from 'react-icons/fa';
@@ -42,7 +43,7 @@ const SideBarSlidercont = React.memo(function SideBarSlidercont({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
+        const response = await axios.get(`${BASE_API_URL}/api/content/`);
         setSliderContentData(response.data);
       } catch (error) {
       }

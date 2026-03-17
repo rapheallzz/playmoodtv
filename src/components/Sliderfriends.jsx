@@ -1,3 +1,4 @@
+import BASE_API_URL from '../apiConfig';
 import React, { useEffect, useState } from 'react';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
@@ -13,7 +14,7 @@ export default function Sliderfriends() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('https://playmoodserver-stg-0fb54b955e6b.herokuapp.com/api/content/');
+        const response = await axios.get(`${BASE_API_URL}/api/content/`);
         setData(response.data);
       } catch (error) {
       }
