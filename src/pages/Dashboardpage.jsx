@@ -47,6 +47,7 @@ function Dashboardpage() {
   const [activeInteractionTab, setActiveInteractionTab] = useState('SUBSCRIPTION');
   const [isLoadingUser, setIsLoadingUser] = useState(true);
   const [showCreatorConfirmPopup, setShowCreatorConfirmPopup] = useState(false);
+  const [isApplyingAsCreator, setIsApplyingAsCreator] = useState(false);
   const [showEmailVerificationModal, setShowEmailVerificationModal] = useState(false);
   const [userProfile, setUserProfile] = useState(null);
   const [showChangePassword, setShowChangePassword] = useState(false);
@@ -485,6 +486,8 @@ function Dashboardpage() {
   };
 
   const confirmApplyAsCreator = async () => {
+    if (isApplyingAsCreator) return;
+    setIsApplyingAsCreator(true);
     try {
       const response = await axios.post(
         `${BASE_API_URL}/api/rolechange`,
@@ -499,9 +502,11 @@ function Dashboardpage() {
       }
     } catch (error) {
       setMessage('There was an issue submitting your request. Please try again.');
+    } finally {
+      setIsApplyingAsCreator(false);
+      setShowCreatorConfirmPopup(false);
+      setShowMessageModal(true);
     }
-    setShowCreatorConfirmPopup(false);
-    setShowMessageModal(true);
   };
 
   const handleProfileImageClick = async () => {
@@ -729,14 +734,25 @@ function Dashboardpage() {
               </p>
               <div className="flex justify-center gap-4">
                 <button
-                  className="bg-[#541011] text-white py-2 px-6 rounded text-base font-normal hover:bg-white hover:text-[#541011] transition-colors"
+                  className={`bg-[#541011] text-white py-2 px-6 rounded text-base font-normal transition-colors flex items-center gap-2 ${
+                    isApplyingAsCreator ? 'opacity-70 cursor-not-allowed' : 'hover:bg-white hover:text-[#541011]'
+                  }`}
                   onClick={confirmApplyAsCreator}
+                  disabled={isApplyingAsCreator}
                 >
-                  Confirm
+                  {isApplyingAsCreator ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Applying...
+                    </>
+                  ) : (
+                    'Confirm'
+                  )}
                 </button>
                 <button
                   className="bg-transparent text-white py-2 px-6 border border-white rounded text-base font-normal hover:bg-[#541011] transition-colors"
                   onClick={() => setShowCreatorConfirmPopup(false)}
+                  disabled={isApplyingAsCreator}
                 >
                   Cancel
                 </button>
