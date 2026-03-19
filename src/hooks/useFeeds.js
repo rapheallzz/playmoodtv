@@ -32,11 +32,14 @@ const useFeeds = (user, creatorId = null) => {
     }
   };
 
-  const createFeedPost = async (caption, mediaFiles) => {
+  const createFeedPost = async (caption, mediaFiles, previews, selectedExisting = []) => {
     if (!user) return;
     try {
-      // Step 1 & 2: Get signatures and upload each file to R2
-      const uploadPromises = Array.from(mediaFiles).map(async (file) => {
+      // Step 1: Upload new media files
+      const uploadPromises = mediaFiles.map(async (file, index) => {
+        const preview = previews[index];
+
+        // Upload main file
         const signatureFormData = new FormData();
         signatureFormData.append('provider', 'r2');
         signatureFormData.append('fileName', file.name);
@@ -46,28 +49,58 @@ const useFeeds = (user, creatorId = null) => {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
         const { uploadUrl, key, publicUrl } = sigResponse.data;
-
         await uploadService.uploadToR2(file, uploadUrl, file.type);
+
+        let thumbnailData = null;
+        // Upload generated thumbnail if it's a video
+        if (file.type.startsWith('video/') && preview.thumbnailBlob) {
+          const thumbFileName = `thumb-${file.name.split('.')[0]}.jpg`;
+          const thumbFormData = new FormData();
+          thumbFormData.append('provider', 'r2');
+          thumbFormData.append('fileName', thumbFileName);
+          thumbFormData.append('contentType', 'image/jpeg');
+
+          const thumbSigResponse = await api.post('/api/content/signature', thumbFormData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+          });
+          const { uploadUrl: thumbUploadUrl, key: thumbKey, publicUrl: thumbPublicUrl } = thumbSigResponse.data;
+          await uploadService.uploadToR2(preview.thumbnailBlob, thumbUploadUrl, 'image/jpeg');
+
+          thumbnailData = {
+            url: thumbPublicUrl || thumbUploadUrl,
+            key: thumbKey
+          };
+        }
 
         return {
           url: publicUrl || uploadUrl,
           key: key,
+          thumbnail: thumbnailData
         };
       });
 
       const uploadedMedia = await Promise.all(uploadPromises);
 
+      // Prepare IDs for existing content
+      const contentIds = selectedExisting.filter(item => item.type === 'video').map(item => item.id);
+      const highlightIds = selectedExisting.filter(item => item.type === 'highlight').map(item => item.id);
+
       // 3. Create feed post in backend
       const postData = {
         caption,
-        type: 'image',
+        type: uploadedMedia.some(m => m.url.includes('.mp4')) ? 'video' : 'image', // Basic type detection
         media: uploadedMedia,
+        contentIds,
+        highlightIds
       };
 
       const response = await api.post('/api/feed', postData);
       setFeeds([response.data, ...feeds]);
+      return { success: true };
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to create feed post.');
+      const errMsg = err.response?.data?.message || 'Failed to create feed post.';
+      setError(errMsg);
+      throw new Error(errMsg);
     }
   };
 

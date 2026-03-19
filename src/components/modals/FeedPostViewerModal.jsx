@@ -161,9 +161,13 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
   const allMedia = [];
   const addedUrls = new Set();
 
-  const addMediaItem = (url, type) => {
+  const addMediaItem = (url, type, thumbnail) => {
     if (url && !addedUrls.has(url)) {
-      allMedia.push({ url, type: type || (url.endsWith('.mp4') ? 'video' : 'image') });
+      allMedia.push({
+        url,
+        type: type || (url.endsWith('.mp4') ? 'video' : 'image'),
+        thumbnail
+      });
       addedUrls.add(url);
     }
   };
@@ -190,7 +194,7 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
 
   // 5. Additional Media Array
   if (post.media) {
-    post.media.forEach((m) => addMediaItem(m.url));
+    post.media.forEach((m) => addMediaItem(m.url, m.url.endsWith('.mp4') ? 'video' : 'image', m.thumbnail?.url || m.thumbnail));
   }
 
   const handleNextMedia = (e) => {
@@ -257,7 +261,14 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
             {allMedia.map((media, idx) => (
               <SwiperSlide key={idx} className="flex items-center justify-center">
                 {media.type === 'video' ? (
-                  <video src={media.url} controls autoPlay={idx === currentIndex} loop className="max-w-full max-h-full object-contain" />
+                  <video
+                    src={media.url}
+                    poster={media.thumbnail}
+                    controls
+                    autoPlay={idx === currentIndex}
+                    loop
+                    className="max-w-full max-h-full object-contain"
+                  />
                 ) : (
                   <img src={media.url} alt={post.caption || post.title} className="max-w-full max-h-full object-contain" />
                 )}

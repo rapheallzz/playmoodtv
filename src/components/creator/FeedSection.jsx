@@ -76,7 +76,9 @@ const FeedSection = ({ feeds, isLoadingFeeds, onPostClick, onDelete }) => {
   };
 
   const renderFeedPost = (feed, index) => {
-    const imageUrl = feed.media?.[0]?.url || feed.content?.thumbnail || feed.thumbnail;
+    const firstMedia = feed.media?.[0];
+    const imageUrl = firstMedia?.thumbnail?.url || firstMedia?.url || feed.content?.thumbnail || feed.thumbnail;
+
     if (!imageUrl) {
       return null;
     }

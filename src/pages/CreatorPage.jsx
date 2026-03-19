@@ -419,6 +419,8 @@ export default function CreatorPage() {
           isOpen={showCreateFeedPostModal}
           onClose={closeAllModals}
           onCreateFeedPost={createFeedPost}
+          availableVideos={approvedVideos}
+          highlights={highlights}
         />
       )}
       {showFeedPostViewerModal && (
