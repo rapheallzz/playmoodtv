@@ -168,11 +168,6 @@ const CreateHighlightModal = ({
     setStartTime(value);
     if (videoRef.current) {
       videoRef.current.currentTime = value;
-      if (videoRef.current.paused) {
-          // just seek
-      } else {
-          // maybe pause if it goes out of bounds?
-      }
     }
   };
 
@@ -210,17 +205,9 @@ const CreateHighlightModal = ({
     return availableVideos.find((video) => video._id === contentId);
   }, [contentId, availableVideos]);
 
-  useEffect(() => {
-    if (selectedVideo && videoRef.current) {
-        // We don't need to do much here, the video src will be updated by React
-    }
-  }, [selectedVideo]);
-
   const handleVideoChange = (e) => {
-    const vid = availableVideos.find(v => v._id === e.target.value);
     setContentId(e.target.value);
     setStartTime(0);
-    // When switching videos, reset duration so slider doesn't show old duration
     setVideoDuration(null);
   };
 
@@ -240,7 +227,6 @@ const CreateHighlightModal = ({
         setEndTime(Math.min(30, duration));
       };
       video.addEventListener('loadedmetadata', handleLoadedMetadata);
-      // If metadata is already loaded
       if (video.readyState >= 1) {
         handleLoadedMetadata();
       }
@@ -259,7 +245,7 @@ const CreateHighlightModal = ({
         const duration = video.duration;
         setVideoDuration(duration);
         setStartTime(0);
-        setEndTime(Math.min(30, duration)); // Default to 30s or full duration
+        setEndTime(Math.min(30, duration));
         URL.revokeObjectURL(url);
       };
       video.src = url;
@@ -276,46 +262,46 @@ const CreateHighlightModal = ({
     }
   }, [videoFile]);
 
-  const uploadVideoAsContent = async () => {
-    if (!videoFile) return null;
+  const generateThumbnail = (file) => {
+    return new Promise((resolve) => {
+      const video = document.createElement('video');
+      video.preload = 'metadata';
+      video.onloadedmetadata = () => {
+        video.currentTime = Math.min(startTime, video.duration);
+      };
+      video.onseeked = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        canvas.toBlob((blob) => {
+          resolve(blob);
+          video.remove();
+        }, 'image/jpeg');
+      };
+      video.src = URL.createObjectURL(file);
+    });
+  };
 
-    // 1. Get signature
+  const uploadToR2 = async (file, contentType) => {
     const signatureFormData = new FormData();
     signatureFormData.append('provider', 'r2');
-    signatureFormData.append('fileName', videoFile.name);
-    signatureFormData.append('contentType', videoFile.type);
+    signatureFormData.append('fileName', file.name || `thumb-${Date.now()}.jpg`);
+    signatureFormData.append('contentType', contentType);
 
     const sigResponse = await axios.post(`${BASE_API_URL}/api/content/signature`, signatureFormData, {
       headers: { Authorization: `Bearer ${userToken}` }
     });
     const { uploadUrl, key, publicUrl } = sigResponse.data;
 
-    // 2. Upload to R2
-    await uploadService.uploadToR2(videoFile, uploadUrl, videoFile.type, (progress) => {
+    await uploadService.uploadToR2(file, uploadUrl, contentType, (progress) => {
+      if (contentType.startsWith('video/')) {
         setUploadProgress(progress);
+      }
     });
 
-    // 3. Create Content Record (simplified for highlight source)
-    const contentPayload = {
-      title: `Source for ${title}`,
-      description: `Uploaded via highlight creator`,
-      category: 'Social',
-      video: {
-        url: publicUrl || uploadUrl,
-        key: key,
-      },
-      isApproved: true, // Auto-approve for highlights if possible, or handle pending
-      userId: user.userId || user._id
-    };
-
-    const contentRes = await axios.post(`${BASE_API_URL}/api/content`, contentPayload, {
-      headers: {
-        Authorization: `Bearer ${userToken}`,
-        'Content-Type': 'application/json',
-      },
-    });
-
-    return contentRes.data._id;
+    return { key, publicUrl: publicUrl || uploadUrl };
   };
 
   const handleSubmit = async (e) => {
@@ -332,17 +318,24 @@ const CreateHighlightModal = ({
     setIsLoading(true);
 
     try {
-      let finalContentId = contentId;
-      if (activeTab === 'upload') {
-        finalContentId = await uploadVideoAsContent();
-      }
-
-      const result = await onCreate({
-        contentId: finalContentId,
+      let payload = {
+        title,
         startTime: parseFloat(startTime),
         endTime: parseFloat(endTime),
-        title,
-      });
+      };
+
+      if (activeTab === 'existing') {
+        payload.contentId = contentId;
+      } else {
+        const videoData = await uploadToR2(videoFile, videoFile.type);
+        const thumbBlob = await generateThumbnail(videoFile);
+        const thumbData = await uploadToR2(thumbBlob, 'image/jpeg');
+
+        payload.videoKey = videoData.key;
+        payload.thumbnailKey = thumbData.key;
+      }
+
+      const result = await onCreate(payload);
 
       if (result.success) {
         Swal.fire('Success', 'Highlight created successfully!', 'success');
@@ -352,7 +345,8 @@ const CreateHighlightModal = ({
         setError(result.error || 'Failed to create highlight.');
       }
     } catch (err) {
-      setError(err.message || 'An error occurred during creation.');
+      const errMsg = err.response?.data?.error || err.response?.data?.message || err.message || 'An error occurred during creation.';
+      setError(errMsg);
     } finally {
       setIsLoading(false);
       setUploadProgress(0);
@@ -361,12 +355,13 @@ const CreateHighlightModal = ({
 
   const resetForm = () => {
     setContentId('');
-    setStartTime('');
-    setEndTime('');
+    setStartTime(0);
+    setEndTime(0);
     setTitle('');
     setVideoFile(null);
     setVideoDuration(null);
     setActiveTab('existing');
+    setError('');
   };
 
   if (!isOpen) return null;

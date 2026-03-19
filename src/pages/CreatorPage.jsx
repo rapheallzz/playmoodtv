@@ -102,6 +102,7 @@ export default function CreatorPage() {
   const {
     highlights,
     isLoading: isLoadingHighlights,
+    isCreating: isCreatingHighlight,
     error: highlightsError,
     createHighlight,
     fetchHighlights,
@@ -210,7 +211,7 @@ export default function CreatorPage() {
     setShowVerticalHighlightViewer(true); // Data is ready, now we can show the viewer
   };
 
-  const isLoading = isLoadingChannel || isLoadingHighlights;
+  const isLoading = (isLoadingChannel || isLoadingHighlights) && !isCreatingHighlight;
 
   if (isLoading) {
     return <CreatorPageSkeleton />;

@@ -5,6 +5,7 @@ import BASE_API_URL from '../apiConfig';
 const useHighlights = (user, creatorId) => {
   const [highlights, setHighlights] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState(null);
 
   const fetchHighlights = useCallback(async () => {
@@ -21,7 +22,7 @@ const useHighlights = (user, creatorId) => {
       });
       setHighlights(response.data);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to fetch highlights.');
+      setError(err.response?.data?.error || err.response?.data?.message || 'Failed to fetch highlights.');
     } finally {
       setIsLoading(false);
     }
@@ -36,7 +37,7 @@ const useHighlights = (user, creatorId) => {
       setError('User not authenticated.');
       return { success: false };
     }
-    setIsLoading(true);
+    setIsCreating(true);
     setError(null);
     try {
       const config = {
@@ -54,17 +55,17 @@ const useHighlights = (user, creatorId) => {
         config
       );
       setHighlights((prev) => [...prev, response.data]);
-      setIsLoading(false);
       return { success: true, data: response.data };
     } catch (err) {
-      const errorMessage = err.response?.data?.message || 'Failed to create highlight.';
+      const errorMessage = err.response?.data?.error || err.response?.data?.message || 'Failed to create highlight.';
       setError(errorMessage);
-      setIsLoading(false);
       return { success: false, error: errorMessage };
+    } finally {
+      setIsCreating(false);
     }
   };
 
-  return { highlights, isLoading, error, createHighlight, fetchHighlights };
+  return { highlights, isLoading, isCreating, error, createHighlight, fetchHighlights };
 };
 
 export default useHighlights;
