@@ -712,7 +712,6 @@ const fetchPlaylists = async () => {
             <ProfileImage
               src={creatorData?.profileImage || 'https://via.placeholder.com/80'}
               alt="profile"
-              className="w-full h-full object-cover"
             />
           </div>
           <div className="gap-2">
@@ -952,10 +951,12 @@ const fetchPlaylists = async () => {
           <ModalContent onClick={(e) => e.stopPropagation()}>
             <CloseButton onClick={closeModal}>×</CloseButton>
             <ModalHeader>
-              <ProfileImage
-                src={creatorData?.profileImage || 'https://via.placeholder.com/60'}
-                alt="Creator Profile"
-              />
+              <div className="w-[60px] h-[60px] rounded-full overflow-hidden flex-shrink-0">
+                <ProfileImage
+                  src={creatorData?.profileImage || 'https://via.placeholder.com/60'}
+                  alt="Creator Profile"
+                />
+              </div>
               <h2>{creatorData?.name || 'Creator Name'}</h2>
             </ModalHeader>
             <ModalBody>
@@ -1274,11 +1275,10 @@ const ModalHeader = styled.div`
 `;
 
 const ProfileImage = styled.img`
-  border-radius: 50%;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   background: #ccc;
-  width: 60px;
-  height: 60px;
 `;
 
 const ModalBody = styled.div`
