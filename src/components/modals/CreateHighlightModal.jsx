@@ -44,6 +44,103 @@ const Tab = styled.button`
   }
 `;
 
+const RangeSliderContainer = styled.div`
+  position: relative;
+  width: 100%;
+  height: 30px;
+  margin: 10px 0 25px 0;
+  display: flex;
+  align-items: center;
+  background: #1a1a1a;
+  border-radius: 4px;
+  padding: 0 10px;
+`;
+
+const SliderTrack = styled.div`
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  height: 4px;
+  background: #444;
+  border-radius: 2px;
+  z-index: 1;
+`;
+
+const SliderRange = styled.div`
+  position: absolute;
+  height: 4px;
+  background: #541011;
+  border-radius: 2px;
+  z-index: 2;
+  left: calc(10px + ${props => props.$left}% * (100% - 20px) / 100);
+  width: calc(${props => props.$width}% * (100% - 20px) / 100);
+`;
+
+const RangeInput = styled.input`
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  width: calc(100% - 20px);
+  background: none;
+  pointer-events: none;
+  appearance: none;
+  -webkit-appearance: none;
+  z-index: 3;
+  margin: 0;
+
+  &::-webkit-slider-thumb {
+    height: 24px;
+    width: 12px;
+    border-radius: 2px;
+    background: #fff;
+    cursor: pointer;
+    pointer-events: auto;
+    appearance: none;
+    -webkit-appearance: none;
+    border: 1px solid #541011;
+    box-shadow: 0 0 5px rgba(0,0,0,0.5);
+  }
+
+  &::-moz-range-thumb {
+    height: 24px;
+    width: 12px;
+    border-radius: 2px;
+    background: #fff;
+    cursor: pointer;
+    pointer-events: auto;
+    border: 1px solid #541011;
+    box-shadow: 0 0 5px rgba(0,0,0,0.5);
+  }
+`;
+
+const TimeLabelContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-top: -15px;
+  margin-bottom: 20px;
+  font-size: 11px;
+  color: #888;
+  font-family: monospace;
+`;
+
+const PlayRangeButton = styled.button`
+  background: #333;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 15px;
+
+  &:hover {
+    background: #444;
+  }
+`;
+
 const CreateHighlightModal = ({
   isOpen,
   onClose,
@@ -53,27 +150,59 @@ const CreateHighlightModal = ({
   const { user, userToken } = useSelector((state) => state.auth);
   const [activeTab, setActiveTab] = useState('existing'); // 'existing' or 'upload'
   const [contentId, setContentId] = useState('');
-  const [startTime, setStartTime] = useState('');
-  const [endTime, setEndTime] = useState('');
+  const [startTime, setStartTime] = useState(0);
+  const [endTime, setEndTime] = useState(0);
   const [title, setTitle] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [videoFile, setVideoFile] = useState(null);
   const [videoPreviewUrl, setVideoPreviewUrl] = useState('');
   const [videoDuration, setVideoDuration] = useState(null);
+  const [isPreviewing, setIsPreviewing] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const fileInputRef = useRef(null);
   const videoRef = useRef(null);
 
-  const handleSetStartTime = () => {
+  const handleStartTimeChange = (e) => {
+    const value = Math.min(parseFloat(e.target.value), endTime - 0.1);
+    setStartTime(value);
     if (videoRef.current) {
-      setStartTime(videoRef.current.currentTime.toFixed(1));
+      videoRef.current.currentTime = value;
+      if (videoRef.current.paused) {
+          // just seek
+      } else {
+          // maybe pause if it goes out of bounds?
+      }
     }
   };
 
-  const handleSetEndTime = () => {
+  const handlePlayPreview = () => {
     if (videoRef.current) {
-      setEndTime(videoRef.current.currentTime.toFixed(1));
+      videoRef.current.currentTime = startTime;
+      videoRef.current.play();
+      setIsPreviewing(true);
+    }
+  };
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (video && isPreviewing) {
+      const handleTimeUpdate = () => {
+        if (video.currentTime >= endTime) {
+          video.pause();
+          setIsPreviewing(false);
+        }
+      };
+      video.addEventListener('timeupdate', handleTimeUpdate);
+      return () => video.removeEventListener('timeupdate', handleTimeUpdate);
+    }
+  }, [isPreviewing, endTime]);
+
+  const handleEndTimeChange = (e) => {
+    const value = Math.max(parseFloat(e.target.value), startTime + 0.1);
+    setEndTime(value);
+    if (videoRef.current) {
+      videoRef.current.currentTime = value;
     }
   };
 
@@ -88,10 +217,29 @@ const CreateHighlightModal = ({
   }, [selectedVideo]);
 
   const handleVideoChange = (e) => {
+    const vid = availableVideos.find(v => v._id === e.target.value);
     setContentId(e.target.value);
-    setStartTime('');
-    setEndTime('');
+    setStartTime(0);
+    // When switching videos, reset duration so slider doesn't show old duration
+    setVideoDuration(null);
   };
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (video) {
+      const handleLoadedMetadata = () => {
+        const duration = video.duration;
+        setVideoDuration(duration);
+        setEndTime(Math.min(30, duration));
+      };
+      video.addEventListener('loadedmetadata', handleLoadedMetadata);
+      // If metadata is already loaded
+      if (video.readyState >= 1) {
+        handleLoadedMetadata();
+      }
+      return () => video.removeEventListener('loadedmetadata', handleLoadedMetadata);
+    }
+  }, [selectedVideo, videoFile, activeTab]);
 
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
@@ -101,9 +249,10 @@ const CreateHighlightModal = ({
       const video = document.createElement('video');
       video.preload = 'metadata';
       video.onloadedmetadata = () => {
-        setVideoDuration(video.duration);
+        const duration = video.duration;
+        setVideoDuration(duration);
         setStartTime(0);
-        setEndTime(Math.min(30, video.duration)); // Default to 30s or full duration
+        setEndTime(Math.min(30, duration)); // Default to 30s or full duration
         URL.revokeObjectURL(url);
       };
       video.src = url;
@@ -301,68 +450,44 @@ const CreateHighlightModal = ({
             </div>
           )}
 
-          <div style={{ display: 'flex', gap: '16px', marginBottom: '16px' }}>
-            <div style={{ flex: 1 }}>
-              <label htmlFor="start-time" style={{ display: 'block', marginBottom: '8px' }}>Start Time (s)</label>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <StyledInput
-                  id="start-time"
-                  type="number"
+          {(selectedVideo || videoFile) && videoDuration && (
+            <>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label style={{ display: 'block', marginBottom: '5px' }}>Trim Highlight</label>
+                <PlayRangeButton type="button" onClick={handlePlayPreview}>
+                   {isPreviewing ? 'Playing...' : 'Preview Range'}
+                </PlayRangeButton>
+              </div>
+              <RangeSliderContainer>
+                <SliderTrack />
+                <SliderRange
+                  $left={(startTime / videoDuration) * 100}
+                  $width={((endTime - startTime) / videoDuration) * 100}
+                />
+                <RangeInput
+                  type="range"
+                  min="0"
+                  max={videoDuration}
+                  step="0.1"
                   value={startTime}
-                  onChange={(e) => setStartTime(e.target.value)}
-                  min="0"
-                  step="0.1"
-                  required
+                  onChange={handleStartTimeChange}
                 />
-                <button
-                  type="button"
-                  onClick={handleSetStartTime}
-                  title="Capture current time"
-                  style={{
-                    backgroundColor: '#541011',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '4px',
-                    padding: '0 12px',
-                    cursor: 'pointer',
-                    fontSize: '12px'
-                  }}
-                >
-                  Set
-                </button>
-              </div>
-            </div>
-            <div style={{ flex: 1 }}>
-              <label htmlFor="end-time" style={{ display: 'block', marginBottom: '8px' }}>End Time (s)</label>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <StyledInput
-                  id="end-time"
-                  type="number"
+                <RangeInput
+                  type="range"
+                  min="0"
+                  max={videoDuration}
+                  step="0.1"
                   value={endTime}
-                  onChange={(e) => setEndTime(e.target.value)}
-                  min="0"
-                  step="0.1"
-                  required
+                  onChange={handleEndTimeChange}
                 />
-                <button
-                  type="button"
-                  onClick={handleSetEndTime}
-                  title="Capture current time"
-                  style={{
-                    backgroundColor: '#541011',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '4px',
-                    padding: '0 12px',
-                    cursor: 'pointer',
-                    fontSize: '12px'
-                  }}
-                >
-                  Set
-                </button>
-              </div>
-            </div>
-          </div>
+              </RangeSliderContainer>
+              <TimeLabelContainer>
+                <span>{parseFloat(startTime).toFixed(1)}s</span>
+                <span>Duration: {(endTime - startTime).toFixed(1)}s</span>
+                <span>{parseFloat(endTime).toFixed(1)}s</span>
+              </TimeLabelContainer>
+            </>
+          )}
 
           {isLoading && uploadProgress > 0 && (
             <div style={{ marginBottom: '16px' }}>
