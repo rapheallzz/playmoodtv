@@ -165,7 +165,7 @@ function Dashboardpage() {
           address: cachedUser.address || '',
         });
         setProfileImagePreview(cachedUser.profileImage || defaultProfileIcon);
-        if (!cachedUser.isEmailVerified) {
+        if (cachedUser.isEmailVerified === false) {
           setShowEmailVerificationModal(true);
         }
         setIsLoadingUser(false);
@@ -203,7 +203,7 @@ function Dashboardpage() {
           address: fetchedUser.address || '',
         });
         setProfileImagePreview(imageUrl);
-        if (!fetchedUser.isEmailVerified) {
+        if (fetchedUser.isEmailVerified === false) {
           setShowEmailVerificationModal(true);
         }
       }
@@ -235,9 +235,8 @@ function Dashboardpage() {
           address: cachedUser.address || '',
         });
         setProfileImagePreview(imageUrl);
-        if (!cachedUser.isEmailVerified) {
-          setShowEmailVerificationModal(true);
-        }
+        // Explicitly NOT showing EmailVerificationModal on network error
+        // to avoid incorrect prompts for already verified users.
       } else {
         navigate('/login');
       }
