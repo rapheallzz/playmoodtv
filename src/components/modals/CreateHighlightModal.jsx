@@ -15,6 +15,7 @@ import {
   ModalButtonSubmit,
   ErrorMessage,
   StyledInput,
+  StyledTextArea,
   StyledSelect,
   UploadZoneContainer,
   UploadText,
@@ -58,10 +59,23 @@ const CreateHighlightModal = ({
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [videoFile, setVideoFile] = useState(null);
+  const [videoPreviewUrl, setVideoPreviewUrl] = useState('');
   const [videoDuration, setVideoDuration] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const fileInputRef = useRef(null);
   const videoRef = useRef(null);
+
+  const handleSetStartTime = () => {
+    if (videoRef.current) {
+      setStartTime(videoRef.current.currentTime.toFixed(1));
+    }
+  };
+
+  const handleSetEndTime = () => {
+    if (videoRef.current) {
+      setEndTime(videoRef.current.currentTime.toFixed(1));
+    }
+  };
 
   const selectedVideo = useMemo(() => {
     return availableVideos.find((video) => video._id === contentId);
@@ -95,6 +109,16 @@ const CreateHighlightModal = ({
       video.src = url;
     }
   };
+
+  useEffect(() => {
+    if (videoFile) {
+      const url = URL.createObjectURL(videoFile);
+      setVideoPreviewUrl(url);
+      return () => URL.revokeObjectURL(url);
+    } else {
+      setVideoPreviewUrl('');
+    }
+  }, [videoFile]);
 
   const uploadVideoAsContent = async () => {
     if (!videoFile) return null;
@@ -207,15 +231,15 @@ const CreateHighlightModal = ({
         </TabContainer>
 
         <form onSubmit={handleSubmit}>
-          <div>
+          <div style={{ marginBottom: '16px' }}>
             <label htmlFor="title" style={{ display: 'block', marginBottom: '8px' }}>Highlight Title</label>
-            <StyledInput
+            <StyledTextArea
               id="title"
-              type="text"
               value={title}
               placeholder="Enter highlight title"
               onChange={(e) => setTitle(e.target.value)}
               required
+              style={{ minHeight: '80px' }}
             />
           </div>
 
@@ -262,12 +286,12 @@ const CreateHighlightModal = ({
             </div>
           )}
 
-          {(selectedVideo || videoFile) && (
+          {(selectedVideo || (activeTab === 'upload' && videoPreviewUrl)) && (
             <div style={{ marginBottom: '16px' }}>
               <video
                 ref={videoRef}
                 key={selectedVideo ? selectedVideo._id : 'uploaded-preview'}
-                src={selectedVideo ? selectedVideo.video : (videoFile ? URL.createObjectURL(videoFile) : '')}
+                src={selectedVideo ? selectedVideo.video : videoPreviewUrl}
                 controls
                 width="100%"
                 style={{ borderRadius: '8px', maxHeight: '200px', backgroundColor: 'black' }}
@@ -280,27 +304,63 @@ const CreateHighlightModal = ({
           <div style={{ display: 'flex', gap: '16px', marginBottom: '16px' }}>
             <div style={{ flex: 1 }}>
               <label htmlFor="start-time" style={{ display: 'block', marginBottom: '8px' }}>Start Time (s)</label>
-              <StyledInput
-                id="start-time"
-                type="number"
-                value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
-                min="0"
-                step="0.1"
-                required
-              />
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <StyledInput
+                  id="start-time"
+                  type="number"
+                  value={startTime}
+                  onChange={(e) => setStartTime(e.target.value)}
+                  min="0"
+                  step="0.1"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={handleSetStartTime}
+                  title="Capture current time"
+                  style={{
+                    backgroundColor: '#541011',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    padding: '0 12px',
+                    cursor: 'pointer',
+                    fontSize: '12px'
+                  }}
+                >
+                  Set
+                </button>
+              </div>
             </div>
             <div style={{ flex: 1 }}>
               <label htmlFor="end-time" style={{ display: 'block', marginBottom: '8px' }}>End Time (s)</label>
-              <StyledInput
-                id="end-time"
-                type="number"
-                value={endTime}
-                onChange={(e) => setEndTime(e.target.value)}
-                min="0"
-                step="0.1"
-                required
-              />
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <StyledInput
+                  id="end-time"
+                  type="number"
+                  value={endTime}
+                  onChange={(e) => setEndTime(e.target.value)}
+                  min="0"
+                  step="0.1"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={handleSetEndTime}
+                  title="Capture current time"
+                  style={{
+                    backgroundColor: '#541011',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    padding: '0 12px',
+                    cursor: 'pointer',
+                    fontSize: '12px'
+                  }}
+                >
+                  Set
+                </button>
+              </div>
             </div>
           </div>
 
