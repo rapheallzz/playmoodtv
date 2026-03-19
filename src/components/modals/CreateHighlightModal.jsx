@@ -224,6 +224,13 @@ const CreateHighlightModal = ({
     setVideoDuration(null);
   };
 
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    setVideoDuration(null);
+    setStartTime(0);
+    setEndTime(0);
+  };
+
   useEffect(() => {
     const video = videoRef.current;
     if (video) {
@@ -366,15 +373,15 @@ const CreateHighlightModal = ({
 
   return (
     <Modal>
-      <ModalContent style={{ maxWidth: '600px' }}>
+      <ModalContent style={{ maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto' }}>
         <ModalTitle>Create Highlight</ModalTitle>
         {error && <ErrorMessage>{error}</ErrorMessage>}
 
         <TabContainer>
-          <Tab $active={activeTab === 'existing'} onClick={() => setActiveTab('existing')}>
+          <Tab $active={activeTab === 'existing'} onClick={() => handleTabChange('existing')}>
             From Existing Video
           </Tab>
-          <Tab $active={activeTab === 'upload'} onClick={() => setActiveTab('upload')}>
+          <Tab $active={activeTab === 'upload'} onClick={() => handleTabChange('upload')}>
             Upload New Highlight
           </Tab>
         </TabContainer>
@@ -435,12 +442,12 @@ const CreateHighlightModal = ({
             </div>
           )}
 
-          {(selectedVideo || (activeTab === 'upload' && videoPreviewUrl)) && (
+          {((activeTab === 'existing' && selectedVideo) || (activeTab === 'upload' && videoPreviewUrl)) && (
             <div style={{ marginBottom: '16px' }}>
               <video
                 ref={videoRef}
-                key={selectedVideo ? selectedVideo._id : 'uploaded-preview'}
-                src={selectedVideo ? selectedVideo.video : videoPreviewUrl}
+                key={activeTab === 'existing' && selectedVideo ? selectedVideo._id : 'uploaded-preview'}
+                src={activeTab === 'existing' && selectedVideo ? selectedVideo.video : videoPreviewUrl}
                 controls
                 width="100%"
                 style={{ borderRadius: '8px', maxHeight: '200px', backgroundColor: 'black' }}
@@ -450,7 +457,7 @@ const CreateHighlightModal = ({
             </div>
           )}
 
-          {(selectedVideo || videoFile) && videoDuration && (
+          {((activeTab === 'existing' && selectedVideo) || (activeTab === 'upload' && videoFile)) && videoDuration && (
             <>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <label style={{ display: 'block', marginBottom: '5px' }}>Trim Highlight</label>
