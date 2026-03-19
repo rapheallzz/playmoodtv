@@ -105,6 +105,7 @@ export default function CreatorPage() {
     isCreating: isCreatingHighlight,
     error: highlightsError,
     createHighlight,
+    deleteHighlight,
     fetchHighlights,
   } = useHighlights(user);
 
@@ -195,7 +196,8 @@ export default function CreatorPage() {
     // Fetch all videos and wait for completion
     const enrichedData = await Promise.all(
       highlights.map(async (h) => {
-        if (h.content.video) return h;
+        if (h.highlightUrl || h.content?.video) return h;
+        if (!h.content?._id) return h;
         try {
           const res = await axios.get(
             `${BASE_API_URL}/api/content/${h.content._id}`
@@ -254,6 +256,7 @@ export default function CreatorPage() {
         highlights={highlights}
         onSelectHighlight={handleSelectHighlight}
         viewedHighlights={viewedHighlights}
+        onDelete={deleteHighlight}
       />
       {activeTab === 'Feeds' ? (
         <FeedSection

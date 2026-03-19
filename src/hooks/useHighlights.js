@@ -65,7 +65,28 @@ const useHighlights = (user, creatorId) => {
     }
   };
 
-  return { highlights, isLoading, isCreating, error, createHighlight, fetchHighlights };
+  const deleteHighlight = async (highlightId) => {
+    if (!user?._id || !user.token) {
+      setError('User not authenticated.');
+      return { success: false };
+    }
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+      await axios.delete(`${BASE_API_URL}/api/highlights/${highlightId}`, config);
+      setHighlights((prev) => prev.filter((h) => h._id !== highlightId));
+      return { success: true };
+    } catch (err) {
+      const errorMessage = err.response?.data?.error || err.response?.data?.message || 'Failed to delete highlight.';
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
+    }
+  };
+
+  return { highlights, isLoading, isCreating, error, createHighlight, deleteHighlight, fetchHighlights };
 };
 
 export default useHighlights;

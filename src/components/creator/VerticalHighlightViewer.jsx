@@ -67,7 +67,8 @@ const VerticalHighlightViewer = ({
 
   useEffect(() => {
     if (user && highlights[currentIndex]) {
-      setIsLiked(user.like?.includes(highlights[currentIndex].content._id) || false);
+      const targetId = highlights[currentIndex].content?._id || highlights[currentIndex]._id;
+      setIsLiked(user.like?.includes(targetId) || false);
     }
   }, [user, currentIndex, highlights]);
 
@@ -85,27 +86,42 @@ const VerticalHighlightViewer = ({
   useEffect(() => {
     if (socket) {
       const handleContentLiked = ({ contentId, likes }) => {
-        if (highlights.some(h => h.content._id === contentId)) {
+        if (highlights.some(h => (h.content?._id || h._id) === contentId)) {
           setHighlights(prev =>
-            prev.map(h =>
-              h.content._id === contentId ? { ...h, content: { ...h.content, likesCount: likes } } : h
-            )
+            prev.map(h => {
+              if ((h.content?._id || h._id) === contentId) {
+                if (h.content) {
+                  return { ...h, content: { ...h.content, likesCount: likes } };
+                } else {
+                  return { ...h, likesCount: likes };
+                }
+              }
+              return h;
+            })
           );
         }
       };
 
       const handleContentUnliked = ({ contentId, likes }) => {
-        if (highlights.some(h => h.content._id === contentId)) {
+        if (highlights.some(h => (h.content?._id || h._id) === contentId)) {
           setHighlights(prev =>
-            prev.map(h =>
-              h.content._id === contentId ? { ...h, content: { ...h.content, likesCount: likes } } : h
-            )
+            prev.map(h => {
+              if ((h.content?._id || h._id) === contentId) {
+                if (h.content) {
+                  return { ...h, content: { ...h.content, likesCount: likes } };
+                } else {
+                  return { ...h, likesCount: likes };
+                }
+              }
+              return h;
+            })
           );
         }
       };
 
       const handleCommentAdded = ({ contentId, comment }) => {
-        if (selectedHighlightRef.current?.content._id === contentId) {
+        const selectedId = selectedHighlightRef.current?.content?._id || selectedHighlightRef.current?._id;
+        if (selectedId === contentId) {
           setComments(prev => [...prev, comment]);
           setTotalComments(prev => prev + 1);
         }
@@ -184,8 +200,9 @@ const VerticalHighlightViewer = ({
     // Snippet logic
     const highlight = highlights[currentIndex];
     const isFragment = !!highlight.highlightUrl;
-    let startTime = isFragment ? 0 : (highlight?.content?.shortPreview?.start ?? 0);
-    let endTime = isFragment ? video.duration : (highlight?.content?.shortPreview?.end ?? video.duration);
+    const isStandalone = !highlight.content;
+    let startTime = (isFragment || isStandalone) ? 0 : (highlight?.content?.shortPreview?.start ?? 0);
+    let endTime = (isFragment || isStandalone) ? video.duration : (highlight?.content?.shortPreview?.end ?? video.duration);
 
     if (!isFragment && endTime - startTime > 60) {
       endTime = startTime + 60;
@@ -332,16 +349,25 @@ const VerticalHighlightViewer = ({
     // Optimistic UI update
     setHighlights((prevHighlights) =>
       prevHighlights.map((h) => {
-        if (h.content._id === highlightId) {
-          return {
-            ...h,
-            content: {
-              ...h.content,
+        if ((h.content?._id || h._id) === highlightId) {
+          if (h.content) {
+            return {
+              ...h,
+              content: {
+                ...h.content,
+                likesCount: newIsLiked
+                  ? (h.content.likesCount || 0) + 1
+                  : (h.content.likesCount || 1) - 1,
+              },
+            };
+          } else {
+            return {
+              ...h,
               likesCount: newIsLiked
-                ? (h.content.likesCount || 0) + 1
-                : (h.content.likesCount || 1) - 1,
-            },
-          };
+                ? (h.likesCount || 0) + 1
+                : (h.likesCount || 1) - 1,
+            };
+          }
         }
         return h;
       })
@@ -355,16 +381,25 @@ const VerticalHighlightViewer = ({
       setIsLiked(!newIsLiked);
       setHighlights((prevHighlights) =>
         prevHighlights.map((h) => {
-          if (h.content._id === highlightId) {
-            return {
-              ...h,
-              content: {
-                ...h.content,
+          if ((h.content?._id || h._id) === highlightId) {
+            if (h.content) {
+              return {
+                ...h,
+                content: {
+                  ...h.content,
+                  likesCount: newIsLiked
+                    ? (h.content.likesCount || 1) - 1
+                    : (h.content.likesCount || 0) + 1,
+                },
+              };
+            } else {
+              return {
+                ...h,
                 likesCount: newIsLiked
-                  ? (h.content.likesCount || 1) - 1
-                  : (h.content.likesCount || 0) + 1,
-              },
-            };
+                  ? (h.likesCount || 1) - 1
+                  : (h.likesCount || 0) + 1,
+              };
+            }
           }
           return h;
         })
@@ -373,7 +408,10 @@ const VerticalHighlightViewer = ({
   };
 
   const handleCommentIconClick = async (highlight) => {
-    if (isCommentSectionOpen && selectedHighlight?.content._id === highlight.content._id) {
+    const highlightId = highlight.content?._id || highlight._id;
+    const selectedId = selectedHighlight?.content?._id || selectedHighlight?._id;
+
+    if (isCommentSectionOpen && selectedId === highlightId) {
       setCommentSectionOpen(false);
       setSelectedHighlight(null);
       setComments([]);
@@ -386,7 +424,7 @@ const VerticalHighlightViewer = ({
         try {
           setComments([]); // Clear old comments while fetching new ones
           const response = await contentService.getComments({
-            contentId: highlight.content._id,
+            contentId: highlightId,
             token: user.token,
           });
           setComments(response.comments || []);
@@ -402,7 +440,8 @@ const VerticalHighlightViewer = ({
   };
 
   const handleCommentSubmit = async (comment) => {
-    if (!user || !user.token || !selectedHighlight) {
+    const highlightId = selectedHighlight?.content?._id || selectedHighlight?._id;
+    if (!user || !user.token || !highlightId) {
       toast.error('You must be logged in to comment.');
       return;
     }
@@ -425,7 +464,7 @@ const VerticalHighlightViewer = ({
 
     try {
       const response = await contentService.commentOnContent({
-        contentId: selectedHighlight.content._id,
+        contentId: highlightId,
         comment,
         token: user.token,
       });
@@ -477,7 +516,7 @@ const VerticalHighlightViewer = ({
         >
           <VideoContainer
             data-testid={`video-container-${index}`}
-            className={isCommentSectionOpen && selectedHighlight?.content._id === highlight.content._id ? 'shifted' : ''}
+            className={isCommentSectionOpen && (selectedHighlight?.content?._id || selectedHighlight?._id) === (highlight.content?._id || highlight._id) ? 'shifted' : ''}
           >
             {index === currentIndex && highlights.length > 1 && (
               <>
@@ -538,25 +577,26 @@ const VerticalHighlightViewer = ({
                     <CreatorName>@{highlight.creator?.name || creatorName}</CreatorName>
                   </CreatorInfo>
                 )}
-                <HighlightViewerTitle>{highlight.content.title}</HighlightViewerTitle>
+                <HighlightViewerTitle>{highlight.title || highlight.content?.title || ""}</HighlightViewerTitle>
               </TextInfoContainer>
               <ActionsContainer>
                 <ViewerActionButton
-                  onClick={() => handleLikeClick(highlight.content._id)}
+                  onClick={() => handleLikeClick(highlight.content?._id || highlight._id)}
                   className={isLiked ? 'liked' : ''}
                 >
                   <FaHeart />
-                  <span>{highlight.content.likesCount || 0}</span>
+                  <span>{highlight.content?.likesCount || highlight.likesCount || 0}</span>
                 </ViewerActionButton>
                 <ViewerActionButton onClick={() => handleCommentIconClick(highlight)}>
                   <FaComment />
-                  <span>{highlight.content.commentsCount || 0}</span>
+                  <span>{highlight.content?.commentsCount || highlight.commentsCount || 0}</span>
                 </ViewerActionButton>
                 <ViewerActionButton onClick={() => {
-                  const encodedId = btoa(highlight.content._id);
+                  const highlightId = highlight.content?._id || highlight._id;
+                  const encodedId = btoa(highlightId);
                   const params = new URLSearchParams();
-                  if (highlight.content.thumbnail) params.append('img', highlight.content.thumbnail);
-                  const highlightVideo = highlight.highlightUrl || highlight.content.video;
+                  if (highlight.content?.thumbnail || highlight.thumbnail) params.append('img', highlight.content?.thumbnail || highlight.thumbnail);
+                  const highlightVideo = highlight.highlightUrl || highlight.content?.video;
                   if (highlightVideo) params.append('video', highlightVideo);
                   const url = `${window.location.origin}/highlight/${encodedId}${params.toString() ? '?' + params.toString() : ''}`;
                   setShareUrl(url);
@@ -566,20 +606,22 @@ const VerticalHighlightViewer = ({
                   <span>Share</span>
                 </ViewerActionButton>
 
-                <ViewerActionButton
-                  onClick={() => {
-                    const slug = `${highlight.content.title.replace(/\s+/g, '-')}-${highlight.content._id}`;
-                    navigate(`/movie/${slug}`);
-                    onClose();
-                  }}
-                >
-                  <FaFilm />
-                  <span>Watch Full Video</span>
-                </ViewerActionButton>
+                {(highlight.content?._id) && (
+                  <ViewerActionButton
+                    onClick={() => {
+                      const slug = `${highlight.content.title.replace(/\s+/g, '-')}-${highlight.content._id}`;
+                      navigate(`/movie/${slug}`);
+                      onClose();
+                    }}
+                  >
+                    <FaFilm />
+                    <span>Watch Full Video</span>
+                  </ViewerActionButton>
+                )}
               </ActionsContainer>
             </BottomInfoContainer>
           </VideoContainer>
-          {isCommentSectionOpen && selectedHighlight?.content._id === highlight.content._id && (
+          {isCommentSectionOpen && (selectedHighlight?.content?._id || selectedHighlight?._id) === (highlight.content?._id || highlight._id) && (
             <CommentSection
               comments={comments}
               user={user}
@@ -594,7 +636,7 @@ const VerticalHighlightViewer = ({
       {isShareModalOpen && (
         <UniversalShareModal
           shareUrl={shareUrl}
-          title={highlights[currentIndex]?.content.title}
+          title={highlights[currentIndex]?.title || highlights[currentIndex]?.content?.title}
           onClose={() => setIsShareModalOpen(false)}
         />
       )}

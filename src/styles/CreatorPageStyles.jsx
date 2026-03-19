@@ -1689,6 +1689,37 @@ export const HighlightCard = styled.div`
   align-items: center;
   position: relative;
   overflow: hidden;
+
+  &:hover .highlight-delete-btn {
+    opacity: 1;
+  }
+`;
+
+export const HighlightDeleteButton = styled.button`
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.2s, background-color 0.2s;
+
+  &:hover {
+    background: #541011;
+  }
+
+  svg {
+    font-size: 14px;
+  }
 `;
 
 export const HighlightImage = styled.img`
