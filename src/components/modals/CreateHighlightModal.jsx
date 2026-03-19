@@ -202,7 +202,7 @@ const CreateHighlightModal = ({
             From Existing Video
           </Tab>
           <Tab $active={activeTab === 'upload'} onClick={() => setActiveTab('upload')}>
-            Upload New Video
+            Upload New Highlight
           </Tab>
         </TabContainer>
 
