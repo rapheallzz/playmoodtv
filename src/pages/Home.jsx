@@ -847,36 +847,41 @@ export default function Home() {
       const sharedVideo = queryParams.get('video');
       const sharedImg = queryParams.get('img');
 
-      axios.get(`${BASE_API_URL}/api/content/${contentId}`, {
-        headers: {
-          'Cache-Control': 'no-cache',
-        },
-      })
+      // Try fetching as a highlight first
+      axios.get(`${BASE_API_URL}/api/highlights/${contentId}`)
         .then(response => {
-          setHighlightData(response.data);
-          if (response.data) {
-            setHighlights([{
-              _id: `share-${contentId}`,
-              content: response.data,
-              highlightUrl: null
-            }]);
-            setShowVerticalHighlightViewer(true);
-          }
+          setHighlights([response.data]);
+          setHighlightData(response.data.content || response.data);
+          setShowVerticalHighlightViewer(true);
         })
-        .catch(error => {
-          if (sharedVideo) {
-            setHighlights([{
-              _id: `fallback-${contentId}`,
-              content: {
-                _id: contentId,
-                title: 'Shared Highlight',
-                thumbnail: sharedImg,
-                video: sharedVideo
-              },
-              highlightUrl: sharedVideo
-            }]);
-            setShowVerticalHighlightViewer(true);
-          }
+        .catch(() => {
+          // If not a standalone highlight, try fetching as content (timeframe-based)
+          axios.get(`${BASE_API_URL}/api/content/${contentId}`)
+            .then(response => {
+              setHighlightData(response.data);
+              setHighlights([{
+                _id: `share-${contentId}`,
+                content: response.data,
+                highlightUrl: null
+              }]);
+              setShowVerticalHighlightViewer(true);
+            })
+            .catch(() => {
+              // Final fallback to query params
+              if (sharedVideo) {
+                setHighlights([{
+                  _id: `fallback-${contentId}`,
+                  content: {
+                    _id: contentId,
+                    title: 'Shared Highlight',
+                    thumbnail: sharedImg,
+                    video: sharedVideo
+                  },
+                  highlightUrl: sharedVideo
+                }]);
+                setShowVerticalHighlightViewer(true);
+              }
+            });
         });
     }
   }, [encodedContentId]);
