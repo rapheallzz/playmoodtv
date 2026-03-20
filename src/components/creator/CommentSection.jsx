@@ -34,11 +34,13 @@ const CommentPanel = styled.div`
 const Header = styled.div`
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 20px;
+  gap: 10px;
 
   h3 {
     margin: 0;
+    font-size: 1.1rem;
   }
 
   button {
@@ -160,7 +162,29 @@ const NoCommentsMessage = styled.p`
   margin-top: 40px;
 `;
 
-const CommentSection = ({ comments = [], user, onSubmit, onClose, isLoading, totalComments }) => {
+const HighlightDescription = styled.div`
+  padding: 10px 0 20px 0;
+  border-bottom: 1px solid #333;
+  margin-bottom: 20px;
+
+  h4 {
+    margin: 0 0 8px 0;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #bbb;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+`;
+
+const CommentSection = ({ comments = [], user, onSubmit, onClose, isLoading, totalComments, highlightTitle }) => {
   const [newComment, setNewComment] = useState('');
 
   const handleSubmit = (e) => {
@@ -177,6 +201,12 @@ const CommentSection = ({ comments = [], user, onSubmit, onClose, isLoading, tot
         <h3>{totalComments} Comments</h3>
         <button onClick={onClose}><FaTimes /></button>
       </Header>
+      {highlightTitle && (
+        <HighlightDescription>
+          <h4>Description</h4>
+          <p>{highlightTitle}</p>
+        </HighlightDescription>
+      )}
       <CommentList>
         {isLoading ? (
           <LoadingSpinner />

@@ -2082,8 +2082,10 @@ export const TextInfoContainer = styled.div`
 export const HighlightViewerTitle = styled.h4`
   margin: 10px 0 0 0;
   font-weight: normal;
-  white-space: pre-wrap;
-  word-wrap: break-word;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 `;
 
 export const ActionsContainer = styled.div`

@@ -629,6 +629,7 @@ const VerticalHighlightViewer = ({
               onClose={() => setCommentSectionOpen(false)}
               isLoading={isLoadingComments}
               totalComments={totalComments}
+              highlightTitle={highlight.title || highlight.content?.title}
             />
           )}
         </HighlightStory>
