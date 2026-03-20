@@ -577,7 +577,12 @@ const VerticalHighlightViewer = ({
                     <CreatorName>@{highlight.creator?.name || creatorName}</CreatorName>
                   </CreatorInfo>
                 )}
-                <HighlightViewerTitle>{highlight.title || highlight.content?.title || ""}</HighlightViewerTitle>
+                <HighlightViewerTitle
+                  onClick={() => handleCommentIconClick(highlight)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  {highlight.title || highlight.content?.title || ""}
+                </HighlightViewerTitle>
               </TextInfoContainer>
               <ActionsContainer>
                 <ViewerActionButton
