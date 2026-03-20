@@ -94,9 +94,10 @@ const navigate = useNavigate();
     async function fetchData() {
       try {
         setLoading(true);
-        const response = await axios.get(`${BASE_API_URL}/api/content/category?category=Behind the camera`);
+        const response = await axios.get(`${BASE_API_URL}/api/content/`);
         if (response.data && Array.isArray(response.data)) {
-          setData(response.data);
+          const filtered = response.data.filter(item => item.category === 'Behind the camera');
+          setData(filtered);
         } else {
           setError('Unexpected data format.');
         }
