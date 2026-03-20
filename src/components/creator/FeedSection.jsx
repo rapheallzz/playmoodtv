@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaHeart, FaComment, FaTrash, FaClone } from 'react-icons/fa';
+import { FaHeart, FaComment, FaTrash, FaClone, FaVideo } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import {
   FeedContainer,
@@ -98,16 +98,21 @@ const FeedSection = ({ feeds, isLoadingFeeds, onPostClick, onDelete }) => {
     if (feed.content?.thumbnail) distinctUrls.add(feed.content.thumbnail);
     if (feed.thumbnail) distinctUrls.add(feed.thumbnail);
     const isCarousel = distinctUrls.size > 1;
+    const isVideo = feed.type === 'video' || !!feed.highlightUrl || !!feed.content?.video || firstMedia?.url?.toLowerCase().endsWith('.mp4') || firstMedia?.type?.startsWith('video/');
 
     return (
       <FeedPostCardContainer key={feed._id} onClick={() => onPostClick(feed, index)}>
         <FeedItem>
           <FeedImage src={imageUrl} alt={feed.caption || feed.title} />
-          {isCarousel && (
+          {isCarousel ? (
             <CarouselIcon>
               <FaClone size={14} />
             </CarouselIcon>
-          )}
+          ) : isVideo ? (
+            <CarouselIcon>
+              <FaVideo size={12} />
+            </CarouselIcon>
+          ) : null}
           {onDelete && (
             <FeedDeleteButton onClick={(e) => handleDelete(e, feed._id)} title="Delete Feed Post">
               <FaTrash size={14} />
