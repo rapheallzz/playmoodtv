@@ -181,8 +181,8 @@ export default function SliderHighlights({ highlights, handleSelectHighlight, re
               <LargeHighlightCircle
                 viewed={!recentHighlights.has(highlight._id) && viewedHighlights.has(highlight._id)}
               >
-                {highlight.content.thumbnail && (
-                  <img src={highlight.content.thumbnail} alt="Highlight thumbnail" />
+                {(highlight.content?.thumbnail || highlight.thumbnail) && (
+                  <img src={highlight.content?.thumbnail || highlight.thumbnail} alt="Highlight thumbnail" />
                 )}
               </LargeHighlightCircle>
             </div>
