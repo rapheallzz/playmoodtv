@@ -70,15 +70,30 @@ export default function CreatorPage() {
     setSelectedFeedPost(feeds[prevIndex]);
   };
 
+  // Feeds hook
+  const {
+    feeds,
+    isLoadingFeeds,
+    error: feedsError,
+    fetchFeeds,
+    createFeedPost,
+    deleteFeedPost,
+  } = useFeeds(user);
+
   // Channel details hook
   const {
     bannerImage, setBannerImageFile, profileImage, creatorName, setCreatorName,
     about, setAbout, instagram, setInstagram, tiktok, setTiktok,
     linkedin, setLinkedin, twitter, setTwitter, data, subscribers,
     errorMessage: channelErrorMessage, handleUpdateChannelInfo,
-    refreshChannel,
+    refreshChannel: originalRefreshChannel,
     isLoading: isLoadingChannel,
   } = useChannelDetails(user);
+
+  const refreshChannel = async () => {
+    await originalRefreshChannel();
+    await fetchFeeds();
+  };
 
   // Playlists hook
   const {
@@ -137,13 +152,6 @@ export default function CreatorPage() {
     }
   }, [location.state, navigate]);
 
-  const {
-    feeds,
-    isLoadingFeeds,
-    error: feedsError,
-    createFeedPost,
-    deleteFeedPost,
-  } = useFeeds(user);
 
   const approvedVideos = useMemo(() => {
     return data.filter(content => content.isApproved && content.video) || [];
