@@ -95,7 +95,7 @@ const useFeeds = (user, creatorId = null) => {
       };
 
       const response = await api.post('/api/feed', postData);
-      setFeeds([response.data, ...feeds]);
+      setFeeds(prevFeeds => [response.data, ...prevFeeds]);
       return { success: true };
     } catch (err) {
       const errMsg = err.response?.data?.message || 'Failed to create feed post.';

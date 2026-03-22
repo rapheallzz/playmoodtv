@@ -224,7 +224,7 @@ const CreateFeedPostModal = ({ isOpen, onClose, onCreateFeedPost, availableVideo
 
   return (
     <ModalOverlay onClick={handleClose}>
-      <ModalContent onClick={(e) => e.stopPropagation()} style={{ maxWidth: '600px' }}>
+      <ModalContent onClick={(e) => e.stopPropagation()} style={{ maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto' }}>
         <ModalHeader>
           <h2>Create Feed Post</h2>
           <CloseButton onClick={handleClose}>&times;</CloseButton>
@@ -309,6 +309,7 @@ const CreateFeedPostModal = ({ isOpen, onClose, onCreateFeedPost, availableVideo
           {(previews.length > 0 || selectedExisting.length > 0) && (
             <div style={{ marginTop: '20px' }}>
               <h4 style={{ color: '#fff', marginBottom: '10px' }}>Selected Media</h4>
+              <div style={{ maxHeight: '200px', overflowY: 'auto', padding: '5px' }}>
               <MediaPreviewGrid>
                 {/* New uploads */}
                 {previews.map((preview, index) => (
@@ -341,6 +342,7 @@ const CreateFeedPostModal = ({ isOpen, onClose, onCreateFeedPost, availableVideo
                   </PreviewItem>
                 ))}
               </MediaPreviewGrid>
+              </div>
             </div>
           )}
         </ModalBody>

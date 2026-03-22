@@ -25,10 +25,11 @@ const FeedSection = ({ feeds, isLoadingFeeds, onPostClick, onDelete }) => {
 
   // Group feeds that belong to the same content
   const processedFeeds = feeds.reduce((acc, feed) => {
-    const contentId = feed.content?._id || feed._id;
-    const existingIndex = acc.findIndex(item => (item.content?._id || item._id) === contentId);
+    // Only group if it has a content reference. Independent feeds stay separate.
+    const contentId = feed.content?._id;
+    const existingIndex = contentId ? acc.findIndex(item => (item.content?._id) === contentId) : -1;
 
-    if (existingIndex !== -1) {
+    if (contentId && existingIndex !== -1) {
       // Group with existing post
       const existing = acc[existingIndex];
       if (feed.media && feed.media.length > 0) {
