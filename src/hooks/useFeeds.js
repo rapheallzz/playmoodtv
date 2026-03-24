@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import BASE_API_URL, { CLOUDINARY_CLOUD_NAME } from '../apiConfig';
 import uploadService from '../features/uploadService';
+import { getFileContentType } from '../utils/fileUtils';
 
 const useFeeds = (user, creatorId = null) => {
   const [feeds, setFeeds] = useState([]);
@@ -40,16 +41,17 @@ const useFeeds = (user, creatorId = null) => {
         const preview = previews[index];
 
         // Upload main file
+        const contentType = getFileContentType(file);
         const signatureFormData = new FormData();
         signatureFormData.append('provider', 'r2');
         signatureFormData.append('fileName', file.name);
-        signatureFormData.append('contentType', file.type);
+        signatureFormData.append('contentType', contentType);
 
         const sigResponse = await api.post('/api/content/signature', signatureFormData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
         const { uploadUrl, key, publicUrl } = sigResponse.data;
-        await uploadService.uploadToR2(file, uploadUrl, file.type);
+        await uploadService.uploadToR2(file, uploadUrl, contentType);
 
         let thumbnailData = null;
         // Upload generated thumbnail if it's a video

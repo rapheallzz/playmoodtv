@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
 import uploadService from './uploadService';
 import BASE_API_URL from '../apiConfig';
+import { getFileContentType } from '../utils/fileUtils';
 
 const initialState = {
   uploads: [],
@@ -37,10 +38,11 @@ export const uploadFile = createAsyncThunk(
 
     try {
       // Step 1A: Get Permission (Presigned URL) for Video
+      const videoContentType = getFileContentType(videoFile);
       const videoSignatureFormData = new FormData();
       videoSignatureFormData.append('provider', 'r2');
       videoSignatureFormData.append('fileName', videoFile.name);
-      videoSignatureFormData.append('contentType', videoFile.type);
+      videoSignatureFormData.append('contentType', videoContentType);
 
       const videoSignatureResponse = await axios.post(
         `${BASE_API_URL}/api/content/signature`,
@@ -53,7 +55,7 @@ export const uploadFile = createAsyncThunk(
       await uploadService.uploadToR2(
         videoFile,
         videoUploadUrl,
-        videoFile.type,
+        videoContentType,
         (progress) => {
           thunkAPI.dispatch(updateUploadProgress({ id: uploadId, progress }));
         }
@@ -62,10 +64,11 @@ export const uploadFile = createAsyncThunk(
       let thumbnailData = null;
       if (thumbnailFile) {
         // Step 1B: Get Permission (Presigned URL) for Thumbnail
+        const thumbContentType = getFileContentType(thumbnailFile);
         const thumbSignatureFormData = new FormData();
         thumbSignatureFormData.append('provider', 'r2');
         thumbSignatureFormData.append('fileName', thumbnailFile.name);
-        thumbSignatureFormData.append('contentType', thumbnailFile.type);
+        thumbSignatureFormData.append('contentType', thumbContentType);
 
         const thumbSignatureResponse = await axios.post(
           `${BASE_API_URL}/api/content/signature`,
@@ -78,7 +81,7 @@ export const uploadFile = createAsyncThunk(
         await uploadService.uploadToR2(
           thumbnailFile,
           thumbUploadUrl,
-          thumbnailFile.type,
+          thumbContentType,
           () => {} // Not tracking thumbnail progress
         );
 
@@ -142,10 +145,11 @@ export const updateContent = createAsyncThunk(
       let thumbnailData = null;
       if (thumbnailFile) {
         // Step 1: Get Permission (Presigned URL) for Thumbnail
+        const thumbContentType = getFileContentType(thumbnailFile);
         const thumbSignatureFormData = new FormData();
         thumbSignatureFormData.append('provider', 'r2');
         thumbSignatureFormData.append('fileName', thumbnailFile.name);
-        thumbSignatureFormData.append('contentType', thumbnailFile.type);
+        thumbSignatureFormData.append('contentType', thumbContentType);
 
         const thumbSignatureResponse = await axios.post(
           `${BASE_API_URL}/api/content/signature`,
@@ -158,7 +162,7 @@ export const updateContent = createAsyncThunk(
         await uploadService.uploadToR2(
           thumbnailFile,
           thumbUploadUrl,
-          thumbnailFile.type,
+          thumbContentType,
           () => {} // Not tracking thumbnail progress
         );
 

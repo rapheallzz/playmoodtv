@@ -370,11 +370,11 @@ const VideoModal = ({ onClose, content }) => {
 
           <Label>{isEditing ? 'Change Thumbnail (Optional)' : 'Upload Thumbnail'}</Label>
           <FileUploadZone
-            accept="image/*"
+            accept="image/*,.heic,.HEIC"
             onChange={handleThumbnailChange}
             file={thumbnailFile}
             icon={HiPhotograph}
-            label="PNG, JPG or JPEG"
+            label="PNG, JPG, JPEG or HEIC"
             maxSizeLabel="max. 10MB"
           />
 

@@ -52,7 +52,7 @@ const Modal = ({ onClose }) => {
                     <label>Add Video Image</label>
                     <Input
                         type='file'
-                        accept='image/*'
+                        accept='image/*,.heic,.HEIC'
                         // You can add onChange attribute based on your needs
                     />
 

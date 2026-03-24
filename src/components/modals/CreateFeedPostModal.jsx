@@ -1,7 +1,8 @@
 import React, { useState, useRef, useMemo } from 'react';
-import { HiCloudUpload, HiX, HiPlus, HiCollection, HiVideoCamera } from 'react-icons/hi';
+import { HiCloudUpload, HiX, HiPlus, HiCollection, HiVideoCamera, HiPhotograph } from 'react-icons/hi';
 import styled, { keyframes } from 'styled-components';
 import Swal from 'sweetalert2';
+import { getFileContentType } from '../../utils/fileUtils';
 import {
   ModalOverlay,
   ModalContent,
@@ -100,7 +101,8 @@ const CreateFeedPostModal = ({ isOpen, onClose, onCreateFeedPost, availableVideo
 
   const generateThumbnail = (file) => {
     return new Promise((resolve) => {
-      if (!file.type.startsWith('video/')) {
+      const contentType = getFileContentType(file);
+      if (!contentType || !contentType.startsWith('video/')) {
         resolve(null);
         return;
       }
@@ -134,13 +136,14 @@ const CreateFeedPostModal = ({ isOpen, onClose, onCreateFeedPost, availableVideo
     const newPreviews = [...previews];
 
     for (const file of files) {
+      const contentType = getFileContentType(file);
       newMedia.push(file);
       const thumbnailBlob = await generateThumbnail(file);
       newPreviews.push({
         url: URL.createObjectURL(file),
         thumbnailUrl: thumbnailBlob ? URL.createObjectURL(thumbnailBlob) : null,
         thumbnailBlob,
-        type: file.type,
+        type: contentType,
         name: file.name
       });
     }
@@ -262,7 +265,7 @@ const CreateFeedPostModal = ({ isOpen, onClose, onCreateFeedPost, availableVideo
                 hidden
                 ref={fileInputRef}
                 onChange={handleFileChange}
-                accept="image/*,video/*"
+                accept="image/*,video/*,.heic,.HEIC"
               />
               <HiCloudUpload size={40} color={isDragOver ? '#541011' : '#666'} />
               <UploadText>
@@ -316,6 +319,11 @@ const CreateFeedPostModal = ({ isOpen, onClose, onCreateFeedPost, availableVideo
                   <PreviewItem key={`new-${index}`}>
                     {preview.type.startsWith('video/') ? (
                       <img src={preview.thumbnailUrl || preview.url} alt="video thumbnail" />
+                    ) : preview.type === 'image/heic' ? (
+                      <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#333', color: 'white', fontSize: '10px' }}>
+                        <HiPhotograph size={24} />
+                        <span>HEIC</span>
+                      </div>
                     ) : (
                       <img src={preview.url} alt="preview" />
                     )}

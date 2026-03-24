@@ -12,6 +12,7 @@ import SliderLiked from '../components/sliders/SlideLiked';
 import UserWatchlist from '../components/sliders/UserSliderWatchlist';
 import BASE_API_URL from '../apiConfig';
 import uploadService from '../features/uploadService';
+import { getFileContentType } from '../utils/fileUtils';
 import UserFavourite from '../components/sliders/UserSliderFavourite';
 import UserRecommended from '../components/miscSlider/UserSliderRecommended';
 import TermsModal from '../components/Terms';
@@ -122,6 +123,13 @@ function Dashboardpage() {
   const handleProfileImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      if (file.name.toLowerCase().endsWith('.heic') || file.type === 'image/heic') {
+        // Skip cropping for HEIC as browsers can't render it in the cropper
+        setProfileImage(file);
+        const placeholderUrl = URL.createObjectURL(file);
+        setProfileImagePreview(placeholderUrl);
+        return;
+      }
       const reader = new FileReader();
       reader.onload = () => {
         setImageToCrop(reader.result);
@@ -321,13 +329,15 @@ function Dashboardpage() {
       return;
     }
     try {
-      const file = new File([imageBlob], "profile.jpg", { type: "image/jpeg" });
+      const fileName = imageBlob instanceof File ? imageBlob.name : "profile.jpg";
+      const file = new File([imageBlob], fileName, { type: imageBlob.type || "image/jpeg" });
 
       // Step 1: Get Signature
+      const contentType = getFileContentType(file) || "image/jpeg";
       const signatureFormData = new FormData();
       signatureFormData.append('provider', 'r2');
       signatureFormData.append('fileName', file.name);
-      signatureFormData.append('contentType', file.type);
+      signatureFormData.append('contentType', contentType);
 
       const sigResponse = await axios.post(
         `${BASE_API_URL}/api/content/signature`,
@@ -337,7 +347,7 @@ function Dashboardpage() {
       const { uploadUrl, key, publicUrl } = sigResponse.data;
 
       // Step 2: Upload to R2
-      await uploadService.uploadToR2(file, uploadUrl, file.type);
+      await uploadService.uploadToR2(file, uploadUrl, contentType);
 
       // Step 3: Update Record
       const response = await axios.put(
@@ -647,7 +657,7 @@ function Dashboardpage() {
                 type="file"
                 id="profileImage"
                 className="hidden"
-                accept="image/*"
+                accept="image/*,.heic,.HEIC"
                 onChange={handleProfileImageChange}
               />
               <h1 className="text-white">{authUser && authUser.name}</h1>
@@ -871,17 +881,24 @@ function Dashboardpage() {
                 <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-white flex items-center justify-center bg-white relative">
                   <AiOutlineUser size={48} color="#541011" style={{ position: 'absolute' }} />
                   { (profileImagePreview) && (
-                    <img
-                      src={profileImagePreview}
-                      alt="Profile Preview"
-                      className="w-full h-full object-cover relative z-10"
-                      onError={(e) => { e.target.style.display = 'none'; }}
-                    />
+                    profileImagePreview.startsWith('blob:') && (profileImage?.name?.toLowerCase().endsWith('.heic') || profileImage?.type === 'image/heic') ? (
+                      <div className="w-full h-full flex flex-col items-center justify-center bg-gray-100 relative z-10">
+                        <AiOutlineUser size={32} color="#ccc" />
+                        <span style={{ fontSize: '8px', color: '#999' }}>HEIC</span>
+                      </div>
+                    ) : (
+                      <img
+                        src={profileImagePreview}
+                        alt="Profile Preview"
+                        className="w-full h-full object-cover relative z-10"
+                        onError={(e) => { e.target.style.display = 'none'; }}
+                      />
+                    )
                   )}
                 </div>
                 <label className="mt-2 text-white text-sm cursor-pointer hover:text-[#541011]">
                   Change Profile Picture
-                  <input type="file" accept="image/*" className="hidden" onChange={handleProfileImageChange} />
+                  <input type="file" accept="image/*,.heic,.HEIC" className="hidden" onChange={handleProfileImageChange} />
                 </label>
               </div>
 

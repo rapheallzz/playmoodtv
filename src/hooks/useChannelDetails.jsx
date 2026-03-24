@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import BASE_API_URL, { CLOUDINARY_CLOUD_NAME } from '../apiConfig';
 import uploadService from '../features/uploadService';
+import { getFileContentType } from '../utils/fileUtils';
 
 const useChannelDetails = (user) => {
   const [bannerImage, setBannerImage] = useState('');
@@ -57,10 +58,11 @@ const useChannelDetails = (user) => {
 
   const uploadBannerToR2 = async (file, token) => {
     // 1. Get signature from the backend
+    const contentType = getFileContentType(file);
     const signatureFormData = new FormData();
     signatureFormData.append('provider', 'r2');
     signatureFormData.append('fileName', file.name);
-    signatureFormData.append('contentType', file.type);
+    signatureFormData.append('contentType', contentType);
 
     const { data: sigData } = await axios.post(
       `${BASE_API_URL}/api/content/signature`,
@@ -69,7 +71,7 @@ const useChannelDetails = (user) => {
     );
 
     // 2. Upload the file directly to R2
-    await uploadService.uploadToR2(file, sigData.uploadUrl, file.type);
+    await uploadService.uploadToR2(file, sigData.uploadUrl, contentType);
 
     return {
       url: sigData.publicUrl || sigData.uploadUrl,

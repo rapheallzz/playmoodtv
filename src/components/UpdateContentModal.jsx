@@ -5,6 +5,7 @@ import axios from 'axios';
 import { useSelector } from 'react-redux';
 import BASE_API_URL from '../apiConfig';
 import uploadService from '../features/uploadService';
+import { getFileContentType } from '../utils/fileUtils';
 
 const UpdateContentModal = ({ onClose, contentId }) => {
   const { userToken } = useSelector((state) => state.auth);
@@ -68,10 +69,11 @@ const UpdateContentModal = ({ onClose, contentId }) => {
 
       // Handle Video Upload to R2 if it's a new file
       if (formData.video instanceof File) {
+        const videoContentType = getFileContentType(formData.video);
         const videoSignatureFormData = new FormData();
         videoSignatureFormData.append('provider', 'r2');
         videoSignatureFormData.append('fileName', formData.video.name);
-        videoSignatureFormData.append('contentType', formData.video.type);
+        videoSignatureFormData.append('contentType', videoContentType);
 
         const videoSigResponse = await axios.post(
           `${BASE_API_URL}/api/content/signature`,
@@ -83,7 +85,7 @@ const UpdateContentModal = ({ onClose, contentId }) => {
         await uploadService.uploadToR2(
           formData.video,
           videoUploadUrl,
-          formData.video.type,
+          videoContentType,
           (progress) => {
           }
         );
@@ -96,10 +98,11 @@ const UpdateContentModal = ({ onClose, contentId }) => {
 
       // Handle Thumbnail Upload to R2 if it's a new file
       if (formData.thumbnail instanceof File) {
+        const thumbContentType = getFileContentType(formData.thumbnail);
         const thumbSignatureFormData = new FormData();
         thumbSignatureFormData.append('provider', 'r2');
         thumbSignatureFormData.append('fileName', formData.thumbnail.name);
-        thumbSignatureFormData.append('contentType', formData.thumbnail.type);
+        thumbSignatureFormData.append('contentType', thumbContentType);
 
         const thumbSigResponse = await axios.post(
           `${BASE_API_URL}/api/content/signature`,
@@ -111,7 +114,7 @@ const UpdateContentModal = ({ onClose, contentId }) => {
         await uploadService.uploadToR2(
           formData.thumbnail,
           thumbUploadUrl,
-          formData.thumbnail.type,
+          thumbContentType,
           (progress) => {
           }
         );
@@ -208,7 +211,7 @@ const UpdateContentModal = ({ onClose, contentId }) => {
             <label>Upload Video Image</label>
             <Input
               type="file"
-              accept="image/*"
+              accept="image/*,.heic,.HEIC"
               name="thumbnail"
               onChange={handleFileChange}
             />

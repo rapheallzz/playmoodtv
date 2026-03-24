@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { toast } from 'react-toastify';
-import { FaInstagram, FaTiktok, FaLinkedin } from 'react-icons/fa';
+import { FaInstagram, FaTiktok, FaLinkedin, FaFileImage } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
 import ReactCrop from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
@@ -34,10 +34,11 @@ const EditChannelModal = ({
   const onSelectFile = (e) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
-      const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+      const isHEIC = file.name.toLowerCase().endsWith('.heic') || file.type === 'image/heic';
+      const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/heic'];
       const maxSize = 5 * 1024 * 1024;
-      if (!validTypes.includes(file.type)) {
-        setFileError('Please upload a JPEG or PNG image.');
+      if (!validTypes.includes(file.type) && !isHEIC) {
+        setFileError('Please upload a JPEG, PNG or HEIC image.');
         setUpImg(null);
         return;
       }
@@ -47,9 +48,14 @@ const EditChannelModal = ({
         return;
       }
       setFileError('');
-      const reader = new FileReader();
-      reader.addEventListener('load', () => setUpImg(reader.result));
-      reader.readAsDataURL(file);
+      if (isHEIC) {
+        setUpImg('data:image/heic;base64,');
+        setBannerImageFile(file);
+      } else {
+        const reader = new FileReader();
+        reader.addEventListener('load', () => setUpImg(reader.result));
+        reader.readAsDataURL(file);
+      }
     }
   };
 
@@ -134,11 +140,17 @@ const EditChannelModal = ({
               )}
               <input
                 type="file"
-                accept="image/jpeg,image/png,image/jpg"
+                accept="image/jpeg,image/png,image/jpg,image/heic,.heic,.HEIC"
                 onChange={onSelectFile}
                 className="mt-1 p-2 border rounded-md w-full text-sm"
               />
-              {upImg && (
+              {upImg && upImg.startsWith('data:image/heic') ? (
+                <div className="flex flex-col items-center justify-center p-8 bg-gray-100 rounded-md">
+                   <FaFileImage className="w-12 h-12 text-gray-400 mb-2" />
+                   <p className="text-gray-600 text-sm">HEIC Image selected</p>
+                   <p className="text-gray-400 text-xs">(Preview not available for HEIC)</p>
+                </div>
+              ) : upImg && (
                 <div>
                   <ReactCrop
                     crop={crop}

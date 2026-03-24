@@ -5,6 +5,7 @@ import Swal from 'sweetalert2';
 import axios from 'axios';
 import BASE_API_URL from '../../apiConfig';
 import uploadService from '../../features/uploadService';
+import { getFileContentType } from '../../utils/fileUtils';
 import { useSelector } from 'react-redux';
 import {
   Modal,
@@ -285,17 +286,18 @@ const CreateHighlightModal = ({
   };
 
   const uploadToR2 = async (file, contentType) => {
+    const finalContentType = contentType || getFileContentType(file) || 'application/octet-stream';
     const signatureFormData = new FormData();
     signatureFormData.append('provider', 'r2');
     signatureFormData.append('fileName', file.name || `thumb-${Date.now()}.jpg`);
-    signatureFormData.append('contentType', contentType);
+    signatureFormData.append('contentType', finalContentType);
 
     const sigResponse = await axios.post(`${BASE_API_URL}/api/content/signature`, signatureFormData, {
       headers: { Authorization: `Bearer ${userToken}` }
     });
     const { uploadUrl, key, publicUrl } = sigResponse.data;
 
-    await uploadService.uploadToR2(file, uploadUrl, contentType, (progress) => {
+    await uploadService.uploadToR2(file, uploadUrl, finalContentType, (progress) => {
       if (contentType.startsWith('video/')) {
         setUploadProgress(progress);
       }
