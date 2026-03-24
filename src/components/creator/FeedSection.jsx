@@ -93,7 +93,9 @@ const FeedSection = ({ feeds, isLoadingFeeds, onPostClick, onDelete }) => {
     }
 
     // Ensure resolvedImage is a string if it exists
-    const imageUrl = typeof resolvedImage === 'string' ? resolvedImage : 'https://via.placeholder.com/300x200?text=No+Preview';
+    // Using a data URI for the initial placeholder to avoid external dependency issues
+    const placeholderUrl = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22300%22%20height%3D%22200%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%232a2a2a%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20font-family%3D%22Arial%22%20font-size%3D%2214%22%20fill%3D%22%23888%22%20text-anchor%3D%22middle%22%20dy%3D%22.3em%22%3ENo%20Preview%3C%2Ftext%3E%3C%2Fsvg%3E';
+    const imageUrl = typeof resolvedImage === 'string' ? resolvedImage : placeholderUrl;
 
     // Determine unique key for React rendering
     const groupKey = (typeof feed.content === 'object' ? feed.content?._id : feed.content) || feed._id;
@@ -118,7 +120,8 @@ const FeedSection = ({ feeds, isLoadingFeeds, onPostClick, onDelete }) => {
             src={imageUrl}
             alt={feed.caption || feed.title}
             onError={(e) => {
-              e.target.src = 'https://via.placeholder.com/300x200?text=No+Preview';
+              // Switch to a data URI placeholder on error to stop any network loops
+              e.target.src = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22300%22%20height%3D%22200%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%232a2a2a%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20font-family%3D%22Arial%22%20font-size%3D%2214%22%20fill%3D%22%23888%22%20text-anchor%3D%22middle%22%20dy%3D%22.3em%22%3ENo%20Preview%3C%2Ftext%3E%3C%2Fsvg%3E';
               e.target.onerror = null; // Prevent infinite loop
             }}
           />
