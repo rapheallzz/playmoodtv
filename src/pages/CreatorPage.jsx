@@ -116,7 +116,7 @@ export default function CreatorPage() {
         }
 
         // Merge content details
-        if (feed.content) {
+        if (feed.content && typeof feed.content === 'object') {
           existing.content = { ...(existing.content || {}), ...feed.content };
         }
 
@@ -124,6 +124,13 @@ export default function CreatorPage() {
         if (new Date(feed.createdAt) > new Date(existing.createdAt)) {
           existing.createdAt = feed.createdAt;
         }
+
+        // Merge all other fields that might be missing in the existing group
+        Object.keys(feed).forEach(key => {
+          if ((existing[key] === undefined || existing[key] === null) && feed[key] !== undefined && feed[key] !== null) {
+            existing[key] = feed[key];
+          }
+        });
       } else {
         // Create new grouped entry (deep copy to avoid modifying original prop)
         acc.push(JSON.parse(JSON.stringify(feed)));

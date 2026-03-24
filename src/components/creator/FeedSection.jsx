@@ -55,17 +55,45 @@ const FeedSection = ({ feeds, isLoadingFeeds, onPostClick, onDelete }) => {
   };
 
   const renderFeedPost = (feed, index) => {
-    const firstMedia = feed.media?.[0];
-    const imageUrl =
-      firstMedia?.thumbnail?.url ||
-      firstMedia?.url ||
-      feed.thumbnail?.url ||
-      feed.thumbnail ||
-      feed.content?.thumbnail?.url ||
-      feed.content?.thumbnail ||
-      feed.highlightUrl ||
-      feed.shortPreviewUrl ||
-      feed.content?.video;
+    // Helper to check if a URL is an image
+    const isImage = (url) => {
+      if (!url || typeof url !== 'string') return false;
+      const cleanUrl = url.split('?')[0].toLowerCase();
+      return (
+        cleanUrl.endsWith('.jpg') ||
+        cleanUrl.endsWith('.jpeg') ||
+        cleanUrl.endsWith('.png') ||
+        cleanUrl.endsWith('.webp') ||
+        cleanUrl.endsWith('.heic')
+      );
+    };
+
+    // 1. Try to find an image in media array
+    let resolvedImage =
+      feed.media?.find((m) => isImage(m.url))?.url ||
+      feed.media?.find((m) => isImage(m.thumbnail?.url))?.thumbnail?.url;
+
+    // 2. Fallbacks
+    if (!resolvedImage) {
+      const candidates = [
+        feed.thumbnail?.url || feed.thumbnail,
+        feed.content?.thumbnail?.url || feed.content?.thumbnail,
+        feed.highlightUrl,
+        feed.shortPreviewUrl,
+        feed.content?.video,
+      ];
+
+      // Prioritize actual images from the candidates
+      resolvedImage = candidates.find((c) => isImage(c));
+
+      // If still no image found, take the first non-null candidate
+      if (!resolvedImage) {
+        resolvedImage = candidates.find((c) => !!c);
+      }
+    }
+
+    // Ensure resolvedImage is a string if it exists
+    const imageUrl = typeof resolvedImage === 'string' ? resolvedImage : null;
 
     if (!imageUrl) {
       return null;
@@ -83,13 +111,21 @@ const FeedSection = ({ feeds, isLoadingFeeds, onPostClick, onDelete }) => {
     if (feed.content?.thumbnail) distinctUrls.add(feed.content.thumbnail.url || feed.content.thumbnail);
     if (feed.thumbnail) distinctUrls.add(feed.thumbnail.url || feed.thumbnail);
 
+    const firstMedia = feed.media?.[0];
     const isCarousel = distinctUrls.size > 1;
     const isVideo = feed.type === 'video' || !!feed.highlightUrl || !!feed.shortPreviewUrl || !!feed.content?.video || firstMedia?.url?.toLowerCase().endsWith('.mp4') || firstMedia?.type?.startsWith('video/');
 
     return (
       <FeedPostCardContainer key={groupKey} onClick={() => onPostClick(feed, index)}>
         <FeedItem>
-          <FeedImage src={imageUrl} alt={feed.caption || feed.title} />
+          <FeedImage
+            src={imageUrl}
+            alt={feed.caption || feed.title}
+            onError={(e) => {
+              e.target.src = 'https://via.placeholder.com/300x200?text=No+Preview';
+              e.target.onerror = null; // Prevent infinite loop
+            }}
+          />
           {isCarousel ? (
             <CarouselIcon>
               <FaClone size={14} />
