@@ -23,28 +23,8 @@ const FeedSection = ({ feeds, isLoadingFeeds, onPostClick, onDelete }) => {
     return <NoPostsMessage>No feed posts yet.</NoPostsMessage>;
   }
 
-  // Group feeds that belong to the same content
-  const processedFeeds = feeds.reduce((acc, feed) => {
-    // Only group if it has a content reference. Independent feeds stay separate.
-    const contentId = feed.content?._id;
-    const existingIndex = contentId ? acc.findIndex(item => (item.content?._id) === contentId) : -1;
-
-    if (contentId && existingIndex !== -1) {
-      // Group with existing post
-      const existing = acc[existingIndex];
-      if (feed.media && feed.media.length > 0) {
-        existing.media = existing.media ? [...existing.media, ...feed.media] : [...feed.media];
-      }
-      if (feed.content?.video && !existing.content?.video) {
-        existing.content = existing.content ? { ...existing.content, video: feed.content.video } : { video: feed.content.video };
-      }
-    } else {
-      // Create new grouped entry (deep copy to avoid modifying original prop)
-      acc.push(JSON.parse(JSON.stringify(feed)));
-    }
-
-    return acc;
-  }, []);
+  // No longer grouping feeds to ensure all posts are visible separately
+  const processedFeeds = feeds;
 
   const handleDelete = async (e, postId) => {
     e.stopPropagation();
