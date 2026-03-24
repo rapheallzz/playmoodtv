@@ -60,6 +60,16 @@ export default function CreatorPage() {
   const [highlightStartIndex, setHighlightStartIndex] = useState(0);
   const [enrichedHighlights, setEnrichedHighlights] = useState([]);
 
+  // Feeds hook
+  const {
+    feeds,
+    isLoadingFeeds,
+    error: feedsError,
+    fetchFeeds,
+    createFeedPost,
+    deleteFeedPost,
+  } = useFeeds(user);
+
   const processedFeeds = useMemo(() => {
     if (!feeds) return [];
     return feeds.reduce((acc, feed) => {
@@ -130,16 +140,6 @@ export default function CreatorPage() {
     setSelectedFeedPostIndex(prevIndex);
     setSelectedFeedPost(processedFeeds[prevIndex]);
   };
-
-  // Feeds hook
-  const {
-    feeds,
-    isLoadingFeeds,
-    error: feedsError,
-    fetchFeeds,
-    createFeedPost,
-    deleteFeedPost,
-  } = useFeeds(user);
 
   // Channel details hook
   const {
