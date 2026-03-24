@@ -21,6 +21,7 @@ import WelcomePopup from '../components/Welcomepop';
 import ErrorPopup from '../components/ErrorPopup';
 import useHighlights from '../hooks/useHighlights';
 import useFeeds from '../hooks/useFeeds';
+import { groupFeeds } from '../utils/feedUtils';
 import CreatorChannelSkeleton from '../components/skeletons/CreatorChannelSkeleton';
 import HighlightsSection from '../components/creator/HighlightsSection';
 import { Helmet } from 'react-helmet-async';
@@ -212,17 +213,21 @@ export default function CreatorChannel() {
     isLoadingFeeds,
   } = useFeeds(user, creatorId);
 
+  const processedFeeds = React.useMemo(() => {
+    return groupFeeds(feeds);
+  }, [feeds]);
+
   useEffect(() => {
-    if (!isLoadingFeeds && feeds.length > 0) {
+    if (!isLoadingFeeds && processedFeeds.length > 0) {
       const queryParams = new URLSearchParams(window.location.search);
       const feedId = queryParams.get('feedId');
       const sharedVideo = queryParams.get('video');
       const sharedImg = queryParams.get('img');
 
       if (feedId) {
-        const index = feeds.findIndex(f => f._id === feedId);
+        const index = processedFeeds.findIndex(f => f._id === feedId || (typeof f.content === 'object' && f.content?._id === feedId));
         if (index !== -1) {
-          setSelectedFeedPost(feeds[index]);
+          setSelectedFeedPost(processedFeeds[index]);
           setSelectedFeedPostIndex(index);
           setShowFeedPostViewerModal(true);
         } else if (sharedVideo) {
@@ -248,15 +253,15 @@ export default function CreatorChannel() {
   const [enrichedHighlights, setEnrichedHighlights] = useState([]);
 
   const handleNextFeed = () => {
-    const nextIndex = (selectedFeedPostIndex + 1) % feeds.length;
+    const nextIndex = (selectedFeedPostIndex + 1) % processedFeeds.length;
     setSelectedFeedPostIndex(nextIndex);
-    setSelectedFeedPost(feeds[nextIndex]);
+    setSelectedFeedPost(processedFeeds[nextIndex]);
   };
 
   const handlePreviousFeed = () => {
-    const prevIndex = (selectedFeedPostIndex - 1 + feeds.length) % feeds.length;
+    const prevIndex = (selectedFeedPostIndex - 1 + processedFeeds.length) % processedFeeds.length;
     setSelectedFeedPostIndex(prevIndex);
-    setSelectedFeedPost(feeds[prevIndex]);
+    setSelectedFeedPost(processedFeeds[prevIndex]);
   };
 
   const handleSelectHighlight = async (highlight, index) => {
@@ -645,7 +650,7 @@ const fetchPlaylists = async () => {
   const queryParams = new URLSearchParams(search);
   const sharedFeedId = queryParams.get('feedId');
   const sharedImg = queryParams.get('img');
-  const sharedFeed = sharedFeedId ? feeds.find(f => f._id === sharedFeedId) : null;
+  const sharedFeed = sharedFeedId ? processedFeeds.find(f => f._id === sharedFeedId || (typeof f.content === 'object' && f.content?._id === sharedFeedId)) : null;
 
   return (
     <div className="w-full h-auto overflow-x-hidden flex flex-col items-center bg-black">
@@ -810,7 +815,7 @@ const fetchPlaylists = async () => {
 
         {activeTab === 'FEEDS' && (
           <FeedSection
-            feeds={feeds}
+            feeds={processedFeeds}
             isLoadingFeeds={isLoadingFeeds}
             onPostClick={(feed, index) => {
               setSelectedFeedPost(feed);

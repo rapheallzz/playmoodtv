@@ -93,14 +93,10 @@ const FeedSection = ({ feeds, isLoadingFeeds, onPostClick, onDelete }) => {
     }
 
     // Ensure resolvedImage is a string if it exists
-    const imageUrl = typeof resolvedImage === 'string' ? resolvedImage : null;
-
-    if (!imageUrl) {
-      return null;
-    }
+    const imageUrl = typeof resolvedImage === 'string' ? resolvedImage : 'https://via.placeholder.com/300x200?text=No+Preview';
 
     // Determine unique key for React rendering
-    const groupKey = feed.content?._id || feed._id;
+    const groupKey = (typeof feed.content === 'object' ? feed.content?._id : feed.content) || feed._id;
 
     // Determine if it's a carousel (multiple images/videos)
     const distinctUrls = new Set();
