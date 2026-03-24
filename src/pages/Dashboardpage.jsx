@@ -54,6 +54,24 @@ function Dashboardpage() {
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [hasFetched, setHasFetched] = useState(false);
 
+  // Manage profile image preview URL
+  useEffect(() => {
+    if (!profileImage || !(profileImage instanceof File || profileImage instanceof Blob)) return;
+
+    const contentType = getFileContentType(profileImage);
+    let url;
+
+    if (contentType === 'image/heic') {
+      // Create a fake URL just to trigger the "HEIC" placeholder logic in the UI
+      url = URL.createObjectURL(new Blob([], { type: 'image/heic' }));
+    } else {
+      url = URL.createObjectURL(profileImage);
+    }
+
+    setProfileImagePreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [profileImage]);
+
   const [personalData, setPersonalData] = useState({
     name: '',
     email: '',
@@ -123,11 +141,11 @@ function Dashboardpage() {
   const handleProfileImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      if (file.name.toLowerCase().endsWith('.heic') || file.type === 'image/heic') {
+      const contentType = getFileContentType(file);
+      if (contentType === 'image/heic') {
         // Skip cropping for HEIC as browsers can't render it in the cropper
         setProfileImage(file);
-        const placeholderUrl = URL.createObjectURL(file);
-        setProfileImagePreview(placeholderUrl);
+        // Logic handled by useEffect
         return;
       }
       const reader = new FileReader();
@@ -140,8 +158,6 @@ function Dashboardpage() {
   };
 
   const handleCropComplete = async (croppedImageBlob) => {
-    const croppedImageUrl = URL.createObjectURL(croppedImageBlob);
-    setProfileImagePreview(croppedImageUrl);
     setProfileImage(croppedImageBlob);
     setShowCropModal(false);
     try {
@@ -881,10 +897,11 @@ function Dashboardpage() {
                 <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-white flex items-center justify-center bg-white relative">
                   <AiOutlineUser size={48} color="#541011" style={{ position: 'absolute' }} />
                   { (profileImagePreview) && (
-                    profileImagePreview.startsWith('blob:') && (profileImage?.name?.toLowerCase().endsWith('.heic') || profileImage?.type === 'image/heic') ? (
-                      <div className="w-full h-full flex flex-col items-center justify-center bg-gray-100 relative z-10">
+                    profileImagePreview.startsWith('blob:') && getFileContentType(profileImage) === 'image/heic' ? (
+                      <div className="w-full h-full flex flex-col items-center justify-center bg-gray-100 relative z-10 text-center">
                         <AiOutlineUser size={32} color="#ccc" />
-                        <span style={{ fontSize: '8px', color: '#999' }}>HEIC</span>
+                        <span style={{ fontSize: '10px', fontWeight: 'bold', color: '#666' }}>HEIC Image</span>
+                        <span style={{ fontSize: '8px', color: '#999' }}>(No Preview)</span>
                       </div>
                     ) : (
                       <img

@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import BASE_API_URL from '../apiConfig';
 import uploadService from '../features/uploadService';
 import { getFileContentType } from '../utils/fileUtils';
+import { HiPhotograph } from 'react-icons/hi';
 
 const UpdateContentModal = ({ onClose, contentId }) => {
   const { userToken } = useSelector((state) => state.auth);
@@ -22,6 +23,23 @@ const UpdateContentModal = ({ onClose, contentId }) => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
+  const [thumbnailPreviewUrl, setThumbnailPreviewUrl] = useState(null);
+
+  // Manage thumbnail preview URL
+  useEffect(() => {
+    if (formData.thumbnail instanceof File) {
+      const contentType = getFileContentType(formData.thumbnail);
+      if (contentType !== 'image/heic') {
+        const url = URL.createObjectURL(formData.thumbnail);
+        setThumbnailPreviewUrl(url);
+        return () => URL.revokeObjectURL(url);
+      } else {
+        setThumbnailPreviewUrl(null);
+      }
+    } else {
+      setThumbnailPreviewUrl(null);
+    }
+  }, [formData.thumbnail]);
 
   // Update form data when contentId prop changes
   useEffect(() => {
@@ -215,6 +233,48 @@ const UpdateContentModal = ({ onClose, contentId }) => {
               name="thumbnail"
               onChange={handleFileChange}
             />
+
+            {formData.thumbnail && (
+              <div style={{ marginTop: '10px' }}>
+                <label style={{ fontSize: '14px', fontWeight: '500', color: '#333' }}>Thumbnail Preview</label>
+                <div style={{
+                  width: '100px',
+                  height: '100px',
+                  borderRadius: '8px',
+                  overflow: 'hidden',
+                  border: '1px solid #ccc',
+                  marginTop: '5px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: '#f0f0f0'
+                }}>
+                  {formData.thumbnail instanceof File ? (
+                    getFileContentType(formData.thumbnail) === 'image/heic' ? (
+                      <div style={{ textAlign: 'center', color: '#666' }}>
+                        <HiPhotograph size={30} />
+                        <div style={{ fontSize: '10px', fontWeight: 'bold' }}>HEIC Image</div>
+                        <div style={{ fontSize: '8px' }}>(No Preview)</div>
+                      </div>
+                    ) : (
+                      thumbnailPreviewUrl && (
+                        <img
+                          src={thumbnailPreviewUrl}
+                          alt="Thumbnail Preview"
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        />
+                      )
+                    )
+                  ) : (
+                    <img
+                      src={formData.thumbnail.url || formData.thumbnail}
+                      alt="Current Thumbnail"
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                  )}
+                </div>
+              </div>
+            )}
 
             <label>Upload Video</label>
             <Input

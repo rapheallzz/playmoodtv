@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { uploadFile, updateContent } from '../features/uploadSlice';
 import { HiCloudUpload, HiVideoCamera, HiPhotograph } from 'react-icons/hi';
 import { FaTimes } from 'react-icons/fa';
+import { getFileContentType } from '../utils/fileUtils';
 
 const FileUploadZone = ({ accept, onChange, file, icon: Icon, label, maxSizeLabel }) => {
   const fileInputRef = useRef(null);
@@ -90,12 +91,41 @@ const VideoModal = ({ onClose, content }) => {
 
   const [isScheduled, setIsScheduled] = useState(!!(content?.scheduledDate || content?.scheduledStartTime));
   const [videoFile, setVideoFile] = useState(null);
+  const [videoPreviewUrl, setVideoPreviewUrl] = useState(null);
   const [thumbnailFile, setThumbnailFile] = useState(null);
+  const [thumbnailPreviewUrl, setThumbnailPreviewUrl] = useState(null);
   const [previewStart, setPreviewStart] = useState(content?.previewStart || 0);
   const [previewEnd, setPreviewEnd] = useState(content?.previewEnd || 10);
   const [videoDuration, setVideoDuration] = useState(null);
   const [error, setError] = useState('');
   const videoRef = useRef(null);
+
+  // Manage video preview URL
+  useEffect(() => {
+    if (videoFile) {
+      const url = URL.createObjectURL(videoFile);
+      setVideoPreviewUrl(url);
+      return () => URL.revokeObjectURL(url);
+    } else {
+      setVideoPreviewUrl(null);
+    }
+  }, [videoFile]);
+
+  // Manage thumbnail preview URL
+  useEffect(() => {
+    if (thumbnailFile) {
+      const contentType = getFileContentType(thumbnailFile);
+      if (contentType !== 'image/heic') {
+        const url = URL.createObjectURL(thumbnailFile);
+        setThumbnailPreviewUrl(url);
+        return () => URL.revokeObjectURL(url);
+      } else {
+        setThumbnailPreviewUrl(null);
+      }
+    } else {
+      setThumbnailPreviewUrl(null);
+    }
+  }, [thumbnailFile]);
 
   // Handle video file selection
   const handleVideoChange = (e) => {
@@ -136,7 +166,8 @@ const VideoModal = ({ onClose, content }) => {
   // Handle thumbnail file selection
   const handleThumbnailChange = (e) => {
     const file = e.target.files[0];
-    if (file && file.type.startsWith('image/')) {
+    const contentType = getFileContentType(file);
+    if (file && contentType.startsWith('image/')) {
       const maxThumbnailSize = 10 * 1024 * 1024; // 10MB
       if (file.size > maxThumbnailSize) {
         setError('The thumbnail file exceeds the maximum size (10MB).');
@@ -378,18 +409,54 @@ const VideoModal = ({ onClose, content }) => {
             maxSizeLabel="max. 10MB"
           />
 
+          {thumbnailFile && (
+            <div style={{ marginTop: '10px' }}>
+              <Label>Thumbnail Preview</Label>
+              <div style={{
+                width: '100px',
+                height: '100px',
+                borderRadius: '8px',
+                overflow: 'hidden',
+                border: '1px solid #ccc',
+                marginTop: '5px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: '#f0f0f0'
+              }}>
+                {getFileContentType(thumbnailFile) === 'image/heic' ? (
+                  <div style={{ textAlign: 'center', color: '#666' }}>
+                    <HiPhotograph size={30} />
+                    <div style={{ fontSize: '10px', fontWeight: 'bold' }}>HEIC Image</div>
+                    <div style={{ fontSize: '8px' }}>(No Preview)</div>
+                  </div>
+                ) : (
+                  thumbnailPreviewUrl && (
+                    <img
+                      src={thumbnailPreviewUrl}
+                      alt="Thumbnail Preview"
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                  )
+                )}
+              </div>
+            </div>
+          )}
+
           {!isEditing && videoFile && (
             <>
               <Label>Preview Selection (10–15 seconds)</Label>
               {videoDuration ? (
                 <>
                   <VideoContainer>
-                    <video
-                      ref={videoRef}
-                      controls
-                      src={URL.createObjectURL(videoFile)}
-                      style={{ width: '100%', maxHeight: '200px' }}
-                    />
+                    {videoPreviewUrl && (
+                      <video
+                        ref={videoRef}
+                        controls
+                        src={videoPreviewUrl}
+                        style={{ width: '100%', maxHeight: '200px' }}
+                      />
+                    )}
                   </VideoContainer>
                   <PreviewControls>
                     <div>

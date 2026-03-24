@@ -320,9 +320,10 @@ const CreateFeedPostModal = ({ isOpen, onClose, onCreateFeedPost, availableVideo
                     {preview.type.startsWith('video/') ? (
                       <img src={preview.thumbnailUrl || preview.url} alt="video thumbnail" />
                     ) : preview.type === 'image/heic' ? (
-                      <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#333', color: 'white', fontSize: '10px' }}>
+                      <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#333', color: 'white', fontSize: '8px', textAlign: 'center' }}>
                         <HiPhotograph size={24} />
-                        <span>HEIC</span>
+                        <span style={{ fontWeight: 'bold' }}>HEIC Image</span>
+                        <span>(No Preview)</span>
                       </div>
                     ) : (
                       <img src={preview.url} alt="preview" />
