@@ -56,7 +56,16 @@ const FeedSection = ({ feeds, isLoadingFeeds, onPostClick, onDelete }) => {
 
   const renderFeedPost = (feed, index) => {
     const firstMedia = feed.media?.[0];
-    const imageUrl = firstMedia?.thumbnail?.url || firstMedia?.url || feed.content?.thumbnail || feed.thumbnail;
+    const imageUrl =
+      firstMedia?.thumbnail?.url ||
+      firstMedia?.url ||
+      feed.thumbnail?.url ||
+      feed.thumbnail ||
+      feed.content?.thumbnail?.url ||
+      feed.content?.thumbnail ||
+      feed.highlightUrl ||
+      feed.shortPreviewUrl ||
+      feed.content?.video;
 
     if (!imageUrl) {
       return null;
@@ -66,21 +75,16 @@ const FeedSection = ({ feeds, isLoadingFeeds, onPostClick, onDelete }) => {
     const groupKey = feed.content?._id || feed._id;
 
     // Determine if it's a carousel (multiple images/videos)
-    let mediaCount = 0;
-    if (feed.media) mediaCount += feed.media.length;
-    if (feed.highlightUrl) mediaCount++;
-    if (feed.content?.video) mediaCount++;
-    if (feed.content?.thumbnail) mediaCount++;
-    if (feed.thumbnail) mediaCount++;
-    // Correct logic for distinct media items (some URLs might overlap)
     const distinctUrls = new Set();
-    if (feed.media) feed.media.forEach(m => distinctUrls.add(m.url));
+    if (feed.media) feed.media.forEach(m => { if (m.url) distinctUrls.add(m.url); });
     if (feed.highlightUrl) distinctUrls.add(feed.highlightUrl);
+    if (feed.shortPreviewUrl) distinctUrls.add(feed.shortPreviewUrl);
     if (feed.content?.video) distinctUrls.add(feed.content.video);
-    if (feed.content?.thumbnail) distinctUrls.add(feed.content.thumbnail);
-    if (feed.thumbnail) distinctUrls.add(feed.thumbnail);
+    if (feed.content?.thumbnail) distinctUrls.add(feed.content.thumbnail.url || feed.content.thumbnail);
+    if (feed.thumbnail) distinctUrls.add(feed.thumbnail.url || feed.thumbnail);
+
     const isCarousel = distinctUrls.size > 1;
-    const isVideo = feed.type === 'video' || !!feed.highlightUrl || !!feed.content?.video || firstMedia?.url?.toLowerCase().endsWith('.mp4') || firstMedia?.type?.startsWith('video/');
+    const isVideo = feed.type === 'video' || !!feed.highlightUrl || !!feed.shortPreviewUrl || !!feed.content?.video || firstMedia?.url?.toLowerCase().endsWith('.mp4') || firstMedia?.type?.startsWith('video/');
 
     return (
       <FeedPostCardContainer key={groupKey} onClick={() => onPostClick(feed, index)}>

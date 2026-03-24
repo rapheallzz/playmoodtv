@@ -72,11 +72,12 @@ export default function CreatorPage() {
 
   const processedFeeds = useMemo(() => {
     if (!feeds) return [];
-    return feeds.reduce((acc, feed) => {
+    const grouped = feeds.reduce((acc, feed) => {
       // Identify the content ID this feed belongs to.
       // Some feeds have it in content._id, others (like thumbnails/previews) use the top-level _id.
+      // Note: feed.content might be a string in some older models, so we check for both.
       const contentId =
-        feed.content?._id ||
+        (typeof feed.content === 'object' ? feed.content?._id : feed.content) ||
         (['thumbnail', 'shortPreview', 'highlight'].includes(feed.feedType)
           ? feed._id
           : null);
@@ -84,7 +85,7 @@ export default function CreatorPage() {
       const existingIndex = contentId
         ? acc.findIndex((item) => {
             const itemContentId =
-              item.content?._id ||
+              (typeof item.content === 'object' ? item.content?._id : item.content) ||
               (['thumbnail', 'shortPreview', 'highlight'].includes(item.feedType)
                 ? item._id
                 : null);
@@ -106,8 +107,13 @@ export default function CreatorPage() {
           existing.highlightUrl = feed.highlightUrl;
         if (feed.shortPreviewUrl && !existing.shortPreviewUrl)
           existing.shortPreviewUrl = feed.shortPreviewUrl;
-        if (feed.thumbnail && !existing.thumbnail)
+
+        // Handle potentially different thumbnail structures
+        const currentThumb = feed.thumbnail?.url || feed.thumbnail;
+        const existingThumb = existing.thumbnail?.url || existing.thumbnail;
+        if (currentThumb && !existingThumb) {
           existing.thumbnail = feed.thumbnail;
+        }
 
         // Merge content details
         if (feed.content) {
@@ -125,6 +131,9 @@ export default function CreatorPage() {
 
       return acc;
     }, []);
+
+    // Sort processed feeds by creation date in descending order (latest first)
+    return grouped.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
   }, [feeds]);
 
   const handleNextFeed = () => {

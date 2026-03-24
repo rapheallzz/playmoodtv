@@ -177,6 +177,11 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
     addMediaItem(post.highlightUrl, 'video');
   }
 
+  // 1b. Short Preview
+  if (post.shortPreviewUrl) {
+    addMediaItem(post.shortPreviewUrl, 'video');
+  }
+
   // 2. Content Video
   if (post.content?.video) {
     addMediaItem(post.content.video, 'video');
