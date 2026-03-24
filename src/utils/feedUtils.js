@@ -11,23 +11,25 @@ export const groupFeeds = (feeds) => {
     // 2. If it's a thumbnail, shortPreview, or highlight, try to group by the underlying content.
 
     let contentId = null;
-    if (feed.feedType === 'feedPost') {
-        // For feedPosts, if they refer to a content object, use its ID.
-        // Otherwise, use the feed post's own ID to keep it separate.
-        contentId = (typeof feed.content === 'object' ? feed.content?._id : feed.content) || feed._id;
+    let isFeedPost = feed.feedType === 'feedPost';
+
+    if (isFeedPost) {
+        // For feedPosts, we want them to be separate items in the grid even if they reference content.
+        // We only group them if they have the exact same _id (which shouldn't happen unless there are duplicates).
+        contentId = feed._id;
     } else {
         // For other types (thumbnail, shortPreview, highlight),
-        // they ALMOST ALWAYS should be grouped by the content they belong to.
+        // they should be grouped by the content they belong to.
         contentId = (typeof feed.content === 'object' ? feed.content?._id : feed.content) || feed._id;
     }
 
     const existingIndex = contentId
       ? acc.findIndex((item) => {
-          const itemContentId =
-            (typeof item.content === 'object' ? item.content?._id : item.content) || item._id;
+          let itemIsFeedPost = item.feedType === 'feedPost';
+          const itemContentId = itemIsFeedPost
+            ? item._id
+            : ((typeof item.content === 'object' ? item.content?._id : item.content) || item._id);
 
-          // Only group if the IDs match AND (it's not a feedPost OR it's the same feedPost)
-          // Actually, if we want to group feedPosts with their content's other feeds, we use contentId.
           return itemContentId === contentId;
         })
       : -1;

@@ -98,7 +98,9 @@ const FeedSection = ({ feeds, isLoadingFeeds, onPostClick, onDelete }) => {
     const imageUrl = typeof resolvedImage === 'string' ? resolvedImage : placeholderUrl;
 
     // Determine unique key for React rendering
-    const groupKey = (typeof feed.content === 'object' ? feed.content?._id : feed.content) || feed._id;
+    const groupKey = feed.feedType === 'feedPost'
+      ? feed._id
+      : ((typeof feed.content === 'object' ? feed.content?._id : feed.content) || feed._id);
 
     // Determine if it's a carousel (multiple images/videos)
     const distinctUrls = new Set();
