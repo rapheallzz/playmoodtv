@@ -161,12 +161,13 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
   const allMedia = [];
   const addedUrls = new Set();
 
-  const addMediaItem = (url, type, thumbnail) => {
+  const addMediaItem = (mediaInput, type, thumbnail) => {
+    const url = typeof mediaInput === 'string' ? mediaInput : mediaInput?.url;
     if (url && !addedUrls.has(url)) {
       allMedia.push({
         url,
-        type: type || (url.endsWith('.mp4') ? 'video' : 'image'),
-        thumbnail
+        type: type || (url.toLowerCase().endsWith('.mp4') ? 'video' : 'image'),
+        thumbnail: thumbnail || (typeof mediaInput === 'object' ? (mediaInput.thumbnail?.url || mediaInput.thumbnail) : null)
       });
       addedUrls.add(url);
     }
@@ -174,27 +175,25 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
 
   // 1. Highlight Video
   if (post.highlightUrl) {
-    addMediaItem(post.highlightUrl, 'video');
+    addMediaItem(post.highlightUrl, 'video', post.thumbnail || post.content?.thumbnail);
   }
 
   // 2. Content Video
   if (post.content?.video) {
-    addMediaItem(post.content.video, 'video');
+    addMediaItem(post.content.video, 'video', post.content.thumbnail);
   }
 
-  // 3. Content Thumbnail
-  if (post.content?.thumbnail) {
-    addMediaItem(post.content.thumbnail, 'image');
-  }
-
-  // 4. Post Thumbnail
-  if (post.thumbnail) {
-    addMediaItem(post.thumbnail, 'image');
-  }
-
-  // 5. Additional Media Array
-  if (post.media) {
-    post.media.forEach((m) => addMediaItem(m.url, m.url.endsWith('.mp4') ? 'video' : 'image', m.thumbnail?.url || m.thumbnail));
+  // 3. Additional Media Array (Usually images or new video uploads)
+  if (post.media && post.media.length > 0) {
+    post.media.forEach((m) => addMediaItem(m));
+  } else if (!post.highlightUrl && !post.content?.video) {
+    // Fallback to thumbnails only if no videos are present
+    if (post.content?.thumbnail) {
+      addMediaItem(post.content.thumbnail, 'image');
+    }
+    if (post.thumbnail) {
+      addMediaItem(post.thumbnail, 'image');
+    }
   }
 
   const handleNextMedia = (e) => {
