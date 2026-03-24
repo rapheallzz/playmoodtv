@@ -1,6 +1,6 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useWebSocket } from '../context/WebSocketContext';
 import { Homecontent } from '../styles/CreatorPageStyles';
 import Banner from '../components/creator/Banner';
@@ -36,6 +36,7 @@ export default function CreatorPage() {
   const location = useLocation();
   const socket = useWebSocket();
   const { user } = useSelector((state) => state.auth);
+  const { isUploading } = useSelector((state) => state.upload);
   const [activeTab, setActiveTab] = useState('Uploads');
   const apiUrl = BASE_API_URL;
   const [activeSubTab, setActiveSubTab] = useState('Approved');
@@ -57,18 +58,15 @@ export default function CreatorPage() {
   const [showVerticalHighlightViewer, setShowVerticalHighlightViewer] = useState(false);
   const [highlightStartIndex, setHighlightStartIndex] = useState(0);
   const [enrichedHighlights, setEnrichedHighlights] = useState([]);
+  const prevIsUploadingRef = useRef(isUploading);
 
-  const handleNextFeed = () => {
-    const nextIndex = (selectedFeedPostIndex + 1) % feeds.length;
-    setSelectedFeedPostIndex(nextIndex);
-    setSelectedFeedPost(feeds[nextIndex]);
-  };
-
-  const handlePreviousFeed = () => {
-    const prevIndex = (selectedFeedPostIndex - 1 + feeds.length) % feeds.length;
-    setSelectedFeedPostIndex(prevIndex);
-    setSelectedFeedPost(feeds[prevIndex]);
-  };
+  useEffect(() => {
+    if (prevIsUploadingRef.current && !isUploading) {
+      // Transition from uploading to not uploading - update the channel and feeds
+      refreshChannel();
+    }
+    prevIsUploadingRef.current = isUploading;
+  }, [isUploading]);
 
   // Feeds hook
   const {
@@ -79,6 +77,39 @@ export default function CreatorPage() {
     createFeedPost,
     deleteFeedPost,
   } = useFeeds(user);
+
+  // Group feeds by content._id to avoid duplicates for the same content
+  const processedFeeds = useMemo(() => {
+    if (!feeds) return [];
+    const grouped = [];
+    const seenContentIds = new Set();
+
+    feeds.forEach((feed) => {
+      const contentId = feed.content?._id || feed.content;
+      if (contentId && typeof contentId === 'string') {
+        if (!seenContentIds.has(contentId)) {
+          seenContentIds.add(contentId);
+          grouped.push(feed);
+        }
+      } else {
+        // Posts without content ID are kept as standalone
+        grouped.push(feed);
+      }
+    });
+    return grouped;
+  }, [feeds]);
+
+  const handleNextFeed = () => {
+    const nextIndex = (selectedFeedPostIndex + 1) % processedFeeds.length;
+    setSelectedFeedPostIndex(nextIndex);
+    setSelectedFeedPost(processedFeeds[nextIndex]);
+  };
+
+  const handlePreviousFeed = () => {
+    const prevIndex = (selectedFeedPostIndex - 1 + processedFeeds.length) % processedFeeds.length;
+    setSelectedFeedPostIndex(prevIndex);
+    setSelectedFeedPost(processedFeeds[prevIndex]);
+  };
 
   // Channel details hook
   const {
@@ -268,7 +299,7 @@ export default function CreatorPage() {
       />
       {activeTab === 'Feeds' ? (
         <FeedSection
-          feeds={feeds}
+          feeds={processedFeeds}
           isLoadingFeeds={isLoadingFeeds}
           onPostClick={(feed, index) => {
             setSelectedFeedPost(feed);

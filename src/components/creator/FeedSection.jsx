@@ -23,7 +23,8 @@ const FeedSection = ({ feeds, isLoadingFeeds, onPostClick, onDelete }) => {
     return <NoPostsMessage>No feed posts yet.</NoPostsMessage>;
   }
 
-  // No longer grouping feeds to ensure all posts are visible separately
+  // Grouping should ideally be handled by the parent to maintain consistent indexing
+  // for the FeedPostViewerModal.
   const processedFeeds = feeds;
 
   const handleDelete = async (e, postId) => {
@@ -58,7 +59,13 @@ const FeedSection = ({ feeds, isLoadingFeeds, onPostClick, onDelete }) => {
 
   const renderFeedPost = (feed, index) => {
     const firstMedia = feed.media?.[0];
-    const imageUrl = firstMedia?.thumbnail?.url || firstMedia?.url || feed.content?.thumbnail || feed.thumbnail;
+    const imageUrl =
+      firstMedia?.thumbnail?.url ||
+      firstMedia?.url ||
+      feed.thumbnail ||
+      feed.content?.thumbnail ||
+      feed.highlightUrl ||
+      feed.content?.video;
 
     if (!imageUrl) {
       return null;
