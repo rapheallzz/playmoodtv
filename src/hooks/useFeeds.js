@@ -138,7 +138,10 @@ const useFeeds = (user, creatorId = null) => {
       await api.delete(`/api/feed/${postId}`);
       setFeeds(feeds.filter(feed => feed._id !== postId));
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to delete feed post.');
+      const errMsg = err.response?.status === 500
+        ? 'This feed is associated with content and cannot be deleted directly. To delete this feed, please delete the associated content from your "Uploads" tab.'
+        : (err.response?.data?.message || 'Failed to delete feed post.');
+      setError(errMsg);
       throw err;
     }
   };

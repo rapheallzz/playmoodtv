@@ -45,9 +45,13 @@ const FeedSection = ({ feeds, isLoadingFeeds, onPostClick, onDelete }) => {
           'success'
         );
       } catch (error) {
+        const errorMessage = error.response?.status === 500
+          ? 'This feed is associated with content and cannot be deleted directly. To delete this feed, please delete the associated content from your "Uploads" tab.'
+          : (error.message || 'Failed to delete feed post.');
+
         Swal.fire(
           'Error!',
-          error.message || 'Failed to delete feed post.',
+          errorMessage,
           'error'
         );
       }
@@ -136,7 +140,7 @@ const FeedSection = ({ feeds, isLoadingFeeds, onPostClick, onDelete }) => {
               <FaVideo size={12} />
             </CarouselIcon>
           ) : null}
-          {onDelete && (
+          {onDelete && feed.feedType === 'feedPost' && (
             <FeedDeleteButton onClick={(e) => handleDelete(e, feed._id)} title="Delete Feed Post">
               <FaTrash size={14} />
             </FeedDeleteButton>

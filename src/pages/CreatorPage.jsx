@@ -253,9 +253,9 @@ export default function CreatorPage() {
 
   return (
     <Homecontent>
-      {(channelErrorMessage || playlistErrorMessage || postErrorMessage || highlightsError) && (
+      {(channelErrorMessage || playlistErrorMessage || postErrorMessage || highlightsError || feedsError) && (
         <div style={{ color: 'red', marginBottom: '10px' }}>
-          {channelErrorMessage || playlistErrorMessage || postErrorMessage || highlightsError}
+          {channelErrorMessage || playlistErrorMessage || postErrorMessage || highlightsError || feedsError}
         </div>
       )}
       <Banner
