@@ -23,28 +23,6 @@ const FeedSection = ({ feeds, isLoadingFeeds, onPostClick, onDelete }) => {
     return <NoPostsMessage>No feed posts yet.</NoPostsMessage>;
   }
 
-  // Group feeds that belong to the same content
-  const processedFeeds = feeds.reduce((acc, feed) => {
-    // Only group if it has a content reference. Independent feeds stay separate.
-    const contentId = feed.content?._id;
-    const existingIndex = contentId ? acc.findIndex(item => (item.content?._id) === contentId) : -1;
-
-    if (contentId && existingIndex !== -1) {
-      // Group with existing post
-      const existing = acc[existingIndex];
-      if (feed.media && feed.media.length > 0) {
-        existing.media = existing.media ? [...existing.media, ...feed.media] : [...feed.media];
-      }
-      if (feed.content?.video && !existing.content?.video) {
-        existing.content = existing.content ? { ...existing.content, video: feed.content.video } : { video: feed.content.video };
-      }
-    } else {
-      // Create new grouped entry (deep copy to avoid modifying original prop)
-      acc.push(JSON.parse(JSON.stringify(feed)));
-    }
-
-    return acc;
-  }, []);
 
   const handleDelete = async (e, postId) => {
     e.stopPropagation();
@@ -78,31 +56,38 @@ const FeedSection = ({ feeds, isLoadingFeeds, onPostClick, onDelete }) => {
 
   const renderFeedPost = (feed, index) => {
     const firstMedia = feed.media?.[0];
-    const imageUrl = firstMedia?.thumbnail?.url || firstMedia?.url || feed.content?.thumbnail || feed.thumbnail;
+    const imageUrl =
+      firstMedia?.thumbnail?.url ||
+      firstMedia?.url ||
+      feed.thumbnail?.url ||
+      feed.thumbnail ||
+      feed.content?.thumbnail?.url ||
+      feed.content?.thumbnail ||
+      feed.highlightUrl ||
+      feed.shortPreviewUrl ||
+      feed.content?.video;
 
     if (!imageUrl) {
       return null;
     }
 
+    // Determine unique key for React rendering
+    const groupKey = feed.content?._id || feed._id;
+
     // Determine if it's a carousel (multiple images/videos)
-    let mediaCount = 0;
-    if (feed.media) mediaCount += feed.media.length;
-    if (feed.highlightUrl) mediaCount++;
-    if (feed.content?.video) mediaCount++;
-    if (feed.content?.thumbnail) mediaCount++;
-    if (feed.thumbnail) mediaCount++;
-    // Correct logic for distinct media items (some URLs might overlap)
     const distinctUrls = new Set();
-    if (feed.media) feed.media.forEach(m => distinctUrls.add(m.url));
+    if (feed.media) feed.media.forEach(m => { if (m.url) distinctUrls.add(m.url); });
     if (feed.highlightUrl) distinctUrls.add(feed.highlightUrl);
+    if (feed.shortPreviewUrl) distinctUrls.add(feed.shortPreviewUrl);
     if (feed.content?.video) distinctUrls.add(feed.content.video);
-    if (feed.content?.thumbnail) distinctUrls.add(feed.content.thumbnail);
-    if (feed.thumbnail) distinctUrls.add(feed.thumbnail);
+    if (feed.content?.thumbnail) distinctUrls.add(feed.content.thumbnail.url || feed.content.thumbnail);
+    if (feed.thumbnail) distinctUrls.add(feed.thumbnail.url || feed.thumbnail);
+
     const isCarousel = distinctUrls.size > 1;
-    const isVideo = feed.type === 'video' || !!feed.highlightUrl || !!feed.content?.video || firstMedia?.url?.toLowerCase().endsWith('.mp4') || firstMedia?.type?.startsWith('video/');
+    const isVideo = feed.type === 'video' || !!feed.highlightUrl || !!feed.shortPreviewUrl || !!feed.content?.video || firstMedia?.url?.toLowerCase().endsWith('.mp4') || firstMedia?.type?.startsWith('video/');
 
     return (
-      <FeedPostCardContainer key={feed._id} onClick={() => onPostClick(feed, index)}>
+      <FeedPostCardContainer key={groupKey} onClick={() => onPostClick(feed, index)}>
         <FeedItem>
           <FeedImage src={imageUrl} alt={feed.caption || feed.title} />
           {isCarousel ? (
@@ -134,7 +119,7 @@ const FeedSection = ({ feeds, isLoadingFeeds, onPostClick, onDelete }) => {
 
   return (
     <FeedContainer>
-      <FeedGrid>{processedFeeds.map(renderFeedPost)}</FeedGrid>
+      <FeedGrid>{feeds.map(renderFeedPost)}</FeedGrid>
     </FeedContainer>
   );
 };
