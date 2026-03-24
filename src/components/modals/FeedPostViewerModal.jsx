@@ -178,6 +178,11 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
     addMediaItem(post.highlightUrl, 'video', post.thumbnail || post.content?.thumbnail);
   }
 
+  // 1b. Short Preview
+  if (post.shortPreviewUrl) {
+    addMediaItem(post.shortPreviewUrl, 'video');
+  }
+
   // 2. Content Video
   if (post.content?.video) {
     addMediaItem(post.content.video, 'video', post.content.thumbnail);
@@ -269,7 +274,15 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
                     className="max-w-full max-h-full object-contain"
                   />
                 ) : (
-                  <img src={media.url} alt={post.caption || post.title} className="max-w-full max-h-full object-contain" />
+                  <img
+                    src={media.url}
+                    alt={post.caption || post.title}
+                    className="max-w-full max-h-full object-contain"
+                    onError={(e) => {
+                      e.target.src = 'https://via.placeholder.com/300x200?text=Image+Not+Available';
+                      e.target.onerror = null;
+                    }}
+                  />
                 )}
               </SwiperSlide>
             ))}
@@ -277,10 +290,10 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
         </ModalCardMedia>
         <ModalCardContent>
           <ModalCardHeader>
-            <ProfileImage src={post.user?.profileImage} alt={post.user?.name} style={{ width: '40px', height: '40px' }} />
-            <CreatorName>{post.user?.name}</CreatorName>
+            <ProfileImage src={post.user?.profileImage} alt={post.user?.name || 'User'} style={{ width: '40px', height: '40px' }} />
+            <CreatorName>{post.user?.name || 'User'}</CreatorName>
           </ModalCardHeader>
-          <ModalCardCaption>{post.caption || post.title}</ModalCardCaption>
+          <ModalCardCaption>{post.caption || post.title || 'No description available.'}</ModalCardCaption>
           {isCommentsOpen && (
             <>
               <ModalCardComments>
