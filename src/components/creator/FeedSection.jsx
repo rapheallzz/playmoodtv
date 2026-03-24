@@ -23,28 +23,6 @@ const FeedSection = ({ feeds, isLoadingFeeds, onPostClick, onDelete }) => {
     return <NoPostsMessage>No feed posts yet.</NoPostsMessage>;
   }
 
-  // Group feeds that belong to the same content
-  const processedFeeds = feeds.reduce((acc, feed) => {
-    // Only group if it has a content reference. Independent feeds stay separate.
-    const contentId = feed.content?._id;
-    const existingIndex = contentId ? acc.findIndex(item => (item.content?._id) === contentId) : -1;
-
-    if (contentId && existingIndex !== -1) {
-      // Group with existing post
-      const existing = acc[existingIndex];
-      if (feed.media && feed.media.length > 0) {
-        existing.media = existing.media ? [...existing.media, ...feed.media] : [...feed.media];
-      }
-      if (feed.content?.video && !existing.content?.video) {
-        existing.content = existing.content ? { ...existing.content, video: feed.content.video } : { video: feed.content.video };
-      }
-    } else {
-      // Create new grouped entry (deep copy to avoid modifying original prop)
-      acc.push(JSON.parse(JSON.stringify(feed)));
-    }
-
-    return acc;
-  }, []);
 
   const handleDelete = async (e, postId) => {
     e.stopPropagation();
@@ -84,6 +62,9 @@ const FeedSection = ({ feeds, isLoadingFeeds, onPostClick, onDelete }) => {
       return null;
     }
 
+    // Determine unique key for React rendering
+    const groupKey = feed.content?._id || feed._id;
+
     // Determine if it's a carousel (multiple images/videos)
     let mediaCount = 0;
     if (feed.media) mediaCount += feed.media.length;
@@ -102,7 +83,7 @@ const FeedSection = ({ feeds, isLoadingFeeds, onPostClick, onDelete }) => {
     const isVideo = feed.type === 'video' || !!feed.highlightUrl || !!feed.content?.video || firstMedia?.url?.toLowerCase().endsWith('.mp4') || firstMedia?.type?.startsWith('video/');
 
     return (
-      <FeedPostCardContainer key={feed._id} onClick={() => onPostClick(feed, index)}>
+      <FeedPostCardContainer key={groupKey} onClick={() => onPostClick(feed, index)}>
         <FeedItem>
           <FeedImage src={imageUrl} alt={feed.caption || feed.title} />
           {isCarousel ? (
@@ -134,7 +115,7 @@ const FeedSection = ({ feeds, isLoadingFeeds, onPostClick, onDelete }) => {
 
   return (
     <FeedContainer>
-      <FeedGrid>{processedFeeds.map(renderFeedPost)}</FeedGrid>
+      <FeedGrid>{feeds.map(renderFeedPost)}</FeedGrid>
     </FeedContainer>
   );
 };

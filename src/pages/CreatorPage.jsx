@@ -36,6 +36,8 @@ export default function CreatorPage() {
   const location = useLocation();
   const socket = useWebSocket();
   const { user } = useSelector((state) => state.auth);
+  const { isUploading } = useSelector((state) => state.upload);
+  const prevIsUploading = useRef(false);
   const [activeTab, setActiveTab] = useState('Uploads');
   const apiUrl = BASE_API_URL;
   const [activeSubTab, setActiveSubTab] = useState('Approved');
@@ -58,16 +60,75 @@ export default function CreatorPage() {
   const [highlightStartIndex, setHighlightStartIndex] = useState(0);
   const [enrichedHighlights, setEnrichedHighlights] = useState([]);
 
+  const processedFeeds = useMemo(() => {
+    if (!feeds) return [];
+    return feeds.reduce((acc, feed) => {
+      // Identify the content ID this feed belongs to.
+      // Some feeds have it in content._id, others (like thumbnails/previews) use the top-level _id.
+      const contentId =
+        feed.content?._id ||
+        (['thumbnail', 'shortPreview', 'highlight'].includes(feed.feedType)
+          ? feed._id
+          : null);
+
+      const existingIndex = contentId
+        ? acc.findIndex((item) => {
+            const itemContentId =
+              item.content?._id ||
+              (['thumbnail', 'shortPreview', 'highlight'].includes(item.feedType)
+                ? item._id
+                : null);
+            return itemContentId === contentId;
+          })
+        : -1;
+
+      if (contentId && existingIndex !== -1) {
+        // Group with existing post
+        const existing = acc[existingIndex];
+
+        // Merge media arrays
+        if (feed.media && feed.media.length > 0) {
+          existing.media = [...(existing.media || []), ...feed.media];
+        }
+
+        // Merge other media fields if not already present
+        if (feed.highlightUrl && !existing.highlightUrl)
+          existing.highlightUrl = feed.highlightUrl;
+        if (feed.shortPreviewUrl && !existing.shortPreviewUrl)
+          existing.shortPreviewUrl = feed.shortPreviewUrl;
+        if (feed.thumbnail && !existing.thumbnail)
+          existing.thumbnail = feed.thumbnail;
+
+        // Merge content details
+        if (feed.content) {
+          existing.content = { ...(existing.content || {}), ...feed.content };
+        }
+
+        // Keep the most recent timestamp
+        if (new Date(feed.createdAt) > new Date(existing.createdAt)) {
+          existing.createdAt = feed.createdAt;
+        }
+      } else {
+        // Create new grouped entry (deep copy to avoid modifying original prop)
+        acc.push(JSON.parse(JSON.stringify(feed)));
+      }
+
+      return acc;
+    }, []);
+  }, [feeds]);
+
   const handleNextFeed = () => {
-    const nextIndex = (selectedFeedPostIndex + 1) % feeds.length;
+    const nextIndex = (selectedFeedPostIndex + 1) % processedFeeds.length;
     setSelectedFeedPostIndex(nextIndex);
-    setSelectedFeedPost(feeds[nextIndex]);
+    setSelectedFeedPost(processedFeeds[nextIndex]);
   };
 
   const handlePreviousFeed = () => {
-    const prevIndex = (selectedFeedPostIndex - 1 + feeds.length) % feeds.length;
+    const prevIndex =
+      (selectedFeedPostIndex - 1 + processedFeeds.length) %
+      processedFeeds.length;
     setSelectedFeedPostIndex(prevIndex);
-    setSelectedFeedPost(feeds[prevIndex]);
+    setSelectedFeedPost(processedFeeds[prevIndex]);
   };
 
   // Feeds hook
@@ -125,6 +186,21 @@ export default function CreatorPage() {
   } = useHighlights(user);
 
   // Feeds hook
+  const prevIsCreatingHighlight = useRef(false);
+
+  // Sync feeds after upload or highlight creation completes
+  useEffect(() => {
+    const uploadFinished = prevIsUploading.current === true && isUploading === false;
+    const highlightFinished = prevIsCreatingHighlight.current === true && isCreatingHighlight === false;
+
+    if (uploadFinished || highlightFinished) {
+      refreshChannel();
+    }
+
+    prevIsUploading.current = isUploading;
+    prevIsCreatingHighlight.current = isCreatingHighlight;
+  }, [isUploading, isCreatingHighlight]);
+
   useEffect(() => {
     if (location.state?.openModal) {
       const modalToOpen = location.state.openModal;
@@ -268,7 +344,7 @@ export default function CreatorPage() {
       />
       {activeTab === 'Feeds' ? (
         <FeedSection
-          feeds={feeds}
+          feeds={processedFeeds}
           isLoadingFeeds={isLoadingFeeds}
           onPostClick={(feed, index) => {
             setSelectedFeedPost(feed);
