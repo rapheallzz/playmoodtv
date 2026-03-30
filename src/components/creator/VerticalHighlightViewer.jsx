@@ -522,10 +522,10 @@ const VerticalHighlightViewer = ({
           >
             {index === currentIndex && highlights.length > 1 && (
               <>
-                <NavigationArrow className="up-arrow" onClick={() => handleScroll(-1)}>
+                <NavigationArrow className="up-arrow" onClick={(e) => { e.stopPropagation(); handleScroll(-1); }}>
                   <FaChevronUp />
                 </NavigationArrow>
-                <NavigationArrow className="down-arrow" onClick={() => handleScroll(1)}>
+                <NavigationArrow className="down-arrow" onClick={(e) => { e.stopPropagation(); handleScroll(1); }}>
                   <FaChevronDown />
                 </NavigationArrow>
               </>

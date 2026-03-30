@@ -2067,7 +2067,7 @@ export const BottomInfoContainer = styled.div`
   position: absolute;
   bottom: 20px;
   left: 20px;
-  right: 10px;
+  right: 15px;
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
@@ -2093,7 +2093,7 @@ export const ActionsContainer = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 15px;
-  width: 80px;
+  width: 40px;
 `;
 
 export const ViewerActionButton = styled.button`
