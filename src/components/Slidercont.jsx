@@ -259,7 +259,7 @@ const Slidercontent = React.memo(function Slidercontent({
       <div className="absolute top-2.5 w-full px-1 flex justify-between"></div>
       {!hover && !isVideoPlaying ? (
         <>
-          <div className="h-[82%]">
+          <div className="h-full">
             <img
               className="w-full h-full object-cover cursor-pointer"
               src={img}
