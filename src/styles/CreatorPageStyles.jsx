@@ -1635,6 +1635,7 @@ export const HighlightCircle = styled.div`
   justify-content: center;
   align-items: center;
   transition: transform 0.3s ease;
+  cursor: pointer;
 
   &:hover {
     animation: ${breathe} 1.5s infinite;
@@ -1692,6 +1693,7 @@ export const HighlightCard = styled.div`
   align-items: center;
   position: relative;
   overflow: hidden;
+  cursor: pointer;
 
   &:hover .highlight-delete-btn {
     opacity: 1;
