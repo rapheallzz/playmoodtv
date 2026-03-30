@@ -6,6 +6,7 @@ import axios from 'axios';
 import BASE_API_URL from '../../apiConfig';
 import Slidercontent from '../Slidercont';
 import { useNavigate } from 'react-router-dom';
+import { shuffleArray } from '../../utils/shuffle';
 import ContentModal from '../ContentModal';
 import styled, { keyframes } from 'styled-components';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
@@ -95,7 +96,7 @@ export default function SliderNew({ title }) {
         setLoading(true);
         const response = await axios.get(`${BASE_API_URL}/api/content/new`);
         if (response.data && Array.isArray(response.data)) {
-          setData(response.data); // Set all data without filtering
+          setData(shuffleArray(response.data)); // Set all data without filtering
         } else {
           setError('Unexpected data format.');
         }

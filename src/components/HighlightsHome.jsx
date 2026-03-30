@@ -8,6 +8,7 @@ import VerticalHighlightViewer from './creator/VerticalHighlightViewer';
 import { SkeletonHighlightsWrapper, SkeletonHighlightItem, SkeletonHighlightCircle, SkeletonText } from '../styles/SkeletonStyles';
 import SliderHighlights from './sliders/SliderHighlights';
 import styled from 'styled-components';
+import { shuffleArray } from '../utils/shuffle';
 
 const VideoCategory = styled.div`
   width: 100%;
@@ -81,8 +82,8 @@ const HighlightsHome = ({ title }) => {
           axios.get(`${BASE_API_URL}/api/highlights/all`)
         ]);
 
-        setRecentHighlights(recentResponse.data);
-        setAllHighlights(allResponse.data);
+        setRecentHighlights(shuffleArray(recentResponse.data));
+        setAllHighlights(shuffleArray(allResponse.data));
       } catch (error) {
       } finally {
         setIsLoading(false);
