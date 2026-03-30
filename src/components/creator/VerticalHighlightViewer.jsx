@@ -504,7 +504,7 @@ const VerticalHighlightViewer = ({
       style={{ zIndex: 10010 }} // Ensure it's above DesktopHeader (1001)
     >
       <CloseButton
-        onClick={isCommentSectionOpen ? () => setCommentSectionOpen(false) : onClose}
+        onClick={onClose}
         style={{ position: 'fixed', top: '20px', right: '20px', zIndex: 10011 }}
       >
         <FaTimes />
@@ -513,10 +513,12 @@ const VerticalHighlightViewer = ({
         <HighlightStory
           key={highlight._id}
           ref={(el) => (storyRefs.current[index] = el)}
+          onClick={onClose}
         >
           <VideoContainer
             data-testid={`video-container-${index}`}
             className={isCommentSectionOpen && (selectedHighlight?.content?._id || selectedHighlight?._id) === (highlight.content?._id || highlight._id) ? 'shifted' : ''}
+            onClick={(e) => e.stopPropagation()}
           >
             {index === currentIndex && highlights.length > 1 && (
               <>
@@ -627,15 +629,17 @@ const VerticalHighlightViewer = ({
             </BottomInfoContainer>
           </VideoContainer>
           {isCommentSectionOpen && (selectedHighlight?.content?._id || selectedHighlight?._id) === (highlight.content?._id || highlight._id) && (
-            <CommentSection
-              comments={comments}
-              user={user}
-              onSubmit={handleCommentSubmit}
-              onClose={() => setCommentSectionOpen(false)}
-              isLoading={isLoadingComments}
-              totalComments={totalComments}
-              highlightTitle={highlight.title || highlight.content?.title}
-            />
+            <div onClick={(e) => e.stopPropagation()}>
+              <CommentSection
+                comments={comments}
+                user={user}
+                onSubmit={handleCommentSubmit}
+                onClose={() => setCommentSectionOpen(false)}
+                isLoading={isLoadingComments}
+                totalComments={totalComments}
+                highlightTitle={highlight.title || highlight.content?.title}
+              />
+            </div>
           )}
         </HighlightStory>
       ))}

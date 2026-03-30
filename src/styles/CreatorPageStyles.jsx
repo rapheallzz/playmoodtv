@@ -2067,7 +2067,7 @@ export const BottomInfoContainer = styled.div`
   position: absolute;
   bottom: 20px;
   left: 20px;
-  right: 20px;
+  right: 10px;
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
@@ -2145,14 +2145,14 @@ export const NavigationArrow = styled.button`
     top: auto;
     transform: none;
     bottom: 360px;
-    right: 40px;
+    right: 15px;
   }
 
   &.down-arrow {
     top: auto;
     transform: none;
     bottom: 300px;
-    right: 40px;
+    right: 15px;
   }
 
   svg {
