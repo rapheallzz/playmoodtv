@@ -1,8 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import styled, { keyframes } from 'styled-components';
-import Slider from 'react-slick';
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
+import styled from 'styled-components';
 import axios from 'axios';
 import MobileBurger from '../components/headers/MobileBurger';
 import DesktopHeader from '../components/headers/DesktopHeader';
@@ -12,40 +9,6 @@ import Slidercirclecontent from '../components/Slidercirclecontent';
 import CreatorContentModal from '../components/CreatorContentModal';
 import { shuffleArray } from '../utils/shuffle';
 import Footer from '../components/footer/Footer';
-import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
-
-// Pulse animation for right arrow
-const pulse = keyframes`
-  0% {
-    transform: translateY(-50%) scale(1);
-  }
-  50% {
-    transform: translateY(-50%) scale(1.1);
-  }
-  100% {
-    transform: translateY(-50%) scale(1);
-  }
-`;
-
-// Custom Arrow Components
-const CustomPrevArrow = (props) => {
-  const { onClick } = props;
-  return (
-    <div className="custom-arrow prev-arrow" onClick={onClick}>
-      <FaChevronLeft className="arrow-icon" />
-    </div>
-  );
-};
-
-const CustomNextArrow = (props) => {
-  const { onClick } = props;
-  return (
-    <div className="custom-arrow next-arrow" onClick={onClick}>
-      <FaChevronRight className="arrow-icon" />
-    </div>
-  );
-};
-
 export default function Channels() {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -53,7 +16,8 @@ export default function Channels() {
   const [creatorError, setCreatorError] = useState(null);
   const [modalCreator, setModalCreator] = useState(null);
   const [isCreatorModalOpen, setIsCreatorModalOpen] = useState(false);
-  const creatorSliderRef = useRef(null);
+  const [visibleCount, setVisibleCount] = useState(4);
+  const loaderRef = useRef(null);
 
   const handleResize = () => {
     setIsMobile(window.innerWidth <= 768);
@@ -105,50 +69,30 @@ export default function Channels() {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
-  const creatorSliderSettings = {
-    dots: false,
-    infinite: creatorData.length > 4,
-    speed: 300,
-    slidesToShow: 4,
-    slidesToScroll: 1,
-    initialSlide: 0,
-    prevArrow: <CustomPrevArrow />,
-    nextArrow: <CustomNextArrow />,
-    swipeToSlide: true,
-    lazyLoad: 'ondemand',
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 3,
-          slidesToScroll: 1,
-          infinite: creatorData.length > 3,
-          dots: true,
-          arrows: true,
-        },
-      },
-      {
-        breakpoint: 600,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 1,
-          arrows: true,
-          centerMode: true,
-          centerPadding: '20px',
-        },
-      },
-      {
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 1.5,
-          slidesToScroll: 1,
-          arrows: false,
-          centerMode: true,
-          centerPadding: '20px',
-        },
-      },
-    ],
+  const handleViewMore = () => {
+    setVisibleCount((prev) => prev + 8);
   };
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && visibleCount < creatorData.length) {
+          handleViewMore();
+        }
+      },
+      { threshold: 1.0 }
+    );
+
+    if (loaderRef.current) {
+      observer.observe(loaderRef.current);
+    }
+
+    return () => {
+      if (loaderRef.current) {
+        observer.unobserve(loaderRef.current);
+      }
+    };
+  }, [visibleCount, creatorData.length]);
 
   return (
     <Homecontent>
@@ -176,15 +120,15 @@ export default function Channels() {
             </HeaderWrapper>
           )}
 
-          {/* Creator Slider */}
-          <SliderContainer $isShort={creatorData.length < 5}>
+          {/* Creator Grid */}
+          <GridWrapper>
             {creatorError ? (
               <div className="error-message">{creatorError}</div>
             ) : (
-              <Slider {...creatorSliderSettings} ref={creatorSliderRef}>
+              <CreatorGrid>
                 {Array.isArray(creatorData) &&
-                  creatorData.map((creator) => (
-                    <div key={creator._id} className="slidescircle">
+                  creatorData.slice(0, visibleCount).map((creator) => (
+                    <div key={creator._id} className="grid-item">
                       <Slidercirclecontent
                         img={creator.profileImage}
                         movie={creator}
@@ -192,14 +136,21 @@ export default function Channels() {
                       />
                     </div>
                   ))}
-              </Slider>
+              </CreatorGrid>
             )}
+
+            {visibleCount < creatorData.length && (
+              <ViewMoreButton onClick={handleViewMore} ref={loaderRef}>
+                VIEW MORE
+              </ViewMoreButton>
+            )}
+
             <CreatorContentModal
               isOpen={isCreatorModalOpen}
               creator={modalCreator}
               onClose={handleCloseCreatorModal}
             />
-          </SliderContainer>
+          </GridWrapper>
         </ContentWrapper>
       </MainContainer>
 
@@ -258,113 +209,16 @@ const HeaderWrapper = styled.div`
   }
 `;
 
-const SliderContainer = styled.div`
-  position: relative;
+const GridWrapper = styled.div`
   width: 100%;
-  padding: 0 20px 0 20px;
+  padding: 0 20px;
   margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
   @media (max-width: 768px) {
-    padding: 0 10px 0 10px;
-  }
-
-  .slick-slider {
-    position: relative;
-    ${props => props.$isShort && `
-      .slick-track {
-        margin-left: 0 !important;
-        transform: none !important;
-        display: flex !important;
-      }
-    `}
-  }
-
-  .slick-prev,
-  .slick-next {
-    display: none !important;
-  }
-
-  .custom-arrow {
-    display: none;
-    position: absolute;
-    top: 40%;
-    transform: translateY(-50%);
-    width: 50px;
-    height: 100px;
-    background: rgba(0, 0, 0, 0.5);
-    color: white;
-    z-index: 10;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: opacity 0.3s ease, background-color 0.3s ease;
-    opacity: 0;
-
-    &.prev-arrow {
-      left: -10px;
-    }
-
-    &.next-arrow {
-      right: 0;
-      &:hover {
-        animation: ${pulse} 1s infinite;
-        background: rgba(0, 0, 0, 0.7);
-      }
-    }
-
-    .arrow-icon {
-      font-size: 24px;
-    }
-  }
-
-  &:hover .custom-arrow {
-    display: flex;
-    opacity: 1;
-  }
-
-  .slick-slide {
-    padding: 0 5px;
-    min-height: 160px;
-    @media (min-width: 768px) {
-      min-height: 200px;
-    }
-    @media (max-width: 480px) {
-      min-height: 40vw;
-      max-height: 140px;
-    }
-    @media (max-width: 360px) {
-      min-height: 35vw;
-      max-height: 120px;
-    }
-  }
-
-  .slidescircle {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    user-select: none;
-    -webkit-touch-callout: none;
-    width: 160px;
-    height: 160px;
-    @media (min-width: 768px) {
-      width: 200px;
-      height: 200px;
-    }
-    @media (max-width: 480px) {
-      width: 40vw;
-      height: 40vw;
-      max-width: 140px;
-      max-height: 140px;
-    }
-    @media (max-width: 360px) {
-      width: 35vw;
-      height: 35vw;
-      max-width: 120px;
-      max-height: 120px;
-    }
+    padding: 0 10px;
   }
 
   .error-message {
@@ -372,20 +226,54 @@ const SliderContainer = styled.div`
     text-align: center;
     padding: 20px;
   }
+`;
+
+const CreatorGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  width: 100%;
+  margin-bottom: 30px;
 
   @media (max-width: 1024px) {
-    padding: 0 15px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
   }
 
   @media (max-width: 600px) {
-    padding: 0 10px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
   }
 
-  @media (max-width: 480px) {
-    padding: 0 10px;
-    .custom-arrow {
-      display: none !important;
-    }
+  .grid-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+`;
+
+const ViewMoreButton = styled.button`
+  background-color: #541011;
+  color: white;
+  padding: 12px 30px;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  margin: 20px auto 40px auto;
+  font-weight: bold;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+
+  &:hover {
+    background-color: #6b1516;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(84, 16, 17, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 `;
 
