@@ -783,6 +783,9 @@ export const ModalCardMedia = styled.div`
   }
 
   /* Custom styles for Swiper pagination and navigation */
+  .swiper-pagination {
+    bottom: 5px !important; // Moved down slightly to avoid overlap with video controls
+  }
   .swiper-pagination-bullet {
     background: white;
     opacity: 0.5;

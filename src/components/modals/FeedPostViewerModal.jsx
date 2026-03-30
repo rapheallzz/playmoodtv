@@ -33,6 +33,7 @@ import {
 
 const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const videoRefs = useRef([]);
   const touchStart = useRef(null);
   const touchEnd = useRef(null);
 
@@ -88,6 +89,28 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
       setComments(post.comments || []);
     }
   }, [post, user]);
+
+  // Handle video playback logic when index or post changes
+  useEffect(() => {
+    // Pause all videos
+    videoRefs.current.forEach((video) => {
+      if (video) {
+        video.pause();
+      }
+    });
+
+    // Play the current video
+    const currentVideo = videoRefs.current[currentIndex];
+    if (currentVideo) {
+      // Small timeout to ensure video source is loaded if it just changed
+      const playPromise = currentVideo.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          // Autoplay was prevented
+        });
+      }
+    }
+  }, [currentIndex, post]);
 
   const handleLikeToggle = async () => {
     if (!user) return; // or show a login prompt
@@ -266,10 +289,10 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
               <SwiperSlide key={idx} className="flex items-center justify-center">
                 {media.type === 'video' ? (
                   <video
+                    ref={(el) => (videoRefs.current[idx] = el)}
                     src={media.url}
                     poster={media.thumbnail}
                     controls
-                    autoPlay={idx === currentIndex}
                     loop
                     className="max-w-full max-h-full object-contain"
                   />
