@@ -567,7 +567,7 @@ export default function MobileBurger({ channels, set_channels }) {
                     ) : (
                       <img src={newp_red} onMouseOut={handle_newp_hover_out} />
                     )}
-                    <p>New on playmood</p>
+                    <p>New on Playmood</p>
                   </div>
                   <div className="channels_tab" onClick={() => { navigate('/channels'); toggleSidebar(); }}>
                     {snowflakes_hover ? (

@@ -122,6 +122,7 @@ const DropdownMenu = styled.div`
 const StyledLink = styled(Link)`
   color: white;
   transition: color 0.3s ease;
+  white-space: nowrap;
 
   &:hover {
     color: #e53e3e; /* Red-700 equivalent */

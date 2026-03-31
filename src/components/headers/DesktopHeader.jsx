@@ -418,7 +418,7 @@ export default function DesktopHeader({ }) {
                   </div>
                   <div className="new_tab" onClick={() => { navigate('/newplaymood'); }}>
                     {new_hover ? <img src={newp} onMouseEnter={handle_newp_hover} /> : <img src={newp_red} onMouseOut={handle_newp_hover_out} />}
-                    <p>New on playmood</p>
+                    <p>New on Playmood</p>
                   </div>
                   <div className="channels_tab" onClick={() => { navigate('/channels'); }}>
                     {snowflakes_hover ? <img src={snowflakes} onMouseEnter={handle_snowflakes_hover} /> : <img src={snowflakes_red} onMouseOut={handle_snowflakes_hover_out} />}
