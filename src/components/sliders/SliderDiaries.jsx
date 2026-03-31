@@ -136,10 +136,7 @@ const SliderContainer = styled.div`
   }
 
   .slick-slide {
-    padding: 0 12px;
-    @media (min-width: 1025px) {
-      padding: 0 5px;
-    }
+    padding: 0 5px;
     min-height: 160px;
     @media (min-width: 768px) {
       min-height: 200px;
@@ -155,7 +152,7 @@ const SliderContainer = styled.div`
   }
 
   .slidescircle {
-    padding: 0 5px;
+    padding: 0 2px;
     position: relative;
     display: flex;
     align-items: center;

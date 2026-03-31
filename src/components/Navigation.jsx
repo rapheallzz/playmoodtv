@@ -9,6 +9,7 @@ const navLinks = [
   { to: "/channels", label: "Channels" },
   { to: "/diaries", label: "Diaries" },
   { to: "/spaces", label: "Spaces" },
+  { to: "/stories", label: "Stories" },
   { to: "/recommended", label: "Recommendations for you" },
   { to: "/interviews", label: "Interviews" },
   { to: "/fashion", label: "Fashion Shows" },
