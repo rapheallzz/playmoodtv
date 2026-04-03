@@ -112,7 +112,7 @@ const SliderContainer = styled.div`
   }
 
   .slick-slide {
-    padding: 0 12px;
+    padding: 0 2px;
     min-height: 160px;
     @media (min-width: 768px) {
       min-height: 200px;
@@ -128,7 +128,7 @@ const SliderContainer = styled.div`
   }
 
   .slidescircle {
-    padding: 0 5px;
+    padding: 0;
     position: relative;
     display: flex;
     align-items: center;
@@ -185,7 +185,7 @@ export default function SliderSubscriptions({ subscriptions }) {
   };
 
   const numSubscriptions = subscriptions ? subscriptions.length : 0;
-  const slidesToShow = Math.max(1, Math.min(numSubscriptions, 4));
+  const slidesToShow = Math.max(1, Math.min(numSubscriptions, 5.5));
 
   const settings = {
     dots: false,
@@ -205,9 +205,9 @@ export default function SliderSubscriptions({ subscriptions }) {
       {
         breakpoint: 1024,
         settings: {
-          slidesToShow: Math.max(1, Math.min(numSubscriptions, 3)),
+          slidesToShow: Math.max(1, Math.min(numSubscriptions, 4.5)),
           slidesToScroll: 1,
-          infinite: numSubscriptions > Math.max(1, Math.min(numSubscriptions, 3)),
+          infinite: numSubscriptions > Math.max(1, Math.min(numSubscriptions, 4.5)),
           dots: true,
           arrows: true,
         },
@@ -215,34 +215,31 @@ export default function SliderSubscriptions({ subscriptions }) {
       {
         breakpoint: 600,
         settings: {
-          slidesToShow: Math.max(1, Math.min(numSubscriptions, 2)),
+          slidesToShow: Math.max(1, Math.min(numSubscriptions, 3.2)),
           slidesToScroll: 1,
           arrows: true,
-          centerMode: true,
-          centerPadding: '15px',
-          infinite: numSubscriptions > Math.max(1, Math.min(numSubscriptions, 2)),
+          centerMode: false,
+          infinite: numSubscriptions > Math.max(1, Math.min(numSubscriptions, 3.2)),
         },
       },
       {
         breakpoint: 480,
         settings: {
-          slidesToShow: Math.max(1, Math.min(numSubscriptions, 2)),
+          slidesToShow: Math.max(1, Math.min(numSubscriptions, 3.2)),
           slidesToScroll: 1,
           arrows: false,
-          centerMode: true,
-          centerPadding: '5px',
-          infinite: numSubscriptions > Math.max(1, Math.min(numSubscriptions, 2)),
+          centerMode: false,
+          infinite: numSubscriptions > Math.max(1, Math.min(numSubscriptions, 3.2)),
         },
       },
       {
         breakpoint: 360,
         settings: {
-          slidesToShow: Math.max(1, Math.min(numSubscriptions, 2)),
+          slidesToShow: Math.max(1, Math.min(numSubscriptions, 3.2)),
           slidesToScroll: 1,
           arrows: false,
-          centerMode: true,
-          centerPadding: '20px',
-          infinite: numSubscriptions > Math.max(1, Math.min(numSubscriptions, 2)),
+          centerMode: false,
+          infinite: numSubscriptions > Math.max(1, Math.min(numSubscriptions, 3.2)),
         },
       },
     ],

@@ -135,7 +135,7 @@ const SliderContainer = styled.div`
   }
 
   .slick-slide {
-    padding: 0 5px;
+    padding: 0 2px;
     min-height: 160px;
     @media (min-width: 768px) {
       min-height: 200px;
@@ -151,7 +151,7 @@ const SliderContainer = styled.div`
   }
 
   .slidescircle {
-    padding: 0 2px;
+    padding: 0;
     position: relative;
     display: flex;
     align-items: center;
@@ -236,11 +236,14 @@ export default function SliderChannel({ title }) {
     setModalCreator(null);
   };
 
+  const numItems = data ? data.length : 0;
+  const slidesToShow = Math.max(1, Math.min(numItems, 5.5));
+
   const settings = {
     dots: false,
-    infinite: data.length > 4,
+    infinite: numItems > slidesToShow,
     speed: 300,
-    slidesToShow: 4,
+    slidesToShow: slidesToShow,
     slidesToScroll: 1,
     initialSlide: 0,
     autoplaySpeed: 3000,
@@ -254,9 +257,9 @@ export default function SliderChannel({ title }) {
       {
         breakpoint: 1024,
         settings: {
-          slidesToShow: 3,
+          slidesToShow: Math.max(1, Math.min(numItems, 4.5)),
           slidesToScroll: 1,
-          infinite: data.length > 3,
+          infinite: numItems > Math.max(1, Math.min(numItems, 4.5)),
           dots: true,
           arrows: true,
         },
@@ -264,9 +267,9 @@ export default function SliderChannel({ title }) {
       {
         breakpoint: 600,
         settings: {
-          slidesToShow: 2.2,
+          slidesToShow: Math.max(1, Math.min(numItems, 3.2)),
           slidesToScroll: 1,
-          infinite: false,
+          infinite: numItems > Math.max(1, Math.min(numItems, 3.2)),
           arrows: true,
           centerMode: false,
         },
@@ -274,9 +277,9 @@ export default function SliderChannel({ title }) {
       {
         breakpoint: 480,
         settings: {
-          slidesToShow: 2.2,
+          slidesToShow: Math.max(1, Math.min(numItems, 3.2)),
           slidesToScroll: 1,
-          infinite: false,
+          infinite: numItems > Math.max(1, Math.min(numItems, 3.2)),
           arrows: false,
           centerMode: false,
         },
@@ -284,9 +287,9 @@ export default function SliderChannel({ title }) {
       {
         breakpoint: 360,
         settings: {
-          slidesToShow: 2.2,
+          slidesToShow: Math.max(1, Math.min(numItems, 3.2)),
           slidesToScroll: 1,
-          infinite: false,
+          infinite: numItems > Math.max(1, Math.min(numItems, 3.2)),
           arrows: false,
           centerMode: false,
         },
