@@ -771,9 +771,15 @@ export const ModalCardMedia = styled.div`
   flex: 1.5;
   background-color: black;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+
+  .swiper {
+    width: 100% !important;
+    height: 100% !important;
+  }
 
   img,
   video {
@@ -784,7 +790,13 @@ export const ModalCardMedia = styled.div`
 
   /* Custom styles for Swiper pagination and navigation */
   .swiper-pagination {
-    bottom: 5px !important; // Moved down slightly to avoid overlap with video controls
+    position: absolute !important;
+    bottom: 5px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: auto !important;
+    z-index: 10006 !important;
+    margin: 0 !important;
   }
   .swiper-pagination-bullet {
     background: white;

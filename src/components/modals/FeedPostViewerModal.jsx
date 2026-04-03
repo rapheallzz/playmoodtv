@@ -275,7 +275,11 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
         <ModalCardMedia>
           <Swiper
             modules={[Pagination, Navigation]}
-            pagination={{ clickable: true }}
+            pagination={{
+              clickable: true,
+              el: '.custom-swiper-pagination',
+              type: 'bullets'
+            }}
             navigation={allMedia.length > 1}
             onSlideChange={(swiper) => setCurrentIndex(swiper.activeIndex)}
             className="w-full h-full"
@@ -295,6 +299,7 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
                     controls
                     loop
                     className="max-w-full max-h-full object-contain"
+                    style={{ maxHeight: 'calc(100% - 40px)' }}
                   />
                 ) : (
                   <img
@@ -305,11 +310,21 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
                       e.target.src = 'https://via.placeholder.com/300x200?text=Image+Not+Available';
                       e.target.onerror = null;
                     }}
+                    style={{ maxHeight: 'calc(100% - 40px)' }}
                   />
                 )}
               </SwiperSlide>
             ))}
           </Swiper>
+          <div className="custom-swiper-pagination" style={{
+            height: '40px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            background: '#000',
+            zIndex: 10
+          }}></div>
         </ModalCardMedia>
         <ModalCardContent>
           <ModalCardHeader>

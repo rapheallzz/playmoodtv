@@ -112,7 +112,7 @@ const SliderContainer = styled.div`
   }
 
   .slick-slide {
-    padding: 0 2px;
+    padding: 0 1px;
     min-height: 160px;
     @media (min-width: 768px) {
       min-height: 200px;
@@ -185,7 +185,7 @@ export default function SliderSubscriptions({ subscriptions }) {
   };
 
   const numSubscriptions = subscriptions ? subscriptions.length : 0;
-  const slidesToShow = Math.max(1, Math.min(numSubscriptions, 5.5));
+  const slidesToShow = Math.max(1, Math.min(numSubscriptions, 6.5));
 
   const settings = {
     dots: false,
@@ -205,9 +205,9 @@ export default function SliderSubscriptions({ subscriptions }) {
       {
         breakpoint: 1024,
         settings: {
-          slidesToShow: Math.max(1, Math.min(numSubscriptions, 4.5)),
+          slidesToShow: Math.max(1, Math.min(numSubscriptions, 5.5)),
           slidesToScroll: 1,
-          infinite: numSubscriptions > Math.max(1, Math.min(numSubscriptions, 4.5)),
+          infinite: numSubscriptions > Math.max(1, Math.min(numSubscriptions, 5.5)),
           dots: true,
           arrows: true,
         },
@@ -215,31 +215,31 @@ export default function SliderSubscriptions({ subscriptions }) {
       {
         breakpoint: 600,
         settings: {
-          slidesToShow: Math.max(1, Math.min(numSubscriptions, 3.2)),
+          slidesToShow: Math.max(1, Math.min(numSubscriptions, 4.2)),
           slidesToScroll: 1,
           arrows: true,
           centerMode: false,
-          infinite: numSubscriptions > Math.max(1, Math.min(numSubscriptions, 3.2)),
+          infinite: numSubscriptions > Math.max(1, Math.min(numSubscriptions, 4.2)),
         },
       },
       {
         breakpoint: 480,
         settings: {
-          slidesToShow: Math.max(1, Math.min(numSubscriptions, 3.2)),
+          slidesToShow: Math.max(1, Math.min(numSubscriptions, 4.2)),
           slidesToScroll: 1,
           arrows: false,
           centerMode: false,
-          infinite: numSubscriptions > Math.max(1, Math.min(numSubscriptions, 3.2)),
+          infinite: numSubscriptions > Math.max(1, Math.min(numSubscriptions, 4.2)),
         },
       },
       {
         breakpoint: 360,
         settings: {
-          slidesToShow: Math.max(1, Math.min(numSubscriptions, 3.2)),
+          slidesToShow: Math.max(1, Math.min(numSubscriptions, 4.2)),
           slidesToScroll: 1,
           arrows: false,
           centerMode: false,
-          infinite: numSubscriptions > Math.max(1, Math.min(numSubscriptions, 3.2)),
+          infinite: numSubscriptions > Math.max(1, Math.min(numSubscriptions, 4.2)),
         },
       },
     ],
