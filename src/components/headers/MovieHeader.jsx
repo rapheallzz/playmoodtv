@@ -472,6 +472,7 @@ const NavItem = styled.div`
   border-radius: 5px;
   cursor: pointer;
   transition: background 0.2s;
+  white-space: nowrap;
   &:hover {
     background: #1a1a1a;
     border-right: 4px solid #541011;
@@ -479,9 +480,11 @@ const NavItem = styled.div`
   img {
     width: 22px;
     height: 22px;
+    flex-shrink: 0;
   }
   span {
     font-size: 0.9rem;
+    white-space: nowrap;
   }
 `;
 
@@ -497,6 +500,7 @@ const CategorySubsection = styled.div`
     margin: 0;
     cursor: pointer;
     color: #ccc;
+    white-space: nowrap;
     &:hover {
       color: white;
     }

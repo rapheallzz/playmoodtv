@@ -125,6 +125,9 @@ const StyledLink = styled(Link)`
   white-space: nowrap;
   display: block;
   line-height: 1.2;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   &:hover {
     color: #e53e3e; /* Red-700 equivalent */
@@ -138,10 +141,9 @@ const StyledLink = styled(Link)`
   }
 
   @media screen and (min-width: 768px) {
-    font-size: 1.05rem;
+    font-size: 1rem;
     padding: 4px 0;
-    width: 100%;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.01em;
   }
 `;
 

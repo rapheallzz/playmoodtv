@@ -485,9 +485,9 @@ export default function MobileHeader({ channels, set_channels }) {
                     {thumbs_hover ? <img src={thumbs} onMouseEnter={handle_thumbs_hover} /> : <img src={thumbs_red} onMouseOut={handle_thumbs_hover_out} />}
                     <p>Recommended</p>
                   </div>
-                  <div className="new_tab" onClick={() => { navigate('/newplaymood') }}>
+                  <div className="new_tab" onClick={() => { navigate('/newplaymood') }} style={{ whiteSpace: 'nowrap' }}>
                     {new_hover ? <img src={newp} onMouseEnter={handle_newp_hover} /> : <img src={newp_red} onMouseOut={handle_newp_hover_out} />}
-                    <p>New on Playmood</p>
+                    <p style={{ whiteSpace: 'nowrap' }}>New on Playmood</p>
                   </div>
                   <div className="channels_tab" onClick={handleDonationClick}>
                     {snowflakes_hover ? <img src={snowflakes} onMouseEnter={handle_snowflakes_hover} /> : <img src={snowflakes_red} onMouseOut={handle_snowflakes_hover_out} />}

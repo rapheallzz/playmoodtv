@@ -619,7 +619,7 @@ const Side = styled.div`
 `;
 
 const SidebarClicked = styled.div`
-  width: 240px;
+  width: 280px;
   height: 100vh;
   background-color: black;
   top: 0;
@@ -641,6 +641,7 @@ const SidebarClicked = styled.div`
       font-size: 0.7rem;
       font-weight: 600;
       cursor: pointer;
+      white-space: nowrap;
     }
   }
   .user_and_settings {
@@ -667,6 +668,7 @@ const SidebarClicked = styled.div`
     gap: 20px;
     padding: 8px 10px 8px 20px;
     cursor: pointer;
+    white-space: nowrap;
     &:hover {
       background-color: grey;
       border-right: 4px solid red;
@@ -674,9 +676,11 @@ const SidebarClicked = styled.div`
     img {
       width: 25px;
       height: 25px;
+      flex-shrink: 0;
     }
     p {
       font-size: 0.9rem;
+      white-space: nowrap;
     }
   }
   .home_tab {
@@ -685,6 +689,7 @@ const SidebarClicked = styled.div`
     gap: 20px;
     padding: 8px 10px 8px 20px;
     cursor: pointer;
+    white-space: nowrap;
     &:hover {
       background-color: grey;
       border-right: 4px solid red;
@@ -692,9 +697,11 @@ const SidebarClicked = styled.div`
     img {
       width: 25px;
       height: 25px;
+      flex-shrink: 0;
     }
     p {
       font-size: 0.9rem;
+      white-space: nowrap;
     }
   }
   .recommended_tab {
@@ -703,6 +710,7 @@ const SidebarClicked = styled.div`
     gap: 20px;
     padding: 8px 10px 8px 20px;
     cursor: pointer;
+    white-space: nowrap;
     &:hover {
       background-color: grey;
       border-right: 4px solid red;
@@ -710,9 +718,11 @@ const SidebarClicked = styled.div`
     img {
       width: 25px;
       height: 25px;
+      flex-shrink: 0;
     }
     p {
       font-size: 0.9rem;
+      white-space: nowrap;
     }
   }
   .new_tab {
@@ -721,6 +731,7 @@ const SidebarClicked = styled.div`
     gap: 20px;
     padding: 8px 10px 8px 20px;
     cursor: pointer;
+    white-space: nowrap;
     &:hover {
       background-color: grey;
       border-right: 4px solid red;
@@ -728,9 +739,11 @@ const SidebarClicked = styled.div`
     img {
       width: 25px;
       height: 25px;
+      flex-shrink: 0;
     }
     p {
       font-size: 0.9rem;
+      white-space: nowrap;
     }
   }
   .channels_tab {
@@ -739,6 +752,7 @@ const SidebarClicked = styled.div`
     gap: 20px;
     padding: 8px 10px 8px 20px;
     cursor: pointer;
+    white-space: nowrap;
     &:hover {
       background-color: grey;
       border-right: 4px solid red;
@@ -746,9 +760,11 @@ const SidebarClicked = styled.div`
     img {
       width: 25px;
       height: 25px;
+      flex-shrink: 0;
     }
     p {
       font-size: 0.9rem;
+      white-space: nowrap;
     }
   }
   .spaces_tab {
@@ -757,6 +773,7 @@ const SidebarClicked = styled.div`
     gap: 20px;
     padding: 8px 10px 8px 20px;
     cursor: pointer;
+    white-space: nowrap;
     &:hover {
       background-color: grey;
       border-right: 4px solid red;
@@ -764,9 +781,11 @@ const SidebarClicked = styled.div`
     img {
       width: 25px;
       height: 25px;
+      flex-shrink: 0;
     }
     p {
       font-size: 0.9rem;
+      white-space: nowrap;
     }
   }
   .schedule_tab {
