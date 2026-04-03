@@ -773,12 +773,13 @@ export const ModalCardMedia = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   overflow: hidden;
 
   .swiper {
     width: 100% !important;
-    height: 100% !important;
+    flex: 1;
+    height: auto !important;
   }
 
   img,
@@ -790,13 +791,16 @@ export const ModalCardMedia = styled.div`
 
   /* Custom styles for Swiper pagination and navigation */
   .swiper-pagination {
-    position: absolute !important;
-    bottom: 5px !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-    width: auto !important;
-    z-index: 10006 !important;
-    margin: 0 !important;
+    position: relative;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10006;
+    margin: 0;
   }
   .swiper-pagination-bullet {
     background: white;
