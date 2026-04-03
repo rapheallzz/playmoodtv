@@ -282,15 +282,16 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
             }}
             navigation={allMedia.length > 1}
             onSlideChange={(swiper) => setCurrentIndex(swiper.activeIndex)}
-            className="w-full h-full"
+            className="w-full flex-1"
             style={{
               '--swiper-pagination-color': '#fff',
               '--swiper-navigation-color': '#fff',
               '--swiper-navigation-size': '25px',
+              height: '100%'
             }}
           >
             {allMedia.map((media, idx) => (
-              <SwiperSlide key={idx} className="flex items-center justify-center">
+              <SwiperSlide key={idx} className="flex items-center justify-center h-full">
                 {media.type === 'video' ? (
                   <video
                     ref={(el) => (videoRefs.current[idx] = el)}
@@ -299,7 +300,6 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
                     controls
                     loop
                     className="max-w-full max-h-full object-contain"
-                    style={{ maxHeight: 'calc(100% - 200px)', marginBottom: '140px' }}
                   />
                 ) : (
                   <img
@@ -310,24 +310,22 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
                       e.target.src = 'https://via.placeholder.com/300x200?text=Image+Not+Available';
                       e.target.onerror = null;
                     }}
-                    style={{ maxHeight: 'calc(100% - 200px)', marginBottom: '140px' }}
                   />
                 )}
               </SwiperSlide>
             ))}
           </Swiper>
           <div style={{
-            height: '200px',
-            minHeight: '200px',
+            height: '60px',
+            minHeight: '60px',
             display: 'flex',
-            alignItems: 'flex-end',
+            alignItems: 'center',
             justifyContent: 'center',
             width: '100%',
             background: '#000',
             zIndex: 10,
             position: 'relative',
             flexShrink: 0,
-            paddingBottom: '60px'
           }}>
             <div className="custom-swiper-pagination" style={{
               display: 'flex',

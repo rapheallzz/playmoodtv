@@ -779,7 +779,7 @@ export const ModalCardMedia = styled.div`
   .swiper {
     width: 100% !important;
     flex: 1;
-    height: auto !important;
+    height: 100% !important;
   }
 
   img,
@@ -792,8 +792,8 @@ export const ModalCardMedia = styled.div`
   /* Custom styles for Swiper pagination and navigation */
   .swiper-pagination {
     position: relative;
-    bottom: 0;
-    left: 0;
+    bottom: auto;
+    left: auto;
     width: 100%;
     height: 40px;
     display: flex;
