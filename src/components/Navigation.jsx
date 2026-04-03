@@ -40,8 +40,8 @@ const Navigation = ({ isMobile, isDropdownOpen, toggleDropdown }) => {
   return (
     <>
       {/* Desktop Sidebar */}
-      <SidebarContainer className="hidden md:block fixed left-0 w-[260px] mt-[8%] pl-[0.5rem]">
-        <div className="flex flex-col gap-1 text-sm md:text-base font-medium text-white">
+      <SidebarContainer className="hidden md:block fixed left-0 w-[260px] mt-[8%] pl-[0.8rem]">
+        <div className="flex flex-col gap-1 text-sm md:text-base font-medium text-white pr-4">
           {filteredNavLinks.map((link) => (
             <StyledLink
               key={link.to}
@@ -123,6 +123,8 @@ const StyledLink = styled(Link)`
   color: white;
   transition: color 0.3s ease;
   white-space: nowrap;
+  display: block;
+  line-height: 1.2;
 
   &:hover {
     color: #e53e3e; /* Red-700 equivalent */
@@ -133,6 +135,13 @@ const StyledLink = styled(Link)`
     font-weight: bold;
     border-left: 3px solid #e53e3e; /* Optional: visual indicator for desktop */
     padding-left: 8px;
+  }
+
+  @media screen and (min-width: 768px) {
+    font-size: 1.05rem;
+    padding: 4px 0;
+    width: 100%;
+    letter-spacing: -0.02em;
   }
 `;
 
