@@ -124,6 +124,9 @@ const Slidercontent = React.memo(function Slidercontent({
     if (isMobile) {
       setHover(false);
       setIsVideoPlaying(false);
+      if (isHoldTriggered && e.cancelable) {
+        e.preventDefault();
+      }
     }
 
     const clientX = e.type === 'mouseup' ? e.clientX : e.changedTouches[0].clientX;
@@ -255,6 +258,7 @@ const Slidercontent = React.memo(function Slidercontent({
       onTouchMove={handleTouchMove}
       onMouseUp={handleTouchEnd}
       onTouchEnd={handleTouchEnd}
+      onTouchCancel={handleTouchEnd}
     >
       <div className="absolute top-2.5 w-full px-1 flex justify-between"></div>
       {!hover && !isVideoPlaying ? (

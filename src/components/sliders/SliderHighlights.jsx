@@ -95,6 +95,10 @@ export default function SliderHighlights({ highlights, handleSelectHighlight, re
       holdTimer.current = null;
     }
 
+    if (isMobile && isHoldTriggered && e.cancelable) {
+      e.preventDefault();
+    }
+
     const clientX = e.type === 'mouseup' ? e.clientX : e.changedTouches[0].clientX;
     const clientY = e.type === 'mouseup' ? e.clientY : e.changedTouches[0].clientY;
     const distance = Math.sqrt(
@@ -176,6 +180,7 @@ export default function SliderHighlights({ highlights, handleSelectHighlight, re
               onTouchMove={handleTouchMove}
               onMouseUp={(e) => handleTouchEnd(e, highlight, index)}
               onTouchEnd={(e) => handleTouchEnd(e, highlight, index)}
+              onTouchCancel={(e) => handleTouchEnd(e, highlight, index)}
               style={{ cursor: 'pointer' }}
             >
               <LargeHighlightCircle

@@ -115,6 +115,9 @@ const Slidercontent = memo(({ img, title, movie, views, desc, customStyle, progr
     if (isMobile) {
       setHover(false);
       setIsVideoPlaying(false);
+      if (isHoldTriggered && e.cancelable) {
+        e.preventDefault();
+      }
     }
 
     const clientX = e.type === 'mouseup' ? e.clientX : e.changedTouches[0].clientX;
@@ -217,6 +220,7 @@ const Slidercontent = memo(({ img, title, movie, views, desc, customStyle, progr
       onTouchMove={handleTouchMove}
       onMouseUp={handleTouchEnd}
       onTouchEnd={handleTouchEnd}
+      onTouchCancel={handleTouchEnd}
       role="button"
       tabIndex={0}
       aria-label={`View details for ${title}`}

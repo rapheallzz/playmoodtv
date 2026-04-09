@@ -165,6 +165,9 @@ const Slidercontent = React.memo(function Slidercontent({
         videoRef.current.pause();
         videoRef.current.currentTime = previewTimestamps.start;
       }
+      if (isHoldTriggered && e.cancelable) {
+        e.preventDefault();
+      }
     }
 
     const clientX = e.type === 'mouseup' ? e.clientX : e.changedTouches[0].clientX;
@@ -283,6 +286,7 @@ const Slidercontent = React.memo(function Slidercontent({
       onTouchMove={handleTouchMove}
       onMouseUp={handleTouchEnd}
       onTouchEnd={handleTouchEnd}
+      onTouchCancel={handleTouchEnd}
     >
       {localError && (
         <ErrorMessage>{localError}</ErrorMessage>

@@ -73,6 +73,10 @@ const Slidercirclecontent = React.memo(function Slidercirclecontent({
       holdTimer.current = null;
     }
 
+    if (isMobile && isHoldTriggered && e.cancelable) {
+      e.preventDefault();
+    }
+
     const clientX = e.type === 'mouseup' ? e.clientX : e.changedTouches[0].clientX;
     const clientY = e.type === 'mouseup' ? e.clientY : e.changedTouches[0].clientY;
     const distance = Math.sqrt(
@@ -188,6 +192,7 @@ const Slidercirclecontent = React.memo(function Slidercirclecontent({
       onTouchMove={handleTouchMove}
       onMouseUp={handleTouchEnd}
       onTouchEnd={handleTouchEnd}
+      onTouchCancel={handleTouchEnd}
     >
       {copyModal.show && (
         <CopyModal isError={copyModal.isError}>

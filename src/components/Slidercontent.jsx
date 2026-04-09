@@ -113,6 +113,9 @@ const Slidercontent = React.memo(function Slidercontent({ img, title, movie, id,
 
     if (isMobile) {
       setHover(false);
+      if (isHoldTriggered && e.cancelable) {
+        e.preventDefault();
+      }
     }
 
     const clientX = e.type === 'mouseup' ? e.clientX : e.changedTouches[0].clientX;
@@ -170,6 +173,7 @@ const Slidercontent = React.memo(function Slidercontent({ img, title, movie, id,
       onTouchMove={handleTouchMove}
       onMouseUp={handleTouchEnd}
       onTouchEnd={handleTouchEnd}
+      onTouchCancel={handleTouchEnd}
     >
       <div className="absolute top-2 left-2 flex justify-between items-center w-full p-2">
         <img src={logo} className="w-auto h-6" alt="Banner Stamp" />
