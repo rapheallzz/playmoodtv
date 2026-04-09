@@ -386,7 +386,7 @@ const ModalContent = styled.div`
 `;
 
 const DescriptionWrapper = styled.div`
-  max-height: 100px;
+  max-height: 200px;
   overflow-y: auto;
   margin-bottom: 0.5rem;
 
@@ -400,7 +400,7 @@ const DescriptionWrapper = styled.div`
   }
 
   @media (min-width: 768px) {
-    max-height: 150px;
+    max-height: 300px;
   }
 `;
 
