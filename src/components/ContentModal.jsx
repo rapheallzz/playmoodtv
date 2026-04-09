@@ -200,7 +200,9 @@ const ContentModal = ({ isOpen, content, onClose, handleNavigateToMovie }) => {
         </VideoContainer>
         <ModalContent>
           <h2 className="text-base sm:text-lg md:text-xl font-semibold">{content.title}</h2>
-          <p className="text-xs sm:text-sm md:text-base text-black mt-2 line-clamp-2">{content.description}</p>
+          <DescriptionWrapper>
+            <p className="text-xs sm:text-sm md:text-base text-black mt-2">{content.description}</p>
+          </DescriptionWrapper>
           {actionError && <ErrorMessage>{actionError}</ErrorMessage>}
           <ActionRow>
             <WatchButton onClick={() => handleNavigateToMovie(content)}>
@@ -380,6 +382,25 @@ const ModalContent = styled.div`
   &::-webkit-scrollbar-thumb {
     background: #541011;
     border-radius: 3px;
+  }
+`;
+
+const DescriptionWrapper = styled.div`
+  max-height: 100px;
+  overflow-y: auto;
+  margin-bottom: 0.5rem;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #541011;
+    border-radius: 2px;
+  }
+
+  @media (min-width: 768px) {
+    max-height: 150px;
   }
 `;
 

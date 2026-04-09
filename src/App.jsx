@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { RouterProvider, createBrowserRouter, Outlet } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import ScrollToTop from './components/ScrollToTop';
@@ -94,6 +94,18 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
+  useEffect(() => {
+    const handleContextMenu = (e) => {
+      e.preventDefault();
+    };
+
+    document.addEventListener('contextmenu', handleContextMenu);
+
+    return () => {
+      document.removeEventListener('contextmenu', handleContextMenu);
+    };
+  }, []);
+
   return (
     <>
       <RouterProvider router={router} />

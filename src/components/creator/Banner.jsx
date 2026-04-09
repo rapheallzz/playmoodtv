@@ -1,11 +1,16 @@
 import React from 'react';
+import styled from 'styled-components';
 import { BannerSection, BannerImageWrapper, BannerImage, SocialIcons, SocialLink, } from '../../styles/CreatorPageStyles';
 import { FaTwitter, FaInstagram, FaLinkedin, FaTiktok, FaHeart, FaEdit, FaPaperPlane, FaComment, FaChevronLeft, FaChevronRight, FaPlus } from 'react-icons/fa';
 import { FaXTwitter } from "react-icons/fa6";
+import SidebarHamburger from '../headers/SidebarHamburger';
 
 const Banner = ({ bannerImage, twitter, instagram, linkedin, tiktok }) => (
   <BannerSection>
     <BannerImageWrapper>
+      <HamburgerPositioner>
+        <SidebarHamburger />
+      </HamburgerPositioner>
       <BannerImage src={bannerImage} alt="Channel banner" />
       <SocialIcons>
         {twitter ? (
@@ -40,5 +45,12 @@ const Banner = ({ bannerImage, twitter, instagram, linkedin, tiktok }) => (
     </BannerImageWrapper>
   </BannerSection>
 );
+
+const HamburgerPositioner = styled.div`
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1001;
+`;
 
 export default Banner;

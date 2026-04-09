@@ -6,6 +6,7 @@ import styled, { keyframes } from 'styled-components';
 import BASE_API_URL from '../apiConfig';
 import MobileBurger from '../components/headers/MobileBurger';
 import DesktopHeader from '../components/headers/DesktopHeader';
+import SidebarHamburger from '../components/headers/SidebarHamburger';
 import instagram from '/instagram.png';
 import logo from '/PLAYMOOD_DEF.png';
 import { FaBell, FaHeart, FaComment, FaTwitter,FaInstagram, FaLinkedin, FaTiktok, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
@@ -680,6 +681,9 @@ const fetchPlaylists = async () => {
       {/* Banner Section */}
       <div className="w-full h-auto">
         <div className="bg-slate-400 w-full h-[200px] relative">
+          <div className="absolute top-[10px] left-[10px] z-[1001]">
+            <SidebarHamburger />
+          </div>
           <img
             className="w-full h-full object-cover"
             src={creatorData?.bannerImage || 'https://via.placeholder.com/1200x200'}
