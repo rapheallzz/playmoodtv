@@ -129,10 +129,9 @@ export default function Channels() {
               onClose={handleCloseCreatorModal}
             />
           </GridWrapper>
+          <Footer />
         </ContentWrapper>
       </MainContainer>
-
-      <Footer />
     </Homecontent>
   );
 }

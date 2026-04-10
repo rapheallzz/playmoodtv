@@ -216,10 +216,9 @@ export default function Recommended() {
               handleNavigateToMovie={handleNavigateToMovie}
             />
           </SliderContainer>
+                  <Footer />
         </ContentWrapper>
       </MainContainer>
-
-      <Footer />
     </Homecontent>
   );
 }

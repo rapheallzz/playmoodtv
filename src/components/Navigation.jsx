@@ -40,7 +40,7 @@ const Navigation = ({ isMobile, isDropdownOpen, toggleDropdown }) => {
   return (
     <>
       {/* Desktop Sidebar */}
-      <SidebarContainer className="hidden md:block fixed left-0 w-[260px] mt-[8%] pl-[0.8rem]">
+      <SidebarContainer className="hidden md:block fixed left-0 w-[260px] top-[140px] bottom-0 pl-[0.8rem] overflow-y-auto pb-10 custom-sidebar">
         <div className="flex flex-col gap-1 text-sm md:text-base font-medium text-white pr-4">
           {filteredNavLinks.map((link) => (
             <StyledLink
@@ -94,6 +94,20 @@ const Navigation = ({ isMobile, isDropdownOpen, toggleDropdown }) => {
 
 const SidebarContainer = styled.div`
   z-index: 1000;
+
+  &.custom-sidebar::-webkit-scrollbar {
+    width: 4px;
+  }
+  &.custom-sidebar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &.custom-sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+  }
+  &.custom-sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.4);
+  }
 `;
 
 const NavContainer = styled.div`

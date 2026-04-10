@@ -240,10 +240,9 @@ export default function Watchlist() {
               handleNavigateToMovie={handleNavigateToMovie}
             />
           </SliderContainer>
+                  <Footer />
         </ContentWrapper>
       </MainContainer>
-
-      <Footer />
     </Homecontent>
   );
 }

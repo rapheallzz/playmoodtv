@@ -208,10 +208,9 @@ export default function Teens() {
               handleNavigateToMovie={handleNavigateToMovie}
             />
           </SliderContainer>
+                  <Footer />
         </ContentWrapper>
       </MainContainer>
-
-      <Footer />
     </Homecontent>
   );
 }
