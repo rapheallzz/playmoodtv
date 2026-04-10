@@ -207,9 +207,9 @@ export default function SoonPlaymood() {
               handleNavigateToMovie={handleNavigateToMovie}
             />
           </SliderContainer>
-                  <Footer />
         </ContentWrapper>
       </MainContainer>
+      <Footer />
     </Homecontent>
   );
 }

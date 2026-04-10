@@ -949,11 +949,6 @@ const fetchPlaylists = async () => {
         handleNavigateToMovie={handleCardClick}
       />
 
-      {/* Footer */}
-     <div className='w-full'>
-          <Footer/>
-         </div>
-
       {/* Modal */}
       {isModalOpen && (
         <ModalOverlay onClick={closeModal}>
@@ -1043,6 +1038,7 @@ const fetchPlaylists = async () => {
         showPopup={showWelcomePopup}
         onClose={() => setShowWelcomePopup(false)}
       />
+      <Footer />
     </div>
   );
 }

@@ -130,9 +130,9 @@ export default function Diaries() {
               onClose={handleCloseCreatorModal}
             />
           </GridWrapper>
-          <Footer />
         </ContentWrapper>
       </MainContainer>
+      <Footer />
     </Homecontent>
   );
 }
