@@ -32,6 +32,7 @@ const Slidercontent = React.memo(function Slidercontent({
   const touchStartTime = useRef(0);
   const holdTimer = useRef(null);
   const [isHoldTriggered, setIsHoldTriggered] = useState(false);
+  const isTouchActive = useRef(false);
 
   // Compute preview timestamps when movie changes
   useEffect(() => {
@@ -60,14 +61,14 @@ const Slidercontent = React.memo(function Slidercontent({
   }, [isVideoPlaying, previewTimestamps.start]);
 
   const handleHover = () => {
-    if (!isMobile) {
+    if (!isMobile && !isTouchActive.current) {
       setHover(true);
       setIsVideoPlaying(true);
     }
   };
 
   const handleHoverOut = () => {
-    if (!isMobile) {
+    if (!isMobile && !isTouchActive.current) {
       setHover(false);
       setIsVideoPlaying(false);
     }
@@ -75,6 +76,9 @@ const Slidercontent = React.memo(function Slidercontent({
 
   // Track touch start position
   const handleTouchStart = (e) => {
+    if (e.type === 'touchstart') {
+      isTouchActive.current = true;
+    }
     const clientX = e.type === 'mousedown' ? e.clientX : e.touches[0].clientX;
     const clientY = e.type === 'mousedown' ? e.clientY : e.touches[0].clientY;
     touchStart.current = { x: clientX, y: clientY };
@@ -127,6 +131,12 @@ const Slidercontent = React.memo(function Slidercontent({
       if (isHoldTriggered && e.cancelable) {
         e.preventDefault();
       }
+    }
+
+    if (e.type === 'touchend' || e.type === 'touchcancel') {
+      setTimeout(() => {
+        isTouchActive.current = false;
+      }, 500);
     }
 
     const clientX = e.type === 'mouseup' ? e.clientX : e.changedTouches[0].clientX;

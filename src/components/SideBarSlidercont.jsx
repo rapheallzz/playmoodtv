@@ -30,6 +30,7 @@ const SideBarSlidercont = React.memo(function SideBarSlidercont({
   const touchStartTime = useRef(0);
   const holdTimer = useRef(null);
   const [isHoldTriggered, setIsHoldTriggered] = useState(false);
+  const isTouchActive = useRef(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -64,17 +65,24 @@ const SideBarSlidercont = React.memo(function SideBarSlidercont({
   }
 
   const handleHover = () => {
-    setHover(true);
-    setIsVideoPlaying(true);
+    if (!isTouchActive.current) {
+      setHover(true);
+      setIsVideoPlaying(true);
+    }
   };
 
   const handleHoverOut = () => {
-    setHover(false);
-    setIsVideoPlaying(false);
+    if (!isTouchActive.current) {
+      setHover(false);
+      setIsVideoPlaying(false);
+    }
   };
 
   // Track touch start position
   const handleTouchStart = (e) => {
+    if (e.type === 'touchstart') {
+      isTouchActive.current = true;
+    }
     const clientX = e.type === 'mousedown' ? e.clientX : e.touches[0].clientX;
     const clientY = e.type === 'mousedown' ? e.clientY : e.touches[0].clientY;
     touchStart.current = { x: clientX, y: clientY };
@@ -127,6 +135,12 @@ const SideBarSlidercont = React.memo(function SideBarSlidercont({
       if (isHoldTriggered && e.cancelable) {
         e.preventDefault();
       }
+    }
+
+    if (e.type === 'touchend' || e.type === 'touchcancel') {
+      setTimeout(() => {
+        isTouchActive.current = false;
+      }, 500);
     }
 
     const clientX = e.type === 'mouseup' ? e.clientX : e.changedTouches[0].clientX;
