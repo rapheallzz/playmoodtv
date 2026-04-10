@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import MobileBurger from '../components/headers/MobileBurger';
@@ -18,7 +18,6 @@ export default function Diaries() {
   const [modalCreator, setModalCreator] = useState(null);
   const [isCreatorModalOpen, setIsCreatorModalOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(4);
-  const loaderRef = useRef(null);
 
   const handleResize = () => {
     setIsMobile(window.innerWidth <= 768);
@@ -74,27 +73,6 @@ export default function Diaries() {
     setVisibleCount((prev) => prev + 8);
   };
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && visibleCount < creatorData.length) {
-          handleViewMore();
-        }
-      },
-      { threshold: 1.0 }
-    );
-
-    if (loaderRef.current) {
-      observer.observe(loaderRef.current);
-    }
-
-    return () => {
-      if (loaderRef.current) {
-        observer.unobserve(loaderRef.current);
-      }
-    };
-  }, [visibleCount, creatorData.length]);
-
   return (
     <Homecontent>
       {isMobile ? (
@@ -141,7 +119,7 @@ export default function Diaries() {
             )}
 
             {visibleCount < creatorData.length && (
-              <ViewMoreButton onClick={handleViewMore} ref={loaderRef}>
+              <ViewMoreButton onClick={handleViewMore}>
                 VIEW MORE
               </ViewMoreButton>
             )}
