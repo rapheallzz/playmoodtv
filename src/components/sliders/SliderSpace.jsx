@@ -141,11 +141,13 @@ const SliderContainer = styled.div`
       min-height: 200px;
     }
     @media (max-width: 480px) {
-      min-height: 40vw;
+      padding: 0 5px;
+      min-height: 30vw;
       max-height: 140px;
     }
     @media (max-width: 360px) {
-      min-height: 35vw;
+      padding: 0 5px;
+      min-height: 28vw;
       max-height: 120px;
     }
   }
@@ -166,12 +168,12 @@ const SliderContainer = styled.div`
       width: 200px !important;
     }
     @media (max-width: 480px) {
-      width: 40vw !important;
+      width: 28vw !important;
       max-width: 140px;
       max-height: 140px;
     }
     @media (max-width: 360px) {
-      width: 35vw !important;
+      width: 25vw !important;
       max-width: 120px;
       max-height: 120px;
     }
@@ -268,9 +270,9 @@ export default function SliderSpace({ title }) {
       {
         breakpoint: 600,
         settings: {
-          slidesToShow: Math.max(1, Math.min(numItems, 4.2)),
+          slidesToShow: Math.max(1, Math.min(numItems, 3)),
           slidesToScroll: 1,
-          infinite: numItems > Math.max(1, Math.min(numItems, 4.2)),
+          infinite: numItems > Math.max(1, Math.min(numItems, 3)),
           arrows: true,
           centerMode: false,
         },
@@ -278,9 +280,9 @@ export default function SliderSpace({ title }) {
       {
         breakpoint: 480,
         settings: {
-          slidesToShow: Math.max(1, Math.min(numItems, 4.2)),
+          slidesToShow: Math.max(1, Math.min(numItems, 3)),
           slidesToScroll: 1,
-          infinite: numItems > Math.max(1, Math.min(numItems, 4.2)),
+          infinite: numItems > Math.max(1, Math.min(numItems, 3)),
           arrows: false,
           centerMode: false,
         },
@@ -288,9 +290,9 @@ export default function SliderSpace({ title }) {
       {
         breakpoint: 360,
         settings: {
-          slidesToShow: Math.max(1, Math.min(numItems, 4.2)),
+          slidesToShow: Math.max(1, Math.min(numItems, 3)),
           slidesToScroll: 1,
-          infinite: numItems > Math.max(1, Math.min(numItems, 4.2)),
+          infinite: numItems > Math.max(1, Math.min(numItems, 3)),
           arrows: false,
           centerMode: false,
         },
