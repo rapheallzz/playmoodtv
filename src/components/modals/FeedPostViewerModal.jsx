@@ -29,6 +29,7 @@ import {
   LikesContainer,
   CommentInputContainer,
   SendButton,
+  PaginationContainer,
 } from '../../styles/CreatorPageStyles';
 
 const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
@@ -247,7 +248,6 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
       {/* Post Navigation Arrows positioned outside the card */}
       <NavigationArrow
         className="prev-arrow"
-        style={{ left: '20px', zIndex: 10005 }}
         onClick={(e) => {
           e.stopPropagation();
           onPrev();
@@ -257,7 +257,6 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
       </NavigationArrow>
       <NavigationArrow
         className="next-arrow"
-        style={{ right: '20px', zIndex: 10005 }}
         onClick={(e) => {
           e.stopPropagation();
           onNext();
@@ -315,26 +314,9 @@ const FeedPostViewerModal = ({ post, onClose, onNext, onPrev }) => {
               </SwiperSlide>
             ))}
           </Swiper>
-          <div style={{
-            height: '60px',
-            minHeight: '60px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '100%',
-            background: '#000',
-            zIndex: 10,
-            position: 'relative',
-            flexShrink: 0,
-          }}>
-            <div className="custom-swiper-pagination" style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '100%',
-              height: '40px'
-            }}></div>
-          </div>
+          <PaginationContainer>
+            <div className="custom-swiper-pagination"></div>
+          </PaginationContainer>
         </ModalCardMedia>
         <ModalCardContent>
           <ModalCardHeader>

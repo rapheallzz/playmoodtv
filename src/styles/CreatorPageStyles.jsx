@@ -567,6 +567,55 @@ export const PostContent = styled.p`
   }
 `;
 
+export const PaginationContainer = styled.div`
+  height: 60px;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  background: #000;
+  z-index: 10;
+  position: relative;
+  flex-shrink: 0;
+
+  @media screen and (max-width: 768px) {
+    height: 40px;
+    min-height: 40px;
+  }
+
+  .custom-swiper-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 40px;
+
+    @media screen and (max-width: 768px) {
+      height: 30px;
+    }
+  }
+
+  .swiper-pagination-bullet {
+    width: 10px;
+    height: 10px;
+    background: #fff;
+    opacity: 0.5;
+    margin: 0 5px !important;
+
+    @media screen and (max-width: 768px) {
+      width: 8px;
+      height: 8px;
+    }
+  }
+
+  .swiper-pagination-bullet-active {
+    opacity: 1;
+    background: #541011;
+    transform: scale(1.2);
+  }
+`;
+
 export const UploadZoneContainer = styled.div`
   border: 2px dashed ${(props) => (props.$isDragOver ? '#541011' : '#ccc')};
   border-radius: 8px;
@@ -823,7 +872,20 @@ export const ModalCardMedia = styled.div`
     height: 60%;
     .swiper-button-next,
     .swiper-button-prev {
-      display: none !important;
+      display: flex !important;
+      background: rgba(0, 0, 0, 0.4);
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      &:after {
+        font-size: 14px;
+      }
+    }
+    .swiper-button-prev {
+      left: 5px;
+    }
+    .swiper-button-next {
+      right: 5px;
     }
   }
 `;
@@ -2154,7 +2216,7 @@ export const NavigationArrow = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 10003;
+  z-index: 10015;
   transition: background-color 0.3s, transform 0.2s;
 
   &:hover {
@@ -2181,11 +2243,11 @@ export const NavigationArrow = styled.button`
   }
 
   &.prev-arrow {
-    left: 10px;
+    left: 20px;
   }
 
   &.next-arrow {
-    right: 10px;
+    right: 20px;
   }
 
   &:disabled {
@@ -2198,16 +2260,17 @@ export const NavigationArrow = styled.button`
   }
 
   @media screen and (max-width: 768px) {
-    width: 32px;
-    height: 32px;
-    background: rgba(0, 0, 0, 0.3);
+    width: 44px;
+    height: 44px;
+    background: rgba(0, 0, 0, 0.6);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 
     &.prev-arrow {
-      left: 10px !important;
+      left: 5px !important;
     }
 
     &.next-arrow {
-      right: 10px !important;
+      right: 5px !important;
     }
   }
 `;
