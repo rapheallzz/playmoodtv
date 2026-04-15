@@ -59,7 +59,7 @@ const Login = ({ navigation }) => {
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <View style={styles.logoContainer}>
             <Image
-              source={require('../assets/PLAYMOOD_DEF.png')}
+              source={require('../../assets/PLAYMOOD_DEF.png')}
               style={styles.logo}
               resizeMode="contain"
             />

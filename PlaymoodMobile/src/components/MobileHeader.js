@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
-import { GiHamburgerMenu } from 'react-icons/gi'; // We will use Expo icons instead
 import { MaterialIcons, Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
@@ -15,7 +14,7 @@ const MobileHeader = ({ toggleDrawer }) => {
         <View style={styles.topRow}>
           <TouchableOpacity onPress={() => navigation.navigate('Home')}>
             <Image
-              source={require('../assets/PLAYMOOD_DEF.png')}
+              source={require('../../assets/PLAYMOOD_DEF.png')}
               style={styles.logo}
               resizeMode="contain"
             />
@@ -40,7 +39,7 @@ const MobileHeader = ({ toggleDrawer }) => {
           <TouchableOpacity onPress={() => navigation.navigate('Home')}>
             <Text style={styles.navLink}>HOME</Text>
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('Schedule')}>
             <Text style={styles.navLink}>CHANNELS</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => navigation.navigate('Schedule')}>
@@ -49,10 +48,10 @@ const MobileHeader = ({ toggleDrawer }) => {
           <TouchableOpacity>
             <Text style={styles.navLink}>SPACES</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('Stories')}>
+          <TouchableOpacity onPress={() => navigation.navigate('CategoryList', { category: 'Story', title: 'Stories' })}>
             <Text style={styles.navLink}>STORIES</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('Diaries')}>
+          <TouchableOpacity onPress={() => navigation.navigate('CategoryList', { category: 'Diary', title: 'Diaries' })}>
             <Text style={styles.navLink}>DIARIES</Text>
           </TouchableOpacity>
         </View>
@@ -125,7 +124,7 @@ const styles = StyleSheet.create({
   hamburger: {
     position: 'absolute',
     left: 10,
-    bottom: -40, // Adjust based on layout
+    bottom: -40,
     zIndex: 1002,
   }
 });

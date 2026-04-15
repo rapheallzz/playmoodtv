@@ -31,19 +31,25 @@ const CustomDrawerContent = (props) => {
     <DrawerContentScrollView {...props} contentContainerStyle={styles.container}>
       {user ? (
         <View style={styles.userSection}>
-          <View style={styles.userInfo}>
+          <TouchableOpacity
+            style={styles.userInfo}
+            onPress={() => props.navigation.navigate('Dashboard')}
+          >
             <Text style={styles.userName}>{user.name}</Text>
             <TouchableOpacity onPress={onLogout}>
               <Text style={styles.logoutText}>Logout</Text>
             </TouchableOpacity>
-          </View>
-          <View style={styles.profileImageContainer}>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.profileImageContainer}
+            onPress={() => props.navigation.navigate('Dashboard')}
+          >
              {user.profileImage ? (
                <Image source={{ uri: user.profileImage }} style={styles.profileImage} />
              ) : (
                <Ionicons name="person-circle" size={60} color="#541011" />
              )}
-          </View>
+          </TouchableOpacity>
         </View>
       ) : (
         <View style={styles.loginPrompt}>
@@ -58,31 +64,54 @@ const CustomDrawerContent = (props) => {
       )}
 
       <View style={styles.menuItems}>
-        <DrawerItemList {...props} />
-
-        <TouchableOpacity style={styles.customMenuItem} onPress={() => props.navigation.navigate('Home')}>
-           <Ionicons name="search-outline" size={22} color="white" />
-           <Text style={styles.menuLabel}>Search</Text>
-        </TouchableOpacity>
-
         <TouchableOpacity style={styles.customMenuItem} onPress={() => props.navigation.navigate('Home')}>
            <Ionicons name="home-outline" size={22} color="white" />
            <Text style={styles.menuLabel}>Home</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.customMenuItem}>
-           <Ionicons name="thumbs-up-outline" size={22} color="white" />
-           <Text style={styles.menuLabel}>Recommended</Text>
+        <TouchableOpacity style={styles.customMenuItem} onPress={() => props.navigation.navigate('Schedule')}>
+           <Ionicons name="calendar-outline" size={22} color="white" />
+           <Text style={styles.menuLabel}>Schedule</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.customMenuItem}>
-           <Ionicons name="flash-outline" size={22} color="white" />
-           <Text style={styles.menuLabel}>New on Playmood</Text>
+        <TouchableOpacity style={styles.customMenuItem} onPress={() => props.navigation.navigate('Watchlist')}>
+           <Ionicons name="bookmark-outline" size={22} color="white" />
+           <Text style={styles.menuLabel}>Watchlist</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.customMenuItem}>
-           <Ionicons name="snow-outline" size={22} color="white" />
-           <Text style={styles.menuLabel}>Channels</Text>
+        <View style={styles.divider} />
+        <Text style={styles.sectionHeader}>Categories</Text>
+
+        <TouchableOpacity
+          style={styles.customMenuItem}
+          onPress={() => props.navigation.navigate('CategoryList', { category: 'Fashion Show', title: 'Fashion Shows' })}
+        >
+           <Ionicons name="shirt-outline" size={22} color="white" />
+           <Text style={styles.menuLabel}>Fashion Shows</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.customMenuItem}
+          onPress={() => props.navigation.navigate('CategoryList', { category: 'Interview', title: 'Interviews' })}
+        >
+           <Ionicons name="mic-outline" size={22} color="white" />
+           <Text style={styles.menuLabel}>Interviews</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.customMenuItem}
+          onPress={() => props.navigation.navigate('CategoryList', { category: 'Documentary', title: 'Documentaries' })}
+        >
+           <Ionicons name="videocam-outline" size={22} color="white" />
+           <Text style={styles.menuLabel}>Documentaries</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.customMenuItem}
+          onPress={() => props.navigation.navigate('CategoryList', { category: 'Teen', title: 'Teens' })}
+        >
+           <Ionicons name="people-outline" size={22} color="white" />
+           <Text style={styles.menuLabel}>Teens</Text>
         </TouchableOpacity>
       </View>
     </DrawerContentScrollView>
@@ -100,8 +129,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#333',
-    marginBottom: 20,
+    borderBottomColor: '#111',
+    marginBottom: 10,
   },
   userInfo: {
     gap: 5,
@@ -131,8 +160,8 @@ const styles = StyleSheet.create({
   loginPrompt: {
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#333',
-    marginBottom: 20,
+    borderBottomColor: '#111',
+    marginBottom: 10,
     gap: 10,
   },
   loginText: {
@@ -156,13 +185,27 @@ const styles = StyleSheet.create({
   customMenuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 15,
+    paddingVertical: 12,
     paddingHorizontal: 15,
     gap: 20,
   },
   menuLabel: {
     color: 'white',
-    fontSize: 14,
+    fontSize: 15,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: '#111',
+    marginVertical: 15,
+    marginHorizontal: 15,
+  },
+  sectionHeader: {
+    color: '#541011',
+    fontSize: 12,
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
+    marginLeft: 15,
+    marginBottom: 10,
   }
 });
 
