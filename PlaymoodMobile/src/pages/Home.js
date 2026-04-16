@@ -7,6 +7,7 @@ import Carousel from 'react-native-reanimated-carousel';
 import { Ionicons } from '@expo/vector-icons';
 import CircularContentCard from '../components/CircularContentCard';
 import ContentPreviewModal from '../components/ContentPreviewModal';
+import MobileBannerCard from '../components/MobileBannerCard';
 
 const { width: windowWidth } = Dimensions.get('window');
 
@@ -39,52 +40,38 @@ const Home = ({ navigation }) => {
     navigation.navigate('MoviePlayer', { movie: item });
   };
 
-  const renderBannerItem = ({ item }) => (
-    <BannerItem>
-      <BannerImage
-        source={{ uri: item.thumbnail || 'https://via.placeholder.com/800x450' }}
-        resizeMode="cover"
-      />
-      <BannerOverlay>
-        <BannerTitle numberOfLines={1}>{item.title}</BannerTitle>
-        <WatchNowButton
-          onPress={() => navigateToMovie(item)}
-        >
-          <Ionicons name="play" size={20} color="white" />
-          <WatchNowText>WATCH NOW</WatchNowText>
-        </WatchNowButton>
-      </BannerOverlay>
-    </BannerItem>
-  );
+  const renderSection = (title, data, circular = false) => {
+    if (!data || data.length === 0) return null;
 
-  const renderSection = (title, data, circular = false) => (
-    <Section>
-      <SectionTitle>{title}</SectionTitle>
-      <HorizontalScroll horizontal showsHorizontalScrollIndicator={false}>
-        {data.map((item) => (
-          circular ? (
-            <CircularContentCard
-              key={item._id}
-              content={item}
-              onPress={() => openPreview(item)}
-              onMorePress={() => openPreview(item)}
-            />
-          ) : (
-            <ContentCard
-              key={item._id}
-              onPress={() => openPreview(item)}
-            >
-              <CardImage
-                source={{ uri: item.thumbnail || 'https://via.placeholder.com/300x168' }}
-                resizeMode="cover"
+    return (
+      <Section>
+        <SectionTitle>{title}</SectionTitle>
+        <HorizontalScroll horizontal showsHorizontalScrollIndicator={false}>
+          {data.map((item) => (
+            circular ? (
+              <CircularContentCard
+                key={item._id}
+                content={item}
+                onPress={() => openPreview(item)}
+                onMorePress={() => openPreview(item)}
               />
-              <CardTitle numberOfLines={1}>{item.title}</CardTitle>
-            </ContentCard>
-          )
-        ))}
-      </HorizontalScroll>
-    </Section>
-  );
+            ) : (
+              <ContentCard
+                key={item._id}
+                onPress={() => openPreview(item)}
+              >
+                <CardImage
+                  source={{ uri: item.thumbnail || 'https://via.placeholder.com/300x168' }}
+                  resizeMode="cover"
+                />
+                <CardTitle numberOfLines={1}>{item.title}</CardTitle>
+              </ContentCard>
+            )
+          ))}
+        </HorizontalScroll>
+      </Section>
+    );
+  };
 
   if (isLoading) {
     return (
@@ -94,27 +81,44 @@ const Home = ({ navigation }) => {
     );
   }
 
+  // Categories matching web app order
+  const top10 = homePageData.slice(0, 10);
+  const newOnPlaymood = homePageData.filter(i => i.isNew || i.category === 'New').slice(0, 10);
+  const channels = homePageData.filter(i => i.category === 'Channel');
+  const diaries = homePageData.filter(i => i.category === 'Diary');
+  const spaces = homePageData.filter(i => i.category === 'Space');
+  const recommended = homePageData.slice(5, 15);
+  const interviews = homePageData.filter(i => i.category === 'Interview');
+  const fashion = homePageData.filter(i => i.category === 'Fashion Show');
+  const documentaries = homePageData.filter(i => i.category === 'Documentary');
+  const camera = homePageData.filter(i => i.category === 'Behind the Cameras');
+  const soon = homePageData.filter(i => i.category === 'Soon');
+  const teen = homePageData.filter(i => i.category === 'Teen');
+  const only = homePageData.filter(i => i.category === 'Only');
+  const social = homePageData.filter(i => i.category === 'Social');
+
   return (
     <Container>
       <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
-        {homePageData.length > 0 && (
-          <CarouselContainer>
-            <Carousel
-              loop
-              width={windowWidth}
-              height={windowWidth * 0.6}
-              autoPlay={true}
-              data={homePageData.slice(0, 5)}
-              scrollAnimationDuration={1000}
-              renderItem={renderBannerItem}
-            />
-          </CarouselContainer>
-        )}
+        <MobileBannerCard
+          homePageData={homePageData}
+          onPlayNow={navigateToMovie}
+        />
 
-        {renderSection('Channels', homePageData.slice(10, 20), true)}
-        {renderSection('New on Playmood', homePageData.slice(0, 10))}
-        {renderSection('Recommended for you', homePageData.slice(5, 15))}
-        {renderSection('Diaries', homePageData.slice(15, 25), true)}
+        {renderSection('Top 10', top10)}
+        {renderSection('New on Playmood', newOnPlaymood.length > 0 ? newOnPlaymood : homePageData.slice(0, 10))}
+        {renderSection('Channels', channels.length > 0 ? channels : homePageData.slice(10, 18), true)}
+        {renderSection('Diaries', diaries.length > 0 ? diaries : homePageData.slice(18, 26), true)}
+        {renderSection('Spaces', spaces.length > 0 ? spaces : homePageData.slice(0, 8), true)}
+        {renderSection('Recommended for you', recommended)}
+        {renderSection('Interviews', interviews)}
+        {renderSection('Fashion Shows', fashion)}
+        {renderSection('Social', social)}
+        {renderSection('Documentaries and Reports', documentaries)}
+        {renderSection('Behind the Cameras', camera)}
+        {renderSection('Soon in Playmood', soon)}
+        {renderSection('Teens', teen)}
+        {renderSection('Only in Playmood', only)}
       </ScrollView>
 
       <ContentPreviewModal
@@ -137,53 +141,6 @@ const LoadingContainer = styled(View)`
   background-color: #000;
   justify-content: center;
   align-items: center;
-`;
-
-const CarouselContainer = styled(View)`
-  margin-bottom: 20px;
-`;
-
-const BannerItem = styled(View)`
-  flex: 1;
-  position: relative;
-`;
-
-const BannerImage = styled(Image)`
-  width: 100%;
-  height: 100%;
-`;
-
-const BannerOverlay = styled(View)`
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 20px;
-  background-color: rgba(0,0,0,0.4);
-`;
-
-const BannerTitle = styled(Text)`
-  color: #fff;
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 10px;
-`;
-
-const WatchNowButton = styled(TouchableOpacity)`
-  flex-direction: row;
-  align-items: center;
-  background-color: #541011;
-  padding-horizontal: 15px;
-  padding-vertical: 8px;
-  border-radius: 4px;
-  align-self: flex-start;
-`;
-
-const WatchNowText = styled(Text)`
-  color: #fff;
-  font-size: 14px;
-  font-weight: bold;
-  margin-left: 5px;
 `;
 
 const Section = styled(View)`
