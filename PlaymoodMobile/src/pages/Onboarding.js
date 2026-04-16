@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components/native';
 import { Ionicons } from '@expo/vector-icons';
+import { View, Text, TouchableOpacity } from 'react-native';
 
 const Onboarding = ({ navigation }) => {
   return (
@@ -34,21 +35,21 @@ const Onboarding = ({ navigation }) => {
   );
 };
 
-const Container = styled.View`
+const Container = styled(View)`
   flex: 1;
   background-color: #000;
   justify-content: center;
   padding: 20px;
 `;
 
-const Content = styled.View`
+const Content = styled(View)`
   align-items: center;
   background-color: #111;
   padding: 40px 20px;
   border-radius: 20px;
 `;
 
-const Title = styled.Text`
+const Title = styled(Text)`
   color: #fff;
   font-size: 28px;
   font-weight: bold;
@@ -56,7 +57,7 @@ const Title = styled.Text`
   margin-bottom: 20px;
 `;
 
-const Description = styled.Text`
+const Description = styled(Text)`
   color: #ccc;
   font-size: 16px;
   text-align: center;
@@ -64,25 +65,25 @@ const Description = styled.Text`
   margin-bottom: 30px;
 `;
 
-const FeaturesList = styled.View`
+const FeaturesList = styled(View)`
   width: 100%;
-  gap: 20px;
   margin-bottom: 40px;
 `;
 
-const FeatureItem = styled.View`
+const FeatureItem = styled(View)`
   flex-direction: row;
   align-items: center;
-  gap: 15px;
+  margin-bottom: 20px;
 `;
 
-const FeatureText = styled.Text`
+const FeatureText = styled(Text)`
   color: #fff;
   font-size: 15px;
   flex: 1;
+  margin-left: 15px;
 `;
 
-const GetStartedButton = styled.TouchableOpacity`
+const GetStartedButton = styled(TouchableOpacity)`
   background-color: #541011;
   width: 100%;
   padding: 18px;
@@ -90,7 +91,7 @@ const GetStartedButton = styled.TouchableOpacity`
   align-items: center;
 `;
 
-const GetStartedText = styled.Text`
+const GetStartedText = styled(Text)`
   color: #fff;
   font-size: 18px;
   font-weight: bold;
