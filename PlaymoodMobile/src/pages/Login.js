@@ -1,22 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  Image,
-  SafeAreaView,
   ActivityIndicator,
   Alert,
-  ScrollView,
-  KeyboardAvoidingView,
   Platform
 } from 'react-native';
+import styled from 'styled-components/native';
 import { useSelector, useDispatch } from 'react-redux';
 import { login, reset } from '../features/authSlice';
 import { Ionicons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Login = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -33,11 +24,7 @@ const Login = ({ navigation }) => {
     }
 
     if (isSuccess && user) {
-      if (user.role === 'admin') {
-         navigation.replace('AdminDashboard'); // Placeholder if you have one
-      } else {
-         navigation.replace('Home');
-      }
+      navigation.replace('Main');
       dispatch(reset());
     }
   }, [user, isError, isSuccess, message, navigation, dispatch]);
@@ -51,30 +38,27 @@ const Login = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView
+    <Container>
+      <KeyboardWrapper
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={{ flex: 1 }}
       >
-        <ScrollView contentContainerStyle={styles.scrollContent}>
-          <View style={styles.logoContainer}>
-            <Image
+        <ScrollContent contentContainerStyle={{ padding: 20, justifyContent: 'center', minHeight: '100%' }}>
+          <LogoContainer>
+            <Logo
               source={require('../../assets/PLAYMOOD_DEF.png')}
-              style={styles.logo}
               resizeMode="contain"
             />
-          </View>
+          </LogoContainer>
 
-          <View style={styles.titleSection}>
-            <Text style={styles.title}>Welcome Back</Text>
-            <Text style={styles.subtitle}>Login to your account to continue</Text>
-          </View>
+          <TitleSection>
+            <Title>Welcome Back</Title>
+            <Subtitle>Login to your account to continue</Subtitle>
+          </TitleSection>
 
-          <View style={styles.form}>
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Email Address</Text>
-              <TextInput
-                style={styles.input}
+          <Form>
+            <InputGroup>
+              <Label>Email Address</Label>
+              <Input
                 placeholder="name@example.com"
                 placeholderTextColor="#666"
                 keyboardType="email-address"
@@ -82,200 +66,218 @@ const Login = ({ navigation }) => {
                 value={email}
                 onChangeText={setEmail}
               />
-            </View>
+            </InputGroup>
 
-            <View style={styles.inputGroup}>
-              <View style={styles.labelRow}>
-                <Text style={styles.label}>Password</Text>
-                <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
-                  <Text style={styles.forgotPassword}>Forgot password?</Text>
+            <InputGroup>
+              <LabelRow>
+                <Label>Password</Label>
+                <TouchableOpacity onPress={() => {}}>
+                  <ForgotPassword>Forgot password?</ForgotPassword>
                 </TouchableOpacity>
-              </View>
-              <View style={styles.passwordWrapper}>
-                <TextInput
-                  style={[styles.input, { paddingRight: 50 }]}
+              </LabelRow>
+              <PasswordWrapper>
+                <Input
                   placeholder="Enter your password"
                   placeholderTextColor="#666"
                   secureTextEntry={!showPassword}
                   value={password}
                   onChangeText={setPassword}
+                  style={{ paddingRight: 50 }}
                 />
-                <TouchableOpacity
-                  style={styles.passwordToggle}
-                  onPress={() => setShowPassword(!showPassword)}
-                >
+                <PasswordToggle onPress={() => setShowPassword(!showPassword)}>
                   <Ionicons
                     name={showPassword ? 'eye-off' : 'eye'}
                     size={20}
                     color="#999"
                   />
-                </TouchableOpacity>
-              </View>
-            </View>
+                </PasswordToggle>
+              </PasswordWrapper>
+            </InputGroup>
 
-            <TouchableOpacity
-              style={styles.submitButton}
+            <SubmitButton
               onPress={onLoginPress}
               disabled={isLoading}
             >
               {isLoading ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text style={styles.submitButtonText}>Login</Text>
+                <SubmitButtonText>Login</SubmitButtonText>
               )}
-            </TouchableOpacity>
+            </SubmitButton>
 
-            <View style={styles.divider}>
-              <View style={styles.dividerLine} />
-              <Text style={styles.dividerText}>OR</Text>
-              <View style={styles.dividerLine} />
-            </View>
+            <Divider>
+              <DividerLine />
+              <DividerText>OR</DividerText>
+              <DividerLine />
+            </Divider>
 
-            <TouchableOpacity style={styles.googleButton}>
+            <GoogleButton>
               <Ionicons name="logo-google" size={20} color="#4285f4" />
-              <Text style={styles.googleButtonText}>Sign in with Google</Text>
-            </TouchableOpacity>
+              <GoogleButtonText>Sign in with Google</GoogleButtonText>
+            </GoogleButton>
 
-            <View style={styles.footer}>
-              <Text style={styles.footerText}>Don't have an account? </Text>
+            <Footer>
+              <FooterText>Don't have an account? </FooterText>
               <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-                <Text style={styles.signUpText}>Sign Up</Text>
+                <SignUpText>Sign Up</SignUpText>
               </TouchableOpacity>
-            </View>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+            </Footer>
+          </Form>
+        </ScrollContent>
+      </KeyboardWrapper>
+    </Container>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#000',
-  },
-  scrollContent: {
-    padding: 20,
-    justifyContent: 'center',
-    minHeight: '100%',
-  },
-  logoContainer: {
-    alignItems: 'center',
-    marginBottom: 40,
-  },
-  logo: {
-    height: 60,
-    width: 200,
-  },
-  titleSection: {
-    alignItems: 'center',
-    marginBottom: 30,
-  },
-  title: {
-    color: '#fff',
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
-  subtitle: {
-    color: '#999',
-    fontSize: 16,
-  },
-  form: {
-    gap: 20,
-  },
-  inputGroup: {
-    gap: 8,
-  },
-  labelRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  label: {
-    color: '#ccc',
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  input: {
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
-    borderRadius: 12,
-    padding: 14,
-    color: '#fff',
-    fontSize: 16,
-  },
-  passwordWrapper: {
-    position: 'relative',
-  },
-  passwordToggle: {
-    position: 'absolute',
-    right: 15,
-    top: 15,
-  },
-  forgotPassword: {
-    color: '#541011',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  submitButton: {
-    backgroundColor: '#541011',
-    borderRadius: 12,
-    padding: 16,
-    alignItems: 'center',
-    height: 56,
-    justifyContent: 'center',
-    marginTop: 10,
-  },
-  submitButtonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  divider: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 10,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: 'rgba(255,255,255,0.1)',
-  },
-  dividerText: {
-    paddingHorizontal: 15,
-    color: '#666',
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  googleButton: {
-    flexDirection: 'row',
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 12,
-  },
-  googleButtonText: {
-    color: '#333',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 20,
-  },
-  footerText: {
-    color: '#999',
-    fontSize: 14,
-  },
-  signUpText: {
-    color: '#541011',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-});
+const Container = styled.SafeAreaView`
+  flex: 1;
+  background-color: #000;
+`;
+
+const KeyboardWrapper = styled.KeyboardAvoidingView`
+  flex: 1;
+`;
+
+const ScrollContent = styled.ScrollView``;
+
+const LogoContainer = styled.View`
+  align-items: center;
+  margin-bottom: 40px;
+`;
+
+const Logo = styled.Image`
+  height: 60px;
+  width: 200px;
+`;
+
+const TitleSection = styled.View`
+  align-items: center;
+  margin-bottom: 30px;
+`;
+
+const Title = styled.Text`
+  color: #fff;
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 8px;
+`;
+
+const Subtitle = styled.Text`
+  color: #999;
+  font-size: 16px;
+`;
+
+const Form = styled.View``;
+
+const InputGroup = styled.View`
+  margin-bottom: 20px;
+`;
+
+const LabelRow = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+`;
+
+const Label = styled.Text`
+  color: #ccc;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 8px;
+`;
+
+const Input = styled.TextInput`
+  background-color: rgba(255,255,255,0.05);
+  border-width: 1px;
+  border-color: rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 14px;
+  color: #fff;
+  font-size: 16px;
+`;
+
+const PasswordWrapper = styled.View`
+  position: relative;
+`;
+
+const PasswordToggle = styled.TouchableOpacity`
+  position: absolute;
+  right: 15px;
+  top: 15px;
+`;
+
+const ForgotPassword = styled.Text`
+  color: #541011;
+  font-size: 14px;
+  font-weight: 600;
+`;
+
+const SubmitButton = styled.TouchableOpacity`
+  background-color: #541011;
+  border-radius: 12px;
+  padding: 16px;
+  align-items: center;
+  height: 56px;
+  justify-content: center;
+  margin-top: 10px;
+  opacity: ${props => props.disabled ? 0.7 : 1};
+`;
+
+const SubmitButtonText = styled.Text`
+  color: #fff;
+  font-size: 18px;
+  font-weight: 600;
+`;
+
+const Divider = styled.View`
+  flex-direction: row;
+  align-items: center;
+  margin-vertical: 20px;
+`;
+
+const DividerLine = styled.View`
+  flex: 1;
+  height: 1px;
+  background-color: rgba(255,255,255,0.1);
+`;
+
+const DividerText = styled.Text`
+  padding-horizontal: 15px;
+  color: #666;
+  font-size: 12px;
+  font-weight: 600;
+`;
+
+const GoogleButton = styled.TouchableOpacity`
+  flex-direction: row;
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 14px;
+  align-items: center;
+  justify-content: center;
+`;
+
+const GoogleButtonText = styled.Text`
+  color: #333;
+  font-size: 16px;
+  font-weight: 600;
+  margin-left: 12px;
+`;
+
+const Footer = styled.View`
+  flex-direction: row;
+  justify-content: center;
+  margin-top: 30px;
+`;
+
+const FooterText = styled.Text`
+  color: #999;
+  font-size: 14;
+`;
+
+const SignUpText = styled.Text`
+  color: #541011;
+  font-size: 14px;
+  font-weight: 600;
+`;
 
 export default Login;

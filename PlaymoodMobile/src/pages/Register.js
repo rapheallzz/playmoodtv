@@ -1,18 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  Image,
-  SafeAreaView,
   ActivityIndicator,
   Alert,
-  ScrollView,
-  KeyboardAvoidingView,
   Platform
 } from 'react-native';
+import styled from 'styled-components/native';
 import { useSelector, useDispatch } from 'react-redux';
 import { registerUser, reset } from '../features/authSlice';
 import { Ionicons } from '@expo/vector-icons';
@@ -35,7 +27,7 @@ const Register = ({ navigation }) => {
 
     if (isSuccess && user) {
       Alert.alert('Success', 'Account created successfully!');
-      navigation.replace('Home');
+      navigation.replace('Main');
       dispatch(reset());
     }
   }, [user, isError, isSuccess, message, navigation, dispatch]);
@@ -53,41 +45,37 @@ const Register = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView
+    <Container>
+      <KeyboardWrapper
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={{ flex: 1 }}
       >
-        <ScrollView contentContainerStyle={styles.scrollContent}>
-          <View style={styles.logoContainer}>
-            <Image
+        <ScrollContent contentContainerStyle={{ padding: 20, justifyContent: 'center', minHeight: '100%' }}>
+          <LogoContainer>
+            <Logo
               source={require('../../assets/PLAYMOOD_DEF.png')}
-              style={styles.logo}
               resizeMode="contain"
             />
-          </View>
+          </LogoContainer>
 
-          <View style={styles.titleSection}>
-            <Text style={styles.title}>Create Account</Text>
-            <Text style={styles.subtitle}>Join Playmood today</Text>
-          </View>
+          <TitleSection>
+            <Title>Create Account</Title>
+            <Subtitle>Join Playmood today</Subtitle>
+          </TitleSection>
 
-          <View style={styles.form}>
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Full Name</Text>
-              <TextInput
-                style={styles.input}
+          <Form>
+            <InputGroup>
+              <Label>Full Name</Label>
+              <Input
                 placeholder="John Doe"
                 placeholderTextColor="#666"
                 value={name}
                 onChangeText={setName}
               />
-            </View>
+            </InputGroup>
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Email Address</Text>
-              <TextInput
-                style={styles.input}
+            <InputGroup>
+              <Label>Email Address</Label>
+              <Input
                 placeholder="name@example.com"
                 placeholderTextColor="#666"
                 keyboardType="email-address"
@@ -95,157 +83,169 @@ const Register = ({ navigation }) => {
                 value={email}
                 onChangeText={setEmail}
               />
-            </View>
+            </InputGroup>
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Password</Text>
-              <View style={styles.passwordWrapper}>
-                <TextInput
-                  style={[styles.input, { paddingRight: 50 }]}
+            <InputGroup>
+              <Label>Password</Label>
+              <PasswordWrapper>
+                <Input
                   placeholder="Enter your password"
                   placeholderTextColor="#666"
                   secureTextEntry={!showPassword}
                   value={password}
                   onChangeText={setPassword}
+                  style={{ paddingRight: 50 }}
                 />
-                <TouchableOpacity
-                  style={styles.passwordToggle}
-                  onPress={() => setShowPassword(!showPassword)}
-                >
+                <PasswordToggle onPress={() => setShowPassword(!showPassword)}>
                   <Ionicons
                     name={showPassword ? 'eye-off' : 'eye'}
                     size={20}
                     color="#999"
                   />
-                </TouchableOpacity>
-              </View>
-            </View>
+                </PasswordToggle>
+              </PasswordWrapper>
+            </InputGroup>
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Confirm Password</Text>
-              <TextInput
-                style={styles.input}
+            <InputGroup>
+              <Label>Confirm Password</Label>
+              <Input
                 placeholder="Confirm your password"
                 placeholderTextColor="#666"
                 secureTextEntry={true}
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
               />
-            </View>
+            </InputGroup>
 
-            <TouchableOpacity
-              style={styles.submitButton}
+            <SubmitButton
               onPress={onRegisterPress}
               disabled={isLoading}
             >
               {isLoading ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text style={styles.submitButtonText}>Sign Up</Text>
+                <SubmitButtonText>Sign Up</SubmitButtonText>
               )}
-            </TouchableOpacity>
+            </SubmitButton>
 
-            <View style={styles.footer}>
-              <Text style={styles.footerText}>Already have an account? </Text>
+            <Footer>
+              <FooterText>Already have an account? </FooterText>
               <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-                <Text style={styles.signUpText}>Login</Text>
+                <SignUpText>Login</SignUpText>
               </TouchableOpacity>
-            </View>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+            </Footer>
+          </Form>
+        </ScrollContent>
+      </KeyboardWrapper>
+    </Container>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#000',
-  },
-  scrollContent: {
-    padding: 20,
-    justifyContent: 'center',
-    minHeight: '100%',
-  },
-  logoContainer: {
-    alignItems: 'center',
-    marginBottom: 40,
-  },
-  logo: {
-    height: 60,
-    width: 200,
-  },
-  titleSection: {
-    alignItems: 'center',
-    marginBottom: 30,
-  },
-  title: {
-    color: '#fff',
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
-  subtitle: {
-    color: '#999',
-    fontSize: 16,
-  },
-  form: {
-    gap: 15,
-  },
-  inputGroup: {
-    gap: 8,
-  },
-  label: {
-    color: '#ccc',
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  input: {
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
-    borderRadius: 12,
-    padding: 14,
-    color: '#fff',
-    fontSize: 16,
-  },
-  passwordWrapper: {
-    position: 'relative',
-  },
-  passwordToggle: {
-    position: 'absolute',
-    right: 15,
-    top: 15,
-  },
-  submitButton: {
-    backgroundColor: '#541011',
-    borderRadius: 12,
-    padding: 16,
-    alignItems: 'center',
-    height: 56,
-    justifyContent: 'center',
-    marginTop: 20,
-  },
-  submitButtonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 20,
-  },
-  footerText: {
-    color: '#999',
-    fontSize: 14,
-  },
-  signUpText: {
-    color: '#541011',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-});
+const Container = styled.SafeAreaView`
+  flex: 1;
+  background-color: #000;
+`;
+
+const KeyboardWrapper = styled.KeyboardAvoidingView`
+  flex: 1;
+`;
+
+const ScrollContent = styled.ScrollView``;
+
+const LogoContainer = styled.View`
+  align-items: center;
+  margin-bottom: 40px;
+`;
+
+const Logo = styled.Image`
+  height: 60px;
+  width: 200px;
+`;
+
+const TitleSection = styled.View`
+  align-items: center;
+  margin-bottom: 30px;
+`;
+
+const Title = styled.Text`
+  color: #fff;
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 8px;
+`;
+
+const Subtitle = styled.Text`
+  color: #999;
+  font-size: 16px;
+`;
+
+const Form = styled.View``;
+
+const InputGroup = styled.View`
+  margin-bottom: 15px;
+`;
+
+const Label = styled.Text`
+  color: #ccc;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 8px;
+`;
+
+const Input = styled.TextInput`
+  background-color: rgba(255,255,255,0.05);
+  border-width: 1px;
+  border-color: rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 14px;
+  color: #fff;
+  font-size: 16px;
+`;
+
+const PasswordWrapper = styled.View`
+  position: relative;
+`;
+
+const PasswordToggle = styled.TouchableOpacity`
+  position: absolute;
+  right: 15px;
+  top: 15px;
+`;
+
+const SubmitButton = styled.TouchableOpacity`
+  background-color: #541011;
+  border-radius: 12px;
+  padding: 16px;
+  align-items: center;
+  height: 56px;
+  justify-content: center;
+  margin-top: 20px;
+  opacity: ${props => props.disabled ? 0.7 : 1};
+`;
+
+const SubmitButtonText = styled.Text`
+  color: #fff;
+  font-size: 18px;
+  font-weight: 600;
+`;
+
+const Footer = styled.View`
+  flex-direction: row;
+  justify-content: center;
+  margin-top: 20px;
+`;
+
+const FooterText = styled.Text`
+  color: #999;
+  font-size: 14px;
+`;
+
+const TouchableOpacity = styled.TouchableOpacity``;
+
+const SignUpText = styled.Text`
+  color: #541011;
+  font-size: 14px;
+  font-weight: 600;
+`;
 
 export default Register;
