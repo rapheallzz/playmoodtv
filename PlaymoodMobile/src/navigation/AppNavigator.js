@@ -4,6 +4,9 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Home from '../pages/Home';
 import Login from '../pages/Login';
 import Register from '../pages/Register';
+import ForgotPassword from '../pages/ForgotPassword';
+import EmailVerification from '../pages/EmailVerification';
+import ResetPassword from '../pages/ResetPassword';
 import MoviePlayer from '../pages/MoviePlayer';
 import Schedule from '../pages/Schedule';
 import CategoryList from '../pages/CategoryList';
@@ -11,6 +14,7 @@ import Watchlist from '../pages/Watchlist';
 import Dashboard from '../pages/Dashboard';
 import CreatorChannel from '../pages/CreatorChannel';
 import StaticPage from '../pages/StaticPage';
+import Onboarding from '../pages/Onboarding';
 import MobileHeader from '../components/MobileHeader';
 import CustomDrawerContent from './CustomDrawerContent';
 
@@ -29,12 +33,16 @@ const MainStack = () => {
       <Stack.Screen name="MoviePlayer" component={MoviePlayer} options={{ headerShown: false }} />
       <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
       <Stack.Screen name="Register" component={Register} options={{ headerShown: false }} />
+      <Stack.Screen name="ForgotPassword" component={ForgotPassword} options={{ headerShown: false }} />
+      <Stack.Screen name="EmailVerification" component={EmailVerification} options={{ headerShown: false }} />
+      <Stack.Screen name="ResetPassword" component={ResetPassword} options={{ headerShown: false }} />
       <Stack.Screen name="Schedule" component={Schedule} />
       <Stack.Screen name="CategoryList" component={CategoryList} />
       <Stack.Screen name="Watchlist" component={Watchlist} />
       <Stack.Screen name="Dashboard" component={Dashboard} />
       <Stack.Screen name="CreatorChannel" component={CreatorChannel} />
       <Stack.Screen name="StaticPage" component={StaticPage} options={{ headerShown: false }} />
+      <Stack.Screen name="Onboarding" component={Onboarding} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 };
