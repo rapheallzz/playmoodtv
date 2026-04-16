@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
-import { MaterialIcons, Ionicons } from '@expo/vector-icons';
+import styled from 'styled-components/native';
+import { Image, TouchableOpacity, SafeAreaView } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 
@@ -9,124 +10,133 @@ const MobileHeader = ({ toggleDrawer }) => {
   const { user } = useSelector((state) => state.auth);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        <View style={styles.topRow}>
+    <SafeHeader>
+      <Container>
+        <TopRow>
           <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-            <Image
+            <Logo
               source={require('../../assets/PLAYMOOD_DEF.png')}
-              style={styles.logo}
               resizeMode="contain"
             />
           </TouchableOpacity>
 
-          <View style={styles.rightActions}>
-            <TouchableOpacity style={styles.postButton}>
-              <Text style={styles.postText}>Post</Text>
+          <RightActions>
+            <PostButton>
+              <PostText>Post</PostText>
               <Ionicons name="add" size={16} color="white" />
-            </TouchableOpacity>
+            </PostButton>
 
-            <TouchableOpacity
-              style={styles.profileCircle}
+            <ProfileCircle
               onPress={() => user ? navigation.navigate('Dashboard') : navigation.navigate('Login')}
             >
                <Ionicons name="person" size={20} color="white" />
-            </TouchableOpacity>
-          </View>
-        </View>
+            </ProfileCircle>
+          </RightActions>
+        </TopRow>
 
-        <View style={styles.bottomRow}>
-          <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-            <Text style={styles.navLink}>HOME</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('Schedule')}>
-            <Text style={styles.navLink}>CHANNELS</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('Schedule')}>
-            <Text style={styles.navLink}>SCHEDULE</Text>
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Text style={styles.navLink}>SPACES</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('CategoryList', { category: 'Story', title: 'Stories' })}>
-            <Text style={styles.navLink}>STORIES</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('CategoryList', { category: 'Diary', title: 'Diaries' })}>
-            <Text style={styles.navLink}>DIARIES</Text>
-          </TouchableOpacity>
-        </View>
+        <BottomRow>
+          <NavTouchable onPress={() => navigation.navigate('Home')}>
+            <NavLink>HOME</NavLink>
+          </NavTouchable>
+          <NavTouchable onPress={() => navigation.navigate('Schedule')}>
+            <NavLink>CHANNELS</NavLink>
+          </NavTouchable>
+          <NavTouchable onPress={() => navigation.navigate('Schedule')}>
+            <NavLink>SCHEDULE</NavLink>
+          </NavTouchable>
+          <NavTouchable>
+            <NavLink>SPACES</NavLink>
+          </NavTouchable>
+          <NavTouchable onPress={() => navigation.navigate('CategoryList', { category: 'Story', title: 'Stories' })}>
+            <NavLink>STORIES</NavLink>
+          </NavTouchable>
+          <NavTouchable onPress={() => navigation.navigate('CategoryList', { category: 'Diary', title: 'Diaries' })}>
+            <NavLink>DIARIES</NavLink>
+          </NavTouchable>
+        </BottomRow>
 
-        <TouchableOpacity style={styles.hamburger} onPress={toggleDrawer}>
+        <Hamburger onPress={toggleDrawer}>
            <Ionicons name="menu" size={30} color="white" />
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+        </Hamburger>
+      </Container>
+    </SafeHeader>
   );
 };
 
-const styles = StyleSheet.create({
-  safeArea: {
-    backgroundColor: 'rgba(0,0,0,0.6)',
-  },
-  container: {
-    height: 100,
-    width: '100%',
-    paddingHorizontal: 20,
-    justifyContent: 'center',
-  },
-  topRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  logo: {
-    width: 120,
-    height: 30,
-  },
-  rightActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 15,
-  },
-  postButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'white',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 2,
-  },
-  postText: {
-    color: 'white',
-    fontSize: 12,
-    marginRight: 4,
-  },
-  profileCircle: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#8c0734',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  bottomRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
-  },
-  navLink: {
-    color: 'white',
-    fontSize: 10,
-    fontWeight: '500',
-  },
-  hamburger: {
-    position: 'absolute',
-    left: 10,
-    bottom: -40,
-    zIndex: 1002,
-  }
-});
+const SafeHeader = styled(SafeAreaView)`
+  background-color: rgba(0,0,0,0.6);
+`;
+
+const Container = styled.View`
+  height: 100px;
+  width: 100%;
+  padding-horizontal: 20px;
+  justify-content: center;
+  position: relative;
+`;
+
+const TopRow = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+`;
+
+const Logo = styled(Image)`
+  width: 120px;
+  height: 30px;
+`;
+
+const RightActions = styled.View`
+  flex-direction: row;
+  align-items: center;
+`;
+
+const PostButton = styled(TouchableOpacity)`
+  flex-direction: row;
+  align-items: center;
+  border-width: 1px;
+  border-color: white;
+  padding-horizontal: 10px;
+  padding-vertical: 4px;
+  border-radius: 2px;
+  margin-right: 15px;
+`;
+
+const PostText = styled.Text`
+  color: white;
+  font-size: 12px;
+  margin-right: 4px;
+`;
+
+const ProfileCircle = styled(TouchableOpacity)`
+  width: 32px;
+  height: 32px;
+  border-radius: 16px;
+  background-color: #8c0734;
+  justify-content: center;
+  align-items: center;
+`;
+
+const BottomRow = styled.View`
+  flex-direction: row;
+  justify-content: space-around;
+  width: 100%;
+`;
+
+const NavTouchable = styled(TouchableOpacity)``;
+
+const NavLink = styled.Text`
+  color: white;
+  font-size: 10px;
+  font-weight: 500;
+`;
+
+const Hamburger = styled(TouchableOpacity)`
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  z-index: 1002;
+`;
 
 export default MobileHeader;
