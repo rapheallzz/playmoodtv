@@ -2,7 +2,11 @@ import React, { useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
-  Platform
+  TouchableOpacity,
+  SafeAreaView,
+  View,
+  Text,
+  TextInput
 } from 'react-native';
 import styled from 'styled-components/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -32,19 +36,19 @@ const ForgotPassword = ({ navigation }) => {
 
   return (
     <Container>
-      <Header>
+      <HeaderContainer>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
-        <HeaderTitle>Forgot Password</HeaderTitle>
-      </Header>
+        <HeaderTitleText>Forgot Password</HeaderTitleTitleText>
+      </HeaderContainer>
 
-      <Content>
-        <Subtitle>Enter your email address and we'll send you a link to reset your password.</Subtitle>
+      <ContentContainer>
+        <SubtitleText>Enter your email address and we'll send you a link to reset your password.</SubtitleText>
 
         <InputGroup>
-          <Label>Email Address</Label>
-          <Input
+          <LabelText>Email Address</LabelText>
+          <StyledInput
             placeholder="name@example.com"
             placeholderTextColor="#666"
             keyboardType="email-address"
@@ -64,52 +68,52 @@ const ForgotPassword = ({ navigation }) => {
             <SubmitButtonText>Send Reset Link</SubmitButtonText>
           )}
         </SubmitButton>
-      </Content>
+      </ContentContainer>
     </Container>
   );
 };
 
-const Container = styled.SafeAreaView`
+const Container = styled(SafeAreaView)`
   flex: 1;
   background-color: #000;
 `;
 
-const Header = styled.View`
+const HeaderContainer = styled(View)`
   flex-direction: row;
   align-items: center;
   padding: 20px;
   gap: 20px;
 `;
 
-const HeaderTitle = styled.Text`
+const HeaderTitleText = styled(Text)`
   color: #fff;
   font-size: 20px;
   font-weight: bold;
 `;
 
-const Content = styled.View`
+const ContentContainer = styled(View)`
   padding: 20px;
 `;
 
-const Subtitle = styled.Text`
+const SubtitleText = styled(Text)`
   color: #999;
   font-size: 14px;
   margin-bottom: 30px;
   line-height: 20px;
 `;
 
-const InputGroup = styled.View`
+const InputGroup = styled(View)`
   margin-bottom: 20px;
 `;
 
-const Label = styled.Text`
+const LabelText = styled(Text)`
   color: #ccc;
   font-size: 14px;
   font-weight: 500;
   margin-bottom: 8px;
 `;
 
-const Input = styled.TextInput`
+const StyledInput = styled(TextInput)`
   background-color: rgba(255,255,255,0.05);
   border-width: 1px;
   border-color: rgba(255,255,255,0.1);
@@ -119,7 +123,7 @@ const Input = styled.TextInput`
   font-size: 16px;
 `;
 
-const SubmitButton = styled.TouchableOpacity`
+const SubmitButton = styled(TouchableOpacity)`
   background-color: #541011;
   border-radius: 12px;
   padding: 16px;
@@ -130,12 +134,10 @@ const SubmitButton = styled.TouchableOpacity`
   opacity: ${props => props.disabled ? 0.7 : 1};
 `;
 
-const SubmitButtonText = styled.Text`
+const SubmitButtonText = styled(Text)`
   color: #fff;
   font-size: 18px;
   font-weight: 600;
 `;
-
-const TouchableOpacity = styled.TouchableOpacity``;
 
 export default ForgotPassword;

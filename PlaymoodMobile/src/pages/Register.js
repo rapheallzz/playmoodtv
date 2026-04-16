@@ -58,14 +58,14 @@ const Register = ({ navigation }) => {
           </LogoContainer>
 
           <TitleSection>
-            <Title>Create Account</Title>
-            <Subtitle>Join Playmood today</Subtitle>
+            <TitleText>Create Account</TitleText>
+            <SubtitleText>Join Playmood today</SubtitleText>
           </TitleSection>
 
-          <Form>
+          <FormContainer>
             <InputGroup>
-              <Label>Full Name</Label>
-              <Input
+              <LabelText>Full Name</LabelText>
+              <StyledInput
                 placeholder="John Doe"
                 placeholderTextColor="#666"
                 value={name}
@@ -74,8 +74,8 @@ const Register = ({ navigation }) => {
             </InputGroup>
 
             <InputGroup>
-              <Label>Email Address</Label>
-              <Input
+              <LabelText>Email Address</LabelText>
+              <StyledInput
                 placeholder="name@example.com"
                 placeholderTextColor="#666"
                 keyboardType="email-address"
@@ -86,9 +86,9 @@ const Register = ({ navigation }) => {
             </InputGroup>
 
             <InputGroup>
-              <Label>Password</Label>
+              <LabelText>Password</LabelText>
               <PasswordWrapper>
-                <Input
+                <StyledInput
                   placeholder="Enter your password"
                   placeholderTextColor="#666"
                   secureTextEntry={!showPassword}
@@ -107,8 +107,8 @@ const Register = ({ navigation }) => {
             </InputGroup>
 
             <InputGroup>
-              <Label>Confirm Password</Label>
-              <Input
+              <LabelText>Confirm Password</LabelText>
+              <StyledInput
                 placeholder="Confirm your password"
                 placeholderTextColor="#666"
                 secureTextEntry={true}
@@ -128,13 +128,13 @@ const Register = ({ navigation }) => {
               )}
             </SubmitButton>
 
-            <Footer>
+            <FooterContainer>
               <FooterText>Already have an account? </FooterText>
               <TouchableOpacity onPress={() => navigation.navigate('Login')}>
                 <SignUpText>Login</SignUpText>
               </TouchableOpacity>
-            </Footer>
-          </Form>
+            </FooterContainer>
+          </FormContainer>
         </ScrollContent>
       </KeyboardWrapper>
     </Container>
@@ -167,32 +167,32 @@ const TitleSection = styled.View`
   margin-bottom: 30px;
 `;
 
-const Title = styled.Text`
+const TitleText = styled.Text`
   color: #fff;
   font-size: 28px;
   font-weight: bold;
   margin-bottom: 8px;
 `;
 
-const Subtitle = styled.Text`
+const SubtitleText = styled.Text`
   color: #999;
   font-size: 16px;
 `;
 
-const Form = styled.View``;
+const FormContainer = styled.View``;
 
 const InputGroup = styled.View`
   margin-bottom: 15px;
 `;
 
-const Label = styled.Text`
+const LabelText = styled.Text`
   color: #ccc;
   font-size: 14px;
   font-weight: 500;
   margin-bottom: 8px;
 `;
 
-const Input = styled.TextInput`
+const StyledInput = styled.TextInput`
   background-color: rgba(255,255,255,0.05);
   border-width: 1px;
   border-color: rgba(255,255,255,0.1);
@@ -229,7 +229,7 @@ const SubmitButtonText = styled.Text`
   font-weight: 600;
 `;
 
-const Footer = styled.View`
+const FooterContainer = styled.View`
   flex-direction: row;
   justify-content: center;
   margin-top: 20px;

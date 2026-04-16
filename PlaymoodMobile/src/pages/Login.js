@@ -51,14 +51,14 @@ const Login = ({ navigation }) => {
           </LogoContainer>
 
           <TitleSection>
-            <Title>Welcome Back</Title>
-            <Subtitle>Login to your account to continue</Subtitle>
+            <TitleText>Welcome Back</TitleText>
+            <SubtitleText>Login to your account to continue</SubtitleText>
           </TitleSection>
 
-          <Form>
+          <FormContainer>
             <InputGroup>
-              <Label>Email Address</Label>
-              <Input
+              <LabelText>Email Address</LabelText>
+              <StyledInput
                 placeholder="name@example.com"
                 placeholderTextColor="#666"
                 keyboardType="email-address"
@@ -70,13 +70,13 @@ const Login = ({ navigation }) => {
 
             <InputGroup>
               <LabelRow>
-                <Label>Password</Label>
+                <LabelText>Password</LabelText>
                 <TouchableOpacity onPress={() => {}}>
-                  <ForgotPassword>Forgot password?</ForgotPassword>
+                  <ForgotPasswordText>Forgot password?</ForgotPasswordText>
                 </TouchableOpacity>
               </LabelRow>
               <PasswordWrapper>
-                <Input
+                <StyledInput
                   placeholder="Enter your password"
                   placeholderTextColor="#666"
                   secureTextEntry={!showPassword}
@@ -116,13 +116,13 @@ const Login = ({ navigation }) => {
               <GoogleButtonText>Sign in with Google</GoogleButtonText>
             </GoogleButton>
 
-            <Footer>
+            <FooterContainer>
               <FooterText>Don't have an account? </FooterText>
               <TouchableOpacity onPress={() => navigation.navigate('Register')}>
                 <SignUpText>Sign Up</SignUpText>
               </TouchableOpacity>
-            </Footer>
-          </Form>
+            </FooterContainer>
+          </FormContainer>
         </ScrollContent>
       </KeyboardWrapper>
     </Container>
@@ -155,19 +155,19 @@ const TitleSection = styled.View`
   margin-bottom: 30px;
 `;
 
-const Title = styled.Text`
+const TitleText = styled.Text`
   color: #fff;
   font-size: 28px;
   font-weight: bold;
   margin-bottom: 8px;
 `;
 
-const Subtitle = styled.Text`
+const SubtitleText = styled.Text`
   color: #999;
   font-size: 16px;
 `;
 
-const Form = styled.View``;
+const FormContainer = styled.View``;
 
 const InputGroup = styled.View`
   margin-bottom: 20px;
@@ -178,14 +178,14 @@ const LabelRow = styled.View`
   justify-content: space-between;
 `;
 
-const Label = styled.Text`
+const LabelText = styled.Text`
   color: #ccc;
   font-size: 14px;
   font-weight: 500;
   margin-bottom: 8px;
 `;
 
-const Input = styled.TextInput`
+const StyledInput = styled.TextInput`
   background-color: rgba(255,255,255,0.05);
   border-width: 1px;
   border-color: rgba(255,255,255,0.1);
@@ -205,7 +205,7 @@ const PasswordToggle = styled.TouchableOpacity`
   top: 15px;
 `;
 
-const ForgotPassword = styled.Text`
+const ForgotPasswordText = styled.Text`
   color: #541011;
   font-size: 14px;
   font-weight: 600;
@@ -263,7 +263,7 @@ const GoogleButtonText = styled.Text`
   margin-left: 12px;
 `;
 
-const Footer = styled.View`
+const FooterContainer = styled.View`
   flex-direction: row;
   justify-content: center;
   margin-top: 30px;
@@ -271,8 +271,10 @@ const Footer = styled.View`
 
 const FooterText = styled.Text`
   color: #999;
-  font-size: 14;
+  font-size: 14px;
 `;
+
+const TouchableOpacity = styled.TouchableOpacity``;
 
 const SignUpText = styled.Text`
   color: #541011;

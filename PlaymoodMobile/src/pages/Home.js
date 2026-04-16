@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Dimensions, ScrollView, ActivityIndicator } from 'react-native';
+import { Dimensions, ScrollView, ActivityIndicator, View, Text, Image, TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
 import axios from 'axios';
 import BASE_API_URL from '../apiConfig';
@@ -97,33 +97,33 @@ const Home = ({ navigation }) => {
   );
 };
 
-const Container = styled.View`
+const Container = styled(View)`
   flex: 1;
   background-color: #000;
 `;
 
-const LoadingContainer = styled.View`
+const LoadingContainer = styled(View)`
   flex: 1;
   background-color: #000;
   justify-content: center;
   align-items: center;
 `;
 
-const CarouselContainer = styled.View`
+const CarouselContainer = styled(View)`
   margin-bottom: 20px;
 `;
 
-const BannerItem = styled.View`
+const BannerItem = styled(View)`
   flex: 1;
   position: relative;
 `;
 
-const BannerImage = styled.Image`
+const BannerImage = styled(Image)`
   width: 100%;
   height: 100%;
 `;
 
-const BannerOverlay = styled.View`
+const BannerOverlay = styled(View)`
   position: absolute;
   bottom: 0;
   left: 0;
@@ -132,14 +132,14 @@ const BannerOverlay = styled.View`
   background-color: rgba(0,0,0,0.4);
 `;
 
-const BannerTitle = styled.Text`
+const BannerTitle = styled(Text)`
   color: #fff;
   font-size: 24px;
   font-weight: bold;
   margin-bottom: 10px;
 `;
 
-const WatchNowButton = styled.TouchableOpacity`
+const WatchNowButton = styled(TouchableOpacity)`
   flex-direction: row;
   align-items: center;
   background-color: #541011;
@@ -149,18 +149,18 @@ const WatchNowButton = styled.TouchableOpacity`
   align-self: flex-start;
 `;
 
-const WatchNowText = styled.Text`
+const WatchNowText = styled(Text)`
   color: #fff;
   font-size: 14px;
   font-weight: bold;
   margin-left: 5px;
 `;
 
-const Section = styled.View`
+const Section = styled(View)`
   margin-vertical: 15px;
 `;
 
-const SectionTitle = styled.Text`
+const SectionTitle = styled(Text)`
   color: #fff;
   font-size: 18px;
   font-weight: bold;
@@ -168,26 +168,26 @@ const SectionTitle = styled.Text`
   margin-bottom: 10px;
 `;
 
-const HorizontalScroll = styled.ScrollView.attrs({
+const HorizontalScroll = styled(ScrollView).attrs({
   contentContainerStyle: {
     paddingLeft: 15,
     paddingRight: 15,
   }
 })``;
 
-const ContentCard = styled.TouchableOpacity`
+const ContentCard = styled(TouchableOpacity)`
   width: 160px;
   margin-right: 15px;
 `;
 
-const CardImage = styled.Image`
+const CardImage = styled(Image)`
   width: 160px;
   height: 90px;
   border-radius: 8px;
   margin-bottom: 5px;
 `;
 
-const CardTitle = styled.Text`
+const CardTitle = styled(Text)`
   color: #ccc;
   font-size: 12px;
 `;
