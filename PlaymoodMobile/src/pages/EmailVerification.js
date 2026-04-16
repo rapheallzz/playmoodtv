@@ -16,7 +16,7 @@ const EmailVerification = ({ navigation }) => {
     setIsLoading(true);
     try {
       Alert.alert('Success', 'Your email has been verified!');
-      navigation.replace('Main');
+      navigation.replace('Home');
     } catch (error) {
       Alert.alert('Error', error.response?.data?.message || 'Verification failed.');
     } finally {

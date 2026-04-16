@@ -27,7 +27,7 @@ const Onboarding = ({ navigation }) => {
           </FeatureItem>
         </FeaturesList>
 
-        <GetStartedButton onPress={() => navigation.replace('Main')}>
+        <GetStartedButton onPress={() => navigation.replace('Home')}>
           <GetStartedText>Get Started</GetStartedText>
         </GetStartedButton>
       </Content>

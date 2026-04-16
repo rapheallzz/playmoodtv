@@ -27,7 +27,7 @@ const Register = ({ navigation }) => {
 
     if (isSuccess && user) {
       Alert.alert('Success', 'Account created successfully!');
-      navigation.replace('Main');
+      navigation.replace('Home');
       dispatch(reset());
     }
   }, [user, isError, isSuccess, message, navigation, dispatch]);

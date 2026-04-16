@@ -24,7 +24,7 @@ const Login = ({ navigation }) => {
     }
 
     if (isSuccess && user) {
-      navigation.replace('Main');
+      navigation.replace('Home');
       dispatch(reset());
     }
   }, [user, isError, isSuccess, message, navigation, dispatch]);

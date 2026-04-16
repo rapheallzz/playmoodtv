@@ -40,7 +40,7 @@ const ForgotPassword = ({ navigation }) => {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
-        <HeaderTitleText>Forgot Password</HeaderTitleText>
+        <HeaderTitleText>Forgot Password</HeaderTitleTitleText>
       </HeaderContainer>
 
       <ContentContainer>

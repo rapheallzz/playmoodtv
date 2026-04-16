@@ -5,12 +5,16 @@ import axios from 'axios';
 import BASE_API_URL from '../apiConfig';
 import Carousel from 'react-native-reanimated-carousel';
 import { Ionicons } from '@expo/vector-icons';
+import CircularContentCard from '../components/CircularContentCard';
+import ContentPreviewModal from '../components/ContentPreviewModal';
 
 const { width: windowWidth } = Dimensions.get('window');
 
 const Home = ({ navigation }) => {
   const [homePageData, setHomePageData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedPreview, setSelectedPreview] = useState(null);
+  const [previewVisible, setPreviewVisible] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -26,6 +30,15 @@ const Home = ({ navigation }) => {
     fetchData();
   }, []);
 
+  const openPreview = (item) => {
+    setSelectedPreview(item);
+    setPreviewVisible(true);
+  };
+
+  const navigateToMovie = (item) => {
+    navigation.navigate('MoviePlayer', { movie: item });
+  };
+
   const renderBannerItem = ({ item }) => (
     <BannerItem>
       <BannerImage
@@ -35,7 +48,7 @@ const Home = ({ navigation }) => {
       <BannerOverlay>
         <BannerTitle numberOfLines={1}>{item.title}</BannerTitle>
         <WatchNowButton
-          onPress={() => navigation.navigate('MoviePlayer', { movie: item })}
+          onPress={() => navigateToMovie(item)}
         >
           <Ionicons name="play" size={20} color="white" />
           <WatchNowText>WATCH NOW</WatchNowText>
@@ -44,21 +57,30 @@ const Home = ({ navigation }) => {
     </BannerItem>
   );
 
-  const renderSection = (title, data) => (
+  const renderSection = (title, data, circular = false) => (
     <Section>
       <SectionTitle>{title}</SectionTitle>
       <HorizontalScroll horizontal showsHorizontalScrollIndicator={false}>
         {data.map((item) => (
-          <ContentCard
-            key={item._id}
-            onPress={() => navigation.navigate('MoviePlayer', { movie: item })}
-          >
-            <CardImage
-              source={{ uri: item.thumbnail || 'https://via.placeholder.com/300x168' }}
-              resizeMode="cover"
+          circular ? (
+            <CircularContentCard
+              key={item._id}
+              content={item}
+              onPress={() => openPreview(item)}
+              onMorePress={() => openPreview(item)}
             />
-            <CardTitle numberOfLines={1}>{item.title}</CardTitle>
-          </ContentCard>
+          ) : (
+            <ContentCard
+              key={item._id}
+              onPress={() => openPreview(item)}
+            >
+              <CardImage
+                source={{ uri: item.thumbnail || 'https://via.placeholder.com/300x168' }}
+                resizeMode="cover"
+              />
+              <CardTitle numberOfLines={1}>{item.title}</CardTitle>
+            </ContentCard>
+          )
         ))}
       </HorizontalScroll>
     </Section>
@@ -89,10 +111,18 @@ const Home = ({ navigation }) => {
           </CarouselContainer>
         )}
 
+        {renderSection('Channels', homePageData.slice(10, 20), true)}
         {renderSection('New on Playmood', homePageData.slice(0, 10))}
         {renderSection('Recommended for you', homePageData.slice(5, 15))}
-        {renderSection('Channels', homePageData.slice(10, 20))}
+        {renderSection('Diaries', homePageData.slice(15, 25), true)}
       </ScrollView>
+
+      <ContentPreviewModal
+        visible={previewVisible}
+        content={selectedPreview}
+        onClose={() => setPreviewVisible(false)}
+        onWatchNow={navigateToMovie}
+      />
     </Container>
   );
 };
