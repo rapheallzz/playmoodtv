@@ -68,6 +68,7 @@ const HighlightViewerModal = ({ visible, highlights, initialIndex = 0, onClose, 
       onRequestClose={onClose}
     >
       <Carousel
+        vertical
         width={width}
         height={height}
         data={highlights}
