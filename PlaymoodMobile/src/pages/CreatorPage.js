@@ -13,8 +13,6 @@ const CreatorPage = ({ navigation }) => {
     isLoading: isLoadingChannel, refreshChannel
   } = useChannelDetails(user);
 
-  const [activeTab, setActiveTab] = useState('Uploads');
-
   if (!user || user.role !== 'creator') {
     return (
       <Centered>
@@ -38,6 +36,10 @@ const CreatorPage = ({ navigation }) => {
     </StatItem>
   );
 
+  const navigateToPublicChannel = () => {
+    navigation.navigate('CreatorChannel', { creatorId: user._id });
+  };
+
   return (
     <Container>
       <ScrollView>
@@ -49,7 +51,9 @@ const CreatorPage = ({ navigation }) => {
            </ProfileContainer>
            <HeaderInfo>
               <CreatorName>{creatorName}</CreatorName>
-              <ManageBadge><ManageText>MANAGE CHANNEL</ManageText></ManageBadge>
+              <TouchableOpacity onPress={navigateToPublicChannel}>
+                <ManageBadge><ManageText>VIEW PUBLIC CHANNEL</ManageText></ManageBadge>
+              </TouchableOpacity>
            </HeaderInfo>
         </Header>
 
@@ -137,17 +141,17 @@ const CreatorName = styled.Text`
 `;
 
 const ManageBadge = styled.View`
-  background-color: #222;
-  padding-horizontal: 8px;
-  padding-vertical: 4px;
+  background-color: #541011;
+  padding-horizontal: 10px;
+  padding-vertical: 6px;
   border-radius: 4px;
   align-self: flex-start;
-  margin-top: 5px;
+  margin-top: 8px;
 `;
 
 const ManageText = styled.Text`
-  color: #888;
-  font-size: 9px;
+  color: #fff;
+  font-size: 10px;
   font-weight: bold;
 `;
 

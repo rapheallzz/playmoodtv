@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import styled from 'styled-components/native';
 import { Video } from 'expo-av';
 
-const ContentPreviewModal = ({ visible, content, onClose, onWatchNow }) => {
+const ContentPreviewModal = ({ visible, content, onClose, onWatchNow, onProfilePress }) => {
   if (!content) return null;
 
   return (
@@ -17,7 +17,9 @@ const ContentPreviewModal = ({ visible, content, onClose, onWatchNow }) => {
       <CenteredView>
         <ModalView>
           <HeaderRow>
-            <TitleText numberOfLines={1}>{content.title}</TitleText>
+            <TouchableOpacity onPress={() => onProfilePress(content.user)}>
+              <TitleText numberOfLines={1}>{content.title}</TitleText>
+            </TouchableOpacity>
             <CloseButton onPress={onClose}>
               <Ionicons name="close" size={24} color="white" />
             </CloseButton>
@@ -44,14 +46,14 @@ const ContentPreviewModal = ({ visible, content, onClose, onWatchNow }) => {
                 </WatchButton>
 
                 <SecondaryActions>
-                   <ActionIcon>
-                      <Ionicons name="heart-outline" size={24} color="white" />
+                   <ActionIcon onPress={() => onProfilePress(content.user)}>
+                      <Ionicons name="person-circle-outline" size={28} color="white" />
                    </ActionIcon>
                    <ActionIcon>
-                      <Ionicons name="add" size={24} color="white" />
+                      <Ionicons name="heart-outline" size={28} color="white" />
                    </ActionIcon>
                    <ActionIcon>
-                      <Ionicons name="share-social-outline" size={24} color="white" />
+                      <Ionicons name="add" size={28} color="white" />
                    </ActionIcon>
                 </SecondaryActions>
              </ActionRow>
@@ -133,7 +135,8 @@ const WatchText = styled.Text`
 
 const SecondaryActions = styled.View`
   flex-direction: row;
-  gap: 20px;
+  gap: 15px;
+  align-items: center;
 `;
 
 const ActionIcon = styled.TouchableOpacity``;

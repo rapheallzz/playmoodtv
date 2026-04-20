@@ -7,7 +7,7 @@ import Carousel from 'react-native-reanimated-carousel';
 
 const { height, width } = Dimensions.get('window');
 
-const HighlightViewerModal = ({ visible, highlights, initialIndex = 0, onClose }) => {
+const HighlightViewerModal = ({ visible, highlights, initialIndex = 0, onClose, onProfilePress }) => {
   if (!highlights || highlights.length === 0) return null;
 
   const renderItem = ({ item }) => (
@@ -29,13 +29,15 @@ const HighlightViewerModal = ({ visible, highlights, initialIndex = 0, onClose }
         </Header>
 
         <Footer>
-          <CreatorRow>
-             <ProfileImage source={{ uri: item.user?.profileImage }} />
-             <CreatorName>{item.user?.name}</CreatorName>
-             <SubscribeButtonSmall>
-                <SubscribeTextSmall>FOLLOW</SubscribeTextSmall>
-             </SubscribeButtonSmall>
-          </CreatorRow>
+          <TouchableOpacity onPress={() => onProfilePress(item.user)}>
+            <CreatorRow>
+               <ProfileImage source={{ uri: item.user?.profileImage }} />
+               <CreatorName>{item.user?.name}</CreatorName>
+               <SubscribeButtonSmall>
+                  <SubscribeTextSmall>SUBSCRIBE</SubscribeTextSmall>
+               </SubscribeButtonSmall>
+            </CreatorRow>
+          </TouchableOpacity>
 
           <CaptionText>{item.content?.title || item.caption}</CaptionText>
         </Footer>
@@ -124,7 +126,7 @@ const CreatorName = styled.Text`
   font-size: 16px;
 `;
 
-const SubscribeButtonSmall = styled.TouchableOpacity`
+const SubscribeButtonSmall = styled.View`
   border-width: 1px;
   border-color: #fff;
   padding-horizontal: 8px;

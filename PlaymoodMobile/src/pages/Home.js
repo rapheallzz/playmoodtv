@@ -51,6 +51,14 @@ const Home = ({ navigation }) => {
     navigation.navigate('MoviePlayer', { movie: item });
   };
 
+  const navigateToCreator = (user) => {
+    if (!user) return;
+    setHighlightVisible(false);
+    setPreviewVisible(false);
+    const userId = user._id || user;
+    navigation.navigate('CreatorChannel', { creatorId: userId });
+  };
+
   const renderSection = (title, data, circular = false) => {
     if (!data || data.length === 0) return null;
 
@@ -144,6 +152,7 @@ const Home = ({ navigation }) => {
         content={selectedPreview}
         onClose={() => setPreviewVisible(false)}
         onWatchNow={navigateToMovie}
+        onProfilePress={navigateToCreator}
       />
 
       <HighlightViewerModal
@@ -151,6 +160,7 @@ const Home = ({ navigation }) => {
         highlights={allHighlights}
         initialIndex={highlightStartIndex}
         onClose={() => setHighlightVisible(false)}
+        onProfilePress={navigateToCreator}
       />
     </Container>
   );
