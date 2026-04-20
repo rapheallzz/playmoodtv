@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components/native';
-import { Image, TouchableOpacity, SafeAreaView } from 'react-native';
+import { Image, TouchableOpacity, SafeAreaView, View, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
@@ -13,25 +13,35 @@ const MobileHeader = ({ toggleDrawer }) => {
     <SafeHeader>
       <Container>
         <TopRow>
-          <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-            <Logo
-              source={require('../../assets/PLAYMOOD_DEF.png')}
-              resizeMode="contain"
-            />
-          </TouchableOpacity>
+          <LeftSection>
+            <Hamburger onPress={toggleDrawer}>
+              <Ionicons name="menu" size={30} color="white" />
+            </Hamburger>
+          </LeftSection>
 
-          <RightActions>
-            <PostButton>
-              <PostText>Post</PostText>
-              <Ionicons name="add" size={16} color="white" />
-            </PostButton>
+          <CenterSection>
+            <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+              <Logo
+                source={require('../../assets/PLAYMOOD_DEF.png')}
+                resizeMode="contain"
+              />
+            </TouchableOpacity>
+          </CenterSection>
 
-            <ProfileCircle
-              onPress={() => user ? navigation.navigate('Dashboard') : navigation.navigate('Login')}
-            >
-               <Ionicons name="person" size={20} color="white" />
-            </ProfileCircle>
-          </RightActions>
+          <RightSection>
+            <RightActions>
+              <PostButton>
+                <PostText>Post</PostText>
+                <Ionicons name="add" size={16} color="white" />
+              </PostButton>
+
+              <ProfileCircle
+                onPress={() => user ? navigation.navigate('Dashboard') : navigation.navigate('Login')}
+              >
+                <Ionicons name="person" size={20} color="white" />
+              </ProfileCircle>
+            </RightActions>
+          </RightSection>
         </TopRow>
 
         <BottomRow>
@@ -54,40 +64,54 @@ const MobileHeader = ({ toggleDrawer }) => {
             <NavLink>DIARIES</NavLink>
           </NavTouchable>
         </BottomRow>
-
-        <Hamburger onPress={toggleDrawer}>
-           <Ionicons name="menu" size={30} color="white" />
-        </Hamburger>
       </Container>
     </SafeHeader>
   );
 };
 
 const SafeHeader = styled(SafeAreaView)`
-  background-color: rgba(0,0,0,0.6);
+  background-color: rgba(0,0,0,0.8);
 `;
 
-const Container = styled.View`
-  height: 100px;
+const Container = styled(View)`
+  height: 120px;
   width: 100%;
-  padding-horizontal: 20px;
+  padding-horizontal: 10px;
   justify-content: center;
-  position: relative;
 `;
 
-const TopRow = styled.View`
+const TopRow = styled(View)`
   flex-direction: row;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  height: 50px;
+`;
+
+const LeftSection = styled(View)`
+  width: 50px;
+  align-items: flex-start;
+  justify-content: center;
+`;
+
+const CenterSection = styled(View)`
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+`;
+
+const RightSection = styled(View)`
+  width: 130px;
+  align-items: flex-end;
+  justify-content: center;
 `;
 
 const Logo = styled(Image)`
   width: 120px;
-  height: 30px;
+  height: 40px;
 `;
 
-const RightActions = styled.View`
+const RightActions = styled(View)`
   flex-direction: row;
   align-items: center;
 `;
@@ -97,15 +121,15 @@ const PostButton = styled(TouchableOpacity)`
   align-items: center;
   border-width: 1px;
   border-color: white;
-  padding-horizontal: 10px;
+  padding-horizontal: 8px;
   padding-vertical: 4px;
   border-radius: 2px;
-  margin-right: 15px;
+  margin-right: 10px;
 `;
 
-const PostText = styled.Text`
+const PostText = styled(Text)`
   color: white;
-  font-size: 12px;
+  font-size: 11px;
   margin-right: 4px;
 `;
 
@@ -118,7 +142,7 @@ const ProfileCircle = styled(TouchableOpacity)`
   align-items: center;
 `;
 
-const BottomRow = styled.View`
+const BottomRow = styled(View)`
   flex-direction: row;
   justify-content: space-around;
   width: 100%;
@@ -126,17 +150,12 @@ const BottomRow = styled.View`
 
 const NavTouchable = styled(TouchableOpacity)``;
 
-const NavLink = styled.Text`
+const NavLink = styled(Text)`
   color: white;
   font-size: 10px;
   font-weight: 500;
 `;
 
-const Hamburger = styled(TouchableOpacity)`
-  position: absolute;
-  left: 10px;
-  top: 10px;
-  z-index: 1002;
-`;
+const Hamburger = styled(TouchableOpacity)``;
 
 export default MobileHeader;

@@ -13,6 +13,7 @@ import CategoryList from '../pages/CategoryList';
 import Watchlist from '../pages/Watchlist';
 import Dashboard from '../pages/Dashboard';
 import CreatorChannel from '../pages/CreatorChannel';
+import CreatorPage from '../pages/CreatorPage';
 import StaticPage from '../pages/StaticPage';
 import Onboarding from '../pages/Onboarding';
 import MobileHeader from '../components/MobileHeader';
@@ -41,6 +42,7 @@ const MainStack = () => {
       <Stack.Screen name="Watchlist" component={Watchlist} />
       <Stack.Screen name="Dashboard" component={Dashboard} />
       <Stack.Screen name="CreatorChannel" component={CreatorChannel} />
+      <Stack.Screen name="CreatorPage" component={CreatorPage} />
       <Stack.Screen name="StaticPage" component={StaticPage} options={{ headerShown: false }} />
       <Stack.Screen name="Onboarding" component={Onboarding} options={{ headerShown: false }} />
     </Stack.Navigator>

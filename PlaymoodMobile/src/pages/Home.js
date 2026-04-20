@@ -55,18 +55,22 @@ const Home = ({ navigation }) => {
     return (
       <Section>
         <SectionTitle>{title}</SectionTitle>
-        <HorizontalScroll horizontal showsHorizontalScrollIndicator={false}>
-          {data.map((item) => (
+        <Carousel
+          loop={false}
+          width={circular ? 135 : 175}
+          height={circular ? 160 : 180}
+          style={{ width: windowWidth }}
+          data={data}
+          scrollAnimationDuration={1000}
+          renderItem={({ item }) => (
             circular ? (
               <CircularContentCard
-                key={item._id}
                 content={item}
                 onPress={() => openPreview(item)}
                 onMorePress={() => openPreview(item)}
               />
             ) : (
               <ContentCard
-                key={item._id}
                 onPress={() => openPreview(item)}
               >
                 <CardImage
@@ -76,8 +80,8 @@ const Home = ({ navigation }) => {
                 <CardTitle numberOfLines={1}>{item.title}</CardTitle>
               </ContentCard>
             )
-          ))}
-        </HorizontalScroll>
+          )}
+        />
       </Section>
     );
   };
@@ -173,16 +177,9 @@ const SectionTitle = styled(Text)`
   margin-bottom: 10px;
 `;
 
-const HorizontalScroll = styled(ScrollView).attrs({
-  contentContainerStyle: {
-    paddingLeft: 15,
-    paddingRight: 15,
-  }
-})``;
-
 const ContentCard = styled(TouchableOpacity)`
   width: 160px;
-  margin-right: 15px;
+  margin-left: 15px;
 `;
 
 const CardImage = styled(Image)`
