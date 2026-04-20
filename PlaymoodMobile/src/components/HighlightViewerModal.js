@@ -3,11 +3,60 @@ import { View, Text, Modal, TouchableOpacity, StyleSheet, Image, Dimensions } fr
 import { Ionicons } from '@expo/vector-icons';
 import styled from 'styled-components/native';
 import { Video } from 'expo-av';
+import Carousel from 'react-native-reanimated-carousel';
 
 const { height, width } = Dimensions.get('window');
 
-const HighlightViewerModal = ({ visible, highlight, onClose }) => {
-  if (!highlight) return null;
+const HighlightViewerModal = ({ visible, highlights, initialIndex = 0, onClose }) => {
+  if (!highlights || highlights.length === 0) return null;
+
+  const renderItem = ({ item }) => (
+    <Container>
+      <Video
+        source={{ uri: item.highlightUrl || item.content?.video }}
+        style={styles.fullVideo}
+        resizeMode="cover"
+        shouldPlay={true}
+        isLooping
+        useNativeControls={false}
+      />
+
+      <Overlay>
+        <Header>
+          <TouchableOpacity onPress={onClose}>
+            <Ionicons name="close" size={32} color="white" />
+          </TouchableOpacity>
+        </Header>
+
+        <Footer>
+          <CreatorRow>
+             <ProfileImage source={{ uri: item.user?.profileImage }} />
+             <CreatorName>{item.user?.name}</CreatorName>
+             <SubscribeButtonSmall>
+                <SubscribeTextSmall>FOLLOW</SubscribeTextSmall>
+             </SubscribeButtonSmall>
+          </CreatorRow>
+
+          <CaptionText>{item.content?.title || item.caption}</CaptionText>
+        </Footer>
+
+        <SideActions>
+           <ActionButton>
+              <Ionicons name="heart" size={35} color="white" />
+              <ActionCount>1.2K</ActionCount>
+           </ActionButton>
+           <ActionButton>
+              <Ionicons name="chatbubble" size={30} color="white" />
+              <ActionCount>84</ActionCount>
+           </ActionButton>
+           <ActionButton>
+              <Ionicons name="share-social" size={30} color="white" />
+              <ActionCount>Share</ActionCount>
+           </ActionButton>
+        </SideActions>
+      </Overlay>
+    </Container>
+  );
 
   return (
     <Modal
@@ -16,51 +65,14 @@ const HighlightViewerModal = ({ visible, highlight, onClose }) => {
       visible={visible}
       onRequestClose={onClose}
     >
-      <Container>
-        <Video
-          source={{ uri: highlight.highlightUrl || highlight.content?.video }}
-          style={styles.fullVideo}
-          resizeMode="cover"
-          shouldPlay
-          isLooping
-          useNativeControls={false}
-        />
-
-        <Overlay>
-          <Header>
-            <TouchableOpacity onPress={onClose}>
-              <Ionicons name="close" size={32} color="white" />
-            </TouchableOpacity>
-          </Header>
-
-          <Footer>
-            <CreatorRow>
-               <ProfileImage source={{ uri: highlight.user?.profileImage }} />
-               <CreatorName>{highlight.user?.name}</CreatorName>
-               <SubscribeButtonSmall>
-                  <SubscribeTextSmall>FOLLOW</SubscribeTextSmall>
-               </SubscribeButtonSmall>
-            </CreatorRow>
-
-            <CaptionText>{highlight.content?.title || highlight.caption}</CaptionText>
-          </Footer>
-
-          <SideActions>
-             <ActionButton>
-                <Ionicons name="heart" size={35} color="white" />
-                <ActionCount>1.2K</ActionCount>
-             </ActionButton>
-             <ActionButton>
-                <Ionicons name="chatbubble" size={30} color="white" />
-                <ActionCount>84</ActionCount>
-             </ActionButton>
-             <ActionButton>
-                <Ionicons name="share-social" size={30} color="white" />
-                <ActionCount>Share</ActionCount>
-             </ActionButton>
-          </SideActions>
-        </Overlay>
-      </Container>
+      <Carousel
+        width={width}
+        height={height}
+        data={highlights}
+        defaultIndex={initialIndex}
+        scrollAnimationDuration={500}
+        renderItem={renderItem}
+      />
     </Modal>
   );
 };

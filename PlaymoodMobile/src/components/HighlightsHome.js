@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, ActivityIndi
 import axios from 'axios';
 import BASE_API_URL from '../apiConfig';
 import styled from 'styled-components/native';
+import { shuffleArray } from '../utils/shuffle';
 
 const HighlightsHome = ({ onSelect }) => {
   const [highlights, setHighlights] = useState([]);
@@ -12,7 +13,7 @@ const HighlightsHome = ({ onSelect }) => {
     const fetchHighlights = async () => {
       try {
         const response = await axios.get(`${BASE_API_URL}/api/highlights/recent`);
-        setHighlights(response.data);
+        setHighlights(shuffleArray(response.data));
       } catch (error) {
         console.error('Error fetching highlights:', error);
       } finally {
@@ -22,8 +23,12 @@ const HighlightsHome = ({ onSelect }) => {
     fetchHighlights();
   }, []);
 
-  const renderItem = ({ item }) => (
-    <HighlightItem onPress={() => onSelect(item)}>
+  const handlePress = (item, index) => {
+    onSelect(highlights, index);
+  };
+
+  const renderItem = ({ item, index }) => (
+    <HighlightItem onPress={() => handlePress(item, index)}>
       <CircleContainer>
         <HighlightImage
           source={{ uri: item.thumbnail || item.user?.profileImage }}
@@ -52,11 +57,11 @@ const HighlightsHome = ({ onSelect }) => {
   );
 };
 
-const Container = styled.View`
+const Container = styled(View)`
   margin-vertical: 15px;
 `;
 
-const SectionTitle = styled.Text`
+const SectionTitle = styled(Text)`
   color: #fff;
   font-size: 18px;
   font-weight: bold;
@@ -64,13 +69,13 @@ const SectionTitle = styled.Text`
   margin-bottom: 15px;
 `;
 
-const HighlightItem = styled.TouchableOpacity`
+const HighlightItem = styled(TouchableOpacity)`
   align-items: center;
   margin-right: 15px;
   width: 80px;
 `;
 
-const CircleContainer = styled.View`
+const CircleContainer = styled(View)`
   width: 70px;
   height: 70px;
   border-radius: 35px;
@@ -80,13 +85,13 @@ const CircleContainer = styled.View`
   overflow: hidden;
 `;
 
-const HighlightImage = styled.Image`
+const HighlightImage = styled(Image)`
   width: 100%;
   height: 100%;
   border-radius: 32px;
 `;
 
-const CreatorName = styled.Text`
+const CreatorName = styled(Text)`
   color: #ccc;
   font-size: 10px;
   margin-top: 6px;

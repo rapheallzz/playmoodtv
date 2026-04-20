@@ -18,7 +18,8 @@ const Home = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedPreview, setSelectedPreview] = useState(null);
   const [previewVisible, setPreviewVisible] = useState(false);
-  const [selectedHighlight, setSelectedHighlight] = useState(null);
+  const [allHighlights, setAllHighlights] = useState([]);
+  const [highlightStartIndex, setHighlightStartIndex] = useState(0);
   const [highlightVisible, setHighlightVisible] = useState(false);
 
   useEffect(() => {
@@ -40,8 +41,9 @@ const Home = ({ navigation }) => {
     setPreviewVisible(true);
   };
 
-  const openHighlight = (item) => {
-    setSelectedHighlight(item);
+  const openHighlight = (highlights, index) => {
+    setAllHighlights(highlights);
+    setHighlightStartIndex(index);
     setHighlightVisible(true);
   };
 
@@ -146,7 +148,8 @@ const Home = ({ navigation }) => {
 
       <HighlightViewerModal
         visible={highlightVisible}
-        highlight={selectedHighlight}
+        highlights={allHighlights}
+        initialIndex={highlightStartIndex}
         onClose={() => setHighlightVisible(false)}
       />
     </Container>
