@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Alert } from 'react-native';
-import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
+import { View, Text, Image, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { DrawerContentScrollView } from '@react-navigation/drawer';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout, reset } from '../features/authSlice';
 import { Ionicons } from '@expo/vector-icons';
+import styled from 'styled-components/native';
 
 const CustomDrawerContent = (props) => {
   const { user } = useSelector((state) => state.auth);
@@ -28,185 +29,197 @@ const CustomDrawerContent = (props) => {
   };
 
   return (
-    <DrawerContentScrollView {...props} contentContainerStyle={styles.container}>
+    <Container contentContainerStyle={{ flexGrow: 1 }}>
       {user ? (
-        <View style={styles.userSection}>
+        <UserSection>
           <TouchableOpacity
-            style={styles.userInfo}
+            style={{ flex: 1 }}
             onPress={() => props.navigation.navigate('Dashboard')}
           >
-            <Text style={styles.userName}>{user.name}</Text>
+            <UserName>{user.name}</UserName>
             <TouchableOpacity onPress={onLogout}>
-              <Text style={styles.logoutText}>Logout</Text>
+              <LogoutText>Logout</LogoutText>
             </TouchableOpacity>
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.profileImageContainer}
             onPress={() => props.navigation.navigate('Dashboard')}
           >
-             {user.profileImage ? (
-               <Image source={{ uri: user.profileImage }} style={styles.profileImage} />
-             ) : (
-               <Ionicons name="person-circle" size={60} color="#541011" />
-             )}
+             <ProfileImageContainer>
+                {user.profileImage ? (
+                  <ProfileImage source={{ uri: user.profileImage }} />
+                ) : (
+                  <Ionicons name="person-circle" size={60} color="#541011" />
+                )}
+             </ProfileImageContainer>
           </TouchableOpacity>
-        </View>
+        </UserSection>
       ) : (
-        <View style={styles.loginPrompt}>
-           <Text style={styles.loginText}>Join Playmood</Text>
-           <TouchableOpacity
-             style={styles.loginButton}
+        <LoginPrompt>
+           <LoginPromptText>Join Playmood</LoginPromptText>
+           <LoginButton
              onPress={() => props.navigation.navigate('Login')}
            >
-             <Text style={styles.loginButtonText}>Login / Register</Text>
-           </TouchableOpacity>
-        </View>
+             <LoginButtonText>Login / Register</LoginButtonText>
+           </LoginButton>
+        </LoginPrompt>
       )}
 
-      <View style={styles.menuItems}>
-        <TouchableOpacity style={styles.customMenuItem} onPress={() => props.navigation.navigate('Home')}>
+      <MenuItems>
+        <MenuAction onPress={() => props.navigation.navigate('Home')}>
            <Ionicons name="home-outline" size={22} color="white" />
-           <Text style={styles.menuLabel}>Home</Text>
-        </TouchableOpacity>
+           <MenuLabel>Home</MenuLabel>
+        </MenuAction>
 
-        <TouchableOpacity style={styles.customMenuItem} onPress={() => props.navigation.navigate('Schedule')}>
+        {user?.role === 'creator' && (
+          <MenuAction onPress={() => props.navigation.navigate('CreatorPage')}>
+             <Ionicons name="videocam-outline" size={22} color="white" />
+             <MenuLabel>Creator Studio</MenuLabel>
+          </MenuAction>
+        )}
+
+        <MenuAction onPress={() => props.navigation.navigate('Schedule')}>
            <Ionicons name="calendar-outline" size={22} color="white" />
-           <Text style={styles.menuLabel}>Schedule</Text>
-        </TouchableOpacity>
+           <MenuLabel>Schedule</MenuLabel>
+        </MenuAction>
 
-        <TouchableOpacity style={styles.customMenuItem} onPress={() => props.navigation.navigate('Watchlist')}>
+        <MenuAction onPress={() => props.navigation.navigate('Watchlist')}>
            <Ionicons name="bookmark-outline" size={22} color="white" />
-           <Text style={styles.menuLabel}>Watchlist</Text>
-        </TouchableOpacity>
+           <MenuLabel>Watchlist</MenuLabel>
+        </MenuAction>
 
-        <View style={styles.divider} />
-        <Text style={styles.sectionHeader}>Categories</Text>
+        <Divider />
+        <SectionHeader>Categories</SectionHeader>
 
-        <TouchableOpacity
-          style={styles.customMenuItem}
+        <MenuAction
           onPress={() => props.navigation.navigate('CategoryList', { category: 'Fashion Show', title: 'Fashion Shows' })}
         >
            <Ionicons name="shirt-outline" size={22} color="white" />
-           <Text style={styles.menuLabel}>Fashion Shows</Text>
-        </TouchableOpacity>
+           <MenuLabel>Fashion Shows</MenuLabel>
+        </MenuAction>
 
-        <TouchableOpacity
-          style={styles.customMenuItem}
+        <MenuAction
           onPress={() => props.navigation.navigate('CategoryList', { category: 'Interview', title: 'Interviews' })}
         >
            <Ionicons name="mic-outline" size={22} color="white" />
-           <Text style={styles.menuLabel}>Interviews</Text>
-        </TouchableOpacity>
+           <MenuLabel>Interviews</MenuLabel>
+        </MenuAction>
 
-        <TouchableOpacity
-          style={styles.customMenuItem}
+        <MenuAction
           onPress={() => props.navigation.navigate('CategoryList', { category: 'Documentary', title: 'Documentaries' })}
         >
            <Ionicons name="videocam-outline" size={22} color="white" />
-           <Text style={styles.menuLabel}>Documentaries</Text>
-        </TouchableOpacity>
+           <MenuLabel>Documentaries</MenuLabel>
+        </MenuAction>
 
-        <TouchableOpacity
-          style={styles.customMenuItem}
+        <MenuAction
           onPress={() => props.navigation.navigate('CategoryList', { category: 'Teen', title: 'Teens' })}
         >
            <Ionicons name="people-outline" size={22} color="white" />
-           <Text style={styles.menuLabel}>Teens</Text>
-        </TouchableOpacity>
-      </View>
-    </DrawerContentScrollView>
+           <MenuLabel>Teens</MenuLabel>
+        </MenuAction>
+      </MenuItems>
+    </Container>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#000',
-    flex: 1,
-  },
-  userSection: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#111',
-    marginBottom: 10,
-  },
-  userInfo: {
-    gap: 5,
-  },
-  userName: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  logoutText: {
-    color: '#999',
-    fontSize: 12,
-  },
-  profileImageContainer: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: 'white',
-    justifyContent: 'center',
-    alignItems: 'center',
-    overflow: 'hidden',
-  },
-  profileImage: {
-    width: '100%',
-    height: '100%',
-  },
-  loginPrompt: {
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#111',
-    marginBottom: 10,
-    gap: 10,
-  },
-  loginText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  loginButton: {
-    backgroundColor: '#541011',
-    padding: 10,
-    borderRadius: 5,
-    alignItems: 'center',
-  },
-  loginButtonText: {
-    color: 'white',
-    fontWeight: '600',
-  },
-  menuItems: {
-    paddingHorizontal: 10,
-  },
-  customMenuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 15,
-    gap: 20,
-  },
-  menuLabel: {
-    color: 'white',
-    fontSize: 15,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: '#111',
-    marginVertical: 15,
-    marginHorizontal: 15,
-  },
-  sectionHeader: {
-    color: '#541011',
-    fontSize: 12,
-    fontWeight: 'bold',
-    textTransform: 'uppercase',
-    marginLeft: 15,
-    marginBottom: 10,
-  }
-});
+const Container = styled(DrawerContentScrollView)`
+  background-color: #000;
+`;
+
+const UserSection = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom-width: 1px;
+  border-bottom-color: #111;
+  margin-bottom: 10px;
+`;
+
+const UserName = styled.Text`
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+`;
+
+const LogoutText = styled.Text`
+  color: #999;
+  font-size: 12px;
+  margin-top: 5px;
+`;
+
+const ProfileImageContainer = styled.View`
+  width: 60px;
+  height: 60px;
+  border-radius: 30px;
+  background-color: white;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+`;
+
+const ProfileImage = styled.Image`
+  width: 100%;
+  height: 100%;
+`;
+
+const LoginPrompt = styled.View`
+  padding: 20px;
+  border-bottom-width: 1px;
+  border-bottom-color: #111;
+  margin-bottom: 10px;
+`;
+
+const LoginPromptText = styled.Text`
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+`;
+
+const LoginButton = styled.TouchableOpacity`
+  background-color: #541011;
+  padding: 12px;
+  border-radius: 5px;
+  align-items: center;
+`;
+
+const LoginButtonText = styled.Text`
+  color: white;
+  font-weight: 600;
+`;
+
+const MenuItems = styled.View`
+  padding-horizontal: 10px;
+`;
+
+const MenuAction = styled.TouchableOpacity`
+  flex-direction: row;
+  align-items: center;
+  padding-vertical: 12px;
+  padding-horizontal: 15px;
+`;
+
+const MenuLabel = styled.Text`
+  color: white;
+  font-size: 15px;
+  margin-left: 20px;
+`;
+
+const Divider = styled.View`
+  height: 1px;
+  background-color: #111;
+  margin-vertical: 15px;
+  margin-horizontal: 15px;
+`;
+
+const SectionHeader = styled.Text`
+  color: #541011;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-left: 15px;
+  margin-bottom: 10px;
+`;
 
 export default CustomDrawerContent;

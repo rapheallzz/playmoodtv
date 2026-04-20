@@ -1,221 +1,262 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, ActivityIndicator, FlatList } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Image, ScrollView, TouchableOpacity, ActivityIndicator, FlatList } from 'react-native';
+import styled from 'styled-components/native';
 import axios from 'axios';
 import BASE_API_URL from '../apiConfig';
+import { useSelector } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 
 const CreatorChannel = ({ route, navigation }) => {
-  const { creatorSlug, creatorId } = route.params;
-  const [creator, setCreator] = useState(null);
-  const [content, setContent] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { creatorSlug, creatorId: routeCreatorId } = route.params || {};
+  const user = useSelector((state) => state.auth.user);
+  const currentUserId = user?._id || null;
+
+  const [creatorData, setCreatorData] = useState(null);
+  const [videos, setVideos] = useState([]);
+  const [activeTab, setActiveTab] = useState('VIDEOS');
+  const [isLoading, setIsLoading] = useState(true);
+  const [subscribed, setSubscribed] = useState(false);
+
+  const creatorId = creatorSlug ? creatorSlug.split('-').pop() : routeCreatorId;
 
   useEffect(() => {
     const fetchCreatorData = async () => {
+      if (!creatorId) return;
+      setIsLoading(true);
       try {
-        // Fetch creator details and their content
-        const creatorRes = await axios.get(`${BASE_API_URL}/api/users/creator/${creatorSlug || creatorId}`);
-        setCreator(creatorRes.data);
+        const response = await axios.get(`${BASE_API_URL}/api/channel/${creatorId}`);
+        setCreatorData(response.data);
+        setVideos(response.data.content || []);
 
-        const contentRes = await axios.get(`${BASE_API_URL}/api/content/creator/${creatorRes.data._id}`);
-        setContent(contentRes.data);
+        if (currentUserId && response.data.subscriberDetails) {
+          setSubscribed(response.data.subscriberDetails.some(s => s._id === currentUserId));
+        }
       } catch (error) {
-        console.error('Error fetching creator data:', error);
+        console.error('Error fetching creator channel:', error);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
     fetchCreatorData();
-  }, [creatorSlug, creatorId]);
+  }, [creatorId, currentUserId]);
 
-  const renderContentItem = ({ item }) => (
-    <TouchableOpacity
-      style={styles.contentCard}
-      onPress={() => navigation.navigate('MoviePlayer', { movie: item })}
-    >
-      <Image source={{ uri: item.thumbnail }} style={styles.thumbnail} />
-      <Text style={styles.contentTitle} numberOfLines={2}>{item.title}</Text>
-    </TouchableOpacity>
+  const toggleSubscribe = async () => {
+    if (!currentUserId) {
+      navigation.navigate('Login');
+      return;
+    }
+    try {
+      const endpoint = subscribed ? '/api/subscribe' : '/api/subscribe'; // Simplify for now
+      const method = subscribed ? 'put' : 'post';
+      await axios[method](`${BASE_API_URL}${endpoint}`, { creatorId });
+      setSubscribed(!subscribed);
+    } catch (error) {
+      console.error('Subscription error:', error);
+    }
+  };
+
+  const renderVideoItem = ({ item }) => (
+    <VideoCard onPress={() => navigation.navigate('MoviePlayer', { movie: item })}>
+      <Thumbnail source={{ uri: item.thumbnail }} resizeMode="cover" />
+      <VideoTitle numberOfLines={2}>{item.title}</VideoTitle>
+      <VideoStats>{item.views || 0} views</VideoStats>
+    </VideoCard>
   );
 
-  if (loading) {
+  if (isLoading) {
     return (
-      <View style={styles.loadingContainer}>
+      <LoadingContainer>
         <ActivityIndicator size="large" color="#541011" />
-      </View>
-    );
-  }
-
-  if (!creator) {
-    return (
-      <View style={styles.centered}>
-        <Text style={styles.message}>Creator not found.</Text>
-      </View>
+      </LoadingContainer>
     );
   }
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.bannerContainer}>
-        <Image
-          source={{ uri: creator.bannerImage || 'https://via.placeholder.com/800x200' }}
-          style={styles.banner}
-        />
-        <View style={styles.profileInfo}>
-          <View style={styles.profileImageContainer}>
-            <Image
-              source={{ uri: creator.profileImage || 'https://via.placeholder.com/150' }}
-              style={styles.profileImage}
+    <Container>
+      <ScrollView stickyHeaderIndices={[2]}>
+        <Banner source={{ uri: creatorData?.bannerImage || 'https://via.placeholder.com/800x200' }} resizeMode="cover" />
+
+        <ProfileHeader>
+          <ProfileImageContainer>
+            <ProfileImage source={{ uri: creatorData?.profileImage }} />
+          </ProfileImageContainer>
+          <CreatorInfo>
+            <CreatorName>{creatorData?.name}</CreatorName>
+            <SubscriberCount>{creatorData?.subscribers || 0} subscribers</SubscriberCount>
+          </CreatorInfo>
+          <SubscribeButton subscribed={subscribed} onPress={toggleSubscribe}>
+            <SubscribeText subscribed={subscribed}>{subscribed ? 'UNSUBSCRIBE' : 'SUBSCRIBE'}</SubscribeText>
+          </SubscribeButton>
+        </ProfileHeader>
+
+        <TabBar>
+          <Tab active={activeTab === 'VIDEOS'} onPress={() => setActiveTab('VIDEOS')}>
+            <TabText active={activeTab === 'VIDEOS'}>VIDEOS</TabText>
+          </Tab>
+          <Tab active={activeTab === 'FEEDS'} onPress={() => setActiveTab('FEEDS')}>
+            <TabText active={activeTab === 'FEEDS'}>FEEDS</TabText>
+          </Tab>
+          <Tab active={activeTab === 'COMMUNITY'} onPress={() => setActiveTab('COMMUNITY')}>
+            <TabText active={activeTab === 'COMMUNITY'}>COMMUNITY</TabText>
+          </Tab>
+          <Tab onPress={() => Alert.alert('About', creatorData?.about || 'No description available.')}>
+            <TabText>ABOUT</TabText>
+          </Tab>
+        </TabBar>
+
+        <ContentArea>
+          {activeTab === 'VIDEOS' && (
+            <FlatList
+              data={videos}
+              renderItem={renderVideoItem}
+              keyExtractor={item => item._id}
+              numColumns={2}
+              scrollEnabled={false}
+              columnWrapperStyle={{ justifyContent: 'space-between', paddingHorizontal: 15 }}
             />
-          </View>
-          <View style={styles.textInfo}>
-            <Text style={styles.creatorName}>{creator.name}</Text>
-            <Text style={styles.subscribers}>{creator.subscribers?.length || 0} subscribers</Text>
-          </View>
-          <TouchableOpacity style={styles.subscribeButton}>
-            <Text style={styles.subscribeText}>SUBSCRIBE</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      <View style={styles.aboutSection}>
-        <Text style={styles.sectionTitle}>About</Text>
-        <Text style={styles.bio}>{creator.bio || 'No bio available.'}</Text>
-      </View>
-
-      <View style={styles.contentSection}>
-        <Text style={styles.sectionTitle}>Videos</Text>
-        <FlatList
-          data={content}
-          renderItem={renderContentItem}
-          keyExtractor={item => item._id}
-          horizontal={false}
-          numColumns={2}
-          scrollEnabled={false}
-          columnWrapperStyle={styles.columnWrapper}
-          ListEmptyComponent={<Text style={styles.empty}>No videos uploaded yet.</Text>}
-        />
-      </View>
-    </ScrollView>
+          )}
+          {activeTab !== 'VIDEOS' && (
+            <EmptyState>
+              <Ionicons name="construct-outline" size={48} color="#222" />
+              <EmptyText>This section is coming soon to mobile.</EmptyText>
+            </EmptyState>
+          )}
+        </ContentArea>
+      </ScrollView>
+    </Container>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#000',
-  },
-  loadingContainer: {
-    flex: 1,
-    backgroundColor: '#000',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  bannerContainer: {
-    backgroundColor: '#111',
-  },
-  banner: {
-    width: '100%',
-    height: 120,
-    backgroundColor: '#222',
-  },
-  profileInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 15,
-    marginTop: -30,
-  },
-  profileImageContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    borderWidth: 3,
-    borderColor: '#000',
-    overflow: 'hidden',
-    backgroundColor: '#fff',
-  },
-  profileImage: {
-    width: '100%',
-    height: '100%',
-  },
-  textInfo: {
-    flex: 1,
-    marginLeft: 15,
-    marginTop: 25,
-  },
-  creatorName: {
-    color: '#fff',
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  subscribers: {
-    color: '#666',
-    fontSize: 12,
-  },
-  subscribeButton: {
-    backgroundColor: '#541011',
-    paddingHorizontal: 15,
-    paddingVertical: 8,
-    borderRadius: 4,
-    marginTop: 25,
-  },
-  subscribeText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 12,
-  },
-  aboutSection: {
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#111',
-  },
-  sectionTitle: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  bio: {
-    color: '#888',
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  contentSection: {
-    padding: 15,
-  },
-  columnWrapper: {
-    justifyContent: 'space-between',
-    marginBottom: 15,
-  },
-  contentCard: {
-    width: '48%',
-  },
-  thumbnail: {
-    width: '100%',
-    aspectRatio: 16 / 9,
-    borderRadius: 8,
-  },
-  contentTitle: {
-    color: '#ccc',
-    fontSize: 13,
-    marginTop: 5,
-    fontWeight: '500',
-  },
-  centered: {
-    flex: 1,
-    backgroundColor: '#000',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  message: {
-    color: '#666',
-  },
-  empty: {
-    color: '#444',
-    textAlign: 'center',
-    width: '100%',
-    marginTop: 20,
-  }
-});
+const Container = styled.View`
+  flex: 1;
+  background-color: #000;
+`;
+
+const LoadingContainer = styled.View`
+  flex: 1;
+  background-color: #000;
+  justify-content: center;
+  align-items: center;
+`;
+
+const Banner = styled.Image`
+  width: 100%;
+  height: 150px;
+  background-color: #111;
+`;
+
+const ProfileHeader = styled.View`
+  flex-direction: row;
+  align-items: center;
+  padding: 15px;
+  background-color: #000;
+`;
+
+const ProfileImageContainer = styled.View`
+  width: 80px;
+  height: 80px;
+  border-radius: 40px;
+  border-width: 3px;
+  border-color: #fff;
+  overflow: hidden;
+  background-color: #eee;
+`;
+
+const ProfileImage = styled.Image`
+  width: 100%;
+  height: 100%;
+`;
+
+const CreatorInfo = styled.View`
+  flex: 1;
+  margin-left: 15px;
+`;
+
+const CreatorName = styled.Text`
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
+`;
+
+const SubscriberCount = styled.Text`
+  color: #888;
+  font-size: 13px;
+  margin-top: 2px;
+`;
+
+const SubscribeButton = styled.TouchableOpacity`
+  background-color: ${props => props.subscribed ? 'transparent' : '#541011'};
+  border-width: 1px;
+  border-color: #541011;
+  padding-horizontal: 12px;
+  padding-vertical: 8px;
+  border-radius: 4px;
+`;
+
+const SubscribeText = styled.Text`
+  color: ${props => props.subscribed ? '#541011' : '#fff'};
+  font-weight: bold;
+  font-size: 11px;
+`;
+
+const TabBar = styled.View`
+  flex-direction: row;
+  background-color: #000;
+  border-bottom-width: 1px;
+  border-bottom-color: #111;
+`;
+
+const Tab = styled.TouchableOpacity`
+  padding-vertical: 15px;
+  padding-horizontal: 20px;
+  border-bottom-width: 2px;
+  border-bottom-color: ${props => props.active ? '#541011' : 'transparent'};
+`;
+
+const TabText = styled.Text`
+  color: ${props => props.active ? '#541011' : '#888'};
+  font-weight: bold;
+  font-size: 12px;
+`;
+
+const ContentArea = styled.View`
+  padding-top: 20px;
+  background-color: #000;
+`;
+
+const VideoCard = styled.TouchableOpacity`
+  width: 48%;
+  margin-bottom: 20px;
+`;
+
+const Thumbnail = styled.Image`
+  width: 100%;
+  aspect-ratio: 16/9;
+  border-radius: 8px;
+`;
+
+const VideoTitle = styled.Text`
+  color: #ccc;
+  font-size: 13px;
+  margin-top: 8px;
+  font-weight: 500;
+`;
+
+const VideoStats = styled.Text`
+  color: #555;
+  font-size: 11px;
+  margin-top: 2px;
+`;
+
+const EmptyState = styled.View`
+  padding: 60px;
+  align-items: center;
+`;
+
+const EmptyText = styled.Text`
+  color: #444;
+  margin-top: 15px;
+  text-align: center;
+`;
 
 export default CreatorChannel;

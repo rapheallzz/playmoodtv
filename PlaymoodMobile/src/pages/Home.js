@@ -8,6 +8,8 @@ import { Ionicons } from '@expo/vector-icons';
 import CircularContentCard from '../components/CircularContentCard';
 import ContentPreviewModal from '../components/ContentPreviewModal';
 import MobileBannerCard from '../components/MobileBannerCard';
+import HighlightsHome from '../components/HighlightsHome';
+import HighlightViewerModal from '../components/HighlightViewerModal';
 
 const { width: windowWidth } = Dimensions.get('window');
 
@@ -16,6 +18,8 @@ const Home = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedPreview, setSelectedPreview] = useState(null);
   const [previewVisible, setPreviewVisible] = useState(false);
+  const [selectedHighlight, setSelectedHighlight] = useState(null);
+  const [highlightVisible, setHighlightVisible] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,6 +38,11 @@ const Home = ({ navigation }) => {
   const openPreview = (item) => {
     setSelectedPreview(item);
     setPreviewVisible(true);
+  };
+
+  const openHighlight = (item) => {
+    setSelectedHighlight(item);
+    setHighlightVisible(true);
   };
 
   const navigateToMovie = (item) => {
@@ -106,6 +115,9 @@ const Home = ({ navigation }) => {
         />
 
         {renderSection('Top 10', top10)}
+
+        <HighlightsHome onSelect={openHighlight} />
+
         {renderSection('New on Playmood', newOnPlaymood.length > 0 ? newOnPlaymood : homePageData.slice(0, 10))}
         {renderSection('Channels', channels.length > 0 ? channels : homePageData.slice(10, 18), true)}
         {renderSection('Diaries', diaries.length > 0 ? diaries : homePageData.slice(18, 26), true)}
@@ -126,6 +138,12 @@ const Home = ({ navigation }) => {
         content={selectedPreview}
         onClose={() => setPreviewVisible(false)}
         onWatchNow={navigateToMovie}
+      />
+
+      <HighlightViewerModal
+        visible={highlightVisible}
+        highlight={selectedHighlight}
+        onClose={() => setHighlightVisible(false)}
       />
     </Container>
   );
