@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, ScrollView, TouchableOpacity, ActivityIndicator, FlatList } from 'react-native';
+import { View, Text, Image, ScrollView, TouchableOpacity, ActivityIndicator, FlatList, Alert } from 'react-native';
 import styled from 'styled-components/native';
 import axios from 'axios';
 import BASE_API_URL from '../apiConfig';
@@ -46,7 +46,7 @@ const CreatorChannel = ({ route, navigation }) => {
       return;
     }
     try {
-      const endpoint = subscribed ? '/api/subscribe' : '/api/subscribe'; // Simplify for now
+      const endpoint = subscribed ? '/api/subscribe' : '/api/subscribe';
       const method = subscribed ? 'put' : 'post';
       await axios[method](`${BASE_API_URL}${endpoint}`, { creatorId });
       setSubscribed(!subscribed);
@@ -74,18 +74,18 @@ const CreatorChannel = ({ route, navigation }) => {
   return (
     <Container>
       <ScrollView stickyHeaderIndices={[2]}>
-        <Banner source={{ uri: creatorData?.bannerImage || 'https://via.placeholder.com/800x200' }} resizeMode="cover" />
+        <BannerImage source={{ uri: creatorData?.bannerImage || 'https://via.placeholder.com/800x200' }} resizeMode="cover" />
 
         <ProfileHeader>
           <ProfileImageContainer>
             <ProfileImage source={{ uri: creatorData?.profileImage }} />
           </ProfileImageContainer>
           <CreatorInfo>
-            <CreatorName>{creatorData?.name}</CreatorName>
-            <SubscriberCount>{creatorData?.subscribers || 0} subscribers</SubscriberCount>
+            <CreatorNameText>{creatorData?.name}</CreatorNameText>
+            <SubscriberCountText>{creatorData?.subscribers || 0} subscribers</SubscriberCountText>
           </CreatorInfo>
           <SubscribeButton subscribed={subscribed} onPress={toggleSubscribe}>
-            <SubscribeText subscribed={subscribed}>{subscribed ? 'UNSUBSCRIBE' : 'SUBSCRIBE'}</SubscribeText>
+            <SubscribeButtonText subscribed={subscribed}>{subscribed ? 'UNSUBSCRIBE' : 'SUBSCRIBE'}</SubscribeButtonText>
           </SubscribeButton>
         </ProfileHeader>
 
@@ -127,32 +127,32 @@ const CreatorChannel = ({ route, navigation }) => {
   );
 };
 
-const Container = styled.View`
+const Container = styled(View)`
   flex: 1;
   background-color: #000;
 `;
 
-const LoadingContainer = styled.View`
+const LoadingContainer = styled(View)`
   flex: 1;
   background-color: #000;
   justify-content: center;
   align-items: center;
 `;
 
-const Banner = styled.Image`
+const BannerImage = styled(Image)`
   width: 100%;
   height: 150px;
   background-color: #111;
 `;
 
-const ProfileHeader = styled.View`
+const ProfileHeader = styled(View)`
   flex-direction: row;
   align-items: center;
   padding: 15px;
   background-color: #000;
 `;
 
-const ProfileImageContainer = styled.View`
+const ProfileImageContainer = styled(View)`
   width: 80px;
   height: 80px;
   border-radius: 40px;
@@ -162,29 +162,29 @@ const ProfileImageContainer = styled.View`
   background-color: #eee;
 `;
 
-const ProfileImage = styled.Image`
+const ProfileImage = styled(Image)`
   width: 100%;
   height: 100%;
 `;
 
-const CreatorInfo = styled.View`
+const CreatorInfo = styled(View)`
   flex: 1;
   margin-left: 15px;
 `;
 
-const CreatorName = styled.Text`
+const CreatorNameText = styled(Text)`
   color: #fff;
   font-size: 20px;
   font-weight: bold;
 `;
 
-const SubscriberCount = styled.Text`
+const SubscriberCountText = styled(Text)`
   color: #888;
   font-size: 13px;
   margin-top: 2px;
 `;
 
-const SubscribeButton = styled.TouchableOpacity`
+const SubscribeButton = styled(TouchableOpacity)`
   background-color: ${props => props.subscribed ? 'transparent' : '#541011'};
   border-width: 1px;
   border-color: #541011;
@@ -193,67 +193,67 @@ const SubscribeButton = styled.TouchableOpacity`
   border-radius: 4px;
 `;
 
-const SubscribeText = styled.Text`
+const SubscribeButtonText = styled(Text)`
   color: ${props => props.subscribed ? '#541011' : '#fff'};
   font-weight: bold;
   font-size: 11px;
 `;
 
-const TabBar = styled.View`
+const TabBar = styled(View)`
   flex-direction: row;
   background-color: #000;
   border-bottom-width: 1px;
   border-bottom-color: #111;
 `;
 
-const Tab = styled.TouchableOpacity`
+const Tab = styled(TouchableOpacity)`
   padding-vertical: 15px;
   padding-horizontal: 20px;
   border-bottom-width: 2px;
   border-bottom-color: ${props => props.active ? '#541011' : 'transparent'};
 `;
 
-const TabText = styled.Text`
+const TabText = styled(Text)`
   color: ${props => props.active ? '#541011' : '#888'};
   font-weight: bold;
   font-size: 12px;
 `;
 
-const ContentArea = styled.View`
+const ContentArea = styled(View)`
   padding-top: 20px;
   background-color: #000;
 `;
 
-const VideoCard = styled.TouchableOpacity`
+const VideoCard = styled(TouchableOpacity)`
   width: 48%;
   margin-bottom: 20px;
 `;
 
-const Thumbnail = styled.Image`
+const Thumbnail = styled(Image)`
   width: 100%;
-  aspect-ratio: 16/9;
+  aspect-ratio: 1.77;
   border-radius: 8px;
 `;
 
-const VideoTitle = styled.Text`
+const VideoTitle = styled(Text)`
   color: #ccc;
   font-size: 13px;
   margin-top: 8px;
   font-weight: 500;
 `;
 
-const VideoStats = styled.Text`
+const VideoStats = styled(Text)`
   color: #555;
   font-size: 11px;
   margin-top: 2px;
 `;
 
-const EmptyState = styled.View`
+const EmptyState = styled(View)`
   padding: 60px;
   align-items: center;
 `;
 
-const EmptyText = styled.Text`
+const EmptyText = styled(Text)`
   color: #444;
   margin-top: 15px;
   text-align: center;

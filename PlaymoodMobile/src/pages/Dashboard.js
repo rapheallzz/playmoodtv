@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout, reset } from '../features/authSlice';
 import { Ionicons } from '@expo/vector-icons';
+import styled from 'styled-components/native';
 
 const Dashboard = ({ navigation }) => {
   const { user } = useSelector((state) => state.auth);
@@ -16,197 +17,228 @@ const Dashboard = ({ navigation }) => {
 
   if (!user) {
     return (
-      <View style={styles.centered}>
-        <Text style={styles.message}>Please login to view your dashboard.</Text>
-        <TouchableOpacity style={styles.loginButton} onPress={() => navigation.navigate('Login')}>
-          <Text style={styles.buttonText}>Login</Text>
-        </TouchableOpacity>
-      </View>
+      <Centered>
+        <MessageText>Please login to view your dashboard.</MessageText>
+        <LoginButton onPress={() => navigation.navigate('Login')}>
+          <ButtonText>Login</ButtonText>
+        </LoginButton>
+      </Centered>
     );
   }
 
   const MenuOption = ({ icon, title, onPress, color = "white" }) => (
-    <TouchableOpacity style={styles.menuOption} onPress={onPress}>
-      <View style={styles.menuLeft}>
+    <OptionContainer onPress={onPress}>
+      <MenuLeft>
         <Ionicons name={icon} size={22} color={color} />
-        <Text style={[styles.menuText, { color }]}>{title}</Text>
-      </View>
+        <MenuText style={{ color }}>{title}</MenuText>
+      </MenuLeft>
       <Ionicons name="chevron-forward" size={20} color="#333" />
-    </TouchableOpacity>
+    </OptionContainer>
   );
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.profileHeader}>
-        <View style={styles.imageContainer}>
-          {user.profileImage ? (
-            <Image source={{ uri: user.profileImage }} style={styles.profileImage} />
-          ) : (
-            <Ionicons name="person" size={50} color="#541011" />
-          )}
-        </View>
-        <Text style={styles.userName}>{user.name}</Text>
-        <Text style={styles.userEmail}>{user.email}</Text>
-        <View style={styles.badge}>
-          <Text style={styles.badgeText}>{user.role?.toUpperCase() || 'USER'}</Text>
-        </View>
-      </View>
+    <Container>
+      <ScrollView>
+        <ProfileHeader>
+          <ImageContainer>
+            {user.profileImage ? (
+              <ProfileImage source={{ uri: user.profileImage }} />
+            ) : (
+              <Ionicons name="person" size={50} color="#541011" />
+            )}
+          </ImageContainer>
+          <UserName>{user.name}</UserName>
+          <UserEmail>{user.email}</UserEmail>
+          <Badge>
+            <BadgeText>{user.role?.toUpperCase() || 'USER'}</BadgeText>
+          </Badge>
+        </ProfileHeader>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Account Settings</Text>
-        <MenuOption icon="person-outline" title="Edit Profile" />
-        <MenuOption icon="lock-closed-outline" title="Change Password" />
-        <MenuOption icon="notifications-outline" title="Notifications" />
-      </View>
+        {user.role === 'creator' && (
+          <Section>
+             <SectionTitle>Creator Studio</SectionTitle>
+             <MenuOption
+               icon="videocam-outline"
+               title="Manage My Channel"
+               onPress={() => navigation.navigate('CreatorPage')}
+               color="#541011"
+             />
+          </Section>
+        )}
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Content</Text>
-        <MenuOption icon="bookmark-outline" title="Watchlist" onPress={() => navigation.navigate('Watchlist')} />
-        <MenuOption icon="time-outline" title="History" />
-        <MenuOption icon="heart-outline" title="Liked Videos" />
-      </View>
+        <Section>
+          <SectionTitle>Account Settings</SectionTitle>
+          <MenuOption icon="person-outline" title="Edit Profile" />
+          <MenuOption icon="lock-closed-outline" title="Change Password" />
+          <MenuOption icon="notifications-outline" title="Notifications" />
+        </Section>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Support</Text>
-        <MenuOption icon="help-circle-outline" title="Help Center" />
-        <MenuOption icon="document-text-outline" title="Terms & Conditions" />
-        <MenuOption icon="shield-checkmark-outline" title="Privacy Policy" />
-      </View>
+        <Section>
+          <SectionTitle>Content</SectionTitle>
+          <MenuOption icon="bookmark-outline" title="Watchlist" onPress={() => navigation.navigate('Watchlist')} />
+          <MenuOption icon="time-outline" title="History" />
+          <MenuOption icon="heart-outline" title="Liked Videos" />
+        </Section>
 
-      <TouchableOpacity style={styles.logoutButton} onPress={onLogout}>
-        <Ionicons name="log-out-outline" size={22} color="#541011" />
-        <Text style={styles.logoutText}>Log Out</Text>
-      </TouchableOpacity>
+        <Section>
+          <SectionTitle>Support</SectionTitle>
+          <MenuOption icon="help-circle-outline" title="Help Center" />
+          <MenuOption icon="document-text-outline" title="Terms & Conditions" />
+          <MenuOption icon="shield-checkmark-outline" title="Privacy Policy" />
+        </Section>
 
-      <Text style={styles.version}>Playmood v1.0.0 (Expo)</Text>
-    </ScrollView>
+        <LogoutButton onPress={onLogout}>
+          <Ionicons name="log-out-outline" size={22} color="#541011" />
+          <LogoutText>Log Out</LogoutText>
+        </LogoutButton>
+
+        <VersionText>Playmood v1.0.0 (Expo)</VersionText>
+      </ScrollView>
+    </Container>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#000',
-  },
-  profileHeader: {
-    alignItems: 'center',
-    paddingVertical: 40,
-    borderBottomWidth: 1,
-    borderBottomColor: '#111',
-  },
-  imageContainer: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: '#fff',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 15,
-    overflow: 'hidden',
-    borderWidth: 3,
-    borderColor: '#541011',
-  },
-  profileImage: {
-    width: '100%',
-    height: '100%',
-  },
-  userName: {
-    color: '#fff',
-    fontSize: 22,
-    fontWeight: 'bold',
-  },
-  userEmail: {
-    color: '#666',
-    fontSize: 14,
-    marginTop: 4,
-  },
-  badge: {
-    backgroundColor: '#541011',
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 4,
-    marginTop: 10,
-  },
-  badgeText: {
-    color: '#fff',
-    fontSize: 10,
-    fontWeight: 'bold',
-  },
-  section: {
-    marginTop: 25,
-    paddingHorizontal: 20,
-  },
-  sectionTitle: {
-    color: '#541011',
-    fontSize: 13,
-    fontWeight: 'bold',
-    textTransform: 'uppercase',
-    marginBottom: 10,
-    marginLeft: 5,
-  },
-  menuOption: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#0a0a0a',
-    padding: 15,
-    borderRadius: 12,
-    marginBottom: 8,
-  },
-  menuLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 15,
-  },
-  menuText: {
-    fontSize: 15,
-    fontWeight: '500',
-  },
-  logoutButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    margin: 30,
-    padding: 15,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#541011',
-    gap: 10,
-  },
-  logoutText: {
-    color: '#541011',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  version: {
-    color: '#333',
-    textAlign: 'center',
-    fontSize: 12,
-    marginBottom: 40,
-  },
-  centered: {
-    flex: 1,
-    backgroundColor: '#000',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 40,
-  },
-  message: {
-    color: '#666',
-    fontSize: 16,
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-  loginButton: {
-    backgroundColor: '#541011',
-    paddingHorizontal: 40,
-    paddingVertical: 12,
-    borderRadius: 25,
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-  }
-});
+const Container = styled.View`
+  flex: 1;
+  background-color: #000;
+`;
+
+const ProfileHeader = styled.View`
+  align-items: center;
+  padding-vertical: 40px;
+  border-bottom-width: 1px;
+  border-bottom-color: #111;
+`;
+
+const ImageContainer = styled.View`
+  width: 100px;
+  height: 100px;
+  border-radius: 50px;
+  background-color: #fff;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 15px;
+  overflow: hidden;
+  border-width: 3px;
+  border-color: #541011;
+`;
+
+const ProfileImage = styled.Image`
+  width: 100%;
+  height: 100%;
+`;
+
+const UserName = styled.Text`
+  color: #fff;
+  font-size: 22px;
+  font-weight: bold;
+`;
+
+const UserEmail = styled.Text`
+  color: #666;
+  font-size: 14px;
+  margin-top: 4px;
+`;
+
+const Badge = styled.View`
+  background-color: #541011;
+  padding-horizontal: 12px;
+  padding-vertical: 4px;
+  border-radius: 4px;
+  marginTop: 10px;
+`;
+
+const BadgeText = styled.Text`
+  color: #fff;
+  font-size: 10px;
+  font-weight: bold;
+`;
+
+const Section = styled.View`
+  marginTop: 25px;
+  padding-horizontal: 20px;
+`;
+
+const SectionTitle = styled.Text`
+  color: #541011;
+  font-size: 13px;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  margin-left: 5px;
+`;
+
+const OptionContainer = styled.TouchableOpacity`
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #0a0a0a;
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 8px;
+`;
+
+const MenuLeft = styled.View`
+  flex-direction: row;
+  align-items: center;
+`;
+
+const MenuText = styled.Text`
+  font-size: 15px;
+  font-weight: 500;
+  margin-left: 15px;
+`;
+
+const LogoutButton = styled.TouchableOpacity`
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin: 30px;
+  padding: 15px;
+  border-radius: 12px;
+  border-width: 1px;
+  border-color: #541011;
+`;
+
+const LogoutText = styled.Text`
+  color: #541011;
+  font-size: 16px;
+  font-weight: bold;
+  margin-left: 10px;
+`;
+
+const VersionText = styled.Text`
+  color: #333;
+  text-align: center;
+  font-size: 12px;
+  margin-bottom: 40px;
+`;
+
+const Centered = styled.View`
+  flex: 1;
+  background-color: #000;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+`;
+
+const MessageText = styled.Text`
+  color: #666;
+  font-size: 16px;
+  text-align: center;
+  margin-bottom: 20px;
+`;
+
+const LoginButton = styled.TouchableOpacity`
+  background-color: #541011;
+  padding-horizontal: 40px;
+  padding-vertical: 12px;
+  border-radius: 25px;
+`;
+
+const ButtonText = styled.Text`
+  color: #fff;
+  font-weight: bold;
+`;
 
 export default Dashboard;

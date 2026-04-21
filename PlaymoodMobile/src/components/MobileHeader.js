@@ -1,13 +1,34 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components/native';
 import { Image, TouchableOpacity, SafeAreaView, View, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
+import PostActionsModal from './PostActionsModal';
 
 const MobileHeader = ({ toggleDrawer }) => {
   const navigation = useNavigation();
   const { user } = useSelector((state) => state.auth);
+  const [actionsVisible, setActionsVisible] = useState(false);
+
+  const onPostPress = () => {
+    if (!user) {
+      navigation.navigate('Login');
+      return;
+    }
+    if (user.role === 'creator') {
+      setActionsVisible(true);
+    } else {
+      // In web app, non-creators might see application modal,
+      // but for now we'll just redirect to dashboard or show alert
+      navigation.navigate('Dashboard');
+    }
+  };
+
+  const onActionSelect = (id) => {
+    // Navigate to Creator Studio with state to open specific modal
+    navigation.navigate('CreatorPage', { openModal: id });
+  };
 
   return (
     <SafeHeader>
@@ -30,7 +51,7 @@ const MobileHeader = ({ toggleDrawer }) => {
 
           <RightSection>
             <RightActions>
-              <PostButton>
+              <PostButton onPress={onPostPress}>
                 <PostText>Post</PostText>
                 <Ionicons name="add" size={16} color="white" />
               </PostButton>
@@ -64,6 +85,12 @@ const MobileHeader = ({ toggleDrawer }) => {
             <NavLink>DIARIES</NavLink>
           </NavTouchable>
         </BottomRow>
+
+        <PostActionsModal
+          visible={actionsVisible}
+          onClose={() => setActionsVisible(false)}
+          onSelect={onActionSelect}
+        />
       </Container>
     </SafeHeader>
   );

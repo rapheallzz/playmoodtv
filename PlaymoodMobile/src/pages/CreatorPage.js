@@ -5,13 +5,23 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 import useChannelDetails from '../hooks/useChannelDetails';
 import BASE_API_URL from '../apiConfig';
+import PostActionsModal from '../components/PostActionsModal';
 
-const CreatorPage = ({ navigation }) => {
+const CreatorPage = ({ route, navigation }) => {
   const { user } = useSelector((state) => state.auth);
   const {
     bannerImage, profileImage, creatorName, about, subscribers,
     isLoading: isLoadingChannel, refreshChannel
   } = useChannelDetails(user);
+
+  const [actionsVisible, setActionsVisible] = useState(false);
+
+  useEffect(() => {
+    if (route.params?.openModal) {
+      // Logic to handle opening specific action if needed
+      console.log('Open modal:', route.params.openModal);
+    }
+  }, [route.params]);
 
   if (!user || user.role !== 'creator') {
     return (
@@ -40,19 +50,23 @@ const CreatorPage = ({ navigation }) => {
     navigation.navigate('CreatorChannel', { creatorId: user._id });
   };
 
+  const handleActionSelect = (id) => {
+    Alert.alert('Action Selected', `The ${id} creation flow is coming soon to mobile.`);
+  };
+
   return (
     <Container>
       <ScrollView>
-        <Banner source={{ uri: bannerImage || 'https://via.placeholder.com/800x200' }} />
+        <BannerImage source={{ uri: bannerImage || 'https://via.placeholder.com/800x200' }} resizeMode="cover" />
 
         <Header>
            <ProfileContainer>
               <ProfileImage source={{ uri: profileImage }} />
            </ProfileContainer>
            <HeaderInfo>
-              <CreatorName>{creatorName}</CreatorName>
+              <CreatorNameText>{creatorName}</CreatorNameText>
               <TouchableOpacity onPress={navigateToPublicChannel}>
-                <ManageBadge><ManageText>VIEW PUBLIC CHANNEL</ManageText></ManageBadge>
+                <ManageBadge><ManageTextText>VIEW PUBLIC CHANNEL</ManageTextText></ManageBadge>
               </TouchableOpacity>
            </HeaderInfo>
         </Header>
@@ -64,58 +78,64 @@ const CreatorPage = ({ navigation }) => {
         </StatsRow>
 
         <ActionGrid>
-           <ActionButton onPress={() => Alert.alert('Upload', 'Video upload coming soon to mobile.')}>
-              <Ionicons name="cloud-upload-outline" size={32} color="#fff" />
-              <ActionLabel>Upload Video</ActionLabel>
-           </ActionButton>
-           <ActionButton onPress={() => Alert.alert('Post', 'Community posts coming soon to mobile.')}>
-              <Ionicons name="create-outline" size={32} color="#fff" />
-              <ActionLabel>Create Post</ActionLabel>
-           </ActionButton>
-           <ActionButton onPress={() => Alert.alert('Playlist', 'Playlist management coming soon to mobile.')}>
-              <Ionicons name="list-outline" size={32} color="#fff" />
-              <ActionLabel>Playlists</ActionLabel>
+           <ActionButton onPress={() => setActionsVisible(true)}>
+              <Ionicons name="add-circle-outline" size={32} color="#fff" />
+              <ActionLabelText>Create New</ActionLabelText>
            </ActionButton>
            <ActionButton onPress={() => Alert.alert('Analytics', 'Analytics dashboard coming soon to mobile.')}>
               <Ionicons name="bar-chart-outline" size={32} color="#fff" />
-              <ActionLabel>Analytics</ActionLabel>
+              <ActionLabelText>Analytics</ActionLabelText>
+           </ActionButton>
+           <ActionButton onPress={() => Alert.alert('Comments', 'Comment management coming soon to mobile.')}>
+              <Ionicons name="chatbubbles-outline" size={32} color="#fff" />
+              <ActionLabelText>Comments</ActionLabelText>
+           </ActionButton>
+           <ActionButton onPress={() => Alert.alert('Settings', 'Channel settings coming soon to mobile.')}>
+              <Ionicons name="settings-outline" size={32} color="#fff" />
+              <ActionLabelText>Settings</ActionLabelText>
            </ActionButton>
         </ActionGrid>
 
         <Section>
-           <SectionTitle>About Your Channel</SectionTitle>
+           <SectionTitleText>About Your Channel</SectionTitleText>
            <AboutText>{about || 'No description provided.'}</AboutText>
         </Section>
       </ScrollView>
+
+      <PostActionsModal
+        visible={actionsVisible}
+        onClose={() => setActionsVisible(false)}
+        onSelect={handleActionSelect}
+      />
     </Container>
   );
 };
 
-const Container = styled.View`
+const Container = styled(View)`
   flex: 1;
   background-color: #000;
 `;
 
-const Centered = styled.View`
+const Centered = styled(View)`
   flex: 1;
   background-color: #000;
   justify-content: center;
   align-items: center;
 `;
 
-const Banner = styled.Image`
+const BannerImage = styled(Image)`
   width: 100%;
   height: 120px;
   background-color: #111;
 `;
 
-const Header = styled.View`
+const Header = styled(View)`
   flex-direction: row;
   padding: 20px;
   align-items: center;
 `;
 
-const ProfileContainer = styled.View`
+const ProfileContainer = styled(View)`
   width: 70px;
   height: 70px;
   border-radius: 35px;
@@ -125,22 +145,22 @@ const ProfileContainer = styled.View`
   background-color: #fff;
 `;
 
-const ProfileImage = styled.Image`
+const ProfileImage = styled(Image)`
   width: 100%;
   height: 100%;
 `;
 
-const HeaderInfo = styled.View`
+const HeaderInfo = styled(View)`
   margin-left: 15px;
 `;
 
-const CreatorName = styled.Text`
+const CreatorNameText = styled(Text)`
   color: #fff;
   font-size: 22px;
   font-weight: bold;
 `;
 
-const ManageBadge = styled.View`
+const ManageBadge = styled(View)`
   background-color: #541011;
   padding-horizontal: 10px;
   padding-vertical: 6px;
@@ -149,13 +169,13 @@ const ManageBadge = styled.View`
   margin-top: 8px;
 `;
 
-const ManageText = styled.Text`
+const ManageTextText = styled(Text)`
   color: #fff;
   font-size: 10px;
   font-weight: bold;
 `;
 
-const StatsRow = styled.View`
+const StatsRow = styled(View)`
   flex-direction: row;
   justify-content: space-around;
   background-color: #0a0a0a;
@@ -163,31 +183,31 @@ const StatsRow = styled.View`
   margin-vertical: 10px;
 `;
 
-const StatItem = styled.View`
+const StatItem = styled(View)`
   align-items: center;
 `;
 
-const StatValue = styled.Text`
+const StatValue = styled(Text)`
   color: #fff;
   font-size: 18px;
   font-weight: bold;
 `;
 
-const StatLabel = styled.Text`
+const StatLabel = styled(Text)`
   color: #666;
   font-size: 11px;
   text-transform: uppercase;
   margin-top: 4px;
 `;
 
-const ActionGrid = styled.View`
+const ActionGrid = styled(View)`
   flex-direction: row;
   flex-wrap: wrap;
   padding: 10px;
   justify-content: space-between;
 `;
 
-const ActionButton = styled.TouchableOpacity`
+const ActionButton = styled(TouchableOpacity)`
   width: 48%;
   background-color: #111;
   padding: 25px;
@@ -197,17 +217,17 @@ const ActionButton = styled.TouchableOpacity`
   gap: 12px;
 `;
 
-const ActionLabel = styled.Text`
+const ActionLabelText = styled(Text)`
   color: #ccc;
   font-size: 13px;
   font-weight: 500;
 `;
 
-const Section = styled.View`
+const Section = styled(View)`
   padding: 20px;
 `;
 
-const SectionTitle = styled.Text`
+const SectionTitleText = styled(Text)`
   color: #541011;
   font-size: 14px;
   font-weight: bold;
@@ -215,7 +235,7 @@ const SectionTitle = styled.Text`
   margin-bottom: 10px;
 `;
 
-const AboutText = styled.Text`
+const AboutText = styled(Text)`
   color: #888;
   font-size: 14px;
   line-height: 22px;
