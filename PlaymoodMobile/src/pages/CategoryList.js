@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
+import styled from 'styled-components/native';
 import axios from 'axios';
 import BASE_API_URL from '../apiConfig';
 
 const CategoryList = ({ route, navigation }) => {
-  const { category, title } = route.params;
+  const { category, title } = route.params || {};
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -12,7 +13,17 @@ const CategoryList = ({ route, navigation }) => {
     const fetchData = async () => {
       try {
         const response = await axios.get(`${BASE_API_URL}/api/content/`);
-        const filtered = response.data.filter(item => item.category === category);
+
+        // Match the web app's filtering logic for special categories
+        let filtered = [];
+        if (category === 'Social') {
+           filtered = response.data.filter(item => item.category === 'Social' || item.category === 'Story');
+        } else if (category === 'New') {
+           filtered = response.data.filter(item => item.isNew || item.category === 'New');
+        } else {
+           filtered = response.data.filter(item => item.category === category);
+        }
+
         setData(filtered);
       } catch (error) {
         console.error('Error fetching category data:', error);
@@ -24,97 +35,94 @@ const CategoryList = ({ route, navigation }) => {
   }, [category]);
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity
-      style={styles.card}
-      onPress={() => navigation.navigate('MoviePlayer', { movie: item })}
-    >
-      <Image source={{ uri: item.thumbnail }} style={styles.thumbnail} />
-      <View style={styles.info}>
-        <Text style={styles.itemTitle} numberOfLines={2}>{item.title}</Text>
-        <Text style={styles.views}>{item.views || 0} views</Text>
-      </View>
-    </TouchableOpacity>
+    <Card onPress={() => navigation.navigate('MoviePlayer', { movie: item })}>
+      <Thumbnail source={{ uri: item.thumbnail }} resizeMode="cover" />
+      <Info>
+        <ItemTitle numberOfLines={2}>{item.title}</ItemTitle>
+        <ViewsText>{item.views || 0} views</ViewsText>
+      </Info>
+    </Card>
   );
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <LoadingContainer>
         <ActivityIndicator size="large" color="#541011" />
-      </View>
+      </LoadingContainer>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.headerTitle}>{title || category}</Text>
+    <Container>
+      <HeaderTitle>{title || category}</HeaderTitle>
       <FlatList
         data={data}
         renderItem={renderItem}
         keyExtractor={item => item._id}
         numColumns={2}
-        contentContainerStyle={styles.list}
-        columnWrapperStyle={styles.columnWrapper}
-        ListEmptyComponent={<Text style={styles.empty}>No content found in this category.</Text>}
+        contentContainerStyle={{ paddingBottom: 20 }}
+        columnWrapperStyle={{ justifyContent: 'space-between', marginBottom: 15 }}
+        ListEmptyComponent={<EmptyText>No content found in this category.</EmptyText>}
       />
-    </View>
+    </Container>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#000',
-    padding: 10,
-  },
-  loadingContainer: {
-    flex: 1,
-    backgroundColor: '#000',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  headerTitle: {
-    color: '#fff',
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginVertical: 15,
-    marginLeft: 5,
-  },
-  list: {
-    paddingBottom: 20,
-  },
-  columnWrapper: {
-    justifyContent: 'space-between',
-    marginBottom: 15,
-  },
-  card: {
-    width: '48%',
-    backgroundColor: '#111',
-    borderRadius: 8,
-    overflow: 'hidden',
-  },
-  thumbnail: {
-    width: '100%',
-    aspectRatio: 16 / 9,
-  },
-  info: {
-    padding: 10,
-  },
-  itemTitle: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: 'bold',
-    height: 40,
-  },
-  views: {
-    color: '#666',
-    fontSize: 11,
-    marginTop: 4,
-  },
-  empty: {
-    color: '#666',
-    textAlign: 'center',
-    marginTop: 50,
-  }
-});
+const Container = styled.View`
+  flex: 1;
+  background-color: #000;
+  padding: 10px;
+`;
+
+const LoadingContainer = styled.View`
+  flex: 1;
+  background-color: #000;
+  justify-content: center;
+  align-items: center;
+`;
+
+const HeaderTitle = styled.Text`
+  color: #fff;
+  font-size: 22px;
+  font-weight: bold;
+  margin-vertical: 15px;
+  margin-left: 5px;
+  text-transform: uppercase;
+`;
+
+const Card = styled.TouchableOpacity`
+  width: 48%;
+  background-color: #111;
+  border-radius: 8px;
+  overflow: hidden;
+`;
+
+const Thumbnail = styled.Image`
+  width: 100%;
+  aspect-ratio: 1.77;
+`;
+
+const Info = styled.View`
+  padding: 10px;
+`;
+
+const ItemTitle = styled.Text`
+  color: #fff;
+  font-size: 14px;
+  font-weight: bold;
+  height: 40px;
+`;
+
+const ViewsText = styled.Text`
+  color: #666;
+  font-size: 11px;
+  margin-top: 4px;
+`;
+
+const EmptyText = styled.Text`
+  color: #666;
+  text-align: center;
+  margin-top: 50px;
+`;
 
 export default CategoryList;
