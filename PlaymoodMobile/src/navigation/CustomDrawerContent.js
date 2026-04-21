@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, Image, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { DrawerContentScrollView } from '@react-navigation/drawer';
 import { useSelector, useDispatch } from 'react-redux';
@@ -9,6 +9,7 @@ import styled from 'styled-components/native';
 const CustomDrawerContent = (props) => {
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
+  const [categoriesOpen, setCategoriesOpen] = useState(true);
 
   const onLogout = () => {
     Alert.alert(
@@ -26,6 +27,10 @@ const CustomDrawerContent = (props) => {
         }
       ]
     );
+  };
+
+  const navToCategory = (category, title) => {
+    props.navigation.navigate('CategoryList', { category, title });
   };
 
   return (
@@ -88,34 +93,60 @@ const CustomDrawerContent = (props) => {
         </MenuAction>
 
         <Divider />
-        <SectionHeader>Categories</SectionHeader>
 
-        <MenuAction
-          onPress={() => props.navigation.navigate('CategoryList', { category: 'Fashion Show', title: 'Fashion Shows' })}
-        >
-           <Ionicons name="shirt-outline" size={22} color="white" />
-           <MenuLabel>Fashion Shows</MenuLabel>
+        <MenuAction onPress={() => setCategoriesOpen(!categoriesOpen)}>
+           <Ionicons name="apps-outline" size={22} color="white" />
+           <MenuLabel>Categories</MenuLabel>
+           <Ionicons
+             name={categoriesOpen ? "chevron-up" : "chevron-down"}
+             size={18}
+             color="#541011"
+             style={{ marginLeft: 'auto' }}
+           />
         </MenuAction>
 
-        <MenuAction
-          onPress={() => props.navigation.navigate('CategoryList', { category: 'Interview', title: 'Interviews' })}
-        >
-           <Ionicons name="mic-outline" size={22} color="white" />
-           <MenuLabel>Interviews</MenuLabel>
+        {categoriesOpen && (
+          <SubMenu>
+            <SubMenuAction onPress={() => navToCategory('Channel', 'Channels')}>
+               <MenuLabelSmall>Channels</MenuLabelSmall>
+            </SubMenuAction>
+            <SubMenuAction onPress={() => navToCategory('Diary', 'Diaries')}>
+               <MenuLabelSmall>Diaries</MenuLabelSmall>
+            </SubMenuAction>
+            <SubMenuAction onPress={() => navToCategory('Space', 'Spaces')}>
+               <MenuLabelSmall>Spaces</MenuLabelSmall>
+            </SubMenuAction>
+            <SubMenuAction onPress={() => navToCategory('Interview', 'Interviews')}>
+               <MenuLabelSmall>Interviews</MenuLabelSmall>
+            </SubMenuAction>
+            <SubMenuAction onPress={() => navToCategory('Fashion Show', 'Fashion Shows')}>
+               <MenuLabelSmall>Fashion Shows</MenuLabelSmall>
+            </SubMenuAction>
+            <SubMenuAction onPress={() => navToCategory('Documentary', 'Documentaries')}>
+               <MenuLabelSmall>Documentaries</MenuLabelSmall>
+            </SubMenuAction>
+            <SubMenuAction onPress={() => navToCategory('Behind the Cameras', 'Behind the Cameras')}>
+               <MenuLabelSmall>Behind the Cameras</MenuLabelSmall>
+            </SubMenuAction>
+            <SubMenuAction onPress={() => navToCategory('Teen', 'Teens')}>
+               <MenuLabelSmall>Teens</MenuLabelSmall>
+            </SubMenuAction>
+            <SubMenuAction onPress={() => navToCategory('Social', 'Social')}>
+               <MenuLabelSmall>Social</MenuLabelSmall>
+            </SubMenuAction>
+          </SubMenu>
+        )}
+
+        <Divider />
+
+        <MenuAction onPress={() => props.navigation.navigate('StaticPage', { title: 'Privacy Policy', content: 'Playmood respects your privacy...' })}>
+           <Ionicons name="shield-checkmark-outline" size={22} color="#666" />
+           <MenuLabel style={{ color: '#666' }}>Privacy Policy</MenuLabel>
         </MenuAction>
 
-        <MenuAction
-          onPress={() => props.navigation.navigate('CategoryList', { category: 'Documentary', title: 'Documentaries' })}
-        >
-           <Ionicons name="videocam-outline" size={22} color="white" />
-           <MenuLabel>Documentaries</MenuLabel>
-        </MenuAction>
-
-        <MenuAction
-          onPress={() => props.navigation.navigate('CategoryList', { category: 'Teen', title: 'Teens' })}
-        >
-           <Ionicons name="people-outline" size={22} color="white" />
-           <MenuLabel>Teens</MenuLabel>
+        <MenuAction onPress={() => props.navigation.navigate('StaticPage', { title: 'Cookies Policy', content: 'We use cookies to improve experience...' })}>
+           <Ionicons name="information-circle-outline" size={22} color="#666" />
+           <MenuLabel style={{ color: '#666' }}>Cookies Policy</MenuLabel>
         </MenuAction>
       </MenuItems>
     </Container>
@@ -206,20 +237,25 @@ const MenuLabel = styled.Text`
   margin-left: 20px;
 `;
 
+const SubMenu = styled.View`
+  padding-left: 55px;
+  padding-bottom: 10px;
+`;
+
+const SubMenuAction = styled.TouchableOpacity`
+  padding-vertical: 8px;
+`;
+
+const MenuLabelSmall = styled.Text`
+  color: #ccc;
+  font-size: 14px;
+`;
+
 const Divider = styled.View`
   height: 1px;
   background-color: #111;
-  margin-vertical: 15px;
+  margin-vertical: 10px;
   margin-horizontal: 15px;
-`;
-
-const SectionHeader = styled.Text`
-  color: #541011;
-  font-size: 12px;
-  font-weight: bold;
-  text-transform: uppercase;
-  margin-left: 15px;
-  margin-bottom: 10px;
 `;
 
 export default CustomDrawerContent;
