@@ -58,8 +58,8 @@ const CreatorChannel = ({ route, navigation }) => {
   const renderVideoItem = ({ item }) => (
     <VideoCard onPress={() => navigation.navigate('MoviePlayer', { movie: item })}>
       <Thumbnail source={{ uri: item.thumbnail }} resizeMode="cover" />
-      <VideoTitle numberOfLines={2}>{item.title}</VideoTitle>
-      <VideoStats>{item.views || 0} views</VideoStats>
+      <VideoTitleText numberOfLines={2}>{item.title}</VideoTitleText>
+      <VideoStatsText>{item.views || 0} views</VideoStatsText>
     </VideoCard>
   );
 
@@ -76,35 +76,35 @@ const CreatorChannel = ({ route, navigation }) => {
       <ScrollView stickyHeaderIndices={[2]}>
         <BannerImage source={{ uri: creatorData?.bannerImage || 'https://via.placeholder.com/800x200' }} resizeMode="cover" />
 
-        <ProfileHeader>
+        <ProfileHeaderView>
           <ProfileImageContainer>
             <ProfileImage source={{ uri: creatorData?.profileImage }} />
           </ProfileImageContainer>
-          <CreatorInfo>
+          <CreatorInfoView>
             <CreatorNameText>{creatorData?.name}</CreatorNameText>
             <SubscriberCountText>{creatorData?.subscribers || 0} subscribers</SubscriberCountText>
-          </CreatorInfo>
+          </CreatorInfoView>
           <SubscribeButton subscribed={subscribed} onPress={toggleSubscribe}>
             <SubscribeButtonText subscribed={subscribed}>{subscribed ? 'UNSUBSCRIBE' : 'SUBSCRIBE'}</SubscribeButtonText>
           </SubscribeButton>
-        </ProfileHeader>
+        </ProfileHeaderView>
 
-        <TabBar>
-          <Tab active={activeTab === 'VIDEOS'} onPress={() => setActiveTab('VIDEOS')}>
-            <TabText active={activeTab === 'VIDEOS'}>VIDEOS</TabText>
-          </Tab>
-          <Tab active={activeTab === 'FEEDS'} onPress={() => setActiveTab('FEEDS')}>
-            <TabText active={activeTab === 'FEEDS'}>FEEDS</TabText>
-          </Tab>
-          <Tab active={activeTab === 'COMMUNITY'} onPress={() => setActiveTab('COMMUNITY')}>
-            <TabText active={activeTab === 'COMMUNITY'}>COMMUNITY</TabText>
-          </Tab>
-          <Tab onPress={() => Alert.alert('About', creatorData?.about || 'No description available.')}>
-            <TabText>ABOUT</TabText>
-          </Tab>
-        </TabBar>
+        <TabBarView>
+          <TabTouchable active={activeTab === 'VIDEOS'} onPress={() => setActiveTab('VIDEOS')}>
+            <TabLabelText active={activeTab === 'VIDEOS'}>VIDEOS</TabLabelText>
+          </TabTouchable>
+          <TabTouchable active={activeTab === 'FEEDS'} onPress={() => setActiveTab('FEEDS')}>
+            <TabLabelText active={activeTab === 'FEEDS'}>FEEDS</TabLabelText>
+          </TabTouchable>
+          <TabTouchable active={activeTab === 'COMMUNITY'} onPress={() => setActiveTab('COMMUNITY')}>
+            <TabLabelText active={activeTab === 'COMMUNITY'}>COMMUNITY</TabLabelText>
+          </TabTouchable>
+          <TabTouchable onPress={() => Alert.alert('About', creatorData?.about || 'No description available.')}>
+            <TabLabelText>ABOUT</TabLabelText>
+          </TabTouchable>
+        </TabBarView>
 
-        <ContentArea>
+        <ContentAreaView>
           {activeTab === 'VIDEOS' && (
             <FlatList
               data={videos}
@@ -116,12 +116,12 @@ const CreatorChannel = ({ route, navigation }) => {
             />
           )}
           {activeTab !== 'VIDEOS' && (
-            <EmptyState>
+            <EmptyStateView>
               <Ionicons name="construct-outline" size={48} color="#222" />
-              <EmptyText>This section is coming soon to mobile.</EmptyText>
-            </EmptyState>
+              <EmptyText>{`This section is coming soon to mobile.`}</EmptyText>
+            </EmptyStateView>
           )}
-        </ContentArea>
+        </ContentAreaView>
       </ScrollView>
     </Container>
   );
@@ -145,7 +145,7 @@ const BannerImage = styled(Image)`
   background-color: #111;
 `;
 
-const ProfileHeader = styled(View)`
+const ProfileHeaderView = styled(View)`
   flex-direction: row;
   align-items: center;
   padding: 15px;
@@ -167,7 +167,7 @@ const ProfileImage = styled(Image)`
   height: 100%;
 `;
 
-const CreatorInfo = styled(View)`
+const CreatorInfoView = styled(View)`
   flex: 1;
   margin-left: 15px;
 `;
@@ -199,27 +199,27 @@ const SubscribeButtonText = styled(Text)`
   font-size: 11px;
 `;
 
-const TabBar = styled(View)`
+const TabBarView = styled(View)`
   flex-direction: row;
   background-color: #000;
   border-bottom-width: 1px;
   border-bottom-color: #111;
 `;
 
-const Tab = styled(TouchableOpacity)`
+const TabTouchable = styled(TouchableOpacity)`
   padding-vertical: 15px;
   padding-horizontal: 20px;
   border-bottom-width: 2px;
   border-bottom-color: ${props => props.active ? '#541011' : 'transparent'};
 `;
 
-const TabText = styled(Text)`
+const TabLabelText = styled(Text)`
   color: ${props => props.active ? '#541011' : '#888'};
   font-weight: bold;
   font-size: 12px;
 `;
 
-const ContentArea = styled(View)`
+const ContentAreaView = styled(View)`
   padding-top: 20px;
   background-color: #000;
 `;
@@ -235,20 +235,20 @@ const Thumbnail = styled(Image)`
   border-radius: 8px;
 `;
 
-const VideoTitle = styled(Text)`
+const VideoTitleText = styled(Text)`
   color: #ccc;
   font-size: 13px;
   margin-top: 8px;
   font-weight: 500;
 `;
 
-const VideoStats = styled(Text)`
+const VideoStatsText = styled(Text)`
   color: #555;
   font-size: 11px;
   margin-top: 2px;
 `;
 
-const EmptyState = styled(View)`
+const EmptyStateView = styled(View)`
   padding: 60px;
   align-items: center;
 `;

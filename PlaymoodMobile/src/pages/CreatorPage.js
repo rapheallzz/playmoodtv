@@ -1,27 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Image, ActivityIndicator, Alert } from 'react-native';
 import styled from 'styled-components/native';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 import useChannelDetails from '../hooks/useChannelDetails';
-import BASE_API_URL from '../apiConfig';
 import PostActionsModal from '../components/PostActionsModal';
 
 const CreatorPage = ({ route, navigation }) => {
   const { user } = useSelector((state) => state.auth);
   const {
     bannerImage, profileImage, creatorName, about, subscribers,
-    isLoading: isLoadingChannel, refreshChannel
+    isLoading: isLoadingChannel
   } = useChannelDetails(user);
 
   const [actionsVisible, setActionsVisible] = useState(false);
-
-  useEffect(() => {
-    if (route.params?.openModal) {
-      // Logic to handle opening specific action if needed
-      console.log('Open modal:', route.params.openModal);
-    }
-  }, [route.params]);
 
   if (!user || user.role !== 'creator') {
     return (
@@ -41,8 +33,8 @@ const CreatorPage = ({ route, navigation }) => {
 
   const StatBox = ({ label, value }) => (
     <StatItem>
-      <StatValue>{value}</StatValue>
-      <StatLabel>{label}</StatLabel>
+      <StatValueText>{value}</StatValueText>
+      <StatLabelText>{label}</StatLabelText>
     </StatItem>
   );
 
@@ -59,7 +51,7 @@ const CreatorPage = ({ route, navigation }) => {
       <ScrollView>
         <BannerImage source={{ uri: bannerImage || 'https://via.placeholder.com/800x200' }} resizeMode="cover" />
 
-        <Header>
+        <HeaderView>
            <ProfileContainer>
               <ProfileImage source={{ uri: profileImage }} />
            </ProfileContainer>
@@ -69,7 +61,7 @@ const CreatorPage = ({ route, navigation }) => {
                 <ManageBadge><ManageTextText>VIEW PUBLIC CHANNEL</ManageTextText></ManageBadge>
               </TouchableOpacity>
            </HeaderInfo>
-        </Header>
+        </HeaderView>
 
         <StatsRow>
            <StatBox label="Subscribers" value={subscribers || 0} />
@@ -96,10 +88,10 @@ const CreatorPage = ({ route, navigation }) => {
            </ActionButton>
         </ActionGrid>
 
-        <Section>
+        <AboutSection>
            <SectionTitleText>About Your Channel</SectionTitleText>
            <AboutText>{about || 'No description provided.'}</AboutText>
-        </Section>
+        </AboutSection>
       </ScrollView>
 
       <PostActionsModal
@@ -129,7 +121,7 @@ const BannerImage = styled(Image)`
   background-color: #111;
 `;
 
-const Header = styled(View)`
+const HeaderView = styled(View)`
   flex-direction: row;
   padding: 20px;
   align-items: center;
@@ -187,13 +179,13 @@ const StatItem = styled(View)`
   align-items: center;
 `;
 
-const StatValue = styled(Text)`
+const StatValueText = styled(Text)`
   color: #fff;
   font-size: 18px;
   font-weight: bold;
 `;
 
-const StatLabel = styled(Text)`
+const StatLabelText = styled(Text)`
   color: #666;
   font-size: 11px;
   text-transform: uppercase;
@@ -223,7 +215,7 @@ const ActionLabelText = styled(Text)`
   font-weight: 500;
 `;
 
-const Section = styled(View)`
+const AboutSection = styled(View)`
   padding: 20px;
 `;
 

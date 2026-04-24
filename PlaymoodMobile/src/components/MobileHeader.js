@@ -19,14 +19,11 @@ const MobileHeader = ({ toggleDrawer }) => {
     if (user.role === 'creator') {
       setActionsVisible(true);
     } else {
-      // In web app, non-creators might see application modal,
-      // but for now we'll just redirect to dashboard or show alert
       navigation.navigate('Dashboard');
     }
   };
 
   const onActionSelect = (id) => {
-    // Navigate to Creator Studio with state to open specific modal
     navigation.navigate('CreatorPage', { openModal: id });
   };
 
@@ -34,11 +31,11 @@ const MobileHeader = ({ toggleDrawer }) => {
     <SafeHeader>
       <Container>
         <TopRow>
-          <LeftSection>
+          <SideSection>
             <Hamburger onPress={toggleDrawer}>
               <Ionicons name="menu" size={30} color="white" />
             </Hamburger>
-          </LeftSection>
+          </SideSection>
 
           <CenterSection>
             <TouchableOpacity onPress={() => navigation.navigate('Home')}>
@@ -49,7 +46,7 @@ const MobileHeader = ({ toggleDrawer }) => {
             </TouchableOpacity>
           </CenterSection>
 
-          <RightSection>
+          <SideSection>
             <RightActions>
               <PostButton onPress={onPostPress}>
                 <PostText>Post</PostText>
@@ -62,7 +59,7 @@ const MobileHeader = ({ toggleDrawer }) => {
                 <Ionicons name="person" size={20} color="white" />
               </ProfileCircle>
             </RightActions>
-          </RightSection>
+          </SideSection>
         </TopRow>
 
         <BottomRow>
@@ -103,33 +100,27 @@ const SafeHeader = styled(SafeAreaView)`
 const Container = styled(View)`
   height: 120px;
   width: 100%;
-  padding-horizontal: 10px;
   justify-content: center;
 `;
 
 const TopRow = styled(View)`
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   margin-bottom: 15px;
   height: 50px;
+  padding-horizontal: 10px;
 `;
 
-const LeftSection = styled(View)`
-  width: 50px;
-  align-items: flex-start;
-  justify-content: center;
+const SideSection = styled(View)`
+  flex: 1;
+  flex-direction: row;
+  align-items: center;
 `;
 
 const CenterSection = styled(View)`
-  flex: 1;
+  flex: 2;
   align-items: center;
-  justify-content: center;
-`;
-
-const RightSection = styled(View)`
-  width: 130px;
-  align-items: flex-end;
   justify-content: center;
 `;
 
@@ -141,6 +132,8 @@ const Logo = styled(Image)`
 const RightActions = styled(View)`
   flex-direction: row;
   align-items: center;
+  justify-content: flex-end;
+  flex: 1;
 `;
 
 const PostButton = styled(TouchableOpacity)`
