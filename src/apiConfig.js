@@ -1,4 +1,4 @@
-const API_URL = "https://playmoodserver-stg-0fb54b955e6b.herokuapp.com";
+const API_URL = "https://api.playmoodtv.com";
 
 export const CLOUDINARY_CLOUD_NAME = "dcsdrpkeh";
 
