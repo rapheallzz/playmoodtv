@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 import styled from 'styled-components/native';
+import { isTV } from '../utils/platform';
 import axios from 'axios';
 import BASE_API_URL from '../apiConfig';
 
@@ -34,15 +35,7 @@ const CategoryList = ({ route, navigation }) => {
     fetchData();
   }, [category]);
 
-  const renderItem = ({ item }) => (
-    <Card onPress={() => navigation.navigate('MoviePlayer', { movie: item })}>
-      <Thumbnail source={{ uri: item.thumbnail }} resizeMode="cover" />
-      <Info>
-        <ItemTitle numberOfLines={2}>{item.title}</ItemTitle>
-        <ViewsText>{item.views || 0} views</ViewsText>
-      </Info>
-    </Card>
-  );
+  const renderItem = ({ item }) => <TVCategoryCard item={item} navigation={navigation} />;
 
   if (loading) {
     return (
@@ -56,12 +49,13 @@ const CategoryList = ({ route, navigation }) => {
     <Container>
       <HeaderTitle>{title || category}</HeaderTitle>
       <FlatList
+        key={isTV ? 'tv' : 'mobile'}
         data={data}
         renderItem={renderItem}
         keyExtractor={item => item._id}
-        numColumns={2}
+        numColumns={isTV ? 4 : 2}
         contentContainerStyle={{ paddingBottom: 20 }}
-        columnWrapperStyle={{ justifyContent: 'space-between', marginBottom: 15 }}
+        columnWrapperStyle={isTV ? { gap: 15 } : { justifyContent: 'space-between', marginBottom: 15 }}
         ListEmptyComponent={<EmptyText>No content found in this category.</EmptyText>}
       />
     </Container>
@@ -91,11 +85,33 @@ const HeaderTitle = styled.Text`
 `;
 
 const Card = styled.TouchableOpacity`
-  width: 48%;
+  width: ${isTV ? '23%' : '48%'};
   background-color: #111;
   border-radius: 8px;
   overflow: hidden;
+  margin-bottom: 15px;
+  border-width: ${props => props.isFocused ? '3px' : '0px'};
+  border-color: #8c0734;
+  transform: ${props => props.isFocused ? 'scale(1.05)' : 'scale(1)'};
 `;
+
+const TVCategoryCard = ({ item, navigation }) => {
+  const [isFocused, setIsFocused] = useState(false);
+  return (
+    <Card
+      onPress={() => navigation.navigate('MoviePlayer', { movie: item })}
+      onFocus={() => setIsFocused(true)}
+      onBlur={() => setIsFocused(false)}
+      isFocused={isFocused}
+    >
+      <Thumbnail source={{ uri: item.thumbnail }} resizeMode="cover" />
+      <Info>
+        <ItemTitle numberOfLines={2}>{item.title}</ItemTitle>
+        <ViewsText>{item.views || 0} views</ViewsText>
+      </Info>
+    </Card>
+  );
+};
 
 const Thumbnail = styled.Image`
   width: 100%;

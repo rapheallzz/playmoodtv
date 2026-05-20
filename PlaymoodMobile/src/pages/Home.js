@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Dimensions, ScrollView, ActivityIndicator, View, Text, Image, TouchableOpacity } from 'react-native';
+import { Dimensions, ScrollView, ActivityIndicator, View, Text, Image, TouchableOpacity, Platform } from 'react-native';
 import styled from 'styled-components/native';
+import { isTV } from '../utils/platform';
 import axios from 'axios';
 import BASE_API_URL from '../apiConfig';
 import Carousel from 'react-native-reanimated-carousel';
@@ -62,14 +63,18 @@ const Home = ({ navigation }) => {
   const renderSection = (title, data, circular = false) => {
     if (!data || data.length === 0) return null;
 
+    const carouselWidth = isTV ? (windowWidth - 260) : windowWidth;
+    const itemWidth = isTV ? (circular ? 200 : 320) : (circular ? 135 : 175);
+    const itemHeight = isTV ? (circular ? 250 : 220) : (circular ? 160 : 180);
+
     return (
-      <Section>
-        <SectionTitle>{title}</SectionTitle>
+      <Section isTV={isTV}>
+        <SectionTitle isTV={isTV}>{title}</SectionTitle>
         <Carousel
           loop={false}
-          width={circular ? 135 : 175}
-          height={circular ? 160 : 180}
-          style={{ width: windowWidth }}
+          width={itemWidth}
+          height={itemHeight}
+          style={{ width: carouselWidth }}
           data={data}
           scrollAnimationDuration={1000}
           renderItem={({ item }) => (
@@ -80,15 +85,7 @@ const Home = ({ navigation }) => {
                 onMorePress={() => openPreview(item)}
               />
             ) : (
-              <ContentCard
-                onPress={() => openPreview(item)}
-              >
-                <CardImage
-                  source={{ uri: item.thumbnail || 'https://via.placeholder.com/300x168' }}
-                  resizeMode="cover"
-                />
-                <CardTitle numberOfLines={1}>{item.title}</CardTitle>
-              </ContentCard>
+              <TVContentCard item={item} onPress={() => openPreview(item)} />
             )
           )}
         />
@@ -179,32 +176,55 @@ const LoadingContainer = styled(View)`
 `;
 
 const Section = styled(View)`
-  margin-vertical: 15px;
+  margin-vertical: ${props => props.isTV ? '30px' : '15px'};
 `;
 
 const SectionTitle = styled(Text)`
   color: #fff;
-  font-size: 18px;
+  font-size: ${props => props.isTV ? '24px' : '18px'};
   font-weight: bold;
   margin-left: 15px;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 `;
 
 const ContentCard = styled(TouchableOpacity)`
-  width: 160px;
+  width: ${isTV ? '300px' : '160px'};
   margin-left: 15px;
+  transform: ${props => props.isFocused ? 'scale(1.1)' : 'scale(1)'};
+  border-width: ${props => props.isFocused ? '4px' : '0px'};
+  border-color: #8c0734;
+  border-radius: 8px;
+  overflow: hidden;
 `;
 
+const TVContentCard = ({ item, onPress }) => {
+  const [isFocused, setIsFocused] = useState(false);
+  return (
+    <ContentCard
+      onPress={onPress}
+      onFocus={() => setIsFocused(true)}
+      onBlur={() => setIsFocused(false)}
+      isFocused={isFocused}
+    >
+      <CardImage
+        source={{ uri: item.thumbnail || 'https://via.placeholder.com/300x168' }}
+        resizeMode="cover"
+      />
+      {!isFocused && <CardTitle numberOfLines={1}>{item.title}</CardTitle>}
+    </ContentCard>
+  );
+};
+
 const CardImage = styled(Image)`
-  width: 160px;
-  height: 90px;
+  width: 100%;
+  height: ${isTV ? '168px' : '90px'};
   border-radius: 8px;
-  margin-bottom: 5px;
 `;
 
 const CardTitle = styled(Text)`
   color: #ccc;
   font-size: 12px;
+  margin-top: 5px;
 `;
 
 export default Home;

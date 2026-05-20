@@ -18,6 +18,9 @@ import StaticPage from '../pages/StaticPage';
 import Onboarding from '../pages/Onboarding';
 import MobileHeader from '../components/MobileHeader';
 import CustomDrawerContent from './CustomDrawerContent';
+import TVSidebar from '../components/TVSidebar';
+import { isTV } from '../utils/platform';
+import { View } from 'react-native';
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -26,8 +29,8 @@ const MainStack = () => {
   return (
     <Stack.Navigator
       screenOptions={({ navigation }) => ({
-        header: () => <MobileHeader toggleDrawer={() => navigation.toggleDrawer()} />,
-        headerStyle: { height: 120 },
+        header: isTV ? () => null : () => <MobileHeader toggleDrawer={() => navigation.toggleDrawer()} />,
+        headerStyle: isTV ? { height: 0 } : { height: 120 },
       })}
     >
       <Stack.Screen name="Home" component={Home} />
@@ -50,6 +53,38 @@ const MainStack = () => {
 };
 
 const AppNavigator = () => {
+  if (isTV) {
+    return (
+      <View style={{ flex: 1, flexDirection: 'row', backgroundColor: '#000' }}>
+        <TVSidebar />
+        <View style={{ flex: 1 }}>
+          <Stack.Navigator
+            screenOptions={{
+              headerShown: false,
+              cardStyle: { backgroundColor: '#000' }
+            }}
+          >
+            <Stack.Screen name="Home" component={Home} />
+            <Stack.Screen name="MoviePlayer" component={MoviePlayer} options={{ headerShown: false }} />
+            <Stack.Screen name="Login" component={Login} />
+            <Stack.Screen name="Register" component={Register} />
+            <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+            <Stack.Screen name="EmailVerification" component={EmailVerification} />
+            <Stack.Screen name="ResetPassword" component={ResetPassword} />
+            <Stack.Screen name="Schedule" component={Schedule} />
+            <Stack.Screen name="CategoryList" component={CategoryList} />
+            <Stack.Screen name="Watchlist" component={Watchlist} />
+            <Stack.Screen name="Dashboard" component={Dashboard} />
+            <Stack.Screen name="CreatorChannel" component={CreatorChannel} />
+            <Stack.Screen name="CreatorPage" component={CreatorPage} />
+            <Stack.Screen name="StaticPage" component={StaticPage} />
+            <Stack.Screen name="Onboarding" component={Onboarding} />
+          </Stack.Navigator>
+        </View>
+      </View>
+    );
+  }
+
   return (
     <Drawer.Navigator
       drawerContent={(props) => <CustomDrawerContent {...props} />}

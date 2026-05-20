@@ -1,25 +1,51 @@
-import React from 'react';
-import { View, StyleSheet, Text, Dimensions, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useRef, useEffect } from 'react';
+import { View, StyleSheet, Text, Dimensions, TouchableOpacity, ScrollView, Platform } from 'react-native';
 import { Video } from 'expo-av';
 import { Ionicons } from '@expo/vector-icons';
+import { isTV } from '../utils/platform';
 
 const { width } = Dimensions.get('window');
 
 const MoviePlayer = ({ route, navigation }) => {
   const { movie } = route.params;
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    if (isTV && Platform.OS === 'android') {
+      // Basic TV remote handling could go here if needed
+      // Most of it is handled by useNativeControls
+    }
+  }, []);
+
+  const seekForward = async () => {
+    if (videoRef.current) {
+      const status = await videoRef.current.getStatusAsync();
+      await videoRef.current.setPositionAsync(status.positionMillis + 10000);
+    }
+  };
+
+  const seekBackward = async () => {
+    if (videoRef.current) {
+      const status = await videoRef.current.getStatusAsync();
+      await videoRef.current.setPositionAsync(Math.max(0, status.positionMillis - 10000));
+    }
+  };
 
   return (
-    <View style={styles.container}>
-      <Video
-        source={{ uri: movie.video }}
-        rate={1.0}
-        volume={1.0}
-        isMuted={false}
-        resizeMode="contain"
-        shouldPlay
-        useNativeControls
-        style={styles.video}
-      />
+    <View style={[styles.container, isTV && styles.tvContainer]}>
+      <View style={isTV ? styles.tvVideoWrapper : {}}>
+        <Video
+          ref={videoRef}
+          source={{ uri: movie.video }}
+          rate={1.0}
+          volume={1.0}
+          isMuted={false}
+          resizeMode="contain"
+          shouldPlay
+          useNativeControls
+          style={styles.video}
+        />
+      </View>
 
       <ScrollView style={styles.detailsContainer}>
         <View style={styles.header}>
@@ -63,9 +89,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#000',
   },
   video: {
-    width: width,
-    height: width * (9 / 16),
+    width: isTV ? '100%' : width,
+    height: isTV ? '100%' : width * (9 / 16),
     backgroundColor: '#000',
+  },
+  tvContainer: {
+    paddingLeft: 0,
+  },
+  tvVideoWrapper: {
+    width: '100%',
+    aspectRatio: 16 / 9,
+    maxHeight: '70%',
   },
   detailsContainer: {
     flex: 1,
