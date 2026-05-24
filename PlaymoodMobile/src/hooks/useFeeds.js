@@ -18,7 +18,7 @@ const useFeeds = (user, creatorId = null) => {
   });
 
   const fetchFeeds = async () => {
-    const userIdToFetch = creatorId || user?._id;
+    const userIdToFetch = creatorId || user?._id || user?.userId;
     if (!userIdToFetch) return;
 
     setIsLoadingFeeds(true);

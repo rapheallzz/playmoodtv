@@ -29,7 +29,9 @@ export const initializeAuth = createAsyncThunk('auth/initialize', async (_, thun
           await AsyncStorage.removeItem('user');
           return null;
         } else {
-          user.userId = user.userId || decoded.id || user._id;
+          const userId = user.userId || decoded.id || user._id;
+          user.userId = userId;
+          user._id = user._id || userId;
           return { user, token: user.token };
         }
       }
@@ -68,9 +70,11 @@ export const login = createAsyncThunk('auth/login', async (userData, thunkAPI) =
       if (!decoded) {
         throw new Error('Received expired token');
       }
+      const userId = decoded.id || userData._id || userData.userId;
       const userWithToken = {
         ...userData,
-        userId: decoded.id || userData._id,
+        userId: userId,
+        _id: userId,
       };
       await AsyncStorage.setItem('user', JSON.stringify(userWithToken));
       return { user: userWithToken, token: userData.token };
@@ -80,9 +84,11 @@ export const login = createAsyncThunk('auth/login', async (userData, thunkAPI) =
       if (!decoded) {
         throw new Error('Received expired token');
       }
+      const userId = response.user._id || response.user.userId || decoded.id;
       const userWithToken = {
         ...response.user,
-        userId: decoded.id || response.user._id,
+        userId: userId,
+        _id: userId,
         token: response.token,
       };
       await AsyncStorage.setItem('user', JSON.stringify(userWithToken));
@@ -202,9 +208,11 @@ export const updateAuthUser = createAsyncThunk('auth/updateAuthUser', async (use
       throw new Error('Token expired');
     }
     const response = await authService.updateUser(userData, token);
+    const userId = response._id || response.userId || decoded.id;
     const userWithToken = {
       ...response,
-      userId: decoded.id || response._id,
+      userId: userId,
+      _id: userId,
       token,
     };
     await AsyncStorage.setItem('user', JSON.stringify(userWithToken));

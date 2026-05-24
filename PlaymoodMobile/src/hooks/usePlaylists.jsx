@@ -15,14 +15,15 @@ const usePlaylists = (user) => {
 
   // Fetch all user's playlists
   const fetchPlaylists = useCallback(async () => {
-    if (!user?._id || !user.token) {
-      setErrorMessage('User not authenticated.');
+    const userId = user?._id || user?.userId;
+    if (!userId || !user.token) {
+      if (!userId) setErrorMessage('User not authenticated.');
       return;
     }
     setIsLoadingPlaylists(true);
     try {
       const response = await axios.get(
-        `${BASE_API_URL}/api/playlists/user/${user._id}`,
+        `${BASE_API_URL}/api/playlists/user/${userId}`,
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
       const playlistsData = Array.isArray(response.data.playlists) ? response.data.playlists : [];
@@ -64,9 +65,11 @@ const usePlaylists = (user) => {
 
   // Fetch all of the user's approved videos
   const fetchAvailableVideos = useCallback(async () => {
+    const userId = user?._id || user?.userId;
+    if (!userId) return;
     try {
       const response = await axios.get(
-        `${BASE_API_URL}/api/channel/my-channel/${user._id}`,
+        `${BASE_API_URL}/api/channel/my-channel/${userId}`,
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
       setAvailableVideos(response.data.content.filter(video => video.isApproved) || []);

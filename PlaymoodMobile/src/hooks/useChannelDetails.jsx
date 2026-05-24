@@ -21,12 +21,16 @@ const useChannelDetails = (user) => {
   const isFetchingRef = useRef(false);
 
   const fetchChannelDetails = async () => {
-    if (isFetchingRef.current || !user?._id) return;
+    const userId = user?._id || user?.userId;
+    if (isFetchingRef.current || !userId) {
+      if (!userId) setIsLoading(false);
+      return;
+    }
     setIsLoading(true);
     isFetchingRef.current = true;
     try {
       const response = await axios.get(
-        `${BASE_API_URL}/api/channel/my-channel/${user._id}`,
+        `${BASE_API_URL}/api/channel/my-channel/${userId}`,
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
       const content = Array.isArray(response.data.content) ? response.data.content : [];
@@ -51,8 +55,10 @@ const useChannelDetails = (user) => {
   };
 
   useEffect(() => {
-    if (user && user._id) {
+    if (user && (user._id || user.userId)) {
       fetchChannelDetails();
+    } else if (!user) {
+      setIsLoading(false);
     }
   }, [user]);
 
@@ -107,8 +113,9 @@ const useChannelDetails = (user) => {
       };
 
       // Step 3: Send a single PUT request to update all channel info
+      const userId = user._id || user.userId;
       const response = await axios.put(
-        `${BASE_API_URL}/api/channel/${user._id}`,
+        `${BASE_API_URL}/api/channel/${userId}`,
         payload,
         {
           headers: {

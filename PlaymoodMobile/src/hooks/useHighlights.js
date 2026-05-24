@@ -9,7 +9,7 @@ const useHighlights = (user, creatorId) => {
   const [error, setError] = useState(null);
 
   const fetchHighlights = useCallback(async () => {
-    const idToFetch = creatorId || user?._id;
+    const idToFetch = creatorId || user?._id || user?.userId;
     if (!idToFetch) return;
 
     setIsLoading(true);
@@ -26,14 +26,15 @@ const useHighlights = (user, creatorId) => {
     } finally {
       setIsLoading(false);
     }
-  }, [user?._id, creatorId]);
+  }, [user?._id, user?.userId, creatorId]);
 
   useEffect(() => {
     fetchHighlights();
   }, [fetchHighlights]);
 
   const createHighlight = async (highlightData) => {
-    if (!user?._id || !user.token) {
+    const userId = user?._id || user?.userId;
+    if (!userId || !user.token) {
       setError('User not authenticated.');
       return { success: false };
     }
@@ -50,7 +51,7 @@ const useHighlights = (user, creatorId) => {
         `${BASE_API_URL}/api/highlights`,
         {
           ...highlightData,
-          creatorId: user._id,
+          creatorId: userId,
         },
         config
       );
@@ -66,7 +67,8 @@ const useHighlights = (user, creatorId) => {
   };
 
   const deleteHighlight = async (highlightId) => {
-    if (!user?._id || !user.token) {
+    const userId = user?._id || user?.userId;
+    if (!userId || !user.token) {
       setError('User not authenticated.');
       return { success: false };
     }

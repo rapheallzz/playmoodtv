@@ -1,19 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Image, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Image, ActivityIndicator, Alert, FlatList } from 'react-native';
 import styled from 'styled-components/native';
 import { useSelector } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 import useChannelDetails from '../hooks/useChannelDetails';
+import useHighlights from '../hooks/useHighlights';
+import useFeeds from '../hooks/useFeeds';
+import usePlaylists from '../hooks/usePlaylists';
 import PostActionsModal from '../components/PostActionsModal';
+import { groupFeeds } from '../utils/feedUtils';
 
 const CreatorPage = ({ route, navigation }) => {
   const { user } = useSelector((state) => state.auth);
   const {
-    bannerImage, profileImage, creatorName, about, subscribers,
+    bannerImage, profileImage, creatorName, about, subscribers, data: uploads,
     isLoading: isLoadingChannel
   } = useChannelDetails(user);
 
+  const { highlights, isLoading: isLoadingHighlights } = useHighlights(user);
+  const { feeds, isLoadingFeeds } = useFeeds(user);
+  const { playlists, isLoadingPlaylists } = usePlaylists(user);
+
+  const [activeTab, setActiveTab] = useState('Uploads');
   const [actionsVisible, setActionsVisible] = useState(false);
+
+  const processedFeeds = React.useMemo(() => groupFeeds(feeds), [feeds]);
 
   if (!user || user.role !== 'creator') {
     return (
@@ -39,7 +50,7 @@ const CreatorPage = ({ route, navigation }) => {
   );
 
   const navigateToPublicChannel = () => {
-    navigation.navigate('CreatorChannel', { creatorId: user._id });
+    navigation.navigate('CreatorChannel', { creatorId: user?._id || user?.userId });
   };
 
   const handleActionSelect = (id) => {
@@ -65,9 +76,21 @@ const CreatorPage = ({ route, navigation }) => {
 
         <StatsRow>
            <StatBox label="Subscribers" value={subscribers || 0} />
-           <StatBox label="Total Views" value="1.2K" />
-           <StatBox label="Uploads" value="24" />
+           <StatBox label="Uploads" value={uploads?.length || 0} />
+           <StatBox label="Feeds" value={feeds?.length || 0} />
         </StatsRow>
+
+        <HighlightsContainer>
+           <SectionTitleText>Highlights</SectionTitleText>
+           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 20 }}>
+              {highlights.map((item, index) => (
+                <HighlightCircle key={item._id || index}>
+                   <HighlightImage source={{ uri: item.thumbnail || item.content?.thumbnail }} />
+                </HighlightCircle>
+              ))}
+              {highlights.length === 0 && <EmptyText>No highlights yet.</EmptyText>}
+           </ScrollView>
+        </HighlightsContainer>
 
         <ActionGrid>
            <ActionButton onPress={() => setActionsVisible(true)}>
@@ -88,10 +111,77 @@ const CreatorPage = ({ route, navigation }) => {
            </ActionButton>
         </ActionGrid>
 
-        <AboutSection>
-           <SectionTitleText>About Your Channel</SectionTitleText>
-           <AboutText>{about || 'No description provided.'}</AboutText>
-        </AboutSection>
+        <TabBarView stickyHeaderIndices={[0]}>
+          {['Uploads', 'Feeds', 'Playlists', 'About'].map((tab) => (
+            <TabTouchable
+              key={tab}
+              active={activeTab === tab}
+              onPress={() => setActiveTab(tab)}
+            >
+              <TabLabelText active={activeTab === tab}>{tab.toUpperCase()}</TabLabelText>
+            </TabTouchable>
+          ))}
+        </TabBarView>
+
+        <ContentAreaView>
+          {activeTab === 'Uploads' && (
+            <FlatList
+              data={uploads}
+              renderItem={({ item }) => (
+                <VideoCard onPress={() => navigation.navigate('MoviePlayer', { movie: item })}>
+                  <Thumbnail source={{ uri: item.thumbnail }} resizeMode="cover" />
+                  <VideoTitleText numberOfLines={2}>{item.title}</VideoTitleText>
+                </VideoCard>
+              )}
+              keyExtractor={item => item._id}
+              numColumns={2}
+              scrollEnabled={false}
+              columnWrapperStyle={{ justifyContent: 'space-between', paddingHorizontal: 15 }}
+              ListEmptyComponent={<EmptyText>No uploads yet.</EmptyText>}
+            />
+          )}
+
+          {activeTab === 'Feeds' && (
+            <FlatList
+              data={processedFeeds}
+              renderItem={({ item }) => (
+                <FeedCard>
+                  <FeedThumbnail source={{ uri: item.media?.[0]?.url || item.thumbnail }} resizeMode="cover" />
+                  <FeedCaptionText numberOfLines={2}>{item.caption}</FeedCaptionText>
+                </FeedCard>
+              )}
+              keyExtractor={item => item._id}
+              numColumns={2}
+              scrollEnabled={false}
+              columnWrapperStyle={{ justifyContent: 'space-between', paddingHorizontal: 15 }}
+              ListEmptyComponent={<EmptyText>No feeds yet.</EmptyText>}
+            />
+          )}
+
+          {activeTab === 'Playlists' && (
+            <FlatList
+              data={playlists}
+              renderItem={({ item }) => (
+                <VideoCard>
+                   <Thumbnail source={{ uri: item.videos?.[0]?.thumbnail || 'https://via.placeholder.com/150' }} resizeMode="cover" />
+                   <VideoTitleText numberOfLines={2}>{item.name}</VideoTitleText>
+                   <VideoStatsText>{item.videos?.length || 0} videos</VideoStatsText>
+                </VideoCard>
+              )}
+              keyExtractor={item => item._id}
+              numColumns={2}
+              scrollEnabled={false}
+              columnWrapperStyle={{ justifyContent: 'space-between', paddingHorizontal: 15 }}
+              ListEmptyComponent={<EmptyText>No playlists yet.</EmptyText>}
+            />
+          )}
+
+          {activeTab === 'About' && (
+            <AboutSection>
+              <AboutText>{about || 'No description provided.'}</AboutText>
+            </AboutSection>
+          )}
+        </ContentAreaView>
       </ScrollView>
 
       <PostActionsModal
@@ -192,6 +282,27 @@ const StatLabelText = styled(Text)`
   margin-top: 4px;
 `;
 
+const HighlightsContainer = styled(View)`
+  padding-vertical: 10px;
+  background-color: #000;
+`;
+
+const HighlightCircle = styled(TouchableOpacity)`
+  width: 65px;
+  height: 65px;
+  border-radius: 32.5px;
+  border-width: 2px;
+  border-color: #541011;
+  margin-right: 15px;
+  overflow: hidden;
+  background-color: #111;
+`;
+
+const HighlightImage = styled(Image)`
+  width: 100%;
+  height: 100%;
+`;
+
 const ActionGrid = styled(View)`
   flex-direction: row;
   flex-wrap: wrap;
@@ -213,6 +324,83 @@ const ActionLabelText = styled(Text)`
   color: #ccc;
   font-size: 13px;
   font-weight: 500;
+`;
+
+const TabBarView = styled(View)`
+  flex-direction: row;
+  background-color: #000;
+  border-bottom-width: 1px;
+  border-bottom-color: #111;
+  margin-top: 10px;
+`;
+
+const TabTouchable = styled(TouchableOpacity)`
+  padding-vertical: 15px;
+  padding-horizontal: 15px;
+  border-bottom-width: 2px;
+  border-bottom-color: ${props => props.active ? '#541011' : 'transparent'};
+`;
+
+const TabLabelText = styled(Text)`
+  color: ${props => props.active ? '#541011' : '#888'};
+  font-weight: bold;
+  font-size: 12px;
+`;
+
+const ContentAreaView = styled(View)`
+  padding-top: 20px;
+  background-color: #000;
+  min-height: 400px;
+`;
+
+const VideoCard = styled(TouchableOpacity)`
+  width: 48%;
+  margin-bottom: 20px;
+`;
+
+const Thumbnail = styled(Image)`
+  width: 100%;
+  aspect-ratio: 1.77;
+  border-radius: 8px;
+  background-color: #111;
+`;
+
+const VideoTitleText = styled(Text)`
+  color: #ccc;
+  font-size: 13px;
+  margin-top: 8px;
+  font-weight: 500;
+`;
+
+const VideoStatsText = styled(Text)`
+  color: #555;
+  font-size: 11px;
+  margin-top: 2px;
+`;
+
+const FeedCard = styled(TouchableOpacity)`
+  width: 48%;
+  margin-bottom: 20px;
+`;
+
+const FeedThumbnail = styled(Image)`
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  background-color: #111;
+`;
+
+const FeedCaptionText = styled(Text)`
+  color: #ccc;
+  font-size: 12px;
+  margin-top: 8px;
+`;
+
+const EmptyText = styled(Text)`
+  color: #444;
+  text-align: center;
+  margin-vertical: 20px;
+  width: 100%;
 `;
 
 const AboutSection = styled(View)`
