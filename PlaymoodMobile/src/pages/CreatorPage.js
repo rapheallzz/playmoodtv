@@ -1,14 +1,22 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Image, ActivityIndicator, Alert, FlatList } from 'react-native';
 import styled from 'styled-components/native';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 import useChannelDetails from '../hooks/useChannelDetails';
 import useHighlights from '../hooks/useHighlights';
 import useFeeds from '../hooks/useFeeds';
 import usePlaylists from '../hooks/usePlaylists';
+import useCommunityPosts from '../hooks/useCommunityPosts';
 import PostActionsModal from '../components/PostActionsModal';
+import CreateCommunityPostModal from '../components/CreateCommunityPostModal';
+import CreatePlaylistModal from '../components/CreatePlaylistModal';
+import CreateHighlightModal from '../components/CreateHighlightModal';
+import CreateVideoModal from '../components/CreateVideoModal';
+import CreateFeedPostModal from '../components/CreateFeedPostModal';
 import { groupFeeds } from '../utils/feedUtils';
+import { uploadFile } from '../features/uploadSlice';
+import BASE_API_URL from '../apiConfig';
 
 const CreatorPage = ({ route, navigation }) => {
   const { user } = useSelector((state) => state.auth);
@@ -17,12 +25,26 @@ const CreatorPage = ({ route, navigation }) => {
     isLoading: isLoadingChannel
   } = useChannelDetails(user);
 
-  const { highlights, isLoading: isLoadingHighlights } = useHighlights(user);
-  const { feeds, isLoadingFeeds } = useFeeds(user);
-  const { playlists, isLoadingPlaylists } = usePlaylists(user);
+  const { highlights, isLoading: isLoadingHighlights, createHighlight, fetchHighlights } = useHighlights(user);
+  const { feeds, isLoadingFeeds, fetchFeeds, createFeedPost } = useFeeds(user);
+  const {
+    playlists,
+    isLoadingPlaylists,
+    handleCreateOrUpdatePlaylist,
+    fetchPlaylists,
+    setNewPlaylist
+  } = usePlaylists(user);
+  const { handleCreatePost, isLoadingPosts } = useCommunityPosts(user, 'COMMUNITY', null, BASE_API_URL);
+  const dispatch = useDispatch();
+  const { isUploading } = useSelector((state) => state.upload);
 
   const [activeTab, setActiveTab] = useState('Uploads');
   const [actionsVisible, setActionsVisible] = useState(false);
+  const [communityModalVisible, setCommunityModalVisible] = useState(false);
+  const [playlistModalVisible, setPlaylistModalVisible] = useState(false);
+  const [highlightModalVisible, setHighlightModalVisible] = useState(false);
+  const [videoModalVisible, setVideoModalVisible] = useState(false);
+  const [feedModalVisible, setFeedModalVisible] = useState(false);
 
   const processedFeeds = useMemo(() => groupFeeds(feeds), [feeds]);
 
@@ -54,7 +76,64 @@ const CreatorPage = ({ route, navigation }) => {
   };
 
   const handleActionSelect = (id) => {
-    Alert.alert('Action Selected', `The ${id} creation flow is coming soon to mobile.`);
+    if (id === 'community') {
+      setCommunityModalVisible(true);
+    } else if (id === 'playlist') {
+      setPlaylistModalVisible(true);
+    } else if (id === 'highlight') {
+      setHighlightModalVisible(true);
+    } else if (id === 'video') {
+      setVideoModalVisible(true);
+    } else if (id === 'feed') {
+      setFeedModalVisible(true);
+    } else {
+      Alert.alert('Action Selected', `The ${id} creation flow is coming soon to mobile.`);
+    }
+  };
+
+  const onCreateCommunityPost = async (content) => {
+    const result = await handleCreatePost(content);
+    if (result.success) {
+      Alert.alert('Success', 'Community post created successfully!');
+      setCommunityModalVisible(false);
+    } else {
+      Alert.alert('Error', result.error || 'Failed to create post.');
+    }
+  };
+
+  const onCreatePlaylist = async (playlistData) => {
+    setNewPlaylist(playlistData);
+    const result = await handleCreateOrUpdatePlaylist();
+    if (result.success) {
+      Alert.alert('Success', 'Playlist created successfully!');
+      setPlaylistModalVisible(false);
+      fetchPlaylists();
+    } else {
+      Alert.alert('Error', result.error || 'Failed to create playlist.');
+    }
+  };
+
+  const onUploadVideo = async (uploadData) => {
+    try {
+      await dispatch(uploadFile(uploadData)).unwrap();
+      Alert.alert('Success', 'Video upload started! You can check progress in the dashboard.');
+      setVideoModalVisible(false);
+    } catch (error) {
+      Alert.alert('Error', error.error || 'Failed to start upload.');
+    }
+  };
+
+  const onCreateFeedPost = async (caption, media) => {
+    try {
+      const result = await createFeedPost(caption, media);
+      if (result.success) {
+        Alert.alert('Success', 'Feed post created successfully!');
+        setFeedModalVisible(false);
+        fetchFeeds();
+      }
+    } catch (error) {
+      Alert.alert('Error', error.message || 'Failed to create feed post.');
+    }
   };
 
   return (
@@ -188,6 +267,41 @@ const CreatorPage = ({ route, navigation }) => {
         visible={actionsVisible}
         onClose={() => setActionsVisible(false)}
         onSelect={handleActionSelect}
+      />
+
+      <CreateCommunityPostModal
+        visible={communityModalVisible}
+        onClose={() => setCommunityModalVisible(false)}
+        onCreate={onCreateCommunityPost}
+        isLoading={isLoadingPosts}
+      />
+
+      <CreatePlaylistModal
+        visible={playlistModalVisible}
+        onClose={() => setPlaylistModalVisible(false)}
+        onCreate={onCreatePlaylist}
+        isLoading={isLoadingPlaylists}
+      />
+
+      <CreateHighlightModal
+        visible={highlightModalVisible}
+        onClose={() => setHighlightModalVisible(false)}
+        onCreate={createHighlight}
+        availableVideos={uploads}
+      />
+
+      <CreateVideoModal
+        visible={videoModalVisible}
+        onClose={() => setVideoModalVisible(false)}
+        onUpload={onUploadVideo}
+        isLoading={isUploading}
+      />
+
+      <CreateFeedPostModal
+        visible={feedModalVisible}
+        onClose={() => setFeedModalVisible(false)}
+        onCreate={onCreateFeedPost}
+        isLoading={isLoadingFeeds}
       />
     </Container>
   );

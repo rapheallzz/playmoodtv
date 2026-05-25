@@ -3,6 +3,7 @@ import axios from 'axios';
 import BASE_API_URL, { CLOUDINARY_CLOUD_NAME } from '../apiConfig';
 import uploadService from '../features/uploadService';
 import { getFileContentType } from '../utils/fileUtils';
+import * as VideoThumbnails from 'expo-video-thumbnails';
 
 const useFeeds = (user, creatorId = null) => {
   const [feeds, setFeeds] = useState([]);
@@ -33,13 +34,13 @@ const useFeeds = (user, creatorId = null) => {
     }
   };
 
-  const createFeedPost = async (caption, mediaFiles, previews, selectedExisting = []) => {
+  const createFeedPost = async (caption, mediaFiles, selectedExisting = []) => {
     if (!user) return;
     try {
       // Step 1: Upload new media files
-      const uploadPromises = mediaFiles.map(async (file, index) => {
-        const preview = previews[index];
-
+      const uploadPromises = mediaFiles.map(async (mediaItem) => {
+        const file = await fetch(mediaItem.uri).then(r => r.blob());
+        file.name = mediaItem.fileName || `media-${Date.now()}`;
         // Upload main file
         const contentType = getFileContentType(file);
         const signatureFormData = new FormData();
@@ -55,23 +56,30 @@ const useFeeds = (user, creatorId = null) => {
 
         let thumbnailData = null;
         // Upload generated thumbnail if it's a video
-        if (file.type.startsWith('video/') && preview.thumbnailBlob) {
-          const thumbFileName = `thumb-${file.name.split('.')[0]}.jpg`;
-          const thumbFormData = new FormData();
-          thumbFormData.append('provider', 'r2');
-          thumbFormData.append('fileName', thumbFileName);
-          thumbFormData.append('contentType', 'image/jpeg');
+        if (file.type?.startsWith('video/') || mediaItem.uri?.endsWith('.mp4')) {
+          try {
+            const { uri: thumbUri } = await VideoThumbnails.getThumbnailAsync(mediaItem.uri, { time: 0 });
+            const thumbFileName = `thumb-${Date.now()}.jpg`;
+            const thumbFormData = new FormData();
+            thumbFormData.append('provider', 'r2');
+            thumbFormData.append('fileName', thumbFileName);
+            thumbFormData.append('contentType', 'image/jpeg');
 
-          const thumbSigResponse = await api.post('/api/content/signature', thumbFormData, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-          });
-          const { uploadUrl: thumbUploadUrl, key: thumbKey, publicUrl: thumbPublicUrl } = thumbSigResponse.data;
-          await uploadService.uploadToR2(preview.thumbnailBlob, thumbUploadUrl, 'image/jpeg');
+            const thumbSigResponse = await api.post('/api/content/signature', thumbFormData, {
+              headers: { 'Content-Type': 'multipart/form-data' }
+            });
+            const { uploadUrl: thumbUploadUrl, key: thumbKey, publicUrl: thumbPublicUrl } = thumbSigResponse.data;
 
-          thumbnailData = {
-            url: thumbPublicUrl || thumbUploadUrl,
-            key: thumbKey
-          };
+            const thumbBlob = await fetch(thumbUri).then(r => r.blob());
+            await uploadService.uploadToR2(thumbBlob, thumbUploadUrl, 'image/jpeg');
+
+            thumbnailData = {
+              url: thumbPublicUrl || thumbUploadUrl,
+              key: thumbKey
+            };
+          } catch (e) {
+            console.warn('Failed to generate thumbnail', e);
+          }
         }
 
         return {
