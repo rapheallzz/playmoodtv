@@ -1,23 +1,46 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { View, Text, Image, ScrollView, TouchableOpacity, ActivityIndicator, FlatList, Alert } from 'react-native';
 import styled from 'styled-components/native';
+
+const SectionTitleText = styled(Text)`
+  color: #541011;
+  font-size: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-top: 15px;
+  margin-bottom: 10px;
+  padding-horizontal: 15px;
+`;
 import axios from 'axios';
 import BASE_API_URL from '../apiConfig';
 import { useSelector } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
+import useHighlights from '../hooks/useHighlights';
+import useFeeds from '../hooks/useFeeds';
+import usePlaylists from '../hooks/usePlaylists';
+import { groupFeeds } from '../utils/feedUtils';
 
 const CreatorChannel = ({ route, navigation }) => {
   const { creatorSlug, creatorId: routeCreatorId } = route.params || {};
-  const user = useSelector((state) => state.auth.user);
-  const currentUserId = user?._id || null;
+  const user = useSelector((state) => state.auth);
+  const currentUser = user.user;
+  const currentUserId = currentUser?._id || currentUser?.userId || null;
 
   const [creatorData, setCreatorData] = useState(null);
   const [videos, setVideos] = useState([]);
+  const [communityPosts, setCommunityPosts] = useState([]);
+  const [isLoadingPosts, setIsLoadingPosts] = useState(false);
   const [activeTab, setActiveTab] = useState('VIDEOS');
   const [isLoading, setIsLoading] = useState(true);
   const [subscribed, setSubscribed] = useState(false);
 
   const creatorId = creatorSlug ? creatorSlug.split('-').pop() : routeCreatorId;
+
+  const { highlights, isLoading: isLoadingHighlights } = useHighlights(currentUser, creatorId);
+  const { feeds, isLoadingFeeds } = useFeeds(currentUser, creatorId);
+  const { playlists, isLoadingPlaylists } = usePlaylists(currentUser, creatorId);
+
+  const processedFeeds = useMemo(() => groupFeeds(feeds), [feeds]);
 
   useEffect(() => {
     const fetchCreatorData = async () => {
@@ -39,6 +62,25 @@ const CreatorChannel = ({ route, navigation }) => {
     };
     fetchCreatorData();
   }, [creatorId, currentUserId]);
+
+  const fetchCommunityPosts = async () => {
+    if (!creatorId) return;
+    setIsLoadingPosts(true);
+    try {
+      const response = await axios.get(`${BASE_API_URL}/api/community/${creatorId}`);
+      setCommunityPosts(response.data || []);
+    } catch (error) {
+      console.error('Error fetching community posts:', error);
+    } finally {
+      setIsLoadingPosts(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'COMMUNITY' && communityPosts.length === 0) {
+      fetchCommunityPosts();
+    }
+  }, [activeTab]);
 
   const toggleSubscribe = async () => {
     if (!currentUserId) {
@@ -104,6 +146,18 @@ const CreatorChannel = ({ route, navigation }) => {
           </TabTouchable>
         </TabBarView>
 
+        <HighlightsContainer>
+           <SectionTitleText>Highlights</SectionTitleText>
+           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 20 }}>
+              {highlights.map((item, index) => (
+                <HighlightCircle key={item._id || index}>
+                   <HighlightImage source={{ uri: item.thumbnail || item.content?.thumbnail }} />
+                </HighlightCircle>
+              ))}
+              {highlights.length === 0 && <EmptyText>No highlights yet.</EmptyText>}
+           </ScrollView>
+        </HighlightsContainer>
+
         <ContentAreaView>
           {activeTab === 'VIDEOS' && (
             <FlatList
@@ -113,13 +167,65 @@ const CreatorChannel = ({ route, navigation }) => {
               numColumns={2}
               scrollEnabled={false}
               columnWrapperStyle={{ justifyContent: 'space-between', paddingHorizontal: 15 }}
+              ListEmptyComponent={<EmptyText>No videos available.</EmptyText>}
             />
           )}
-          {activeTab !== 'VIDEOS' && (
-            <EmptyStateView>
-              <Ionicons name="construct-outline" size={48} color="#222" />
-              <EmptyText>{`This section is coming soon to mobile.`}</EmptyText>
-            </EmptyStateView>
+
+          {activeTab === 'FEEDS' && (
+            <FlatList
+              data={processedFeeds}
+              renderItem={({ item }) => (
+                <VideoCard onPress={() => navigation.navigate('MoviePlayer', { movie: item })}>
+                  <Thumbnail source={{ uri: item.media?.[0]?.url || item.thumbnail }} resizeMode="cover" />
+                  <VideoTitleText numberOfLines={2}>{item.caption}</VideoTitleText>
+                </VideoCard>
+              )}
+              keyExtractor={item => item._id}
+              numColumns={2}
+              scrollEnabled={false}
+              columnWrapperStyle={{ justifyContent: 'space-between', paddingHorizontal: 15 }}
+              ListEmptyComponent={<EmptyText>No feeds available.</EmptyText>}
+            />
+          )}
+
+          {activeTab === 'PLAYLISTS' && (
+            <FlatList
+              data={playlists}
+              renderItem={({ item }) => (
+                <VideoCard>
+                   <Thumbnail source={{ uri: item.videos?.[0]?.thumbnail || 'https://via.placeholder.com/150' }} resizeMode="cover" />
+                   <VideoTitleText numberOfLines={2}>{item.name}</VideoTitleText>
+                   <VideoStatsText>{item.videos?.length || 0} videos</VideoStatsText>
+                </VideoCard>
+              )}
+              keyExtractor={item => item._id}
+              numColumns={2}
+              scrollEnabled={false}
+              columnWrapperStyle={{ justifyContent: 'space-between', paddingHorizontal: 15 }}
+              ListEmptyComponent={<EmptyText>No playlists available.</EmptyText>}
+            />
+          )}
+
+          {activeTab === 'COMMUNITY' && (
+            <FlatList
+              data={communityPosts}
+              renderItem={({ item }) => (
+                <PostCard>
+                  <PostHeader>
+                    <PostProfileImage source={{ uri: item.user?.profileImage }} />
+                    <View>
+                      <PostCreatorText>{item.user?.name}</PostCreatorText>
+                      <PostTimestampText>{new Date(item.timestamp).toLocaleDateString()}</PostTimestampText>
+                    </View>
+                  </PostHeader>
+                  <PostContentText>{item.content}</PostContentText>
+                </PostCard>
+              )}
+              keyExtractor={item => item._id}
+              scrollEnabled={false}
+              ListEmptyComponent={isLoadingPosts ? <ActivityIndicator color="#541011" /> : <EmptyText>No community posts available.</EmptyText>}
+              contentContainerStyle={{ paddingHorizontal: 15 }}
+            />
           )}
         </ContentAreaView>
       </ScrollView>
@@ -233,6 +339,7 @@ const Thumbnail = styled(Image)`
   width: 100%;
   aspect-ratio: 1.77;
   border-radius: 8px;
+  background-color: #111;
 `;
 
 const VideoTitleText = styled(Text)`
@@ -248,6 +355,27 @@ const VideoStatsText = styled(Text)`
   margin-top: 2px;
 `;
 
+const HighlightsContainer = styled(View)`
+  padding-vertical: 10px;
+  background-color: #000;
+`;
+
+const HighlightCircle = styled(TouchableOpacity)`
+  width: 65px;
+  height: 65px;
+  border-radius: 32.5px;
+  border-width: 2px;
+  border-color: #541011;
+  margin-right: 15px;
+  overflow: hidden;
+  background-color: #111;
+`;
+
+const HighlightImage = styled(Image)`
+  width: 100%;
+  height: 100%;
+`;
+
 const EmptyStateView = styled(View)`
   padding: 60px;
   align-items: center;
@@ -257,6 +385,45 @@ const EmptyText = styled(Text)`
   color: #444;
   margin-top: 15px;
   text-align: center;
+  width: 100%;
+`;
+
+const PostCard = styled(View)`
+  background-color: #111;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+`;
+
+const PostHeader = styled(View)`
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 10px;
+`;
+
+const PostProfileImage = styled(Image)`
+  width: 35px;
+  height: 35px;
+  border-radius: 17.5px;
+  margin-right: 10px;
+  background-color: #222;
+`;
+
+const PostCreatorText = styled(Text)`
+  color: #fff;
+  font-size: 14px;
+  font-weight: bold;
+`;
+
+const PostTimestampText = styled(Text)`
+  color: #666;
+  font-size: 11px;
+`;
+
+const PostContentText = styled(Text)`
+  color: #ccc;
+  font-size: 14px;
+  line-height: 20px;
 `;
 
 export default CreatorChannel;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Image, ActivityIndicator, Alert, FlatList } from 'react-native';
 import styled from 'styled-components/native';
 import { useSelector } from 'react-redux';
@@ -24,7 +24,7 @@ const CreatorPage = ({ route, navigation }) => {
   const [activeTab, setActiveTab] = useState('Uploads');
   const [actionsVisible, setActionsVisible] = useState(false);
 
-  const processedFeeds = React.useMemo(() => groupFeeds(feeds), [feeds]);
+  const processedFeeds = useMemo(() => groupFeeds(feeds), [feeds]);
 
   if (!user || user.role !== 'creator') {
     return (

@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import BASE_API_URL from '../apiConfig';
 
-const usePlaylists = (user) => {
+const usePlaylists = (user, creatorId = null) => {
   const [playlists, setPlaylists] = useState([]);
   const [isLoadingPlaylists, setIsLoadingPlaylists] = useState(false);
   const [newPlaylist, setNewPlaylist] = useState({ name: '', description: '', visibility: 'public' });
@@ -15,16 +15,16 @@ const usePlaylists = (user) => {
 
   // Fetch all user's playlists
   const fetchPlaylists = useCallback(async () => {
-    const userId = user?._id || user?.userId;
-    if (!userId || !user.token) {
-      if (!userId) setErrorMessage('User not authenticated.');
+    const userId = creatorId || user?._id || user?.userId;
+    if (!userId) {
+      setErrorMessage('User not identified.');
       return;
     }
     setIsLoadingPlaylists(true);
     try {
       const response = await axios.get(
-        `${BASE_API_URL}/api/playlists/user/${userId}`,
-        { headers: { Authorization: `Bearer ${user.token}` } }
+        `${BASE_API_URL}/api/playlists/user/${userId}${creatorId ? '/public' : ''}`,
+        { headers: user?.token ? { Authorization: `Bearer ${user.token}` } : {} }
       );
       const playlistsData = Array.isArray(response.data.playlists) ? response.data.playlists : [];
       setPlaylists(playlistsData);
