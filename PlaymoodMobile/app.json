@@ -28,7 +28,8 @@
             "LAUNCHER"
           ]
         }
-      ]
+      ],
+      "package": "com.rightsort.PlaymoodMobile"
     },
     "web": {
       "favicon": "./assets/favicon.png"
