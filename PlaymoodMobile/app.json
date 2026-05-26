@@ -28,7 +28,8 @@
             "LAUNCHER"
           ]
         }
-      ]
+      ],
+      "package": "com.rightsort.PlaymoodMobile"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -36,6 +37,11 @@
     "plugins": [
       "expo-font",
       "expo-asset"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "894dad49-3055-40a7-8c0d-1152cd6d2fb3"
+      }
+    }
   }
 }
