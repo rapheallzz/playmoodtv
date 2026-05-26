@@ -17,12 +17,24 @@ const useCommunityPosts = (user, activeTab, socket, apiUrl) => {
       setIsLoadingPosts(true);
       try {
         const response = await axios.get(
-          `${apiUrl}/api/community/${userId}`,
+          `${apiUrl}/api/channel/${userId}`,
           {
             headers: { Authorization: `Bearer ${user.token}` },
           }
         );
-        setCommunityPosts(response.data || []);
+        const posts = Array.isArray(response.data.communityPosts)
+          ? response.data.communityPosts.map(post => ({
+              ...post,
+              likes: Array.isArray(post.likes) ? post.likes : [],
+              comments: Array.isArray(post.comments) ? post.comments : [],
+              user: post.user ? {
+                ...post.user,
+                profileImage: post.user.profileImage?.url || post.user.profileImage || ''
+              } : { _id: userId, name: user.name, profileImage: user.profileImage?.url || user.profileImage || '' },
+              createdAt: post.createdAt || post.timestamp || new Date().toISOString(),
+            }))
+          : [];
+        setCommunityPosts(posts);
         setErrorMessage('');
       } catch (error) {
         setErrorMessage('Failed to load community posts.');
@@ -31,7 +43,7 @@ const useCommunityPosts = (user, activeTab, socket, apiUrl) => {
       }
     };
 
-    if (user && (user._id || user.userId) && activeTab === 'COMMUNITY') {
+    if (user && (user._id || user.userId) && (activeTab === 'COMMUNITY' || activeTab === 'Community')) {
       fetchCommunityPosts();
     }
   }, [user, activeTab, apiUrl]);

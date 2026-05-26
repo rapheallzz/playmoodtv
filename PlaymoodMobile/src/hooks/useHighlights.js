@@ -10,7 +10,10 @@ const useHighlights = (user, creatorId) => {
 
   const fetchHighlights = useCallback(async () => {
     const idToFetch = creatorId || user?._id || user?.userId;
-    if (!idToFetch) return;
+    if (!idToFetch) {
+      setIsLoading(false);
+      return;
+    }
 
     setIsLoading(true);
     setError(null);
@@ -20,7 +23,15 @@ const useHighlights = (user, creatorId) => {
           'Cache-Control': 'no-cache',
         },
       });
-      setHighlights(response.data);
+      const normalizedHighlights = Array.isArray(response.data) ? response.data.map(h => ({
+        ...h,
+        thumbnail: h.thumbnail?.url || h.thumbnail || '',
+        content: h.content ? {
+          ...h.content,
+          thumbnail: h.content.thumbnail?.url || h.content.thumbnail || ''
+        } : null
+      })) : [];
+      setHighlights(normalizedHighlights);
     } catch (err) {
       setError(err.response?.data?.error || err.response?.data?.message || 'Failed to fetch highlights.');
     } finally {

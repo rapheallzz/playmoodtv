@@ -18,6 +18,7 @@ const usePlaylists = (user, creatorId = null) => {
     const userId = creatorId || user?._id || user?.userId;
     if (!userId) {
       setErrorMessage('User not identified.');
+      setIsLoadingPlaylists(false);
       return;
     }
     setIsLoadingPlaylists(true);
@@ -26,7 +27,13 @@ const usePlaylists = (user, creatorId = null) => {
         `${BASE_API_URL}/api/playlists/user/${userId}${creatorId ? '/public' : ''}`,
         { headers: user?.token ? { Authorization: `Bearer ${user.token}` } : {} }
       );
-      const playlistsData = Array.isArray(response.data.playlists) ? response.data.playlists : [];
+      const playlistsData = Array.isArray(response.data.playlists) ? response.data.playlists.map(p => ({
+        ...p,
+        videos: Array.isArray(p.videos) ? p.videos.map(v => ({
+          ...v,
+          thumbnail: v.thumbnail?.url || v.thumbnail || ''
+        })) : []
+      })) : [];
       setPlaylists(playlistsData);
       setErrorMessage('');
     } catch (error) {
@@ -72,7 +79,11 @@ const usePlaylists = (user, creatorId = null) => {
         `${BASE_API_URL}/api/channel/my-channel/${userId}`,
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
-      setAvailableVideos(response.data.content.filter(video => video.isApproved) || []);
+      const normalizedContent = Array.isArray(response.data.content) ? response.data.content.map(v => ({
+        ...v,
+        thumbnail: v.thumbnail?.url || v.thumbnail || ''
+      })) : [];
+      setAvailableVideos(normalizedContent.filter(video => video.isApproved) || []);
     } catch (error) {
       setErrorMessage('Failed to load available videos.');
     }

@@ -34,9 +34,12 @@ const useChannelDetails = (user) => {
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
       const content = Array.isArray(response.data.content) ? response.data.content : [];
-      const uniqueContent = [...new Map(content.map(item => [item._id, item])).values()];
-      setBannerImage(response.data.bannerImage || '');
-      setProfileImage(response.data.profileImage || '');
+      const uniqueContent = [...new Map(content.map(item => [item._id, item])).values()].map(item => ({
+        ...item,
+        thumbnail: item.thumbnail?.url || item.thumbnail || ''
+      }));
+      setBannerImage(response.data.bannerImage?.url || response.data.bannerImage || '');
+      setProfileImage(response.data.profileImage?.url || response.data.profileImage || '');
       setCreatorName(response.data.name || '');
       setAbout(response.data.about || '');
       setInstagram(response.data.instagram || '');

@@ -34,7 +34,11 @@ const CreatorPage = ({ route, navigation }) => {
     fetchPlaylists,
     setNewPlaylist
   } = usePlaylists(user);
-  const { handleCreatePost, isLoadingPosts } = useCommunityPosts(user, 'COMMUNITY', null, BASE_API_URL);
+  const {
+    communityPosts,
+    handleCreatePost,
+    isLoadingPosts
+  } = useCommunityPosts(user, activeTab, null, BASE_API_URL);
   const dispatch = useDispatch();
   const { isUploading } = useSelector((state) => state.upload);
 
@@ -143,7 +147,7 @@ const CreatorPage = ({ route, navigation }) => {
 
         <HeaderView>
            <ProfileContainer>
-              <ProfileImage source={{ uri: profileImage }} />
+              <ProfileImage source={{ uri: profileImage || 'https://via.placeholder.com/70' }} />
            </ProfileContainer>
            <HeaderInfo>
               <CreatorNameText>{creatorName}</CreatorNameText>
@@ -164,7 +168,7 @@ const CreatorPage = ({ route, navigation }) => {
            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 20 }}>
               {highlights.map((item, index) => (
                 <HighlightCircle key={item._id || index}>
-                   <HighlightImage source={{ uri: item.thumbnail || item.content?.thumbnail }} />
+                   <HighlightImage source={{ uri: item.thumbnail || item.content?.thumbnail || 'https://via.placeholder.com/65' }} />
                 </HighlightCircle>
               ))}
               {highlights.length === 0 && <EmptyText>No highlights yet.</EmptyText>}
@@ -191,7 +195,7 @@ const CreatorPage = ({ route, navigation }) => {
         </ActionGrid>
 
         <TabBarView stickyHeaderIndices={[0]}>
-          {['Uploads', 'Feeds', 'Playlists', 'About'].map((tab) => (
+          {['Uploads', 'Feeds', 'Playlists', 'Community', 'About'].map((tab) => (
             <TabTouchable
               key={tab}
               active={activeTab === tab}
@@ -208,7 +212,7 @@ const CreatorPage = ({ route, navigation }) => {
               data={uploads}
               renderItem={({ item }) => (
                 <VideoCard onPress={() => navigation.navigate('MoviePlayer', { movie: item })}>
-                  <Thumbnail source={{ uri: item.thumbnail }} resizeMode="cover" />
+                  <Thumbnail source={{ uri: item.thumbnail || 'https://via.placeholder.com/150' }} resizeMode="cover" />
                   <VideoTitleText numberOfLines={2}>{item.title}</VideoTitleText>
                 </VideoCard>
               )}
@@ -225,7 +229,7 @@ const CreatorPage = ({ route, navigation }) => {
               data={processedFeeds}
               renderItem={({ item }) => (
                 <FeedCard>
-                  <FeedThumbnail source={{ uri: item.media?.[0]?.url || item.thumbnail }} resizeMode="cover" />
+                  <FeedThumbnail source={{ uri: item.media?.[0]?.url || item.thumbnail || 'https://via.placeholder.com/150' }} resizeMode="cover" />
                   <FeedCaptionText numberOfLines={2}>{item.caption}</FeedCaptionText>
                 </FeedCard>
               )}
@@ -252,6 +256,28 @@ const CreatorPage = ({ route, navigation }) => {
               scrollEnabled={false}
               columnWrapperStyle={{ justifyContent: 'space-between', paddingHorizontal: 15 }}
               ListEmptyComponent={<EmptyText>No playlists yet.</EmptyText>}
+            />
+          )}
+
+          {activeTab === 'Community' && (
+            <FlatList
+              data={communityPosts}
+              renderItem={({ item }) => (
+                <PostCardView>
+                  <PostHeaderView>
+                    <PostProfileImage source={{ uri: item.user?.profileImage || 'https://via.placeholder.com/35' }} />
+                    <View>
+                      <PostCreatorText>{item.user?.name}</PostCreatorText>
+                      <PostTimestampText>{(item.createdAt || item.timestamp) ? new Date(item.createdAt || item.timestamp).toLocaleDateString() : ''}</PostTimestampText>
+                    </View>
+                  </PostHeaderView>
+                  <PostContentText>{item.content}</PostContentText>
+                </PostCardView>
+              )}
+              keyExtractor={item => item._id}
+              scrollEnabled={false}
+              ListEmptyComponent={isLoadingPosts ? <ActivityIndicator color="#541011" /> : <EmptyText>No community posts yet.</EmptyText>}
+              contentContainerStyle={{ paddingHorizontal: 15 }}
             />
           )}
 
@@ -533,6 +559,44 @@ const AboutText = styled(Text)`
   color: #888;
   font-size: 14px;
   line-height: 22px;
+`;
+
+const PostCardView = styled(View)`
+  background-color: #111;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+`;
+
+const PostHeaderView = styled(View)`
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 10px;
+`;
+
+const PostProfileImage = styled(Image)`
+  width: 35px;
+  height: 35px;
+  border-radius: 17.5px;
+  margin-right: 10px;
+  background-color: #222;
+`;
+
+const PostCreatorText = styled(Text)`
+  color: #fff;
+  font-size: 14px;
+  font-weight: bold;
+`;
+
+const PostTimestampText = styled(Text)`
+  color: #666;
+  font-size: 11px;
+`;
+
+const PostContentText = styled(Text)`
+  color: #ccc;
+  font-size: 14px;
+  line-height: 20px;
 `;
 
 export default CreatorPage;

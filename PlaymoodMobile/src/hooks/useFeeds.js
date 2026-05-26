@@ -20,13 +20,25 @@ const useFeeds = (user, creatorId = null) => {
 
   const fetchFeeds = async () => {
     const userIdToFetch = creatorId || user?._id || user?.userId;
-    if (!userIdToFetch) return;
+    if (!userIdToFetch) {
+      setIsLoadingFeeds(false);
+      return;
+    }
 
     setIsLoadingFeeds(true);
     setError(null);
     try {
       const response = await api.get(`/api/feed/user/${userIdToFetch}`);
-      setFeeds(response.data);
+      const normalizedFeeds = Array.isArray(response.data) ? response.data.map(feed => ({
+        ...feed,
+        thumbnail: feed.thumbnail?.url || feed.thumbnail || '',
+        media: Array.isArray(feed.media) ? feed.media.map(m => ({
+          ...m,
+          url: m.url || '',
+          thumbnail: m.thumbnail?.url || m.thumbnail || ''
+        })) : []
+      })) : [];
+      setFeeds(normalizedFeeds);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to fetch feeds.');
     } finally {
