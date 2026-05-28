@@ -58,7 +58,7 @@ const HighlightsHome = ({ onSelect }) => {
 };
 
 const Container = styled(View)`
-  margin-vertical: 15px;
+  margin-vertical: 5px;
 `;
 
 const SectionTitle = styled(Text)`

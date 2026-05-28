@@ -64,8 +64,8 @@ const Home = ({ navigation }) => {
     if (!data || data.length === 0) return null;
 
     const carouselWidth = isTV ? (windowWidth - 260) : windowWidth;
-    const itemWidth = isTV ? (circular ? 200 : 320) : (circular ? 135 : 175);
-    const itemHeight = isTV ? (circular ? 250 : 220) : (circular ? 160 : 180);
+    const itemWidth = isTV ? (circular ? 200 : 320) : (circular ? 135 : 160);
+    const itemHeight = isTV ? (circular ? 250 : 220) : (circular ? 160 : 240);
 
     return (
       <Section isTV={isTV}>
@@ -76,6 +76,9 @@ const Home = ({ navigation }) => {
           height={itemHeight}
           style={{ width: carouselWidth }}
           data={data}
+          panGestureHandlerProps={{
+            activeOffsetX: [-10, 10],
+          }}
           scrollAnimationDuration={1000}
           renderItem={({ item }) => (
             circular ? (
@@ -176,7 +179,7 @@ const LoadingContainer = styled(View)`
 `;
 
 const Section = styled(View)`
-  margin-vertical: ${props => props.isTV ? '30px' : '15px'};
+  margin-vertical: ${props => props.isTV ? '30px' : '5px'};
 `;
 
 const SectionTitle = styled(Text)`
@@ -184,11 +187,11 @@ const SectionTitle = styled(Text)`
   font-size: ${props => props.isTV ? '24px' : '18px'};
   font-weight: bold;
   margin-left: 15px;
-  margin-bottom: 15px;
+  margin-bottom: 8px;
 `;
 
 const ContentCard = styled(TouchableOpacity)`
-  width: ${isTV ? '300px' : '160px'};
+  width: ${isTV ? '300px' : '145px'};
   margin-left: 15px;
   transform: ${props => props.isFocused ? 'scale(1.1)' : 'scale(1)'};
   border-width: ${props => props.isFocused ? '4px' : '0px'};
@@ -217,7 +220,7 @@ const TVContentCard = ({ item, onPress }) => {
 
 const CardImage = styled(Image)`
   width: 100%;
-  height: ${isTV ? '168px' : '90px'};
+  height: ${isTV ? '168px' : '200px'};
   border-radius: 8px;
 `;
 
@@ -225,6 +228,7 @@ const CardTitle = styled(Text)`
   color: #ccc;
   font-size: 12px;
   margin-top: 5px;
+  margin-left: 5px;
 `;
 
 export default Home;
