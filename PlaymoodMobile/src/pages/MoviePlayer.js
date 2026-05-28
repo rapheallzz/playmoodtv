@@ -11,6 +11,7 @@ import {
   Share,
   TextInput,
   Image,
+  StatusBar,
 } from 'react-native';
 import { Video } from 'expo-av';
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
@@ -92,10 +93,18 @@ const MoviePlayer = ({ route, navigation }) => {
 
   const fetchResumeData = async () => {
     try {
-      const response = await axios.get(`${BASE_API_URL}/api/content/resume`, {
+      const response = await axios.get(`${BASE_API_URL}/api/content/continue-watching`, {
         headers: { Authorization: `Bearer ${user.token}` },
       });
-      setResumeData(response.data || []);
+      if (response.data && response.data.continueWatching) {
+        const formattedData = response.data.continueWatching.map(item => ({
+          ...item,
+          _id: item.contentId || item._id
+        }));
+        setResumeData(formattedData);
+      } else {
+        setResumeData([]);
+      }
     } catch (error) {
       console.error('Error fetching resume data:', error);
     }
@@ -259,7 +268,8 @@ const MoviePlayer = ({ route, navigation }) => {
 
   return (
     <View style={[styles.container, isTV && styles.tvContainer]}>
-      <View style={isTV ? styles.tvVideoWrapper : {}}>
+      <StatusBar barStyle="light-content" backgroundColor="#000" />
+      <View style={[isTV ? styles.tvVideoWrapper : styles.videoWrapper]}>
         <Video
           ref={videoRef}
           source={{ uri: movie.video }}
@@ -402,8 +412,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   video: {
-    width: isTV ? '100%' : windowWidth,
-    height: isTV ? '100%' : windowWidth * (9 / 16),
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#000',
+  },
+  videoWrapper: {
+    width: windowWidth,
+    aspectRatio: 16 / 9,
+    marginTop: Platform.OS === 'ios' ? 50 : 30, // Push down to avoid status bar
     backgroundColor: '#000',
   },
   tvContainer: {
