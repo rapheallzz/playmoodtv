@@ -19,6 +19,7 @@ import useHighlights from '../hooks/useHighlights';
 import useFeeds from '../hooks/useFeeds';
 import usePlaylists from '../hooks/usePlaylists';
 import { groupFeeds } from '../utils/feedUtils';
+import HighlightViewerModal from '../components/HighlightViewerModal';
 
 const CreatorChannel = ({ route, navigation }) => {
   const { creatorSlug, creatorId: routeCreatorId } = route.params || {};
@@ -33,6 +34,8 @@ const CreatorChannel = ({ route, navigation }) => {
   const [activeTab, setActiveTab] = useState('VIDEOS');
   const [isLoading, setIsLoading] = useState(true);
   const [subscribed, setSubscribed] = useState(false);
+  const [highlightVisible, setHighlightVisible] = useState(false);
+  const [highlightStartIndex, setHighlightStartIndex] = useState(0);
 
   const creatorId = creatorSlug ? creatorSlug.split('-').pop() : routeCreatorId;
 
@@ -97,6 +100,19 @@ const CreatorChannel = ({ route, navigation }) => {
     }
   };
 
+  const openHighlight = (index) => {
+    setHighlightStartIndex(index);
+    setHighlightVisible(true);
+  };
+
+  const navigateToCreator = (user) => {
+    if (!user) return;
+    setHighlightVisible(false);
+    const userId = user._id || user;
+    if (userId === creatorId) return; // Already on this channel
+    navigation.navigate('CreatorChannel', { creatorId: userId });
+  };
+
   const renderVideoItem = ({ item }) => (
     <VideoCard onPress={() => navigation.navigate('MoviePlayer', { movie: item })}>
       <Thumbnail source={{ uri: item.thumbnail }} resizeMode="cover" />
@@ -150,7 +166,7 @@ const CreatorChannel = ({ route, navigation }) => {
            <SectionTitleText>Highlights</SectionTitleText>
            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 20 }}>
               {highlights.map((item, index) => (
-                <HighlightCircle key={item._id || index}>
+                <HighlightCircle key={item._id || index} onPress={() => openHighlight(index)}>
                    <HighlightImage source={{ uri: item.thumbnail || item.content?.thumbnail }} />
                 </HighlightCircle>
               ))}
@@ -229,6 +245,14 @@ const CreatorChannel = ({ route, navigation }) => {
           )}
         </ContentAreaView>
       </ScrollView>
+
+      <HighlightViewerModal
+        visible={highlightVisible}
+        highlights={highlights}
+        initialIndex={highlightStartIndex}
+        onClose={() => setHighlightVisible(false)}
+        onProfilePress={navigateToCreator}
+      />
     </Container>
   );
 };

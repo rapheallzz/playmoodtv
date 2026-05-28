@@ -14,6 +14,7 @@ import CreatePlaylistModal from '../components/CreatePlaylistModal';
 import CreateHighlightModal from '../components/CreateHighlightModal';
 import CreateVideoModal from '../components/CreateVideoModal';
 import CreateFeedPostModal from '../components/CreateFeedPostModal';
+import HighlightViewerModal from '../components/HighlightViewerModal';
 import { groupFeeds } from '../utils/feedUtils';
 import { uploadFile } from '../features/uploadSlice';
 import BASE_API_URL from '../apiConfig';
@@ -51,6 +52,8 @@ const CreatorPage = ({ route, navigation }) => {
   const [highlightModalVisible, setHighlightModalVisible] = useState(false);
   const [videoModalVisible, setVideoModalVisible] = useState(false);
   const [feedModalVisible, setFeedModalVisible] = useState(false);
+  const [highlightViewerVisible, setHighlightViewerVisible] = useState(false);
+  const [highlightStartIndex, setHighlightStartIndex] = useState(0);
 
   const processedFeeds = useMemo(() => groupFeeds(feeds), [feeds]);
 
@@ -79,6 +82,19 @@ const CreatorPage = ({ route, navigation }) => {
 
   const navigateToPublicChannel = () => {
     navigation.navigate('CreatorChannel', { creatorId: user?._id || user?.userId });
+  };
+
+  const openHighlightViewer = (index) => {
+    setHighlightStartIndex(index);
+    setHighlightViewerVisible(true);
+  };
+
+  const navigateToCreator = (creator) => {
+    if (!creator) return;
+    setHighlightViewerVisible(false);
+    const creatorId = creator._id || creator;
+    if (creatorId === (user?._id || user?.userId)) return;
+    navigation.navigate('CreatorChannel', { creatorId });
   };
 
   const handleActionSelect = (id) => {
@@ -176,7 +192,7 @@ const CreatorPage = ({ route, navigation }) => {
            <SectionTitleText>Highlights</SectionTitleText>
            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 20 }}>
               {highlights.map((item, index) => (
-                <HighlightCircle key={item._id || index}>
+                <HighlightCircle key={item._id || index} onPress={() => openHighlightViewer(index)}>
                    <HighlightImage source={{ uri: item.thumbnail || item.content?.thumbnail || 'https://via.placeholder.com/65' }} />
                 </HighlightCircle>
               ))}
@@ -337,6 +353,14 @@ const CreatorPage = ({ route, navigation }) => {
         onClose={() => setFeedModalVisible(false)}
         onCreate={onCreateFeedPost}
         isLoading={isLoadingFeeds}
+      />
+
+      <HighlightViewerModal
+        visible={highlightViewerVisible}
+        highlights={highlights}
+        initialIndex={highlightStartIndex}
+        onClose={() => setHighlightViewerVisible(false)}
+        onProfilePress={navigateToCreator}
       />
     </Container>
   );

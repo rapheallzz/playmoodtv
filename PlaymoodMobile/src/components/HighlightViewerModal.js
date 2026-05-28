@@ -83,6 +83,10 @@ const HighlightViewerModal = ({ visible, highlights, initialIndex = 0, onClose, 
   useEffect(() => {
     if (visible) {
       setActiveIndex(initialIndex);
+      // Ensure the carousel moves to the correct index when opened
+      setTimeout(() => {
+        carouselRef.current?.scrollTo({ index: initialIndex, animated: false });
+      }, 0);
     }
   }, [visible, initialIndex]);
 
