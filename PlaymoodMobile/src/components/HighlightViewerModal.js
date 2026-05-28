@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, Modal, TouchableOpacity, StyleSheet, Image, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import styled from 'styled-components/native';
@@ -7,18 +7,33 @@ import Carousel from 'react-native-reanimated-carousel';
 
 const { height, width } = Dimensions.get('window');
 
-const HighlightViewerModal = ({ visible, highlights, initialIndex = 0, onClose, onProfilePress }) => {
-  if (!highlights || highlights.length === 0) return null;
+const HighlightItem = ({ item, index, activeIndex, visible, onNext, onClose, onProfilePress }) => {
+  const videoRef = useRef(null);
+  const isPlaying = visible && index === activeIndex;
 
-  const renderItem = ({ item }) => (
+  useEffect(() => {
+    if (!isPlaying && videoRef.current) {
+      videoRef.current.setPositionAsync(0);
+    }
+  }, [isPlaying]);
+
+  const onPlaybackStatusUpdate = (status) => {
+    if (status.didJustFinish && isPlaying) {
+      onNext();
+    }
+  };
+
+  return (
     <Container>
       <Video
+        ref={videoRef}
         source={{ uri: item.highlightUrl || item.content?.video }}
         style={styles.fullVideo}
         resizeMode="cover"
-        shouldPlay={true}
-        isLooping
+        shouldPlay={isPlaying}
+        isLooping={false}
         useNativeControls={false}
+        onPlaybackStatusUpdate={onPlaybackStatusUpdate}
       />
 
       <Overlay>
@@ -59,6 +74,25 @@ const HighlightViewerModal = ({ visible, highlights, initialIndex = 0, onClose, 
       </Overlay>
     </Container>
   );
+};
+
+const HighlightViewerModal = ({ visible, highlights, initialIndex = 0, onClose, onProfilePress }) => {
+  const [activeIndex, setActiveIndex] = useState(initialIndex);
+  const carouselRef = useRef(null);
+
+  useEffect(() => {
+    if (visible) {
+      setActiveIndex(initialIndex);
+    }
+  }, [visible, initialIndex]);
+
+  if (!highlights || highlights.length === 0) return null;
+
+  const handleNext = () => {
+    if (activeIndex < highlights.length - 1) {
+      carouselRef.current?.next();
+    }
+  };
 
   return (
     <Modal
@@ -68,13 +102,25 @@ const HighlightViewerModal = ({ visible, highlights, initialIndex = 0, onClose, 
       onRequestClose={onClose}
     >
       <Carousel
+        ref={carouselRef}
         vertical
         width={width}
         height={height}
         data={highlights}
         defaultIndex={initialIndex}
         scrollAnimationDuration={500}
-        renderItem={renderItem}
+        onSnapToItem={(index) => setActiveIndex(index)}
+        renderItem={({ item, index }) => (
+          <HighlightItem
+            item={item}
+            index={index}
+            activeIndex={activeIndex}
+            visible={visible}
+            onNext={handleNext}
+            onClose={onClose}
+            onProfilePress={onProfilePress}
+          />
+        )}
       />
     </Modal>
   );
