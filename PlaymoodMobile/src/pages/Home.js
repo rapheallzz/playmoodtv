@@ -65,7 +65,7 @@ const Home = ({ navigation }) => {
 
     const carouselWidth = isTV ? (windowWidth - 260) : windowWidth;
     const itemWidth = isTV ? (circular ? 200 : 320) : (circular ? 135 : 175);
-    const itemHeight = isTV ? (circular ? 250 : 220) : (circular ? 160 : 180);
+    const itemHeight = isTV ? (circular ? 250 : 220) : (circular ? 180 : 220);
 
     return (
       <Section isTV={isTV}>
@@ -76,6 +76,10 @@ const Home = ({ navigation }) => {
           height={itemHeight}
           style={{ width: carouselWidth }}
           data={data}
+          panGestureHandlerProps={{
+            activeOffsetX: [-10, 10],
+            failOffsetY: [-5, 5],
+          }}
           scrollAnimationDuration={1000}
           renderItem={({ item }) => (
             circular ? (
@@ -176,7 +180,7 @@ const LoadingContainer = styled(View)`
 `;
 
 const Section = styled(View)`
-  margin-vertical: ${props => props.isTV ? '30px' : '15px'};
+  margin-vertical: ${props => props.isTV ? '30px' : '8px'};
 `;
 
 const SectionTitle = styled(Text)`
@@ -217,7 +221,7 @@ const TVContentCard = ({ item, onPress }) => {
 
 const CardImage = styled(Image)`
   width: 100%;
-  height: ${isTV ? '168px' : '90px'};
+  height: ${isTV ? '168px' : '120px'};
   border-radius: 8px;
 `;
 
