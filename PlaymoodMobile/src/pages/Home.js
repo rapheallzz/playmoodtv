@@ -64,7 +64,7 @@ const Home = ({ navigation }) => {
     if (!data || data.length === 0) return null;
 
     const carouselWidth = isTV ? (windowWidth - 260) : windowWidth;
-    const itemWidth = isTV ? (circular ? 200 : 320) : (circular ? 135 : 140);
+    const itemWidth = isTV ? (circular ? 200 : 320) : (circular ? 135 : 160);
     const itemHeight = isTV ? (circular ? 250 : 220) : (circular ? 160 : 240);
 
     return (
@@ -85,7 +85,6 @@ const Home = ({ navigation }) => {
               <CircularContentCard
                 content={item}
                 onPress={() => openPreview(item)}
-                onMorePress={() => openPreview(item)}
               />
             ) : (
               <TVContentCard item={item} onPress={() => openPreview(item)} />
@@ -191,7 +190,7 @@ const SectionTitle = styled(Text)`
 `;
 
 const ContentCard = styled(TouchableOpacity)`
-  width: ${isTV ? '300px' : '160px'};
+  width: ${isTV ? '300px' : '145px'};
   margin-left: 15px;
   transform: ${props => props.isFocused ? 'scale(1.1)' : 'scale(1)'};
   border-width: ${props => props.isFocused ? '4px' : '0px'};
