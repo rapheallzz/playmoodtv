@@ -20,16 +20,19 @@ import BASE_API_URL from '../apiConfig';
 
 const CreatorPage = ({ route, navigation }) => {
   const { user } = useSelector((state) => state.auth);
+  const [activeTab, setActiveTab] = useState('Uploads');
+
   const {
     bannerImage, profileImage, creatorName, about, subscribers, data: uploads,
-    isLoading: isLoadingChannel
+    isLoading: isLoadingChannel, errorMessage: channelError, refreshChannel
   } = useChannelDetails(user);
 
-  const { highlights, isLoading: isLoadingHighlights, createHighlight, fetchHighlights } = useHighlights(user);
-  const { feeds, isLoadingFeeds, fetchFeeds, createFeedPost } = useFeeds(user);
+  const { highlights, isLoading: isLoadingHighlights, error: highlightsError, createHighlight, fetchHighlights } = useHighlights(user);
+  const { feeds, isLoadingFeeds, error: feedsError, fetchFeeds, createFeedPost } = useFeeds(user);
   const {
     playlists,
     isLoadingPlaylists,
+    errorMessage: playlistsError,
     handleCreateOrUpdatePlaylist,
     fetchPlaylists,
     setNewPlaylist
@@ -37,12 +40,11 @@ const CreatorPage = ({ route, navigation }) => {
   const {
     communityPosts,
     handleCreatePost,
-    isLoadingPosts
+    isLoadingPosts,
+    errorMessage: postsError
   } = useCommunityPosts(user, activeTab, null, BASE_API_URL);
   const dispatch = useDispatch();
   const { isUploading } = useSelector((state) => state.upload);
-
-  const [activeTab, setActiveTab] = useState('Uploads');
   const [actionsVisible, setActionsVisible] = useState(false);
   const [communityModalVisible, setCommunityModalVisible] = useState(false);
   const [playlistModalVisible, setPlaylistModalVisible] = useState(false);
@@ -143,6 +145,13 @@ const CreatorPage = ({ route, navigation }) => {
   return (
     <Container>
       <ScrollView>
+        {(channelError || highlightsError || feedsError || playlistsError || postsError) && (
+          <View style={{ backgroundColor: '#541011', padding: 10 }}>
+            <Text style={{ color: '#fff', fontSize: 12, textAlign: 'center' }}>
+              {channelError || highlightsError || feedsError || playlistsError || postsError}
+            </Text>
+          </View>
+        )}
         <BannerImage source={{ uri: bannerImage || 'https://via.placeholder.com/800x200' }} resizeMode="cover" />
 
         <HeaderView>

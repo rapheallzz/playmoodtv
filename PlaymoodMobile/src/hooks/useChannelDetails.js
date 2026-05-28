@@ -63,7 +63,7 @@ const useChannelDetails = (user) => {
     } else if (!user) {
       setIsLoading(false);
     }
-  }, [user]);
+  }, [user?._id, user?.userId, user?.token]);
 
   const uploadBannerToR2 = async (file, token) => {
     // 1. Get signature from the backend

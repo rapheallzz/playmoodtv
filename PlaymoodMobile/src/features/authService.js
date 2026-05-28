@@ -43,6 +43,7 @@ const login = async (userData) => {
     const response = await axios.post(`${API_URL}login`, userData);
     const user = {
       userId: response.data._id,
+      _id: response.data._id,
       name: response.data.name,
       email: response.data.email,
       role: response.data.role,
@@ -57,7 +58,7 @@ const login = async (userData) => {
     const token = response.data.token;
     const userWithToken = { ...user, token };
     await AsyncStorage.setItem('user', JSON.stringify(userWithToken));
-    return { user, token };
+    return { user: userWithToken, token };
   } catch (error) {
     throw error;
   }

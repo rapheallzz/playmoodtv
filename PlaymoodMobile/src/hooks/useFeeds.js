@@ -20,6 +20,8 @@ const useFeeds = (user, creatorId = null) => {
 
   const fetchFeeds = async () => {
     const userIdToFetch = creatorId || user?._id || user?.userId;
+    const token = user?.token;
+
     if (!userIdToFetch) {
       setIsLoadingFeeds(false);
       return;
@@ -28,7 +30,12 @@ const useFeeds = (user, creatorId = null) => {
     setIsLoadingFeeds(true);
     setError(null);
     try {
-      const response = await api.get(`/api/feed/user/${userIdToFetch}`);
+      const response = await axios.get(`${BASE_API_URL}/api/feed/user/${userIdToFetch}`, {
+        headers: {
+          Authorization: token ? `Bearer ${token}` : undefined,
+          'Content-Type': 'application/json',
+        },
+      });
       const normalizedFeeds = Array.isArray(response.data) ? response.data.map(feed => ({
         ...feed,
         thumbnail: feed.thumbnail?.url || feed.thumbnail || '',
@@ -167,8 +174,11 @@ const useFeeds = (user, creatorId = null) => {
   };
 
   useEffect(() => {
-    fetchFeeds();
-  }, [user]);
+    const userId = user?._id || user?.userId;
+    if (userId) {
+      fetchFeeds();
+    }
+  }, [user?._id, user?.userId, user?.token]);
 
   return {
     feeds,

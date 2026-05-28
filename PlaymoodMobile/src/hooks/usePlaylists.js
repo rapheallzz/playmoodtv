@@ -42,11 +42,13 @@ const usePlaylists = (user, creatorId = null) => {
     } finally {
       setIsLoadingPlaylists(false);
     }
-  }, [user]);
+  }, [user?._id, user?.userId, user?.token, creatorId]);
 
   useEffect(() => {
-    fetchPlaylists();
-  }, [fetchPlaylists]);
+    if (user?._id || user?.userId || creatorId) {
+      fetchPlaylists();
+    }
+  }, [fetchPlaylists, user?._id, user?.userId, user?.token, creatorId]);
 
   // Fetch a single playlist's details (including videos)
   const fetchPlaylistById = useCallback(async (playlistId) => {

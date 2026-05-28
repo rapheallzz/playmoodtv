@@ -288,6 +288,7 @@ export const authSlice = createSlice({
           ...action.payload.user,
           userId: action.payload.user.userId || action.payload.user._id,
           _id: action.payload.user._id || action.payload.user.userId,
+          token: action.payload.token,
         };
         state.userToken = action.payload.token;
       })
@@ -316,8 +317,9 @@ export const authSlice = createSlice({
           ...action.payload,
           userId: action.payload.userId || action.payload._id,
           _id: action.payload._id || action.payload.userId,
+          token: action.payload.token || state.userToken,
         };
-        state.userToken = action.payload.token;
+        state.userToken = action.payload.token || state.userToken;
       })
       .addCase(updateAuthUser.rejected, (state, action) => {
         state.isLoading = false;

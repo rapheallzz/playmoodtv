@@ -10,6 +10,8 @@ const useHighlights = (user, creatorId) => {
 
   const fetchHighlights = useCallback(async () => {
     const idToFetch = creatorId || user?._id || user?.userId;
+    const token = user?.token;
+
     if (!idToFetch) {
       setIsLoading(false);
       return;
@@ -20,6 +22,7 @@ const useHighlights = (user, creatorId) => {
     try {
       const response = await axios.get(`${BASE_API_URL}/api/highlights/creator/${idToFetch}`, {
         headers: {
+          Authorization: token ? `Bearer ${token}` : undefined,
           'Cache-Control': 'no-cache',
         },
       });
@@ -37,11 +40,13 @@ const useHighlights = (user, creatorId) => {
     } finally {
       setIsLoading(false);
     }
-  }, [user?._id, user?.userId, creatorId]);
+  }, [user?._id, user?.userId, user?.token, creatorId]);
 
   useEffect(() => {
-    fetchHighlights();
-  }, [fetchHighlights]);
+    if (user?._id || user?.userId || creatorId) {
+      fetchHighlights();
+    }
+  }, [fetchHighlights, user?._id, user?.userId, user?.token, creatorId]);
 
   const createHighlight = async (highlightData) => {
     const userId = user?._id || user?.userId;

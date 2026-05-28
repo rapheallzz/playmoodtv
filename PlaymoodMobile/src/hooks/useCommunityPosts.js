@@ -46,7 +46,7 @@ const useCommunityPosts = (user, activeTab, socket, apiUrl) => {
     if (user && (user._id || user.userId) && (activeTab === 'COMMUNITY' || activeTab === 'Community')) {
       fetchCommunityPosts();
     }
-  }, [user, activeTab, apiUrl]);
+  }, [user?._id, user?.userId, user?.token, activeTab, apiUrl]);
 
   const handleCreatePost = async (content) => {
     const postContent = content || newPostContent;
