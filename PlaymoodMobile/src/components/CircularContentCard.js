@@ -4,7 +4,7 @@ import styled from 'styled-components/native';
 import { Ionicons } from '@expo/vector-icons';
 import { isTV } from '../utils/platform';
 
-const CircularContentCard = ({ content, onPress, onMorePress }) => {
+const CircularContentCard = ({ content, onPress }) => {
   const [isFocused, setIsFocused] = useState(false);
 
   return (
@@ -19,9 +19,6 @@ const CircularContentCard = ({ content, onPress, onMorePress }) => {
           source={{ uri: content.thumbnail || 'https://via.placeholder.com/200' }}
           resizeMode="cover"
         />
-        <OverlayIcon onPress={onMorePress}>
-           <Ionicons name="ellipsis-vertical" size={18} color="white" />
-        </OverlayIcon>
       </CircleImageContainer>
       <ContentTitle numberOfLines={1}>{content.title}</ContentTitle>
     </Container>
@@ -58,13 +55,5 @@ const ContentTitle = styled.Text`
   font-weight: 500;
 `;
 
-const OverlayIcon = styled.TouchableOpacity`
-  position: absolute;
-  bottom: 5px;
-  right: 5px;
-  background-color: rgba(0,0,0,0.5);
-  border-radius: 10px;
-  padding: 2px;
-`;
 
 export default CircularContentCard;

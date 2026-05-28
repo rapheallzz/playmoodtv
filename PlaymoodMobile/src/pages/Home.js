@@ -85,7 +85,6 @@ const Home = ({ navigation }) => {
               <CircularContentCard
                 content={item}
                 onPress={() => openPreview(item)}
-                onMorePress={() => openPreview(item)}
               />
             ) : (
               <TVContentCard item={item} onPress={() => openPreview(item)} />
