@@ -124,7 +124,10 @@ const MoviePlayer = ({ route, navigation }) => {
   };
 
   const handleLike = async () => {
-    if (!user) return alert('Please login to like');
+    if (!user) {
+      navigation.navigate('Login');
+      return;
+    }
     try {
       if (isLiked) {
         await dispatch(unlikeContent({ contentId })).unwrap();
@@ -135,11 +138,15 @@ const MoviePlayer = ({ route, navigation }) => {
       fetchMovieData(); // Refresh to get updated like count
     } catch (error) {
       console.error('Error toggling like:', error);
+      alert('Error: ' + (error.message || 'Failed to update like status'));
     }
   };
 
   const handleWatchlist = async () => {
-    if (!user) return alert('Please login to add to watchlist');
+    if (!user) {
+      navigation.navigate('Login');
+      return;
+    }
     try {
       if (isInWatchlist) {
         await dispatch(removeFromWatchlist({ userId: user._id, contentId })).unwrap();
@@ -149,24 +156,29 @@ const MoviePlayer = ({ route, navigation }) => {
       setIsInWatchlist(!isInWatchlist);
     } catch (error) {
       console.error('Error toggling watchlist:', error);
+      alert('Error: ' + (error.message || 'Failed to update watchlist'));
     }
   };
 
   const handleSubscribe = async () => {
-    if (!user) return alert('Please login to subscribe');
+    if (!user) {
+      navigation.navigate('Login');
+      return;
+    }
     try {
       if (isSubscribed) {
-        await axios.put(`${BASE_API_URL}/api/subscribe/`, { creatorId: movie.user._id }, {
+        await axios.put(`${BASE_API_URL}/api/subscribe`, { creatorId: movie.user._id }, {
           headers: { Authorization: `Bearer ${user.token}` },
         });
       } else {
-        await axios.post(`${BASE_API_URL}/api/subscribe/`, { creatorId: movie.user._id }, {
+        await axios.post(`${BASE_API_URL}/api/subscribe`, { creatorId: movie.user._id }, {
           headers: { Authorization: `Bearer ${user.token}` },
         });
       }
       setIsSubscribed(!isSubscribed);
     } catch (error) {
       console.error('Error toggling subscription:', error);
+      alert('Error: ' + (error.response?.data?.message || 'Failed to update subscription'));
     }
   };
 

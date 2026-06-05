@@ -31,6 +31,7 @@ const CreatorChannel = ({ route, navigation }) => {
   const [videos, setVideos] = useState([]);
   const [communityPosts, setCommunityPosts] = useState([]);
   const [isLoadingPosts, setIsLoadingPosts] = useState(false);
+  const [newComment, setNewComment] = useState({});
   const [activeTab, setActiveTab] = useState('VIDEOS');
   const [isLoading, setIsLoading] = useState(true);
   const [subscribed, setSubscribed] = useState(false);
@@ -50,7 +51,10 @@ const CreatorChannel = ({ route, navigation }) => {
       if (!creatorId) return;
       setIsLoading(true);
       try {
-        const response = await axios.get(`${BASE_API_URL}/api/channel/${creatorId}`);
+        const token = user?.userToken;
+        const response = await axios.get(`${BASE_API_URL}/api/channel/${creatorId}`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
         setCreatorData(response.data);
         setVideos(response.data.content || []);
 
@@ -64,13 +68,16 @@ const CreatorChannel = ({ route, navigation }) => {
       }
     };
     fetchCreatorData();
-  }, [creatorId, currentUserId]);
+  }, [creatorId, currentUserId, user?.userToken]);
 
   const fetchCommunityPosts = async () => {
     if (!creatorId) return;
     setIsLoadingPosts(true);
     try {
-      const response = await axios.get(`${BASE_API_URL}/api/community/${creatorId}`);
+      const token = user?.userToken;
+      const response = await axios.get(`${BASE_API_URL}/api/community/${creatorId}`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
       setCommunityPosts(response.data || []);
     } catch (error) {
       console.error('Error fetching community posts:', error);
@@ -91,12 +98,100 @@ const CreatorChannel = ({ route, navigation }) => {
       return;
     }
     try {
-      const endpoint = subscribed ? '/api/subscribe' : '/api/subscribe';
+      const token = user?.userToken;
       const method = subscribed ? 'put' : 'post';
-      await axios[method](`${BASE_API_URL}${endpoint}`, { creatorId });
+      await axios[method](
+        `${BASE_API_URL}/api/subscribe`,
+        { creatorId },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setSubscribed(!subscribed);
+      setCreatorData(prev => ({
+        ...prev,
+        subscribers: subscribed ? Math.max(0, (prev.subscribers || 0) - 1) : (prev.subscribers || 0) + 1
+      }));
     } catch (error) {
       console.error('Subscription error:', error);
+      Alert.alert('Error', error.response?.data?.message || 'Failed to update subscription');
+    }
+  };
+
+  const handleLikePost = async (postId, isLiked) => {
+    if (!currentUserId) {
+      navigation.navigate('Login');
+      return;
+    }
+    try {
+      const token = user?.userToken;
+      const endpoint = isLiked
+        ? `/api/community/${postId}/unlike`
+        : `/api/community/${postId}/like`;
+      await axios.put(
+        `${BASE_API_URL}${endpoint}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setCommunityPosts((prev) =>
+        prev.map((post) =>
+          post._id === postId
+            ? {
+                ...post,
+                likes: isLiked
+                  ? post.likes.filter((id) => id !== currentUserId)
+                  : [...post.likes, currentUserId],
+              }
+            : post
+        )
+      );
+    } catch (error) {
+      console.error('Like error:', error);
+      Alert.alert('Error', 'Failed to update like status');
+    }
+  };
+
+  const handleCommentSubmit = async (postId) => {
+    if (!currentUserId) {
+      navigation.navigate('Login');
+      return;
+    }
+    const content = newComment[postId];
+    if (!content || !content.trim()) return;
+
+    try {
+      const token = user?.userToken;
+      const response = await axios.post(
+        `${BASE_API_URL}/api/community/${postId}/comment`,
+        { content },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setCommunityPosts((prev) =>
+        prev.map((post) =>
+          post._id === postId
+            ? {
+                ...post,
+                comments: [
+                  ...post.comments,
+                  {
+                    _id: response.data.commentId || Date.now().toString(),
+                    user: { _id: currentUserId, name: currentUser?.name || 'User', profileImage: currentUser?.profileImage },
+                    content,
+                    timestamp: new Date().toISOString(),
+                  },
+                ],
+              }
+            : post
+        )
+      );
+      setNewComment((prev) => ({ ...prev, [postId]: '' }));
+    } catch (error) {
+      console.error('Comment error:', error);
+      Alert.alert('Error', 'Failed to add comment');
     }
   };
 
@@ -153,6 +248,9 @@ const CreatorChannel = ({ route, navigation }) => {
           </TabTouchable>
           <TabTouchable active={activeTab === 'FEEDS'} onPress={() => setActiveTab('FEEDS')}>
             <TabLabelText active={activeTab === 'FEEDS'}>FEEDS</TabLabelText>
+          </TabTouchable>
+          <TabTouchable active={activeTab === 'PLAYLISTS'} onPress={() => setActiveTab('PLAYLISTS')}>
+            <TabLabelText active={activeTab === 'PLAYLISTS'}>PLAYLISTS</TabLabelText>
           </TabTouchable>
           <TabTouchable active={activeTab === 'COMMUNITY'} onPress={() => setActiveTab('COMMUNITY')}>
             <TabLabelText active={activeTab === 'COMMUNITY'}>COMMUNITY</TabLabelText>
@@ -225,18 +323,55 @@ const CreatorChannel = ({ route, navigation }) => {
           {activeTab === 'COMMUNITY' && (
             <FlatList
               data={communityPosts}
-              renderItem={({ item }) => (
-                <PostCard>
-                  <PostHeader>
-                    <PostProfileImage source={{ uri: item.user?.profileImage }} />
-                    <View>
-                      <PostCreatorText>{item.user?.name}</PostCreatorText>
-                      <PostTimestampText>{new Date(item.timestamp).toLocaleDateString()}</PostTimestampText>
-                    </View>
-                  </PostHeader>
-                  <PostContentText>{item.content}</PostContentText>
-                </PostCard>
-              )}
+              renderItem={({ item }) => {
+                const isLiked = item.likes?.includes(currentUserId);
+                return (
+                  <PostCard>
+                    <PostHeader>
+                      <PostProfileImage source={{ uri: item.user?.profileImage }} />
+                      <View>
+                        <PostCreatorText>{item.user?.name}</PostCreatorText>
+                        <PostTimestampText>{new Date(item.timestamp || item.createdAt).toLocaleDateString()}</PostTimestampText>
+                      </View>
+                    </PostHeader>
+                    <PostContentText>{item.content}</PostContentText>
+
+                    <PostActions>
+                      <ActionButton onPress={() => handleLikePost(item._id, isLiked)}>
+                        <Ionicons name={isLiked ? "heart" : "heart-outline"} size={20} color={isLiked ? "#541011" : "#888"} />
+                        <ActionText active={isLiked}>{item.likes?.length || 0}</ActionText>
+                      </ActionButton>
+                      <ActionButton>
+                        <Ionicons name="chatbubble-outline" size={18} color="#888" />
+                        <ActionText>{item.comments?.length || 0}</ActionText>
+                      </ActionButton>
+                    </PostActions>
+
+                    {item.comments?.length > 0 && (
+                      <CommentsSection>
+                        {item.comments.slice(0, 3).map((comment, index) => (
+                          <CommentItem key={comment._id || index}>
+                            <CommentUserText>{comment.user?.name || 'User'}: </CommentUserText>
+                            <CommentText>{comment.content}</CommentText>
+                          </CommentItem>
+                        ))}
+                      </CommentsSection>
+                    )}
+
+                    <CommentInputContainer>
+                      <CommentTextInput
+                        placeholder="Add a comment..."
+                        placeholderTextColor="#555"
+                        value={newComment[item._id] || ''}
+                        onChangeText={(text) => setNewComment(prev => ({ ...prev, [item._id]: text }))}
+                      />
+                      <TouchableOpacity onPress={() => handleCommentSubmit(item._id)}>
+                        <Ionicons name="send" size={20} color="#541011" />
+                      </TouchableOpacity>
+                    </CommentInputContainer>
+                  </PostCard>
+                );
+              }}
               keyExtractor={item => item._id}
               scrollEnabled={false}
               ListEmptyComponent={isLoadingPosts ? <ActivityIndicator color="#541011" /> : <EmptyText>No community posts available.</EmptyText>}
@@ -448,6 +583,68 @@ const PostContentText = styled(Text)`
   color: #ccc;
   font-size: 14px;
   line-height: 20px;
+  margin-bottom: 10px;
+`;
+
+const PostActions = styled(View)`
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+  margin-vertical: 10px;
+  padding-top: 10px;
+  border-top-width: 0.5px;
+  border-top-color: #222;
+`;
+
+const ActionButton = styled(TouchableOpacity)`
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+`;
+
+const ActionText = styled(Text)`
+  color: ${props => props.active ? '#541011' : '#888'};
+  font-size: 13px;
+`;
+
+const CommentsSection = styled(View)`
+  background-color: #0a0a0a;
+  border-radius: 4px;
+  padding: 8px;
+  margin-bottom: 10px;
+`;
+
+const CommentItem = styled(View)`
+  flex-direction: row;
+  margin-bottom: 4px;
+`;
+
+const CommentUserText = styled(Text)`
+  color: #fff;
+  font-size: 12px;
+  font-weight: bold;
+`;
+
+const CommentText = styled(Text)`
+  color: #bbb;
+  font-size: 12px;
+  flex: 1;
+`;
+
+const CommentInputContainer = styled(View)`
+  flex-direction: row;
+  align-items: center;
+  background-color: #000;
+  border-radius: 20px;
+  padding-horizontal: 12px;
+  height: 36px;
+`;
+
+const CommentTextInput = styled(TextInput)`
+  flex: 1;
+  color: #fff;
+  font-size: 12px;
+  margin-right: 10px;
 `;
 
 export default CreatorChannel;
