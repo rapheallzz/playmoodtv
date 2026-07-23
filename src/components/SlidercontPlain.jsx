@@ -368,7 +368,8 @@ const Slidercontent = React.memo(function Slidercontent({
               </div>
               <div className="flex justify-end gap-1 items-center">
                 <FaHeart
-                  className={`cursor-pointer ${isLiked ? 'text-red-600 fill-current' : 'text-gray-400'}`}
+                  className={`cursor-pointer ${isLiked ? 'fill-current' : 'text-gray-400'}`}
+                  style={isLiked ? { color: '#541011' } : {}}
                   onClick={handleLike}
                 />
                 <span
@@ -417,7 +418,8 @@ const Slidercontent = React.memo(function Slidercontent({
           onClick={(e) => e.stopPropagation()}
         >
           <FaHeart
-            className={`cursor-pointer ${isLiked ? 'text-red-600 fill-current' : 'text-gray-400'}`}
+            className={`cursor-pointer ${isLiked ? 'fill-current' : 'text-gray-400'}`}
+            style={isLiked ? { color: '#541011' } : {}}
             onClick={handleLike}
           />
           <span

@@ -292,7 +292,8 @@ const Slidercontent = memo(({ img, title, movie, views, desc, customStyle, progr
             </MetaData>
             <Actions>
               <FaHeart
-                className={`cursor-pointer ${isLiked ? 'text-red-600 fill-current' : 'text-gray-400'}`}
+                className={`cursor-pointer ${isLiked ? 'fill-current' : 'text-gray-400'}`}
+                style={isLiked ? { color: '#541011' } : {}}
                 onClick={handleLike}
                 aria-label={isLiked ? 'Unlike' : 'Like'}
               />
@@ -322,7 +323,8 @@ const Slidercontent = memo(({ img, title, movie, views, desc, customStyle, progr
       {showPopup && (
         <Popup onClick={(e) => e.stopPropagation()}>
           <FaHeart
-            className={`cursor-pointer ${isLiked ? 'text-red-600 fill-current' : 'text-gray-400'}`}
+            className={`cursor-pointer ${isLiked ? 'fill-current' : 'text-gray-400'}`}
+            style={isLiked ? { color: '#541011' } : {}}
             onClick={handleLike}
           />
           <span
