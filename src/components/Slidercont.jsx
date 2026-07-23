@@ -360,7 +360,8 @@ const Slidercontent = React.memo(function Slidercontent({
           onClick={(e) => e.stopPropagation()}
         >
           <FaHeart
-            className={`cursor-pointer ${isLiked ? 'text-red-600 fill-current' : 'text-gray-400'}`}
+            className={`cursor-pointer ${isLiked ? 'fill-current' : 'text-gray-400'}`}
+            style={isLiked ? { color: '#541011' } : {}}
             onClick={handleLike}
           />
           <span
@@ -483,7 +484,7 @@ const ActionButtons = styled.div`
   }
 
   .like-icon {
-    color: ${props => props.$isLiked ? '#dc2626' : '#9ca3af'};
+    color: ${props => props.$isLiked ? '#541011' : '#9ca3af'};
     fill: currentColor;
   }
 

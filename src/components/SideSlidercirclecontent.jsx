@@ -225,7 +225,8 @@ const Slidercirclecontent = React.memo(function Slidercirclecontent({
           onClick={(e) => e.stopPropagation()}
         >
           <FaHeart
-            className={`cursor-pointer w-6 h-6 ${isLiked ? 'text-red-600 fill-current' : 'text-gray-400'}`}
+            className={`cursor-pointer w-6 h-6 ${isLiked ? 'fill-current' : 'text-gray-400'}`}
+            style={isLiked ? { color: '#541011' } : {}}
             onClick={handleLike}
           />
           <span

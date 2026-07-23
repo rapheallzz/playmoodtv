@@ -312,7 +312,8 @@ const SideBarSlidercont = React.memo(function SideBarSlidercont({
               </div>
               <div className="flex justify-end gap-1 items-center">
                 <FaHeart
-                  className={`cursor-pointer text-sm ${isLiked ? 'text-red-600 fill-current' : 'text-gray-400'}`}
+                  className={`cursor-pointer text-sm ${isLiked ? 'fill-current' : 'text-gray-400'}`}
+                  style={isLiked ? { color: '#541011' } : {}}
                   onClick={handleLike}
                 />
                 <span
@@ -348,7 +349,8 @@ const SideBarSlidercont = React.memo(function SideBarSlidercont({
           onClick={(e) => e.stopPropagation()} // Prevent modal trigger
         >
           <FaHeart
-            className={`cursor-pointer text-sm ${isLiked ? 'text-red-600 fill-current' : 'text-gray-400'}`}
+            className={`cursor-pointer text-sm ${isLiked ? 'fill-current' : 'text-gray-400'}`}
+            style={isLiked ? { color: '#541011' } : {}}
             onClick={handleLike}
           />
           <span
